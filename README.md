@@ -1,2 +1,2 @@
-# cmmunity_sdk_golang
+# community_sdk_golang
 Golang libraries - SDK
