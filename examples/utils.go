@@ -7,7 +7,6 @@ import (
 	"reflect"
 )
 
-
 func readCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
 	if !ok || authEmail == "" {
@@ -31,7 +30,7 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	switch v.Kind() {
 
 	case reflect.Struct:
-		if _, hasStringer := t.MethodByName("String"); hasStringer{
+		if _, hasStringer := t.MethodByName("String"); hasStringer {
 			printfIndented("%v\n", level, v)
 			return
 		}

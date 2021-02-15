@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	userPath  = "/user"
-	usersPath = "/users"
-	devicePath = "/device"
+	userPath    = "/user"
+	usersPath   = "/users"
+	devicePath  = "/device"
 	devicesPath = "/devices"
 )
 

@@ -10,18 +10,16 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
- 
- 
+
 func TestDevicesAPIExample(t *testing.T) {
 	defer func() {
-		if err := recover(); err!= nil {
+		if err := recover(); err != nil {
 			t.Fatal(err)
 		}
 	}()
 	runCRUD()
 	runGetAll()
 }
-
 
 func runGetAll() {
 	fmt.Println("### GET ALL")

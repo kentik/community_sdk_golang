@@ -19,8 +19,8 @@ func (i DeviceBGPType) String() string {
 var _DeviceBGPTypeValues = []DeviceBGPType{0, 1, 2}
 
 var _DeviceBGPTypeNameToValueMap = map[string]DeviceBGPType{
-	_DeviceBGPTypeName[0:4]:  0,
-	_DeviceBGPTypeName[4:10]: 1,
+	_DeviceBGPTypeName[0:4]:   0,
+	_DeviceBGPTypeName[4:10]:  1,
 	_DeviceBGPTypeName[10:22]: 2,
 }
 

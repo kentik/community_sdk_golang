@@ -20,7 +20,7 @@ var _AuthenticationProtocolValues = []AuthenticationProtocol{0, 1, 2}
 
 var _AuthenticationProtocolNameToValueMap = map[string]AuthenticationProtocol{
 	_AuthenticationProtocolName[0:6]:  0,
-	_AuthenticationProtocolName[6:9]: 1,
+	_AuthenticationProtocolName[6:9]:  1,
 	_AuthenticationProtocolName[9:12]: 2,
 }
 

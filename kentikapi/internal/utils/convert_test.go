@@ -56,10 +56,10 @@ func TestConvertListSuccess(t *testing.T) {
 	// given
 	input := [...]string{"-13", "22", "742"}
 	var output []int
-	
+
 	// when
 	err := utils.ConvertList(input, strconv.Atoi, &output)
-	
+
 	// then
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -72,10 +72,10 @@ func TestConvertListError(t *testing.T) {
 	// given
 	input := []string{"42", "0xFF"}
 	var output []int
-	
+
 	// when
 	err := utils.ConvertList(input, strconv.Atoi, &output)
-	
+
 	// then
 	assert := assert.New(t)
 	assert.Error(err)

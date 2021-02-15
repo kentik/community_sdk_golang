@@ -20,7 +20,7 @@ var _PrivacyProtocolValues = []PrivacyProtocol{0, 1, 2}
 
 var _PrivacyProtocolNameToValueMap = map[string]PrivacyProtocol{
 	_PrivacyProtocolName[0:6]:  0,
-	_PrivacyProtocolName[6:9]: 1,
+	_PrivacyProtocolName[6:9]:  1,
 	_PrivacyProtocolName[9:12]: 2,
 }
 

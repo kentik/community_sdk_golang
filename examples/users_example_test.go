@@ -44,5 +44,3 @@ func demonstrateUsersAPI() error {
 
 	return nil
 }
-
-
