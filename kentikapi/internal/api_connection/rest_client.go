@@ -1,4 +1,4 @@
-package kentikapi
+package api_connection
 
 import (
 	"context"
@@ -16,17 +16,17 @@ const (
 )
 
 type restClient struct {
-	config     restClientConfig
+	config     RestClientConfig
 	httpClient *http.Client
 }
 
-type restClientConfig struct {
+type RestClientConfig struct {
 	APIURL    string
 	AuthEmail string
 	AuthToken string
 }
 
-func newRestClient(c restClientConfig) *restClient {
+func NewRestClient(c RestClientConfig) *restClient {
 	return &restClient{
 		config: c,
 		httpClient: &http.Client{
