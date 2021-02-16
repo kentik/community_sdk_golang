@@ -1,8 +1,8 @@
 package kentikapi
 
 import (
-	"context"
-	"encoding/json"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
 )
 
 // Public constants.
@@ -13,13 +13,9 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	UsersAPI usersAPI
-
-	config Config
-}
-
-type transport interface {
-	Get(ctx context.Context, path string) (responseBody json.RawMessage, err error)
+	UsersAPI   *api_resources.UsersAPI
+	DevicesAPI *api_resources.DevicesAPI
+	config     Config
 }
 
 // Config holds configuration of the client.
@@ -35,14 +31,14 @@ func NewClient(c Config) *Client {
 	if c.APIURL == "" {
 		c.APIURL = APIURLUS
 	}
-
-	rc := newRestClient(restClientConfig{
+	rc := api_connection.NewRestClient(api_connection.RestClientConfig{
 		APIURL:    c.APIURL,
 		AuthEmail: c.AuthEmail,
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		UsersAPI: usersAPI{transport: rc},
-		config:   c,
+		UsersAPI:   api_resources.NewUsersAPI(rc),
+		DevicesAPI: api_resources.NewDevicesAPI(rc),
+		config:     c,
 	}
 }
