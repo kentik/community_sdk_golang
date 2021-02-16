@@ -2,7 +2,7 @@ package kentikapi
 
 import (
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
 )
 
 // Public constants.
@@ -13,8 +13,8 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	UsersAPI   *api_endpoints.UsersAPI
-	DevicesAPI *api_endpoints.DevicesAPI
+	UsersAPI   *api_resources.UsersAPI
+	DevicesAPI *api_resources.DevicesAPI
 	config     Config
 }
 
@@ -37,8 +37,8 @@ func NewClient(c Config) *Client {
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		UsersAPI:   api_endpoints.NewUsersAPI(rc),
-		DevicesAPI: api_endpoints.NewDevicesAPI(rc),
+		UsersAPI:   api_resources.NewUsersAPI(rc),
+		DevicesAPI: api_resources.NewDevicesAPI(rc),
 		config:     c,
 	}
 }

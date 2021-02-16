@@ -1,11 +1,11 @@
-package api_endpoints_test
+package api_resources_test
 
 import (
 	"testing"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -131,7 +131,7 @@ func TestGetDeviceRouter(t *testing.T) {
         }
     }`
 	transport := api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := api_endpoints.NewDevicesAPI(transport)
+	devicesAPI := api_resources.NewDevicesAPI(transport)
 	deviceID := models.ID(42)
 
 	// act
@@ -395,7 +395,7 @@ func TestGetAllDevices(t *testing.T) {
         ]
     }`
 	transport := api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := api_endpoints.NewDevicesAPI(transport)
+	devicesAPI := api_resources.NewDevicesAPI(transport)
 
 	// act
 	devices, err := devicesAPI.GetAll(nil)
