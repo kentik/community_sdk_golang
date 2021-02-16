@@ -33,7 +33,7 @@ func (a *DevicesAPI) Get(ctx context.Context, id models.ID) (*models.Device, err
 	if err := a.GetAndValidate(ctx, api_endpoints.GetDevicePath(id), &response); err != nil {
 		return nil, err
 	}
-	
+
 	device, err := response.ToDevice()
 	return &device, err
 }

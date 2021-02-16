@@ -20,7 +20,7 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 	if err != nil {
 		return err
 	}
-	
+
 	if err = json.Unmarshal(responseBody, &output); err != nil {
 		return err
 	}

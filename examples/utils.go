@@ -28,7 +28,6 @@ func panicOnError(err error) {
 	}
 }
 
-
 // prettyPrint prints an object recursively in an indented way
 func prettyPrint(resource interface{}) {
 	prettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
