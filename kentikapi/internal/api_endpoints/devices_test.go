@@ -207,7 +207,7 @@ func TestGetDeviceRouter(t *testing.T) {
 	assert.Equal("11", *device.DeviceBGPNeighborASN)
 	assert.True(*device.DeviceBGPFlowSpec)
 	assert.Equal("*********ass", *device.DeviceBGPPassword)
-	assert.Nil(device.UserBGPDeviceID)
+	assert.Nil(device.UseBGPDeviceID)
 	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.CreatedDate)
 	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.UpdatedDate)
 	require.NotNil(device.DeviceSNMPv3Conf)
@@ -221,7 +221,6 @@ func TestGetDeviceRouter(t *testing.T) {
 	assert.Nil(device.SNMPLastUpdated)
 	assert.Equal(models.DeviceSubtypeRouter, device.DeviceSubType)
 }
-
 
 func TestGetAllDevices(t *testing.T) {
 	// arrange
@@ -406,9 +405,9 @@ func TestGetAllDevices(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
-    require.Equal(2, len(devices))
-    // device 0
-    device := devices[0]
+	require.Equal(2, len(devices))
+	// device 0
+	device := devices[0]
 	assert.Equal(models.ID(42), device.ID)
 	assert.Equal(models.ID(74333), device.CompanyID)
 	assert.Equal("testapi_router_full_1", device.DeviceName)
@@ -466,7 +465,7 @@ func TestGetAllDevices(t *testing.T) {
 	assert.Equal("11", *device.DeviceBGPNeighborASN)
 	assert.True(*device.DeviceBGPFlowSpec)
 	assert.Equal("*********ass", *device.DeviceBGPPassword)
-	assert.Nil(device.UserBGPDeviceID)
+	assert.Nil(device.UseBGPDeviceID)
 	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.CreatedDate)
 	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.UpdatedDate)
 	require.NotNil(device.DeviceSNMPv3Conf)
@@ -480,10 +479,10 @@ func TestGetAllDevices(t *testing.T) {
 	assert.Nil(device.SNMPLastUpdated)
 	assert.Equal(models.DeviceSubtypeRouter, device.DeviceSubType)
 
-    // device 1
-    device = devices[1]
-    assert.Equal(models.ID(43), device.ID)
-    assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
-    assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
-    assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
+	// device 1
+	device = devices[1]
+	assert.Equal(models.ID(43), device.ID)
+	assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
+	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
+	assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
 }

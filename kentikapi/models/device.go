@@ -3,29 +3,14 @@ package models
 import "time"
 
 type Device struct {
-	// Required
-	ID               ID
-	CompanyID        ID
-	CreatedDate      time.Time
-	UpdatedDate      time.Time
-	DeviceName       string
-	DeviceType       DeviceType
-	DeviceSubType    DeviceSubtype
-	DeviceSampleRate int
-
-	// Optional
-	Plan                  Plan
-	Site                  *DeviceSite
-	SendingIPS            []string
+	// read-write properties (can be updated in update call)
 	PlanID                *ID
 	SiteID                *ID
-	Labels                []DeviceLabel
-	AllInterfaces         []AllInterfaces
-	CDNAttr               *CDNAttribute
 	DeviceDescription     *string
+	DeviceSampleRate      int
+	SendingIPS            []string
 	DeviceSNMNPIP         *string
 	DeviceSNMPCommunity   *string
-	DeviceSNMPv3Conf      *SNMPv3Conf
 	MinimizeSNMP          *bool
 	DeviceBGPType         *DeviceBGPType
 	DeviceBGPNeighborIP   *string
@@ -33,12 +18,27 @@ type Device struct {
 	DeviceBGPNeighborASN  *string
 	DeviceBGPFlowSpec     *bool
 	DeviceBGPPassword     *string
-	UserBGPDeviceID       *ID
-	DeviceStatus          *string
-	DeviceFlowType        *string
-	SNMPLastUpdated       *string
-	BGPPeerIP4            *string
-	BGPPeerIP6            *string
+	UseBGPDeviceID        *ID
+	DeviceSNMPv3Conf      *SNMPv3Conf
+	CDNAttr               *CDNAttribute
+
+	// read-only properties (can't be updated in update call)
+	ID              ID
+	DeviceName      string
+	DeviceType      DeviceType
+	DeviceSubType   DeviceSubtype
+	DeviceStatus    *string
+	DeviceFlowType  *string
+	CompanyID       ID
+	SNMPLastUpdated *string
+	CreatedDate     time.Time
+	UpdatedDate     time.Time
+	BGPPeerIP4      *string
+	BGPPeerIP6      *string
+	Plan            Plan
+	Site            *DeviceSite
+	Labels          []DeviceLabel
+	AllInterfaces   []AllInterfaces
 }
 
 type AllInterfaces struct {

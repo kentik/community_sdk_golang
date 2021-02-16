@@ -51,6 +51,6 @@ func (a *DevicesAPI) Get(ctx context.Context, id models.ID) (*models.Device, err
 		return nil, err
 	}
 
-	device, err := response.Device.ToDevice()
+	device, err := response.ToDevice()
 	return &device, err
 }

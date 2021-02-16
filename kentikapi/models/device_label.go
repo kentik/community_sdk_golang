@@ -3,11 +3,11 @@ package models
 import "time"
 
 type DeviceLabel struct {
-	// read-write
+	// read-write properties (can be updated in update call)
 	Name  string
 	Color string
 
-	// read-only
+	// read-only properties (can't be updated in update call)
 	Devices     []DeviceItem
 	ID          ID
 	UserID      *ID
