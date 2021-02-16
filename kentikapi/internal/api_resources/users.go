@@ -2,8 +2,6 @@ package api_resources
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
@@ -11,39 +9,29 @@ import (
 )
 
 type UsersAPI struct {
-	transport api_connection.Transport
+	BaseAPI
 }
 
 func NewUsersAPI(transport api_connection.Transport) *UsersAPI {
-	return &UsersAPI{transport: transport}
+	return &UsersAPI{BaseAPI{Transport: transport}}
 }
 
 // GetAll lists users.
 func (a *UsersAPI) GetAll(ctx context.Context) (_ []models.User, err error) {
-	responseBody, err := a.transport.Get(ctx, api_endpoints.UsersPath)
-	if err != nil {
+	var response models.GetAllUsersResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.UsersPath, &response); err != nil {
 		return nil, err
 	}
 
-	var data models.GetAllUsersResponse
-	if err = json.Unmarshal(responseBody, &data); err != nil {
-		return nil, fmt.Errorf("unmarshal response body: %v", err)
-	}
-
-	return data.Users, nil
+	return response.Users, nil
 }
 
 // Get shows user with given ID.
 func (a *UsersAPI) Get(ctx context.Context, id models.ID) (*models.User, error) {
-	responseBody, err := a.transport.Get(ctx, api_endpoints.GetUserPath(id))
-	if err != nil {
+	var response models.GetUserResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetUserPath(id), &response); err != nil {
 		return nil, err
 	}
 
-	var data models.GetUserResponse
-	if err = json.Unmarshal(responseBody, &data); err != nil {
-		return nil, fmt.Errorf("unmarshal response body: %v", err)
-	}
-
-	return &data.User, nil
+	return &response.User, nil
 }

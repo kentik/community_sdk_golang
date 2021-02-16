@@ -11,16 +11,21 @@ type Direction string
 const DirectionRequest Direction = "request"
 const DirectionResponse Direction = "response"
 
-func ValidateRequest(method string, resource interface{}) error {
+// CheckRequestRequiredFields checks if resource's required fields are not nil.
+// Eg. for method=post, it returns error if any of resource's fields marked as `request:"post"`` are set to nil
+func CheckRequestRequiredFields(method string, resource interface{}) error {
 	lowercaseMethod := strings.ToLower(method)
 	return validateWrapper(lowercaseMethod, DirectionRequest, resource)
 }
 
-func ValidateResponse(method string, resource interface{}) error {
+// CheckResponseRequiredFields checks if resource's required fields are not nil.
+// Eg. for method=get, it returns error if any of resource's fields marked as `response:"get"`` are set to nil
+func CheckResponseRequiredFields(method string, resource interface{}) error {
 	lowercaseMethod := strings.ToLower(method)
 	return validateWrapper(lowercaseMethod, DirectionResponse, resource)
 }
 
+// validateWrapper returns error containing the list of required fields that happen to be nil
 func validateWrapper(method string, direction Direction, resource interface{}) error {
 	missing := validate(method, string(direction), "", reflect.ValueOf(resource))
 	if len(missing) > 0 {

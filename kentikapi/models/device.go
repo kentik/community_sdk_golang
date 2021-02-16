@@ -99,8 +99,8 @@ const (
 	DeviceSubtypeAwsSubnet   // "aws_subnet"
 	DeviceSubtypeAzureSubnet // "azure_subnet"
 	DeviceSubtypeGcpSubnet   // "gcp_subnet"
-	DeviceSubtypeKappa       // "kappa"  # not in api documentation
-	DeviceSubtypeIbmSubnet   // "ibm_subnet"  # not in api documentation
+	DeviceSubtypeKappa       // "kappa", not in api documentation
+	DeviceSubtypeIbmSubnet   // "ibm_subnet, not in api documentation
 )
 
 type DeviceBGPType int

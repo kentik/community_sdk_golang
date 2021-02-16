@@ -7,23 +7,24 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// Plan only supports GET, so no optional fields except for UpdatedDate which sometimes comes as null
+// PlanPayload represents JSON Plan payload as it is transmitted from KentikAPI
 type PlanPayload struct {
-	ID            models.ID               `json:"id" response:"get"`
-	CompanyID     models.ID               `json:"company_id" response:"get"`
-	Name          string                  `json:"name" response:"get"`
-	Description   string                  `json:"description" response:"get"`
-	Active        bool                    `json:"active" response:"get"`
-	MaxDevices    int                     `json:"max_devices" response:"get"`
-	MaxFPS        int                     `json:"max_fps" response:"get"`
-	BGPEnabled    bool                    `json:"bgp_enabled" response:"get"`
-	FastRetention int                     `json:"fast_retention" response:"get"`
-	FullRetention int                     `json:"full_retention" response:"get"`
-	CreatedDate   time.Time               `json:"cdate" response:"get"`
-	UpdatedDate   *time.Time              `json:"edate"`
-	MaxBigdataFPS int                     `json:"max_bigdata_fps" response:"get"`
-	DeviceTypes   []planDeviceTypePayload `json:"deviceTypes" response:"get"`
-	Devices       []planDevicePayload     `json:"devices" response:"get"`
+	// following fields can appear in request: none, response: get
+	ID            models.ID               `json:"id"`
+	CompanyID     models.ID               `json:"company_id"`
+	Name          string                  `json:"name"`
+	Description   string                  `json:"description"`
+	Active        bool                    `json:"active"`
+	MaxDevices    int                     `json:"max_devices"`
+	MaxFPS        int                     `json:"max_fps"`
+	BGPEnabled    bool                    `json:"bgp_enabled"`
+	FastRetention int                     `json:"fast_retention"`
+	FullRetention int                     `json:"full_retention"`
+	CreatedDate   time.Time               `json:"cdate"`
+	UpdatedDate   *time.Time              `json:"edate"` // the only optional field
+	MaxBigdataFPS int                     `json:"max_bigdata_fps"`
+	DeviceTypes   []planDeviceTypePayload `json:"deviceTypes"`
+	Devices       []planDevicePayload     `json:"devices"`
 }
 
 func (p PlanPayload) ToPlan() (models.Plan, error) {
@@ -58,18 +59,20 @@ func (p PlanPayload) ToPlan() (models.Plan, error) {
 	}, nil
 }
 
+// planDeviceTypePayload represents JSON Plan.DeviceTypes payload as it is transmitted from KentikAPI
 type planDeviceTypePayload struct {
-	DeviceType string `json:"device_type" response:"get"`
+	DeviceType string `json:"device_type"`
 }
 
 func payloadToPlanDeviceType(p planDeviceTypePayload) (models.PlanDeviceType, error) {
 	return models.PlanDeviceType{DeviceType: p.DeviceType}, nil
 }
 
+// planDevicePayload represents JSON Plan.Devices payload as it is transmitted from KentikAPI
 type planDevicePayload struct {
-	DeviceName string    `json:"device_name" response:"get"`
-	DeviceType string    `json:"device_type" response:"get"`
-	ID         models.ID `json:"id,string" response:"get"`
+	DeviceName string    `json:"device_name"`
+	DeviceType string    `json:"device_type"`
+	ID         models.ID `json:"id,string"`
 }
 
 func payloadToPlanDevice(p planDevicePayload) (models.PlanDevice, error) {

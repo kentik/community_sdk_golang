@@ -7,12 +7,12 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// DeviceGetAllResponse represents DevicesAPI GetAll JSON response
-type DeviceGetAllResponse struct {
+// GetAllDevicesResponse represents DevicesAPI GetAll JSON response
+type GetAllDevicesResponse struct {
 	Devices []DevicePayload `json:"devices"`
 }
 
-func (p DeviceGetAllResponse) ToDevices() (result []models.Device, err error) {
+func (p GetAllDevicesResponse) ToDevices() (result []models.Device, err error) {
 	convertFunc := func(d DevicePayload) (models.Device, error) {
 		return d.ToDevice()
 	}
@@ -20,12 +20,12 @@ func (p DeviceGetAllResponse) ToDevices() (result []models.Device, err error) {
 	return result, err
 }
 
-// DeviceGetResponse represents DevicesAPI Get JSON response
-type DeviceGetResponse struct {
+// GetDeviceResponse represents DevicesAPI Get JSON response
+type GetDeviceResponse struct {
 	Device DevicePayload `json:"device"`
 }
 
-func (p DeviceGetResponse) ToDevice() (result models.Device, err error) {
+func (p GetDeviceResponse) ToDevice() (result models.Device, err error) {
 	return p.Device.ToDevice()
 }
 

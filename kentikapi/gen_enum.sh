@@ -12,7 +12,6 @@ function stage() {
 function checkPrerequsites() {
     stage "Checking prerequisites"
 
-    # enumer: https://github.com/alvaroloes/enumer
     which enumer > /dev/null 2>&1
     [[ $? != 0 ]] && echo "You need to install enumer with: go get github.com/alvaroloes/enumer" && exit 1
 

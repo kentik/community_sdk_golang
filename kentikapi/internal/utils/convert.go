@@ -2,7 +2,7 @@ package utils
 
 import "reflect"
 
-// ConvertFunc signature like: func ToUpper(source string) (string, error)
+// ConvertFunc signature like: func IntToString(source int) (string, error)
 type ConvertFunc interface{}
 
 // ConvertList transforms input list of items into output list using convertFunc.
@@ -40,7 +40,7 @@ func ConvertList(input interface{}, convertFunc ConvertFunc, output interface{})
 	return nil
 }
 
-// ConvertOrNone transforms input into output using convertFunc, unless input is nil ->
+// ConvertOrNone transforms input into output using convertFunc, unless input is nil -> then sets output to nil.
 // "input" must be a pointer eg *int
 // "output" must be a pointer to pointer eg **int
 // conversion result is stored under output, or nil is set if input is nil
