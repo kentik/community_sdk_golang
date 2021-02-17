@@ -15,7 +15,19 @@ const (
 type Client struct {
 	UsersAPI   *api_resources.UsersAPI
 	DevicesAPI *api_resources.DevicesAPI
-	config     Config
+	// DeviceLabelsAPI
+	// SitesAPI
+	// TagsAPI
+	// SavedFiltersAPI
+	// CustomDimensionsAPI
+	// CustomApplicationsAPI
+	// QueryAPI
+	// PlansAPI
+	// MyKentikPortalAPI
+	// BatchAPI
+	// AlertingAPI
+
+	config Config
 }
 
 // Config holds configuration of the client.

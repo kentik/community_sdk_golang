@@ -12,7 +12,7 @@ type Device struct {
 	DeviceSNMNPIP         *string
 	DeviceSNMPCommunity   *string
 	MinimizeSNMP          *bool
-	DeviceBGPType         *DeviceBGPType
+	DeviceBGPType         *DeviceBGPType // Note: for DeviceBGPType = DeviceBGPTypeDevice, either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
 	DeviceBGPNeighborIP   *string
 	DeviceBGPNeighborIPv6 *string
 	DeviceBGPNeighborASN  *string
@@ -35,10 +35,87 @@ type Device struct {
 	UpdatedDate     time.Time
 	BGPPeerIP4      *string
 	BGPPeerIP6      *string
-	Plan            Plan
+	Plan            DevicePlan
 	Site            *DeviceSite
 	Labels          []DeviceLabel
 	AllInterfaces   []AllInterfaces
+}
+
+// NewRouter creates a new Router with all necessary fields set
+// Optional fields that can be set for router include:
+// - DeviceSNMNPIP
+// - DeviceSNMPCommunity
+// - DeviceSNMPv3Conf  // when set, overwrites "device_snmp_community"
+// Optional fields that can be always set include:
+// - DeviceDescription
+// - SiteID
+// - DeviceBGPFlowSpec
+func NewRouter(
+	// common required
+	DeviceName string,
+	DeviceSubType DeviceSubtype,
+	DeviceSampleRate int,
+	PlanID ID,
+	// router required
+	SendingIPS []string,
+	MinimizeSNMP bool,
+) *Device {
+	bgpType := DeviceBGPTypeNone // default
+	return &Device{
+		DeviceType:       DeviceTypeRouter,
+		DeviceName:       DeviceName,
+		DeviceSubType:    DeviceSubType,
+		DeviceSampleRate: DeviceSampleRate,
+		PlanID:           &PlanID,
+		DeviceBGPType:    &bgpType,
+		SendingIPS:       SendingIPS,
+		MinimizeSNMP:     &MinimizeSNMP,
+	}
+}
+
+// NewDNS creates a new DSN with all necessary fields set
+// Optional fields that can be set include:
+// - DeviceDescription
+// - SiteID
+// - DeviceBGPFlowSpec
+func NewDNS(
+	// common required
+	DeviceName string,
+	DeviceSubType DeviceSubtype,
+	DeviceSampleRate int,
+	PlanID ID,
+	// dns required
+	CDNAttr CDNAttribute,
+) *Device {
+	bgpType := DeviceBGPTypeNone // default
+	return &Device{
+		DeviceType:       DeviceTypeHostNProbeDNSWWW,
+		DeviceName:       DeviceName,
+		DeviceSubType:    DeviceSubType,
+		DeviceSampleRate: DeviceSampleRate,
+		PlanID:           &PlanID,
+		DeviceBGPType:    &bgpType,
+		CDNAttr:          &CDNAttr,
+	}
+}
+
+// WithBGPTypeDevice is alternative to WithBGPTypeOtherDevice
+// Optional fields that can be set for BGPTypeDevice include:
+// - DeviceBGPPassword
+// Note: either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required for DeviceBGPTypeDevice
+func (d *Device) WithBGPTypeDevice(deviceBGPNeighborASN string) *Device {
+	bgpType := DeviceBGPTypeDevice
+	d.DeviceBGPType = &bgpType
+	d.DeviceBGPNeighborASN = &deviceBGPNeighborASN
+	return d
+}
+
+// WithBGPTypeOtherDevice is alternative to WithBGPTypeDevice
+func (d *Device) WithBGPTypeOtherDevice(useBGPDeviceID ID) *Device {
+	bgpType := DeviceBGPTypeOtherDevice
+	d.DeviceBGPType = &bgpType
+	d.UseBGPDeviceID = &useBGPDeviceID
+	return d
 }
 
 type AllInterfaces struct {
@@ -56,6 +133,22 @@ type SNMPv3Conf struct {
 	PrivacyPassphrase        *string
 }
 
+func NewSNMPv3Conf(userName string) *SNMPv3Conf {
+	return &SNMPv3Conf{UserName: userName}
+}
+
+func (c *SNMPv3Conf) WithAuthentication(protocol AuthenticationProtocol, pass string) *SNMPv3Conf {
+	c.AuthenticationProtocol = &protocol
+	c.AuthenticationPassphrase = &pass
+	return c
+}
+
+func (c *SNMPv3Conf) WithPrivacy(protocol PrivacyProtocol, pass string) *SNMPv3Conf {
+	c.PrivacyProtocol = &protocol
+	c.PrivacyPassphrase = &pass
+	return c
+}
+
 // DeviceSite embedded under Device differs from regular Site in that all fields are optional
 type DeviceSite struct {
 	ID        *ID
@@ -63,6 +156,25 @@ type DeviceSite struct {
 	Latitude  *float64
 	Longitude *float64
 	SiteName  *string
+}
+
+// DevicePlan embedded under Device differs from regular Plan in that all fields are optional
+type DevicePlan struct {
+	ID            *ID
+	CompanyID     *ID
+	Name          *string
+	Description   *string
+	Active        *bool
+	MaxDevices    *int
+	MaxFPS        *int
+	BGPEnabled    *bool
+	FastRetention *int
+	FullRetention *int
+	CreatedDate   *time.Time
+	UpdatedDate   *time.Time
+	MaxBigdataFPS *int
+	DeviceTypes   []PlanDeviceType
+	Devices       []PlanDevice
 }
 
 type DeviceType int
