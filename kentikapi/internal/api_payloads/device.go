@@ -44,7 +44,7 @@ type DevicePayload struct {
 	SiteID                *models.ID         `json:"site_id,omitempty"`
 	DeviceDescription     *string            `json:"device_description,omitempty"`
 	DeviceSampleRate      *int               `json:"device_sample_rate,string,omitempty" request:"post" response:"get,post,put"`
-	SendingIPS            []string           `json:"sending_ips"`
+	SendingIPS            []string           `json:"sending_ips,omitempty"`
 	DeviceSNMNPIP         *string            `json:"device_snmp_ip,omitempty"`
 	DeviceSNMPCommunity   *string            `json:"device_snmp_community,omitempty"`
 	MinimizeSNMP          *bool              `json:"minimize_snmp,omitempty"`

@@ -1,13 +1,13 @@
 package api_connection
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -49,18 +49,16 @@ func NewRestClient(c RestClientConfig) *restClient {
 
 // Get sends GET request to the API and returns raw response body.
 func (c *restClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, c.makeFullURL(path), nil)
+	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
 	}
-
-	request.Header.Set(authEmailKey, c.config.AuthEmail)
-	request.Header.Set(authAPITokenKey, c.config.AuthToken)
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("do request: %v", err)
 	}
+
 	defer func() {
 		cErr := response.Body.Close()
 		if err == nil && cErr != nil {
@@ -77,14 +75,11 @@ func (c *restClient) Get(ctx context.Context, path string) (responseBody json.Ra
 }
 
 func (c *restClient) Post(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.makeFullURL(path), strings.NewReader(string(payload)))
+	fmt.Println(string(payload))
+	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
 	}
-
-	request.Header.Set(authEmailKey, c.config.AuthEmail)
-	request.Header.Set(authAPITokenKey, c.config.AuthToken)
-	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
@@ -113,6 +108,19 @@ func errorFromResponseStatus(r *http.Response, responseBody string) error {
 		return fmt.Errorf("API response error, status: %v, response body: %v", r.Status, responseBody)
 	}
 	return nil
+}
+
+func (c *restClient) newRequest(ctx context.Context, method string, path string, payload json.RawMessage) (*http.Request, error) {
+	request, err := http.NewRequestWithContext(ctx, method, c.makeFullURL(path), bytes.NewReader(payload))
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set(authEmailKey, c.config.AuthEmail)
+	request.Header.Set(authAPITokenKey, c.config.AuthToken)
+	request.Header.Set("Content-Type", "application/json")
+
+	return request, nil
 }
 
 func (c *restClient) makeFullURL(path string) string {
