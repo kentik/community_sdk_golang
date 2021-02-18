@@ -31,3 +31,29 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 
 	return nil
 }
+
+func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interface{}, output interface{}) error {
+	if err := validation.CheckRequestRequiredFields("post", input); err != nil {
+		return err
+	}
+
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return err
+	}
+
+	responseBody, err := b.Transport.Post(ctx, url, payload)
+	if err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(responseBody, &output); err != nil {
+		return err
+	}
+
+	if err = validation.CheckResponseRequiredFields("post", output); err != nil {
+		return err
+	}
+
+	return nil
+}

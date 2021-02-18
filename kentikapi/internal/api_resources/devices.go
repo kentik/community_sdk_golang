@@ -37,3 +37,20 @@ func (a *DevicesAPI) Get(ctx context.Context, id models.ID) (*models.Device, err
 	device, err := response.ToDevice()
 	return &device, err
 }
+
+// Create new device
+func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.Device, error) {
+	payload, err := api_payloads.DeviceToPayload(device)
+	if err != nil {
+		return nil, err
+	}
+
+	request := api_payloads.CreateDeviceRequest{Payload: payload}
+	var response api_payloads.CreateDeviceResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.DevicePath, request, &response); err != nil {
+		return nil, err
+	}
+
+	result, err := response.ToDevice()
+	return &result, err
+}

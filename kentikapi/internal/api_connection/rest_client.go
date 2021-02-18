@@ -1,6 +1,7 @@
 package api_connection
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -48,13 +49,37 @@ func NewRestClient(c RestClientConfig) *restClient {
 
 // Get sends GET request to the API and returns raw response body.
 func (c *restClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, c.config.APIURL+path, nil)
+	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
 	}
 
-	request.Header.Set(authEmailKey, c.config.AuthEmail)
-	request.Header.Set(authAPITokenKey, c.config.AuthToken)
+	response, err := c.httpClient.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("do request: %v", err)
+	}
+
+	defer func() {
+		cErr := response.Body.Close()
+		if err == nil && cErr != nil {
+			err = fmt.Errorf("close response body: %v", cErr)
+		}
+	}()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read response body: %v", err)
+	}
+
+	return body, errorFromResponseStatus(response, string(body))
+}
+
+func (c *restClient) Post(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+	fmt.Println(string(payload))
+	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
+	if err != nil {
+		return nil, fmt.Errorf("new request: %v", err)
+	}
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
@@ -75,7 +100,7 @@ func (c *restClient) Get(ctx context.Context, path string) (responseBody json.Ra
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// TODO(dfurman): implement Post, Put, Delete methods
+// TODO(dfurman): implement Put, Delete methods
 
 func errorFromResponseStatus(r *http.Response, responseBody string) error {
 	// TODO(dfurman): return more specific errors
@@ -83,4 +108,21 @@ func errorFromResponseStatus(r *http.Response, responseBody string) error {
 		return fmt.Errorf("API response error, status: %v, response body: %v", r.Status, responseBody)
 	}
 	return nil
+}
+
+func (c *restClient) newRequest(ctx context.Context, method string, path string, payload json.RawMessage) (*http.Request, error) {
+	request, err := http.NewRequestWithContext(ctx, method, c.makeFullURL(path), bytes.NewReader(payload))
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set(authEmailKey, c.config.AuthEmail)
+	request.Header.Set(authAPITokenKey, c.config.AuthToken)
+	request.Header.Set("Content-Type", "application/json")
+
+	return request, nil
+}
+
+func (c *restClient) makeFullURL(path string) string {
+	return c.config.APIURL + path
 }
