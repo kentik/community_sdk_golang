@@ -15,8 +15,8 @@ function stage() {
 
 if [[ $1 != "" ]]; then
     stage "Running single example: $1"
-    go test -tags examples -run $1  ./... -v
+    go test -tags examples -count 1 -run $1  ./... -v
 else 
     stage "Running all examples"
-    go test -tags examples ./... -v
+    go test -tags examples -count 1 ./... -v
 fi
