@@ -52,7 +52,7 @@ func runCRUDRouter() {
 	snmpv3conf := models.NewSNMPv3Conf("John")
 	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolMD5, "Auth_Pass")
 	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolDES, "Priv_Pass")
-	device := models.NewRouter(
+	device := models.NewDeviceRouter(
 		"testapi_router_router_full",
 		models.DeviceSubtypeRouter,
 		1,
@@ -98,7 +98,7 @@ func runCRUDDNS() {
 	})
 
 	fmt.Println("### CREATE DNS")
-	device := models.NewDNS(
+	device := models.NewDeviceDNS(
 		"testapi_dns_awssubnet",
 		models.DeviceSubtypeAwsSubnet,
 		1,

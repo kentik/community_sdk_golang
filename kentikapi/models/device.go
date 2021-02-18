@@ -41,7 +41,7 @@ type Device struct {
 	AllInterfaces   []AllInterfaces
 }
 
-// NewRouter creates a new Router with all necessary fields set
+// NewDeviceRouter creates a new Router with all necessary fields set
 // Optional fields that can be set for router include:
 // - DeviceSNMNPIP
 // - DeviceSNMPCommunity
@@ -50,7 +50,7 @@ type Device struct {
 // - DeviceDescription
 // - SiteID
 // - DeviceBGPFlowSpec
-func NewRouter(
+func NewDeviceRouter(
 	// common required
 	DeviceName string,
 	DeviceSubType DeviceSubtype,
@@ -73,12 +73,12 @@ func NewRouter(
 	}
 }
 
-// NewDNS creates a new DSN with all necessary fields set
+// NewDeviceDNS creates a new DSN with all necessary fields set
 // Optional fields that can be set include:
 // - DeviceDescription
 // - SiteID
 // - DeviceBGPFlowSpec
-func NewDNS(
+func NewDeviceDNS(
 	// common required
 	DeviceName string,
 	DeviceSubType DeviceSubtype,

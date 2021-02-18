@@ -97,7 +97,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	snmpv3conf := models.NewSNMPv3Conf("John")
 	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolMD5, "Auth_Pass")
 	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolDES, "Priv_Pass")
-	router := models.NewRouter(
+	router := models.NewDeviceRouter(
 		"testapi_router_router_full",
 		models.DeviceSubtypeRouter,
 		1,
@@ -272,7 +272,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	devicesAPI := api_resources.NewDevicesAPI(transport)
 
 	// act
-	dns := models.NewDNS(
+	dns := models.NewDeviceDNS(
 		"testapi_dns-aws_subnet_bgp_other_device",
 		models.DeviceSubtypeAwsSubnet,
 		1,

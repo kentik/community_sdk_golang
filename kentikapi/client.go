@@ -51,6 +51,17 @@ func NewClient(c Config) *Client {
 	return &Client{
 		UsersAPI:   api_resources.NewUsersAPI(rc),
 		DevicesAPI: api_resources.NewDevicesAPI(rc),
-		config:     c,
+		// DeviceLabelsAPI
+		// SitesAPI
+		// TagsAPI
+		// SavedFiltersAPI
+		// CustomDimensionsAPI
+		// CustomApplicationsAPI
+		// QueryAPI
+		// PlansAPI
+		// MyKentikPortalAPI
+		// BatchAPI
+		// AlertingAPI
+		config: c,
 	}
 }
