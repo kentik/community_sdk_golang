@@ -952,3 +952,20 @@ func TestGetAllDevices(t *testing.T) {
 	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
 	assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
 }
+
+func TestDeleteDevice(t *testing.T) {
+	// arrange
+	deleteResponsePayload := "" // deleting device responds with empty body
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	err := devicesAPI.Delete(nil, deviceID)
+
+	// assert
+	assert := assert.New(t)
+	require := require.New(t)
+	require.NoError(err)
+	assert.Zero(transport.RequestBody)
+}

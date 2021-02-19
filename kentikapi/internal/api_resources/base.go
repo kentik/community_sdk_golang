@@ -21,6 +21,10 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 		return err
 	}
 
+	if output == nil {
+		return nil
+	}
+
 	if err = json.Unmarshal(responseBody, &output); err != nil {
 		return err
 	}
@@ -32,6 +36,9 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 	return nil
 }
 
+// PostAndValidate validatee input against required fields defined in struct tags of "input",
+// retrieves json at "url" unmarshalls and validates against required fields in "output"
+// output must be pointer to object
 func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interface{}, output interface{}) error {
 	if err := validation.CheckRequestRequiredFields("post", input); err != nil {
 		return err
@@ -47,11 +54,38 @@ func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interfac
 		return err
 	}
 
+	if output == nil {
+		return nil
+	}
+
 	if err = json.Unmarshal(responseBody, &output); err != nil {
 		return err
 	}
 
 	if err = validation.CheckResponseRequiredFields("post", output); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Delete retrieves json at "url" unmarshalls and validates against required fields defined in struct tags of "output"
+// output must be pointer to object
+func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output interface{}) error {
+	responseBody, err := b.Transport.Delete(ctx, url)
+	if err != nil {
+		return err
+	}
+
+	if output == nil {
+		return nil
+	}
+
+	if err = json.Unmarshal(responseBody, &output); err != nil {
+		return err
+	}
+
+	if err = validation.CheckResponseRequiredFields("get", output); err != nil {
 		return err
 	}
 

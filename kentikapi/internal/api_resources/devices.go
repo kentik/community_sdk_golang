@@ -54,3 +54,14 @@ func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.
 	result, err := response.ToDevice()
 	return &result, err
 }
+
+// Delete a device
+// Note: KentikAPI requires sending delete request twice to actually delete the device.
+// This is a safety measure preventing deletion by mistake.
+func (a *DevicesAPI) Delete(ctx context.Context, id models.ID) error {
+	if err := a.DeleteAndValidate(ctx, api_endpoints.GetDevicePath(id), nil); err != nil {
+		return err
+	}
+
+	return nil
+}
