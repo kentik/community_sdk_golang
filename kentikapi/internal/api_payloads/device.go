@@ -20,21 +20,6 @@ type ApplyLabelsRequest struct {
 	Labels []labelIDPayload `json:"labels,omitempty"`
 }
 
-// ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI
-type ApplyLabelsResponse struct {
-	ID         models.ID            `json:"id,string"`
-	DeviceName string               `json:"device_name"`
-	Labels     []deviceLabelPayload `json:"labels"`
-}
-
-func (r *ApplyLabelsResponse) ToAppliedLabels() (models.AppliedLabels, error) {
-	var labels []models.DeviceLabel
-	if err := utils.ConvertList(r.Labels, payloadToDeviceLabel, &labels); err != nil {
-		return models.AppliedLabels{}, err
-	}
-	return models.AppliedLabels{ID: r.ID, DeviceName: r.DeviceName, Labels: labels}, nil
-}
-
 // GetAllDevicesResponse represents DevicesAPI GetAll JSON response
 type GetAllDevicesResponse struct {
 	Payload []DevicePayload `json:"devices"`
@@ -62,6 +47,21 @@ type CreateDeviceResponse = GetDeviceResponse
 
 // UpdateDeviceResponse represents DevicesAPI Update JSON response
 type UpdateDeviceResponse = GetDeviceResponse
+
+// ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI
+type ApplyLabelsResponse struct {
+	ID         models.ID            `json:"id,string"`
+	DeviceName string               `json:"device_name"`
+	Labels     []deviceLabelPayload `json:"labels"`
+}
+
+func (r *ApplyLabelsResponse) ToAppliedLabels() (models.AppliedLabels, error) {
+	var labels []models.DeviceLabel
+	if err := utils.ConvertList(r.Labels, payloadToDeviceLabel, &labels); err != nil {
+		return models.AppliedLabels{}, err
+	}
+	return models.AppliedLabels{ID: r.ID, DeviceName: r.DeviceName, Labels: labels}, nil
+}
 
 // DevicePayload represents JSON Device payload as it is transmitted to and from KentikAPI
 type DevicePayload struct {

@@ -20,3 +20,7 @@ func UpdateDevice(id ResourceID) string {
 func ApplyDeviceLabels(id ResourceID) string {
 	return fmt.Sprintf("/devices/%v/labels", id)
 }
+
+func GetInterface(deviceID, interfaceID ResourceID) string {
+	return fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID)
+}

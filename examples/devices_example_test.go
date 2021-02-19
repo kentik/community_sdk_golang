@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -17,22 +16,17 @@ func TestDevicesAPIExample(t *testing.T) {
 			t.Fatal(err)
 		}
 	}()
+
 	runCRUDRouter()
 	runCRUDDNS()
-	runGetAll()
+	runGetAllDevices()
+	runGetInterface()
 }
 
-func runGetAll() {
+func runGetAllDevices() {
+	client := NewClient()
+
 	fmt.Println("### GET ALL")
-
-	email, token, err := ReadCredentialsFromEnv()
-	PanicOnError(err)
-
-	client := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
-
 	devices, err := client.Devices.GetAll(context.Background())
 	PanicOnError(err)
 	PrettyPrint(devices)
@@ -41,13 +35,7 @@ func runGetAll() {
 
 func runCRUDRouter() {
 	var err error
-	email, token, err := ReadCredentialsFromEnv()
-	PanicOnError(err)
-
-	client := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
+	client := NewClient()
 
 	fmt.Println("### CREATE ROUTER")
 	snmpv3conf := models.NewSNMPv3Conf("John")
@@ -103,13 +91,7 @@ func runCRUDRouter() {
 
 func runCRUDDNS() {
 	var err error
-	email, token, err := ReadCredentialsFromEnv()
-	PanicOnError(err)
-
-	client := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
+	client := NewClient()
 
 	fmt.Println("### CREATE DNS")
 	device := models.NewDeviceDNS(
@@ -157,5 +139,17 @@ func runCRUDDNS() {
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
 	PanicOnError(err)
 	fmt.Println("Success")
+	fmt.Println()
+}
+
+func runGetInterface() {
+	client := NewClient()
+
+	fmt.Println("### GET INTERFACE")
+	deviceID := models.ID(80166)
+	interfaceID := models.ID(9385804334)
+	intf, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
+	PanicOnError(err)
+	PrettyPrint(intf)
 	fmt.Println()
 }

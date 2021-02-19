@@ -11,10 +11,15 @@ import (
 
 type DevicesAPI struct {
 	BaseAPI
+	Interfaces *interfacesAPI
 }
 
+// NewDevicesAPI is constructor
 func NewDevicesAPI(transport api_connection.Transport) *DevicesAPI {
-	return &DevicesAPI{BaseAPI{Transport: transport}}
+	return &DevicesAPI{
+		BaseAPI{Transport: transport},
+		&interfacesAPI{BaseAPI{Transport: transport}},
+	}
 }
 
 // GetAll devices
@@ -94,4 +99,19 @@ func (a *DevicesAPI) ApplyLabels(ctx context.Context, deviceID models.ID, labels
 	}
 
 	return response.ToAppliedLabels()
+}
+
+type interfacesAPI struct {
+	BaseAPI
+}
+
+// Get device with given ID
+func (a *interfacesAPI) Get(ctx context.Context, deviceID, interfaceID models.ID) (*models.Interface, error) {
+	var response api_payloads.GetInterfaceResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetInterface(deviceID, interfaceID), &response); err != nil {
+		return nil, err
+	}
+
+	device, err := response.ToInterface()
+	return &device, err
 }
