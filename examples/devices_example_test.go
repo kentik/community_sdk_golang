@@ -127,12 +127,6 @@ func runCRUDDNS() {
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
-	fmt.Println("### GET")
-	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
-	PanicOnError(err)
-	PrettyPrint(gotDevice)
-	fmt.Println()
-
 	fmt.Println("### UPDATE")
 	createdDevice.DeviceSampleRate = 10
 	models.SetOptional(&createdDevice.CDNAttr, models.CDNAttributeNo)
@@ -141,6 +135,20 @@ func runCRUDDNS() {
 	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
 	PanicOnError(err)
 	PrettyPrint(updatedDevice)
+	fmt.Println()
+
+	// first make sure the label ids exist!
+	// fmt.Println("### APPLY LABELS")
+	// labelIDs := []models.ID{models.ID(3011), models.ID( 3012)}
+	// labels, err := client.Devices.ApplyLabels(context.Background(),createdDevice.ID, labelIDs)
+	// PanicOnError(err)
+	// PrettyPrint(labels)
+	// fmt.Println()
+
+	fmt.Println("### GET")
+	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
+	PanicOnError(err)
+	PrettyPrint(gotDevice)
 	fmt.Println()
 
 	fmt.Println("### DELETE")

@@ -46,49 +46,49 @@ func PanicOnError(err error) {
 
 // PrettyPrint prints an object recursively in an indented way
 func PrettyPrint(resource interface{}) {
-	PrettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
+	prettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
 }
 
-func PrettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
+func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	switch v.Kind() {
 
 	case reflect.Struct:
 		if _, hasStringer := t.MethodByName("String"); hasStringer {
-			PrettyPrintIndented("%v\n", level, v)
+			prettyPrintIndented("%v\n", level, v)
 			return
 		}
 		for i := 0; i < v.NumField(); i++ {
-			PrettyPrintIndented("%s:\n", level, t.Field(i).Name)
-			PrettyPrintRecursively(v.Field(i).Type(), v.Field(i), level+1)
+			prettyPrintIndented("%s:\n", level, t.Field(i).Name)
+			prettyPrintRecursively(v.Field(i).Type(), v.Field(i), level+1)
 		}
 
 	case reflect.Slice:
 		count := v.Len()
 		if count == 0 {
-			PrettyPrintIndented("[no items]\n", level)
+			prettyPrintIndented("[no items]\n", level)
 
 		} else {
 			for i := 0; i < count; i++ {
-				PrettyPrintIndented("[%d]\n", level, i)
+				prettyPrintIndented("[%d]\n", level, i)
 				s := v.Index(i)
-				PrettyPrintRecursively(s.Type(), s, level+1)
+				prettyPrintRecursively(s.Type(), s, level+1)
 			}
 		}
 
 	case reflect.Ptr, reflect.Interface:
 		if v.IsNil() {
-			PrettyPrintIndented("[empty]\n", level)
+			prettyPrintIndented("[empty]\n", level)
 		} else {
-			PrettyPrintRecursively(v.Elem().Type(), v.Elem(), level)
+			prettyPrintRecursively(v.Elem().Type(), v.Elem(), level)
 		}
 
 	default:
-		PrettyPrintIndented("%v\n", level, v)
+		prettyPrintIndented("%v\n", level, v)
 	}
 
 }
 
-func PrettyPrintIndented(format string, level int, args ...interface{}) {
+func prettyPrintIndented(format string, level int, args ...interface{}) {
 	fmt.Printf("%*s", level*2, "")
 	fmt.Printf(format, args...)
 }

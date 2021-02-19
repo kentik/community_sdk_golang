@@ -9,10 +9,14 @@ const (
 	DevicesPath = "/devices"
 )
 
-func GetDevicePath(id ResourceID) string {
+func GetDevice(id ResourceID) string {
 	return fmt.Sprintf("%v/%v", DevicePath, id)
 }
 
-func UpdateDevicePath(id ResourceID) string {
+func UpdateDevice(id ResourceID) string {
 	return fmt.Sprintf("%v/%v", DevicePath, id)
+}
+
+func ApplyDeviceLabels(id ResourceID) string {
+	return fmt.Sprintf("/devices/%v/labels", id)
 }

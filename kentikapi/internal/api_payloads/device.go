@@ -15,6 +15,26 @@ type CreateDeviceRequest struct {
 // UpdateDeviceRequest represents DevicesAPI Create JSON request
 type UpdateDeviceRequest CreateDeviceRequest
 
+// ApplyLabelsRequest represents DevicesAPI ApplyLabels JSON request
+type ApplyLabelsRequest struct {
+	Labels []labelIDPayload `json:"labels,omitempty"`
+}
+
+// ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI
+type ApplyLabelsResponse struct {
+	ID         models.ID            `json:"id,string"`
+	DeviceName string               `json:"device_name"`
+	Labels     []deviceLabelPayload `json:"labels"`
+}
+
+func (r *ApplyLabelsResponse) ToAppliedLabels() (models.AppliedLabels, error) {
+	var labels []models.DeviceLabel
+	if err := utils.ConvertList(r.Labels, payloadToDeviceLabel, &labels); err != nil {
+		return models.AppliedLabels{}, err
+	}
+	return models.AppliedLabels{ID: r.ID, DeviceName: r.DeviceName, Labels: labels}, nil
+}
+
 // GetAllDevicesResponse represents DevicesAPI GetAll JSON response
 type GetAllDevicesResponse struct {
 	Payload []DevicePayload `json:"devices"`
@@ -412,4 +432,17 @@ func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 		DeviceTypes:   deviceTypes,
 		Devices:       devices,
 	}, nil
+}
+
+// labelIDPayload represents JSON ApplyLabels.LabelID payload as it is transmitted to KentikAPI
+type labelIDPayload struct {
+	ID int `json:"id"`
+}
+
+func LabelIDsToPayload(ids []models.ID) []labelIDPayload {
+	result := make([]labelIDPayload, 0, len(ids))
+	for _, id := range ids {
+		result = append(result, labelIDPayload{ID: id})
+	}
+	return result
 }

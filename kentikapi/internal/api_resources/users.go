@@ -29,7 +29,7 @@ func (a *UsersAPI) GetAll(ctx context.Context) (_ []models.User, err error) {
 // Get shows user with given ID.
 func (a *UsersAPI) Get(ctx context.Context, id models.ID) (*models.User, error) {
 	var response models.GetUserResponse
-	if err := a.GetAndValidate(ctx, api_endpoints.GetUserPath(id), &response); err != nil {
+	if err := a.GetAndValidate(ctx, api_endpoints.GetUser(id), &response); err != nil {
 		return nil, err
 	}
 

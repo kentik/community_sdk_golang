@@ -117,6 +117,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	// assert request properly formed
 	assert := assert.New(t)
 	require := require.New(t)
+
 	require.NoError(err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -287,6 +288,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	// assert request properly formed
 	assert := assert.New(t)
 	require := require.New(t)
+
 	require.NoError(err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -458,6 +460,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	// assert request properly formed
 	assert := assert.New(t)
 	require := require.New(t)
+
 	require.NoError(err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -1161,4 +1164,78 @@ func TestDeleteDevice(t *testing.T) {
 	require := require.New(t)
 	require.NoError(err)
 	assert.Zero(transport.RequestBody)
+}
+
+func TestApplyLabels(t *testing.T) {
+	// arrange
+	applyLabelsResponsePayload := `
+    {
+        "id": "42",
+        "device_name": "test_router",
+        "labels": [
+            {
+                "id": 3011,
+                "name": "apitest-label-red",
+                "description": null,
+                "edate": "2021-01-11T08:38:08.678Z",
+                "cdate": "2021-01-11T08:38:08.678Z",
+                "user_id": "144319",
+                "company_id": "74333",
+                "color": "#FF0000",
+                "order": null,
+                "_pivot_device_id": "79175",
+                "_pivot_label_id": "3011"
+            },
+            {
+                "id": 3012,
+                "name": "apitest-label-blue",
+                "description": null,
+                "edate": "2021-01-11T08:38:42.627Z",
+                "cdate": "2021-01-11T08:38:42.627Z",
+                "user_id": "144319",
+                "company_id": "74333",
+                "color": "#0000FF",
+                "order": null,
+                "_pivot_device_id": "79175",
+                "_pivot_label_id": "3012"
+            }
+        ]
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: applyLabelsResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	labels := []models.ID{models.ID(3011), models.ID(3012)}
+	result, err := devicesAPI.ApplyLabels(nil, deviceID, labels)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+
+	require.NoError(err)
+	require.NotNil(payload.Get("labels"))
+	assert.Equal(2, payload.Count("labels/*"))
+	assert.Equal(models.ID(3011), payload.Int("labels/*[1]/id"))
+	assert.Equal(models.ID(3012), payload.Int("labels/*[2]/id"))
+
+	// and response properly parsed
+	assert.Equal(models.ID(42), result.ID)
+	assert.Equal("test_router", result.DeviceName)
+	assert.Equal(2, len(result.Labels))
+	assert.Equal(models.ID(3011), result.Labels[0].ID)
+	assert.Equal("apitest-label-red", result.Labels[0].Name)
+	assert.Equal(time.Date(2021, 1, 11, 8, 38, 8, 678*1000000, time.UTC), result.Labels[0].CreatedDate)
+	assert.Equal(time.Date(2021, 1, 11, 8, 38, 8, 678*1000000, time.UTC), result.Labels[0].UpdatedDate)
+	assert.Equal(models.ID(144319), *result.Labels[0].UserID)
+	assert.Equal(models.ID(74333), result.Labels[0].CompanyID)
+	assert.Equal("#FF0000", result.Labels[0].Color)
+	assert.Equal(models.ID(3012), result.Labels[1].ID)
+	assert.Equal("apitest-label-blue", result.Labels[1].Name)
+	assert.Equal(time.Date(2021, 1, 11, 8, 38, 42, 627*1000000, time.UTC), result.Labels[1].CreatedDate)
+	assert.Equal(time.Date(2021, 1, 11, 8, 38, 42, 627*1000000, time.UTC), result.Labels[1].UpdatedDate)
+	assert.Equal(models.ID(144319), *result.Labels[1].UserID)
+	assert.Equal(models.ID(74333), result.Labels[1].CompanyID)
+	assert.Equal("#0000FF", result.Labels[1].Color)
 }
