@@ -12,3 +12,7 @@ const (
 func GetDevicePath(id ResourceID) string {
 	return fmt.Sprintf("%v/%v", DevicePath, id)
 }
+
+func UpdateDevicePath(id ResourceID) string {
+	return fmt.Sprintf("%v/%v", DevicePath, id)
+}

@@ -33,7 +33,7 @@ func runGetAll() {
 		AuthToken: token,
 	})
 
-	devices, err := client.DevicesAPI.GetAll(context.Background())
+	devices, err := client.Devices.GetAll(context.Background())
 	PanicOnError(err)
 	PrettyPrint(devices)
 	fmt.Println()
@@ -71,24 +71,31 @@ func runCRUDRouter() {
 	models.SetOptional(&device.DeviceBGPNeighborIP, "127.0.0.42")
 	models.SetOptional(&device.DeviceBGPPassword, "bgp-optional-password")
 
-	createdDevice, err := client.DevicesAPI.Create(context.Background(), *device)
+	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	PanicOnError(err)
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
 	fmt.Println("### GET")
-	gotDevice, err := client.DevicesAPI.Get(context.Background(), createdDevice.ID)
+	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
 	PanicOnError(err)
 	PrettyPrint(gotDevice)
 	fmt.Println()
 
-	// fmt.Println()
-	// fmt.Println("### UPDATE")
+	fmt.Println("### UPDATE")
+	createdDevice.SendingIPS = []string{"128.0.0.15", "128.0.0.16"}
+	createdDevice.DeviceSampleRate = 10
+	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
+	models.SetOptional(&createdDevice.DeviceBGPNeighborASN, "88")
+	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
+	PanicOnError(err)
+	PrettyPrint(updatedDevice)
+	fmt.Println()
 
 	fmt.Println("### DELETE")
-	err = client.DevicesAPI.Delete(context.Background(), createdDevice.ID) // archive
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
 	PanicOnError(err)
-	err = client.DevicesAPI.Delete(context.Background(), createdDevice.ID) // delete
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
 	PanicOnError(err)
 	fmt.Println("Success")
 	fmt.Println()
@@ -115,24 +122,31 @@ func runCRUDDNS() {
 	models.SetOptional(&device.SiteID, 8483)
 	models.SetOptional(&device.DeviceBGPFlowSpec, true)
 
-	createdDevice, err := client.DevicesAPI.Create(context.Background(), *device)
+	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	PanicOnError(err)
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
 	fmt.Println("### GET")
-	gotDevice, err := client.DevicesAPI.Get(context.Background(), createdDevice.ID)
+	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
 	PanicOnError(err)
 	PrettyPrint(gotDevice)
 	fmt.Println()
 
-	// fmt.Println()
-	// fmt.Println("### UPDATE")
+	fmt.Println("### UPDATE")
+	createdDevice.DeviceSampleRate = 10
+	models.SetOptional(&createdDevice.CDNAttr, models.CDNAttributeNo)
+	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
+	models.SetOptional(&createdDevice.DeviceBGPFlowSpec, false)
+	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
+	PanicOnError(err)
+	PrettyPrint(updatedDevice)
+	fmt.Println()
 
 	fmt.Println("### DELETE")
-	err = client.DevicesAPI.Delete(context.Background(), createdDevice.ID) // archive
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
 	PanicOnError(err)
-	err = client.DevicesAPI.Delete(context.Background(), createdDevice.ID) // delete
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
 	PanicOnError(err)
 	fmt.Println("Success")
 	fmt.Println()

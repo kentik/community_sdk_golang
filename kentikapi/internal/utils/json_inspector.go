@@ -36,6 +36,11 @@ func (i *jsonPayloadInspector) Get(path string) *jsonquery.Node {
 	return jsonquery.FindOne(i.doc, path)
 }
 
+// GetAll returns list of whatever can be found at given path or nil if nothing is there
+func (i *jsonPayloadInspector) GetAll(path string) []*jsonquery.Node {
+	return jsonquery.Find(i.doc, path)
+}
+
 // Count returns number of array elements at given path
 func (i *jsonPayloadInspector) Count(path string) int {
 	return len(jsonquery.Find(i.doc, path))

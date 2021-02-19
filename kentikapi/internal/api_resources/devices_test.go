@@ -124,7 +124,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	assert.Equal("router", payload.String("device/device_type"))
 	assert.Equal("router", payload.String("device/device_subtype"))
 	assert.Equal(1, payload.Count("device/sending_ips"))
-	assert.Equal("128.0.0.10", payload.String("device/sending_ips[1]")) // xpath [1] means index 0
+	assert.Equal("128.0.0.10", payload.String("device/sending_ips/*[1]")) // xpath [1] means first element
 	assert.Equal("1", payload.String("device/device_sample_rate"))
 	assert.Equal("testapi router with full config", payload.String("device/device_description"))
 	assert.Equal("127.0.0.1", payload.String("device/device_snmp_ip"))
@@ -348,6 +348,199 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.Nil(device.SNMPLastUpdated)
 	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
 }
+
+func TestUpdatetDeviceRouter(t *testing.T) {
+	// arrange
+	updateResponsePayload := `
+    {
+        "device": {
+            "id": "42",
+            "company_id": "74333",
+            "device_name": "testapi_router_paloalto_minimal",
+            "device_type": "router",
+            "device_status": "V",
+            "device_description": "updated description",
+            "site": {
+                "id": 8483,
+                "site_name": null,
+                "lat": null,
+                "lon": null,
+                "company_id": null
+            },
+            "plan": {
+                "active": null,
+                "bgp_enabled": null,
+                "cdate": null,
+                "company_id": null,
+                "description": null,
+                "deviceTypes": [],
+                "devices": [],
+                "edate": null,
+                "fast_retention": null,
+                "full_retention": null,
+                "id": 11466,
+                "max_bigdata_fps": null,
+                "max_devices": null,
+                "max_fps": null,
+                "name": null,
+                "metadata": null
+            },
+            "labels": [],
+            "all_interfaces": [],
+            "device_flow_type": "auto",
+            "device_sample_rate": "10",
+            "sending_ips": [
+                "128.0.0.10",
+                "128.0.0.11"
+            ],
+            "device_snmp_ip": "127.0.0.10",
+            "device_snmp_community": "",
+            "minimize_snmp": true,
+            "device_bgp_type": "device",
+            "device_bgp_neighbor_ip": null,
+            "device_bgp_neighbor_ip6": "2001:db8:85a3:8d3:1319:8a2e:370:7348",
+            "device_bgp_neighbor_asn": "77",
+            "device_bgp_flowspec": true,
+            "device_bgp_password": "******************ord",
+            "use_bgp_device_id": null,
+            "custom_columns": "",
+            "custom_column_data": [],
+            "device_chf_client_port": null,
+            "device_chf_client_protocol": null,
+            "device_chf_interface": null,
+            "device_agent_type": null,
+            "max_flow_rate": null,
+            "max_big_flow_rate": null,
+            "device_proxy_bgp": "",
+            "device_proxy_bgp6": "",
+            "created_date": "2021-01-08T13:02:45.733Z",
+            "updated_date": "2021-01-08T13:11:57.795Z",
+            "device_snmp_v3_conf": {
+                "UserName": "John",
+                "AuthenticationProtocol": "SHA",
+                "AuthenticationPassphrase": "Auth_Pass",
+                "PrivacyProtocol": "AES",
+                "PrivacyPassphrase": "******ass"
+            },
+            "bgpPeerIP4": "208.76.14.223",
+            "bgpPeerIP6": "2620:129:1:2::1",
+            "snmp_last_updated": null,
+            "device_subtype": "paloalto"
+        }
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	snmpv3conf := models.NewSNMPv3Conf("John")
+	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolSHA, "Auth_Pass")
+	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolAES, "Priv_Pass")
+	deviceID := models.ID(42)
+
+	router := models.Device{
+		ID:               deviceID,
+		SendingIPS:       []string{"128.0.0.10", "128.0.0.11"},
+		DeviceSampleRate: 10,
+		DeviceSNMPv3Conf: snmpv3conf,
+	}
+	models.SetOptional(&router.DeviceDescription, "updated description")
+	models.SetOptional(&router.DeviceSNMNPIP, "127.0.0.10")
+	models.SetOptional(&router.MinimizeSNMP, true)
+	models.SetOptional(&router.PlanID, models.ID(11466))
+	models.SetOptional(&router.SiteID, models.ID(8483))
+	models.SetOptional(&router.DeviceBGPType, models.DeviceBGPTypeDevice)
+	models.SetOptional(&router.DeviceBGPNeighborASN, "77")
+	models.SetOptional(&router.DeviceBGPNeighborIPv6, "2001:db8:85a3:8d3:1319:8a2e:370:7348")
+	models.SetOptional(&router.DeviceBGPPassword, "bgp-optional-password")
+	models.SetOptional(&router.DeviceBGPFlowSpec, true)
+	device, err := devicesAPI.Update(nil, router)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+	require.NoError(err)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+	require.NotNil(payload.Get("device"))
+	assert.Equal(2, payload.Count("device/sending_ips/*"))
+	assert.Equal("128.0.0.10", payload.String("device/sending_ips/*[1]")) // xpath [1] means first element
+	assert.Equal("128.0.0.11", payload.String("device/sending_ips/*[2]")) // xpath [2] means second element
+	assert.Equal("10", payload.String("device/device_sample_rate"))
+	assert.Equal("updated description", payload.String("device/device_description"))
+	assert.Equal("127.0.0.10", payload.String("device/device_snmp_ip"))
+	assert.Equal(11466, payload.Int("device/plan_id"))
+	assert.Equal(8483, payload.Int("device/site_id"))
+	assert.True(payload.Bool("device/minimize_snmp"))
+	assert.NotNil(payload.Get("device/device_snmp_v3_conf"))
+	assert.Equal("John", payload.String("device/device_snmp_v3_conf/UserName"))
+	assert.Equal("SHA", payload.String("device/device_snmp_v3_conf/AuthenticationProtocol"))
+	assert.Equal("Auth_Pass", payload.String("device/device_snmp_v3_conf/AuthenticationPassphrase"))
+	assert.Equal("AES", payload.String("device/device_snmp_v3_conf/PrivacyProtocol"))
+	assert.Equal("Priv_Pass", payload.String("device/device_snmp_v3_conf/PrivacyPassphrase"))
+	assert.Equal("device", payload.String("device/device_bgp_type"))
+	assert.Equal("77", payload.String("device/device_bgp_neighbor_asn"))
+	assert.Equal("2001:db8:85a3:8d3:1319:8a2e:370:7348", payload.String("device/device_bgp_neighbor_ip6"))
+	assert.Equal("bgp-optional-password", payload.String("device/device_bgp_password"))
+	assert.True(payload.Bool("device/device_bgp_flowspec"))
+
+	// # and response properly parsed
+	assert.Equal(models.ID(42), device.ID)
+	assert.Equal(models.ID(74333), device.CompanyID)
+	assert.Equal("testapi_router_paloalto_minimal", device.DeviceName)
+	assert.Equal(models.DeviceTypeRouter, device.DeviceType)
+	assert.Equal("updated description", *device.DeviceDescription)
+	require.NotNil(device.Site)
+	assert.Equal(models.ID(8483), *device.Site.ID)
+	assert.Nil(device.Site.SiteName)
+	assert.Nil(device.Site.Latitude)
+	assert.Nil(device.Site.Longitude)
+	assert.Nil(device.Site.CompanyID)
+	require.NotNil(device.Plan)
+	assert.Nil(device.Plan.Active)
+	assert.Nil(device.Plan.BGPEnabled)
+	assert.Nil(device.Plan.CreatedDate)
+	assert.Nil(device.Plan.CompanyID)
+	assert.Nil(device.Plan.Description)
+	assert.Equal(0, len(device.Plan.DeviceTypes))
+	assert.Equal(0, len(device.Plan.Devices))
+	assert.Nil(device.Plan.UpdatedDate)
+	assert.Nil(device.Plan.FastRetention)
+	assert.Nil(device.Plan.FullRetention)
+	assert.Equal(models.ID(11466), *device.Plan.ID)
+	assert.Nil(device.Plan.MaxBigdataFPS)
+	assert.Nil(device.Plan.MaxDevices)
+	assert.Nil(device.Plan.MaxFPS)
+	assert.Nil(device.Plan.Name)
+	assert.Equal(0, len(device.Labels))
+	assert.Equal(0, len(device.AllInterfaces))
+	assert.Equal("auto", *device.DeviceFlowType)
+	assert.Equal(10, *&device.DeviceSampleRate)
+	assert.Equal(2, len(device.SendingIPS))
+	assert.Equal("128.0.0.10", device.SendingIPS[0])
+	assert.Equal("128.0.0.11", device.SendingIPS[1])
+	assert.Equal("127.0.0.10", *device.DeviceSNMNPIP)
+	assert.Equal("", *device.DeviceSNMPCommunity)
+	assert.True(*device.MinimizeSNMP)
+	assert.Equal(models.DeviceBGPTypeDevice, *device.DeviceBGPType)
+	assert.Equal("2001:db8:85a3:8d3:1319:8a2e:370:7348", *device.DeviceBGPNeighborIPv6)
+	assert.Nil(device.DeviceBGPNeighborIP)
+	assert.Equal("77", *device.DeviceBGPNeighborASN)
+	assert.True(*device.DeviceBGPFlowSpec)
+	assert.Equal("******************ord", *device.DeviceBGPPassword)
+	assert.Nil(device.UseBGPDeviceID)
+	assert.Equal(time.Date(2021, 1, 8, 13, 2, 45, 733*1000000, time.UTC), device.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 8, 13, 11, 57, 795*1000000, time.UTC), device.UpdatedDate)
+	require.NotNil(device.DeviceSNMPv3Conf)
+	assert.Equal("John", device.DeviceSNMPv3Conf.UserName)
+	assert.Equal(models.AuthenticationProtocolSHA, *device.DeviceSNMPv3Conf.AuthenticationProtocol)
+	assert.Equal("Auth_Pass", *device.DeviceSNMPv3Conf.AuthenticationPassphrase)
+	assert.Equal(models.PrivacyProtocolAES, *device.DeviceSNMPv3Conf.PrivacyProtocol)
+	assert.Equal("******ass", *device.DeviceSNMPv3Conf.PrivacyPassphrase)
+	assert.Equal("208.76.14.223", *device.BGPPeerIP4)
+	assert.Equal("2620:129:1:2::1", *device.BGPPeerIP6)
+	assert.Nil(device.SNMPLastUpdated)
+	assert.Equal(models.DeviceSubtypePaloalto, device.DeviceSubType)
+}
+
 func TestGetDeviceRouter(t *testing.T) {
 	// arrange
 	getResponsePayload := `

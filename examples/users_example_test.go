@@ -19,14 +19,14 @@ func demonstrateUsersAPI() error {
 	client := NewClient()
 
 	fmt.Println("### UsersAPI.GetAll")
-	users, err := client.UsersAPI.GetAll(ctx)
+	users, err := client.Users.GetAll(ctx)
 	if err != nil {
 		return fmt.Errorf("UsersAPI.GetAll failed: %s", err)
 	}
 	PrettyPrint(users)
 
 	fmt.Println("\n### UsersAPI.Get")
-	user, err := client.UsersAPI.Get(ctx, 149492)
+	user, err := client.Users.Get(ctx, 149492)
 	if err != nil {
 		return fmt.Errorf("UsersAPI.Get failed: %s", err)
 	}

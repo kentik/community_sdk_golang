@@ -55,6 +55,23 @@ func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.
 	return &result, err
 }
 
+// Update new device
+func (a *DevicesAPI) Update(ctx context.Context, device models.Device) (*models.Device, error) {
+	payload, err := api_payloads.DeviceToPayload(device)
+	if err != nil {
+		return nil, err
+	}
+
+	request := api_payloads.UpdateDeviceRequest{Payload: payload}
+	var response api_payloads.UpdateDeviceResponse
+	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateDevicePath(device.ID), request, &response); err != nil {
+		return nil, err
+	}
+
+	result, err := response.ToDevice()
+	return &result, err
+}
+
 // Delete a device
 // Note: KentikAPI requires sending delete request twice to actually delete the device.
 // This is a safety measure preventing deletion by mistake.

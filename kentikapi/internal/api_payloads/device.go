@@ -12,6 +12,9 @@ type CreateDeviceRequest struct {
 	Payload DevicePayload `json:"device"`
 }
 
+// UpdateDeviceRequest represents DevicesAPI Create JSON request
+type UpdateDeviceRequest CreateDeviceRequest
+
 // GetAllDevicesResponse represents DevicesAPI GetAll JSON response
 type GetAllDevicesResponse struct {
 	Payload []DevicePayload `json:"devices"`
@@ -36,6 +39,9 @@ func (p GetDeviceResponse) ToDevice() (result models.Device, err error) {
 
 // CreateDeviceResponse represents DevicesAPI Create JSON response
 type CreateDeviceResponse = GetDeviceResponse
+
+// UpdateDeviceResponse represents DevicesAPI Update JSON response
+type UpdateDeviceResponse = GetDeviceResponse
 
 // DevicePayload represents JSON Device payload as it is transmitted to and from KentikAPI
 type DevicePayload struct {

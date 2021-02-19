@@ -41,7 +41,7 @@ func createDevice(client *kentikapi.Client) models.ID {
 	models.SetOptional(&device.SiteID, 8483)
 	models.SetOptional(&device.DeviceBGPFlowSpec, true)
 
-	createdDevice, err := client.DevicesAPI.Create(context.Background(), *device)
+	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.PanicOnError(err)
 	fmt.Printf("Successfuly created device, ID = %d\n", createdDevice.ID)
 
@@ -50,29 +50,29 @@ func createDevice(client *kentikapi.Client) models.ID {
 
 func getDevice(client *kentikapi.Client, id models.ID) {
 	fmt.Printf("Retrieving device of ID = %d\n", id)
-	device, err := client.DevicesAPI.Get(context.Background(), id)
+	device, err := client.Devices.Get(context.Background(), id)
 	demos.PanicOnError(err)
 	demos.PrettyPrint(device)
 }
 
 func deleteDevice(client *kentikapi.Client, id models.ID) {
 	fmt.Printf("Deleting device of ID = %d\n", id)
-	err := client.DevicesAPI.Delete(context.Background(), id) // archive
+	err := client.Devices.Delete(context.Background(), id) // archive
 	demos.PanicOnError(err)
-	err = client.DevicesAPI.Delete(context.Background(), id) // delete
+	err = client.Devices.Delete(context.Background(), id) // delete
 	demos.PanicOnError(err)
 	fmt.Println("Successful")
 }
 
 func getAllDevices(client *kentikapi.Client) {
-	devices, err := client.DevicesAPI.GetAll(context.Background())
+	devices, err := client.Devices.GetAll(context.Background())
 	demos.PanicOnError(err)
 	demos.PrettyPrint(devices)
 	fmt.Printf("Total devices: %d\n", len(devices))
 }
 
 func getAllUsers(client *kentikapi.Client) {
-	users, err := client.UsersAPI.GetAll(context.Background())
+	users, err := client.Users.GetAll(context.Background())
 	demos.PanicOnError(err)
 	demos.PrettyPrint(users)
 	fmt.Printf("Total users: %d\n", len(users))
