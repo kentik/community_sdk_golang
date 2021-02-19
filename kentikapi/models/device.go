@@ -177,6 +177,13 @@ type DevicePlan struct {
 	Devices       []PlanDevice
 }
 
+type AppliedLabels struct {
+	// read-only properties
+	ID         ID
+	DeviceName string
+	Labels     []DeviceLabel
+}
+
 type DeviceType int
 
 const (

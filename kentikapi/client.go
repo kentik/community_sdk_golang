@@ -13,19 +13,19 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	UsersAPI   *api_resources.UsersAPI
-	DevicesAPI *api_resources.DevicesAPI
-	// DeviceLabelsAPI
-	// SitesAPI
-	// TagsAPI
-	// SavedFiltersAPI
-	// CustomDimensionsAPI
-	// CustomApplicationsAPI
-	// QueryAPI
-	// PlansAPI
-	// MyKentikPortalAPI
-	// BatchAPI
-	// AlertingAPI
+	Users   *api_resources.UsersAPI
+	Devices *api_resources.DevicesAPI
+	// DeviceLabels
+	// Sites
+	// Tags
+	// SavedFilters
+	// CustomDimensions
+	// CustomApplications
+	// Query
+	// Plans
+	// MyKentikPortal
+	// Batch
+	// Alerting
 
 	config Config
 }
@@ -49,19 +49,19 @@ func NewClient(c Config) *Client {
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		UsersAPI:   api_resources.NewUsersAPI(rc),
-		DevicesAPI: api_resources.NewDevicesAPI(rc),
-		// DeviceLabelsAPI
-		// SitesAPI
-		// TagsAPI
-		// SavedFiltersAPI
-		// CustomDimensionsAPI
-		// CustomApplicationsAPI
-		// QueryAPI
-		// PlansAPI
-		// MyKentikPortalAPI
-		// BatchAPI
-		// AlertingAPI
+		Users:   api_resources.NewUsersAPI(rc),
+		Devices: api_resources.NewDevicesAPI(rc),
+		// DeviceLabels
+		// Sites
+		// Tags
+		// SavedFilters
+		// CustomDimensions
+		// CustomApplications
+		// Query
+		// Plans
+		// MyKentikPortal
+		// Batch
+		// Alerting
 		config: c,
 	}
 }

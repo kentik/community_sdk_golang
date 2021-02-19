@@ -74,8 +74,8 @@ func (c *restClient) Get(ctx context.Context, path string) (responseBody json.Ra
 	return body, errorFromResponseStatus(response, string(body))
 }
 
+// Post sends POST request to the API and returns raw response body
 func (c *restClient) Post(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
-	fmt.Println(string(payload))
 	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -100,7 +100,58 @@ func (c *restClient) Post(ctx context.Context, path string, payload json.RawMess
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// TODO(dfurman): implement Put, Delete methods
+// Put sends PUT request to the API and returns raw response body
+func (c *restClient) Put(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+	request, err := c.newRequest(ctx, http.MethodPut, path, payload)
+	if err != nil {
+		return nil, fmt.Errorf("new request: %v", err)
+	}
+
+	response, err := c.httpClient.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("do request: %v", err)
+	}
+	defer func() {
+		cErr := response.Body.Close()
+		if err == nil && cErr != nil {
+			err = fmt.Errorf("close response body: %v", cErr)
+		}
+	}()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read response body: %v", err)
+	}
+
+	return body, errorFromResponseStatus(response, string(body))
+}
+
+// Delete sends DELETE request to the API and returns raw response body
+func (c *restClient) Delete(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
+	request, err := c.newRequest(ctx, http.MethodDelete, path, json.RawMessage{})
+	if err != nil {
+		return nil, fmt.Errorf("new request: %v", err)
+	}
+
+	response, err := c.httpClient.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("do request: %v", err)
+	}
+
+	defer func() {
+		cErr := response.Body.Close()
+		if err == nil && cErr != nil {
+			err = fmt.Errorf("close response body: %v", cErr)
+		}
+	}()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read response body: %v", err)
+	}
+
+	return body, errorFromResponseStatus(response, string(body))
+}
 
 func errorFromResponseStatus(r *http.Response, responseBody string) error {
 	// TODO(dfurman): return more specific errors

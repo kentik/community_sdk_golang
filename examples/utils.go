@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+
+	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
-func readCredentialsFromEnv() (authEmail, authToken string, _ error) {
+// ReadCredentialsFromEnv reads and returns (email, token) pair from environment variables, or error if not set
+func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
 	if !ok || authEmail == "" {
 		return "", "", errors.New("KTAPI_AUTH_EMAIL environment variable needs to be set")
@@ -21,15 +24,28 @@ func readCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	return authEmail, authToken, nil
 }
 
-// panicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements
-func panicOnError(err error) {
+// NewClient creates kentikapi client with credentials read from env variables
+func NewClient() *kentikapi.Client {
+	var err error
+	email, token, err := ReadCredentialsFromEnv()
+	PanicOnError(err)
+
+	client := kentikapi.NewClient(kentikapi.Config{
+		AuthEmail: email,
+		AuthToken: token,
+	})
+	return client
+}
+
+// PanicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements
+func PanicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-// prettyPrint prints an object recursively in an indented way
-func prettyPrint(resource interface{}) {
+// PrettyPrint prints an object recursively in an indented way
+func PrettyPrint(resource interface{}) {
 	prettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
 }
 
@@ -55,7 +71,7 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 			for i := 0; i < count; i++ {
 				prettyPrintIndented("[%d]\n", level, i)
 				s := v.Index(i)
-				prettyPrintRecursively(s.Type(), s, level)
+				prettyPrintRecursively(s.Type(), s, level+1)
 			}
 		}
 

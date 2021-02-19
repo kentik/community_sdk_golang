@@ -27,11 +27,20 @@ func CheckResponseRequiredFields(method string, resource interface{}) error {
 
 // validateWrapper returns error containing the list of required fields that happen to be nil
 func validateWrapper(method string, direction Direction, resource interface{}) error {
-	missing := validate(method, string(direction), "", reflect.ValueOf(resource))
+	missing := validate(method, string(direction), getTypeName(resource), reflect.ValueOf(resource))
 	if len(missing) > 0 {
 		return fmt.Errorf("following fields are missing in %s %s: %v", method, direction, missing)
 	}
 	return nil
+}
+
+func getTypeName(i interface{}) string {
+	tResource := reflect.TypeOf(i)
+	if tResource.Kind() == reflect.Ptr {
+		return "*" + tResource.Elem().Name()
+	} else {
+		return tResource.Name()
+	}
 }
 
 func validate(method string, direction string, path string, v reflect.Value) []string {
@@ -49,7 +58,7 @@ func validate(method string, direction string, path string, v reflect.Value) []s
 					missing = append(missing, fieldPath)
 				}
 			} else {
-				missing = append(missing, validate(method, direction, fieldPath+field.Type().Name(), field)...)
+				missing = append(missing, validate(method, direction, fieldPath, field)...)
 			}
 		}
 
@@ -64,6 +73,7 @@ func validate(method string, direction string, path string, v reflect.Value) []s
 
 	case reflect.Ptr, reflect.Interface:
 		// pointer and interface can hold a struct, so - validate
+		// path = path + "." + v.Name
 		missing = append(missing, validate(method, direction, path, v.Elem())...)
 
 	default:

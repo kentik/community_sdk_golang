@@ -32,3 +32,22 @@ go test -tags examples -v ./examples/users_example_test.go
 Run tests: `go test ./...`
 
 Run all tests, including usage examples: `go test -tags examples ./...`
+
+## Development state
+
+Ongoing implementation:
+- users
+- devices (with interfaces)
+- my kentik portal
+
+ToDo:
+- sites
+- tags
+- device labels
+- custom dimensions (with populators)
+- custom applications
+- saved filters
+- query methods
+- plans
+- alerts
+- alerts active

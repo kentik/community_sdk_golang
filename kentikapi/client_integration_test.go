@@ -158,7 +158,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 			})
 
 			// act
-			result, err := c.UsersAPI.GetAll(context.Background())
+			result, err := c.Users.GetAll(context.Background())
 
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)
@@ -246,7 +246,7 @@ func TestClientGetUser(t *testing.T) {
 			})
 
 			// act
-			result, err := c.UsersAPI.Get(context.Background(), tt.userID)
+			result, err := c.Users.Get(context.Background(), tt.userID)
 
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)

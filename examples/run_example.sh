@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 # INPUT:
-#   none - run all tests
-#   test name - run specified test
+#   [none] - run all examples
+#   User
+#   Device
 
 function stage() {
     BLUE_BOLD="\e[1m\e[34m"

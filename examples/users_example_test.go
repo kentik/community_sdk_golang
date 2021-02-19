@@ -6,8 +6,6 @@ import (
 	"context"
 	"fmt"
 	"testing"
-
-	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func TestUsersAPIExample(t *testing.T) {
@@ -18,29 +16,21 @@ func TestUsersAPIExample(t *testing.T) {
 
 func demonstrateUsersAPI() error {
 	ctx := context.Background()
-	authEmail, authToken, err := readCredentialsFromEnv()
-	if err != nil {
-		return fmt.Errorf("reading credentials failed: %v", err)
-	}
-
-	client := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: authEmail,
-		AuthToken: authToken,
-	})
+	client := NewClient()
 
 	fmt.Println("### UsersAPI.GetAll")
-	users, err := client.UsersAPI.GetAll(ctx)
+	users, err := client.Users.GetAll(ctx)
 	if err != nil {
 		return fmt.Errorf("UsersAPI.GetAll failed: %s", err)
 	}
-	prettyPrint(users)
+	PrettyPrint(users)
 
 	fmt.Println("\n### UsersAPI.Get")
-	user, err := client.UsersAPI.Get(ctx, 149492)
+	user, err := client.Users.Get(ctx, 149492)
 	if err != nil {
 		return fmt.Errorf("UsersAPI.Get failed: %s", err)
 	}
-	prettyPrint(user)
+	PrettyPrint(user)
 
 	return nil
 }
