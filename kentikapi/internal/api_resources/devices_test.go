@@ -1458,3 +1458,190 @@ func TestGetInterfaceFull(t *testing.T) {
 	assert.Equal("198.186.193.63", intf.SecondaryIPS[1].Address)
 	assert.Equal("255.255.255.225", intf.SecondaryIPS[1].Netmask)
 }
+
+func TestGetAllInterfaces(t *testing.T) {
+	// arrange
+	getResponsePayload := `
+    [
+        {
+            "id": "43",
+            "company_id": "74333",
+            "device_id": "42",
+            "snmp_id": "1",
+            "snmp_speed": "15",
+            "snmp_type": null,
+            "snmp_alias": "interace-description-1",
+            "interface_ip": "127.0.0.1",
+            "interface_description": "testapi-interface-1",
+            "interface_kvs": "",
+            "interface_tags": "",
+            "interface_status": "V",
+            "extra_info": {},
+            "cdate": "2021-01-13T08:50:37.068Z",
+            "edate": "2021-01-13T08:55:59.403Z",
+            "initial_snmp_id": "150",
+            "initial_snmp_alias": "initial-interace-description-1",
+            "initial_interface_description": "initial-testapi-interface-1",
+            "initial_snmp_speed": "7",
+            "interface_ip_netmask": "255.255.255.0",
+            "connectivity_type": "",
+            "network_boundary": "",
+            "initial_connectivity_type": "",
+            "initial_network_boundary": "",
+            "top_nexthop_asns": [
+                {
+                    "ASN": 20,
+                    "packets":30100
+                },
+                {
+                    "ASN": 21,
+                    "packets":30101
+                }
+            ],
+            "provider": "",
+            "initial_provider": "",
+            "vrf_id": "39902",
+            "vrf": {
+                "id": 39902,
+                "company_id": "74333",
+                "description": "vrf-description",
+                "device_id": "79175",
+                "name": "vrf-name",
+                "route_distinguisher": "11.121.111.13:3254",
+                "route_target": "101:100"
+            },
+            "secondary_ips": [
+                {
+                "address": "198.186.193.51",
+                "netmask": "255.255.255.240"
+                },
+                {
+                "address": "198.186.193.63",
+                "netmask": "255.255.255.225"
+                }
+            ]
+        },
+        {
+            "id": "44",
+            "company_id": "74333",
+            "device_id": "42",
+            "snmp_id": "1",
+            "snmp_speed": "15",
+            "snmp_type": null,
+            "snmp_alias": "interace-description-1",
+            "interface_ip": "127.0.0.1",
+            "interface_description": "testapi-interface-1",
+            "interface_kvs": "",
+            "interface_tags": "",
+            "interface_status": "V",
+            "extra_info": {},
+            "cdate": "2021-01-13T08:50:37.068Z",
+            "edate": "2021-01-13T08:50:37.074Z",
+            "initial_snmp_id": "",
+            "initial_snmp_alias": null,
+            "initial_interface_description": null,
+            "initial_snmp_speed": null,
+            "interface_ip_netmask": "255.255.255.0",
+            "secondary_ips": null,
+            "connectivity_type": "",
+            "network_boundary": "",
+            "initial_connectivity_type": "",
+            "initial_network_boundary": "",
+            "top_nexthop_asns": null,
+            "provider": "",
+            "initial_provider": "",
+            "vrf_id": "39902",
+            "vrf": {
+                "id": 39902,
+                "company_id": "74333",
+                "description": "vrf-description",
+                "device_id": "42",
+                "name": "vrf-name",
+                "route_distinguisher": "11.121.111.13:3254",
+                "route_target": "101:100"
+            }
+        },
+        {
+            "id": "45",
+            "company_id": "74333",
+            "device_id": "42",
+            "snmp_id": "1",
+            "snmp_speed": "15",
+            "snmp_type": null,
+            "snmp_alias": "interace-description-1",
+            "interface_ip": "127.0.0.1",
+            "interface_description": "testapi-interface-1",
+            "interface_kvs": "",
+            "interface_tags": "",
+            "interface_status": "V",
+            "extra_info": {},
+            "cdate": "2021-01-13T08:50:37.068Z",
+            "edate": "2021-01-13T08:50:37.074Z",
+            "initial_snmp_id": "",
+            "initial_snmp_alias": null,
+            "initial_interface_description": null,
+            "initial_snmp_speed": null,
+            "interface_ip_netmask": "255.255.255.0",
+            "secondary_ips": null,
+            "connectivity_type": "",
+            "network_boundary": "",
+            "initial_connectivity_type": "",
+            "initial_network_boundary": "",
+            "top_nexthop_asns": null,
+            "provider": "",
+            "initial_provider": "",
+            "vrf_id": "39902",
+            "vrf": {}
+        }
+    ]`
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	interfaces, err := devicesAPI.Interfaces.GetAll(nil, deviceID)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+
+	require.NoError(err)
+	assert.Zero(transport.RequestBody)
+
+	// and response properly parsed
+	assert.Equal(3, len(interfaces))
+	intf := interfaces[0]
+	assert.Equal(models.ID(43), intf.ID)
+	assert.Equal(models.ID(74333), intf.CompanyID)
+	assert.Equal(models.ID(42), intf.DeviceID)
+	assert.Equal(models.ID(1), intf.SNMPID)
+	assert.Equal(15, intf.SNMPSpeed)
+	assert.Equal("interace-description-1", *intf.SNMPAlias)
+	assert.Equal("127.0.0.1", *intf.InterfaceIP)
+	assert.Equal("testapi-interface-1", *intf.InterfaceDescription)
+	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), intf.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 13, 8, 55, 59, 403*1000000, time.UTC), intf.UpdatedDate)
+	assert.Equal("150", *intf.InitialSNMPID)
+	assert.Equal("initial-interace-description-1", *intf.InitialSNMPAlias)
+	assert.Equal("initial-testapi-interface-1", *intf.InitialInterfaceDescription)
+	assert.Equal(7, *intf.InitialSNMPSpeed)
+	assert.Equal("255.255.255.0", *intf.InterfaceIPNetmask)
+	assert.Equal(2, len(intf.TopNextHopASNs))
+	assert.Equal(20, intf.TopNextHopASNs[0].ASN)
+	assert.Equal(30100, intf.TopNextHopASNs[0].Packets)
+	assert.Equal(21, intf.TopNextHopASNs[1].ASN)
+	assert.Equal(30101, intf.TopNextHopASNs[1].Packets)
+	assert.Equal(models.ID(39902), *intf.VRFID)
+	require.NotNil(intf.VRF)
+	assert.Equal(models.ID(74333), intf.VRF.CompanyID)
+	assert.Equal("vrf-description", *intf.VRF.Description)
+	assert.Equal(models.ID(79175), intf.VRF.DeviceID)
+	assert.Equal("vrf-name", intf.VRF.Name)
+	assert.Equal("11.121.111.13:3254", intf.VRF.RouteDistinguisher)
+	assert.Equal("101:100", intf.VRF.RouteTarget)
+	assert.Equal(2, len(intf.SecondaryIPS))
+	assert.Equal("198.186.193.51", intf.SecondaryIPS[0].Address)
+	assert.Equal("255.255.255.240", intf.SecondaryIPS[0].Netmask)
+	assert.Equal("198.186.193.63", intf.SecondaryIPS[1].Address)
+	assert.Equal("255.255.255.225", intf.SecondaryIPS[1].Netmask)
+}

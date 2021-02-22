@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-// Note: Interfaces belong to DevicesAPI but it is wast so lives in a separate file
+// Note: InterfacesAPI belong under DevicesAPI but it is wast so it lives in a separate file
 
 type Interface struct {
 	// read-write properties (can be updated in update call)
@@ -12,8 +12,8 @@ type Interface struct {
 	InterfaceDescription *string
 	InterfaceIP          *string
 	InterfaceIPNetmask   *string
-	VRFID                *ID
 	VRF                  *VRFAttributes
+	VRFID                *ID
 	SecondaryIPS         []SecondaryIP
 
 	// read-only properties (can't be updated in update call)

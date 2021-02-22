@@ -5,6 +5,7 @@ package examples
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -13,6 +14,7 @@ import (
 func TestDevicesAPIExample(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
+			debug.PrintStack()
 			t.Fatal(err)
 		}
 	}()
@@ -21,6 +23,7 @@ func TestDevicesAPIExample(t *testing.T) {
 	runCRUDDNS()
 	runGetAllDevices()
 	runGetInterface()
+	runGetAllInterfaces()
 }
 
 func runGetAllDevices() {
@@ -151,5 +154,15 @@ func runGetInterface() {
 	intf, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
 	PanicOnError(err)
 	PrettyPrint(intf)
+	fmt.Println()
+}
+
+func runGetAllInterfaces() {
+	client := NewClient()
+
+	fmt.Println("### GET ALL INTERFACES")
+	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), models.ID(80166))
+	PanicOnError(err)
+	PrettyPrint(interfaces)
 	fmt.Println()
 }

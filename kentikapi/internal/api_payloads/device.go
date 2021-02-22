@@ -25,11 +25,8 @@ type GetAllDevicesResponse struct {
 	Payload []DevicePayload `json:"devices"`
 }
 
-func (p GetAllDevicesResponse) ToDevices() (result []models.Device, err error) {
-	convertFunc := func(d DevicePayload) (models.Device, error) {
-		return d.ToDevice()
-	}
-	err = utils.ConvertList(p.Payload, convertFunc, &result)
+func (r GetAllDevicesResponse) ToDevices() (result []models.Device, err error) {
+	err = utils.ConvertList(r.Payload, payloadToDevice, &result)
 	return result, err
 }
 
@@ -38,8 +35,8 @@ type GetDeviceResponse struct {
 	Payload DevicePayload `json:"device"`
 }
 
-func (p GetDeviceResponse) ToDevice() (result models.Device, err error) {
-	return p.Payload.ToDevice()
+func (r GetDeviceResponse) ToDevice() (result models.Device, err error) {
+	return payloadToDevice(r.Payload)
 }
 
 // CreateDeviceResponse represents DevicesAPI Create JSON response
@@ -105,8 +102,8 @@ type DevicePayload struct {
 	BGPPeerIP6      *string                `json:"bgpPeerIP6,omitempty"`
 }
 
-// ToDevice transforms GET/POST/PUT response payload into Device
-func (p DevicePayload) ToDevice() (models.Device, error) {
+// payloadToDevice transforms GET/POST/PUT response payload into Device
+func payloadToDevice(p DevicePayload) (models.Device, error) {
 	deviceType, err := models.DeviceTypeString(*p.DeviceType)
 	if err != nil {
 		return models.Device{}, err

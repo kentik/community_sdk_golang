@@ -105,13 +105,23 @@ type interfacesAPI struct {
 	BaseAPI
 }
 
-// Get device with given ID
+// GetAll interfaces of given device
+func (a *interfacesAPI) GetAll(ctx context.Context, deviceID models.ID) ([]models.Interface, error) {
+	var response api_payloads.GetAllInterfacesResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetAllInterfaces(deviceID), &response); err != nil {
+		return nil, err
+	}
+
+	return response.ToInterfaces()
+}
+
+// Get interface of given device with given ID
 func (a *interfacesAPI) Get(ctx context.Context, deviceID, interfaceID models.ID) (*models.Interface, error) {
 	var response api_payloads.GetInterfaceResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetInterface(deviceID, interfaceID), &response); err != nil {
 		return nil, err
 	}
 
-	device, err := response.ToInterface()
-	return &device, err
+	intf, err := response.ToInterface()
+	return &intf, err
 }
