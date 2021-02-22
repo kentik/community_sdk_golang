@@ -39,25 +39,31 @@ func (r CreateInterfaceResponse) ToInterface() (result models.Interface, err err
 	return payloadToInterface(InterfacePayload(r))
 }
 
+// UpdateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request
+type UpdateInterfaceRequest InterfacePayload
+
+// UpdateInterfaceResponse represents DevicesAPI.InterfacesAPI Update JSON response
+type UpdateInterfaceResponse = CreateInterfaceResponse
+
 // InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	SNMPID               *models.ID            `json:"snmp_id,string,omitempty"`
-	SNMPSpeed            interface{}           `json:"snmp_speed"` // caveat, GET returns snmp_speed as string but POST and PUT as int; handle manually
-	InterfaceDescription *string               `json:"interface_description,omitempty"`
+	SNMPID               *models.ID            `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
+	SNMPSpeed            interface{}           `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int; handle manually
+	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
 	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`
 	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
-	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`           // caveat, GET returns vrf as valid object, but POST and PUT as empty object
+	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`           // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
 	VRFID                interface{}           `json:"vrf_id,string,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int and it is optional; handle manually
 	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
 	ID                          *models.ID             `json:"id,string,omitempty" response:"get,post,put"`
-	CompanyID                   *models.ID             `json:"company_id,string,omitempty"`
-	DeviceID                    *models.ID             `json:"device_id,string,omitempty"`
-	CreatedDate                 *time.Time             `json:"cdate,omitempty"`
-	UpdatedDate                 *time.Time             `json:"edate,omitempty"`
+	CompanyID                   *models.ID             `json:"company_id,string,omitempty" response:"get,post,put"`
+	DeviceID                    *models.ID             `json:"device_id,string,omitempty" response:"get,post,put"`
+	CreatedDate                 *time.Time             `json:"cdate,omitempty" response:"get,post,put"`
+	UpdatedDate                 *time.Time             `json:"edate,omitempty" response:"get,post,put"`
 	InitialSNMPID               *string                `json:"initial_snmp_id,omitempty"` // API happens to return empty string ""
 	InitialSNMPAlias            *string                `json:"initial_snmp_alias,omitempty"`
 	InitialInterfaceDescription *string                `json:"initial_interface_description,omitempty"`
@@ -66,14 +72,15 @@ type InterfacePayload struct {
 }
 
 func (p *InterfacePayload) UnmarshalJSON(data []byte) error {
+	// regular unmarshall
 	type tmp InterfacePayload
 	if err := json.Unmarshal(data, (*tmp)(p)); err != nil {
 		return err
 	}
 
-	// postprocessing
-	// API returns non-set VRF as empty object which presumes all VRF fields must be optional.
-	// make empty VRF field a nil so no need to make everything optional
+	// postprocess
+	// API returns non-set VRF as empty object "{}" which presumes all VRF fields must be optional.
+	// make empty VRF field a nil so no need to make all fields optional
 	var emptyVRF vrfAttributesPayload
 	if p.VRF != nil && *p.VRF == emptyVRF {
 		p.VRF = nil
@@ -121,8 +128,8 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 	return models.Interface{
 		SNMPID:               *p.SNMPID,
 		SNMPSpeed:            speed,
+		InterfaceDescription: *p.InterfaceDescription,
 		SNMPAlias:            p.SNMPAlias,
-		InterfaceDescription: p.InterfaceDescription,
 		InterfaceIP:          p.InterfaceIP,
 		InterfaceIPNetmask:   p.InterfaceIPNetmask,
 		VRFID:                vrfID,
@@ -156,11 +163,11 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 		return InterfacePayload{}, err
 	}
 
-	speed := strconv.Itoa(i.SNMPSpeed)
+	speed := i.SNMPSpeed
 	return InterfacePayload{
 		SNMPID:               &i.SNMPID,
 		SNMPSpeed:            &speed,
-		InterfaceDescription: i.InterfaceDescription,
+		InterfaceDescription: &i.InterfaceDescription,
 		SNMPAlias:            i.SNMPAlias,
 		InterfaceIP:          i.InterfaceIP,
 		InterfaceIPNetmask:   i.InterfaceIPNetmask,
@@ -248,7 +255,7 @@ func payloadToTopNextHopASN(p topNextHopASNPayload) (models.TopNextHopASN, error
 	}, nil
 }
 
-// special treatment of InterfacePayload.SNMPSpeed which sometime comes as string, sometimes as float
+// special treatment of InterfacePayload.SNMPSpeed and InterfacePayload.VRFID, which sometimes come as string, sometimes as number
 func stringOrNumberToInt(i interface{}) (result int, err error) {
 	switch val := i.(type) {
 	case string:

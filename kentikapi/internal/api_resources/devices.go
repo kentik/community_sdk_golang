@@ -143,10 +143,28 @@ func (a *interfacesAPI) Create(ctx context.Context, intf models.Interface) (*mod
 	return &result, err
 }
 
+// Delete interface
 func (a *interfacesAPI) Delete(ctx context.Context, deviceID, interfaceID models.ID) error {
 	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteInterface(deviceID, interfaceID), nil); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// Update interface
+func (a *interfacesAPI) Update(ctx context.Context, intf models.Interface) (*models.Interface, error) {
+	payload, err := api_payloads.InterfaceToPayload(intf)
+	if err != nil {
+		return nil, err
+	}
+
+	request := api_payloads.UpdateInterfaceRequest(payload)
+	var response api_payloads.UpdateInterfaceResponse
+	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateInterface(intf.DeviceID, intf.ID), request, &response); err != nil {
+		return nil, err
+	}
+
+	result, err := response.ToInterface()
+	return &result, err
 }

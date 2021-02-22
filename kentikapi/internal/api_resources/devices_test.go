@@ -1253,7 +1253,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
             "snmp_type": null,
             "snmp_alias": null,
             "interface_ip": null,
-            "interface_description": null,
+            "interface_description": "minimal-interface",
             "cdate": "2021-01-13T08:50:37.068Z",
             "edate": "2021-01-13T08:55:59.403Z",
             "initial_snmp_id": null,
@@ -1291,7 +1291,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Nil(intf.SNMPAlias)
 	assert.Nil(intf.InterfaceIP)
-	assert.Nil(intf.InterfaceDescription)
+	assert.Equal("minimal-interface", intf.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), intf.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 13, 8, 55, 59, 403*1000000, time.UTC), intf.UpdatedDate)
 	assert.Nil(intf.InitialSNMPID)
@@ -1392,7 +1392,7 @@ func TestGetInterfaceFull(t *testing.T) {
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Equal("interace-description-1", *intf.SNMPAlias)
 	assert.Equal("127.0.0.1", *intf.InterfaceIP)
-	assert.Equal("testapi-interface-1", *intf.InterfaceDescription)
+	assert.Equal("testapi-interface-1", intf.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), intf.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 13, 8, 55, 59, 403*1000000, time.UTC), intf.UpdatedDate)
 	assert.Equal("150", *intf.InitialSNMPID)
@@ -1579,7 +1579,7 @@ func TestGetAllInterfaces(t *testing.T) {
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Equal("interace-description-1", *intf.SNMPAlias)
 	assert.Equal("127.0.0.1", *intf.InterfaceIP)
-	assert.Equal("testapi-interface-1", *intf.InterfaceDescription)
+	assert.Equal("testapi-interface-1", intf.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), intf.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 13, 8, 55, 59, 403*1000000, time.UTC), intf.UpdatedDate)
 	assert.Equal("150", *intf.InitialSNMPID)
@@ -1649,7 +1649,7 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 	assert.Equal(models.ID(2), created.SNMPID)
 	assert.Equal(models.ID(74333), created.CompanyID)
 	assert.Equal(8, created.SNMPSpeed)
-	assert.Equal("testapi-interface-2", *created.InterfaceDescription)
+	assert.Equal("testapi-interface-2", created.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 41, 16, 191*1000000, time.UTC), created.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 13, 8, 41, 16, 191*1000000, time.UTC), created.UpdatedDate)
 	assert.Equal(0, len(created.SecondaryIPS))
@@ -1743,7 +1743,7 @@ func TestCreateInterfaceFull(t *testing.T) {
 	assert.Equal(models.ID(243205880), created.SNMPID)
 	assert.Equal(models.ID(74333), created.CompanyID)
 	assert.Equal(8, created.SNMPSpeed)
-	assert.Equal("testapi-interface-1", *created.InterfaceDescription)
+	assert.Equal("testapi-interface-1", created.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 31, 40, 619*1000000, time.UTC), created.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 13, 8, 31, 40, 629*1000000, time.UTC), created.UpdatedDate)
 	assert.Equal(2, len(created.SecondaryIPS))
@@ -1774,4 +1774,180 @@ func TestDeleteInterface(t *testing.T) {
 	require := require.New(t)
 	require.NoError(err)
 	assert.Zero(transport.RequestBody)
+}
+
+func TestUpdatenteInterfaceMinimal(t *testing.T) {
+	updateResponsePayload := `
+    {
+        "id": "43",
+        "company_id": "74333",
+        "device_id": "42",
+        "snmp_id": "1",
+        "snmp_speed": 75,
+        "snmp_type": null,
+        "snmp_alias": "interace-description-1",
+        "interface_ip": "127.0.0.1",
+        "interface_description": "testapi-interface-1",
+        "interface_kvs": "",
+        "interface_tags": "",
+        "interface_status": "V",
+        "cdate": "2021-01-13T08:50:37.068Z",
+        "edate": "2021-01-13T08:58:27.276Z",
+        "initial_snmp_id": "",
+        "initial_snmp_alias": null,
+        "initial_interface_description": null,
+        "initial_snmp_speed": null,
+        "interface_ip_netmask": "255.255.255.0",
+        "secondary_ips": null,
+        "connectivity_type": "",
+        "network_boundary": "",
+        "initial_connectivity_type": "",
+        "initial_network_boundary": "",
+        "top_nexthop_asns": null,
+        "provider": "",
+        "initial_provider": "",
+        "vrf_id": "39902",
+        "initial_interface_ip": null,
+        "initial_interface_ip_netmask": null
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	interfaceID := models.ID(43)
+	intf := models.Interface{SNMPSpeed: 75, DeviceID: deviceID, ID: interfaceID}
+	updated, err := devicesAPI.Interfaces.Update(nil, intf)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+
+	require.NoError(err)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+	assert.Equal(75, payload.Int("snmp_speed"))
+	assert.Zero(payload.GetAll("secondary_ips"))
+
+	// and response properly parsed
+	assert.Equal(models.ID(43), updated.ID)
+	assert.Equal(deviceID, updated.DeviceID)
+	assert.Equal(models.ID(1), updated.SNMPID)
+	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(75, updated.SNMPSpeed)
+	assert.Equal("testapi-interface-1", updated.InterfaceDescription)
+	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), updated.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 13, 8, 58, 27, 276*1000000, time.UTC), updated.UpdatedDate)
+	assert.Equal(0, len(updated.SecondaryIPS))
+	assert.Equal("interace-description-1", *updated.SNMPAlias)
+	assert.Equal("127.0.0.1", *updated.InterfaceIP)
+	assert.Equal("255.255.255.0", *updated.InterfaceIPNetmask)
+	assert.Equal(models.ID(39902), *updated.VRFID)
+	assert.Equal(0, len(updated.SecondaryIPS))
+	assert.Equal(0, len(updated.TopNextHopASNs))
+	assert.Nil(updated.VRF)
+	assert.Equal("", *updated.InitialSNMPID)
+	assert.Nil(updated.InitialSNMPAlias)
+	assert.Nil(updated.InitialInterfaceDescription)
+	assert.Nil(updated.InitialSNMPSpeed)
+}
+
+func TestUpdatenteInterfaceFull(t *testing.T) {
+	updateResponsePayload := `
+    {
+        "id": "43",
+        "company_id": "74333",
+        "device_id": "42",
+        "snmp_id": "4",
+        "snmp_speed": 44,
+        "snmp_type": null,
+        "snmp_alias": "interace-description-44",
+        "interface_ip": "127.0.44.55",
+        "interface_description": "testapi-interface-44",
+        "interface_kvs": "",
+        "interface_tags": "",
+        "interface_status": "V",
+        "cdate": "2021-01-14T14:43:43.104Z",
+        "edate": "2021-01-14T14:46:21.200Z",
+        "initial_snmp_id": "",
+        "initial_snmp_alias": null,
+        "initial_interface_description": null,
+        "initial_snmp_speed": null,
+        "interface_ip_netmask": "255.255.255.0",
+        "secondary_ips": [],
+        "connectivity_type": "",
+        "network_boundary": "",
+        "initial_connectivity_type": "",
+        "initial_network_boundary": "",
+        "top_nexthop_asns": null,
+        "provider": "",
+        "initial_provider": "",
+        "vrf_id": 40055,
+        "initial_interface_ip": null,
+        "initial_interface_ip_netmask": null
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	vrf := models.NewVRFAttributes(
+		"vrf-name-44",
+		"101:100",
+		"11.121.111.13:444",
+	)
+	models.SetOptional(&vrf.Description, "vrf-description-44")
+	models.SetOptional(&vrf.ExtRouteDistinguisher, "44")
+	deviceID := models.ID(42)
+	interfaceID := models.ID(43)
+	intf := models.Interface{
+		DeviceID:             deviceID,
+		ID:                   interfaceID,
+		SNMPID:               models.ID(4),
+		SNMPSpeed:            44,
+		InterfaceDescription: "testapi-interface-44",
+	}
+	models.SetOptional(&intf.SNMPAlias, "interace-description-44")
+	models.SetOptional(&intf.InterfaceIP, "127.0.44.55")
+	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
+	intf.VRF = vrf
+	updated, err := devicesAPI.Interfaces.Update(nil, intf)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+
+	require.NoError(err)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+
+	assert.Equal("testapi-interface-44", payload.String("interface_description"))
+	assert.Equal("interace-description-44", payload.String("snmp_alias"))
+	assert.Equal("127.0.44.55", payload.String("interface_ip"))
+	assert.Equal("255.255.255.0", payload.String("interface_ip_netmask"))
+	assert.Equal(44, payload.Int("snmp_speed"))
+	assert.Equal("vrf-name-44", payload.String("vrf/name"))
+	assert.Equal("vrf-description-44", payload.String("vrf/description"))
+	assert.Equal("101:100", payload.String("vrf/route_target"))
+	assert.Equal("11.121.111.13:444", payload.String("vrf/route_distinguisher"))
+	assert.Equal(44, payload.Int("vrf/ext_route_distinguisher"))
+	assert.Equal(0, payload.Count("secondary_ips/*"))
+
+	// and response properly parsed
+	assert.Equal(interfaceID, updated.ID)
+	assert.Equal(deviceID, updated.DeviceID)
+	assert.Equal(models.ID(4), updated.SNMPID)
+	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(44, updated.SNMPSpeed)
+	assert.Equal("testapi-interface-44", updated.InterfaceDescription)
+	assert.Equal(time.Date(2021, 1, 14, 14, 43, 43, 104*1000000, time.UTC), updated.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 14, 14, 46, 21, 200*1000000, time.UTC), updated.UpdatedDate)
+	assert.Equal(0, len(updated.SecondaryIPS))
+	assert.Equal("interace-description-44", *updated.SNMPAlias)
+	assert.Equal("127.0.44.55", *updated.InterfaceIP)
+	assert.Equal("255.255.255.0", *updated.InterfaceIPNetmask)
+	assert.Equal(models.ID(40055), *updated.VRFID)
+	assert.Equal(0, len(updated.SecondaryIPS))
+	assert.Equal(0, len(updated.TopNextHopASNs))
+	assert.Nil(updated.VRF)
+	assert.Equal("", *updated.InitialSNMPID)
+	assert.Nil(updated.InitialSNMPAlias)
+	assert.Nil(updated.InitialSNMPSpeed)
 }

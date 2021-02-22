@@ -22,7 +22,6 @@ func TestDevicesAPIExample(t *testing.T) {
 	runCRUDRouter()
 	runCRUDDNS()
 	runGetAllDevices()
-	runGetInterface()
 	runGetAllInterfaces()
 }
 
@@ -86,6 +85,13 @@ func runCRUDRouter() {
 	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
 	PanicOnError(err)
 	PrettyPrint(createdInterface)
+	fmt.Println()
+
+	fmt.Println("### UPDATE INTERFACE")
+	createdInterface.SNMPSpeed = 24
+	updatedInterface, err := client.Devices.Interfaces.Update(context.Background(), *createdInterface)
+	PanicOnError(err)
+	PrettyPrint(updatedInterface)
 	fmt.Println()
 
 	fmt.Println("### GET ROUTER")
@@ -158,18 +164,6 @@ func runCRUDDNS() {
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
 	PanicOnError(err)
 	fmt.Println("Success")
-	fmt.Println()
-}
-
-func runGetInterface() {
-	client := NewClient()
-
-	fmt.Println("### GET INTERFACE")
-	deviceID := models.ID(80166)
-	interfaceID := models.ID(9385804334)
-	intf, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
-	PanicOnError(err)
-	PrettyPrint(intf)
 	fmt.Println()
 }
 

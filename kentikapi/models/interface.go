@@ -8,8 +8,8 @@ type Interface struct {
 	// read-write properties (can be updated in update call)
 	SNMPID               ID
 	SNMPSpeed            int
+	InterfaceDescription string // if fact, this is interface name, that's why not optional
 	SNMPAlias            *string
-	InterfaceDescription *string
 	InterfaceIP          *string
 	InterfaceIPNetmask   *string
 	VRF                  *VRFAttributes
@@ -35,7 +35,7 @@ func NewInterface(deviceID ID, snmpID ID, snmpSpeed int, interfaceDescription st
 		DeviceID:             deviceID,
 		SNMPID:               snmpID,
 		SNMPSpeed:            snmpSpeed,
-		InterfaceDescription: &interfaceDescription,
+		InterfaceDescription: interfaceDescription,
 	}
 }
 
