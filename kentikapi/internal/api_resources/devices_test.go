@@ -1240,45 +1240,6 @@ func TestApplyLabels(t *testing.T) {
 	assert.Equal("#0000FF", result.Labels[1].Color)
 }
 
-// func TestCreateInterfaceMinimal(t *testing.T) {
-// 	// arrange
-//     createResponsePayload := `
-//     {
-//         "snmp_id": "2",
-//         "snmp_speed": 8,
-//         "interface_description": "testapi-interface-2",
-//         "interface_kvs": "",
-//         "company_id": "74333",
-//         "device_id": "42",
-//         "edate": "2021-01-13T08:41:16.191Z",
-//         "cdate": "2021-01-13T08:41:16.191Z",
-//         "id": "43"
-//     }`
-// 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-// 	devicesAPI := api_resources.NewDevicesAPI(transport)
-
-// 	// act
-// 	deviceID := models.ID(42)
-//     interface_ := models.NewInterface(
-//         deviceID,
-//         ID(2),
-//         15,
-//         "testapi-interface-2",
-//     )
-//     intf, err := devicesAPI.Interfaces.Create(interface_)
-
-// 	// assert request properly formed
-// 	assert := assert.New(t)
-// 	require := require.New(t)
-// 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
-
-// 	require.NoError(err)
-// 	require.NotNil(payload.Get("labels"))
-
-//     // and response properly parsed
-//     assert.Equal(models.ID(2), intf.SNMPID)
-// }
-
 func TestGetInterfaceMinimal(t *testing.T) {
 	// arrange
 	getResponsePayload := `
@@ -1644,4 +1605,173 @@ func TestGetAllInterfaces(t *testing.T) {
 	assert.Equal("255.255.255.240", intf.SecondaryIPS[0].Netmask)
 	assert.Equal("198.186.193.63", intf.SecondaryIPS[1].Address)
 	assert.Equal("255.255.255.225", intf.SecondaryIPS[1].Netmask)
+}
+
+func TestCreateInterfaceMinimal(t *testing.T) {
+	// arrange
+	getResponsePayload := `
+    {
+        "snmp_id": "2",
+        "snmp_speed": 8,
+        "interface_description": "testapi-interface-2",
+        "interface_kvs": "",
+        "company_id": "74333",
+        "device_id": "42",
+        "edate": "2021-01-13T08:41:16.191Z",
+        "cdate": "2021-01-13T08:41:16.191Z",
+        "id": "43"
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	intf := models.NewInterface(
+		deviceID,
+		models.ID(2),
+		8,
+		"testapi-interface-2",
+	)
+	created, err := devicesAPI.Interfaces.Create(nil, *intf)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+
+	require.NoError(err)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+	assert.Equal(2, payload.Int("snmp_id"))
+	assert.Equal(8, payload.Int("snmp_speed"))
+	assert.Equal("testapi-interface-2", payload.String("interface_description"))
+
+	// and response properly parsed
+	assert.Equal(deviceID, created.DeviceID)
+	assert.Equal(models.ID(2), created.SNMPID)
+	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(8, created.SNMPSpeed)
+	assert.Equal("testapi-interface-2", *created.InterfaceDescription)
+	assert.Equal(time.Date(2021, 1, 13, 8, 41, 16, 191*1000000, time.UTC), created.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 13, 8, 41, 16, 191*1000000, time.UTC), created.UpdatedDate)
+	assert.Equal(0, len(created.SecondaryIPS))
+	assert.Nil(created.SNMPAlias)
+	assert.Nil(created.InterfaceIP)
+	assert.Nil(created.InterfaceIPNetmask)
+	assert.Nil(created.VRFID)
+	assert.Nil(created.VRF)
+}
+
+func TestCreateInterfaceFull(t *testing.T) {
+	// arrange
+	getResponsePayload := `
+    {
+        "snmp_id": "243205880",
+        "snmp_alias": "interace-description-1",
+        "snmp_speed": 8,
+        "interface_description": "testapi-interface-1",
+        "interface_ip": "127.0.0.1",
+        "interface_ip_netmask": "255.255.255.0",
+        "interface_kvs": "",
+        "company_id": "74333",
+        "device_id": "42",
+        "edate": "2021-01-13T08:31:40.629Z",
+        "cdate": "2021-01-13T08:31:40.619Z",
+        "id": "43",
+        "vrf_id": 39903,
+        "secondary_ips": [
+            {
+                "address": "198.186.193.51",
+                "netmask": "255.255.255.240"
+            },
+            {
+                "address": "198.186.193.63",
+                "netmask": "255.255.255.225"
+            }
+        ]
+    }`
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	vrf := models.NewVRFAttributes(
+		"vrf-name",
+		"101:100",
+		"11.121.111.13:3254",
+	)
+	models.SetOptional(&vrf.Description, "vrf-description")
+	models.SetOptional(&vrf.ExtRouteDistinguisher, "15")
+	secondaryIP1 := models.SecondaryIP{Address: "127.0.0.2", Netmask: "255.255.255.0"}
+	secondaryIP2 := models.SecondaryIP{Address: "127.0.0.3", Netmask: "255.255.255.0"}
+	deviceID := models.ID(42)
+	intf := models.NewInterface(
+		deviceID,
+		models.ID(2),
+		8,
+		"testapi-interface-2",
+	)
+	models.SetOptional(&intf.SNMPAlias, "interace-description-1")
+	models.SetOptional(&intf.InterfaceIP, "127.0.0.1")
+	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
+	intf.SecondaryIPS = []models.SecondaryIP{secondaryIP1, secondaryIP2}
+	intf.VRF = vrf
+	created, err := devicesAPI.Interfaces.Create(nil, *intf)
+
+	// assert request properly formed
+	assert := assert.New(t)
+	require := require.New(t)
+
+	require.NoError(err)
+	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
+	assert.Equal(2, payload.Int("snmp_id"))
+	assert.Equal(8, payload.Int("snmp_speed"))
+	assert.Equal("testapi-interface-2", payload.String("interface_description"))
+
+	assert.Equal("interace-description-1", payload.String("snmp_alias"))
+	assert.Equal("127.0.0.1", payload.String("interface_ip"))
+	assert.Equal("255.255.255.0", payload.String("interface_ip_netmask"))
+	assert.Equal("vrf-name", payload.String("vrf/name"))
+	assert.Equal("vrf-description", payload.String("vrf/description"))
+	assert.Equal("101:100", payload.String("vrf/route_target"))
+	assert.Equal("11.121.111.13:3254", payload.String("vrf/route_distinguisher"))
+	assert.Equal(15, payload.Int("vrf/ext_route_distinguisher"))
+	assert.Equal("127.0.0.2", payload.String("secondary_ips/*[1]/address"))
+	assert.Equal("255.255.255.0", payload.String("secondary_ips/*[1]/netmask"))
+	assert.Equal("127.0.0.3", payload.String("secondary_ips/*[2]/address"))
+	assert.Equal("255.255.255.0", payload.String("secondary_ips/*[2]/netmask"))
+
+	// and response properly parsed
+	assert.Equal(deviceID, created.DeviceID)
+	assert.Equal(models.ID(243205880), created.SNMPID)
+	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(8, created.SNMPSpeed)
+	assert.Equal("testapi-interface-1", *created.InterfaceDescription)
+	assert.Equal(time.Date(2021, 1, 13, 8, 31, 40, 619*1000000, time.UTC), created.CreatedDate)
+	assert.Equal(time.Date(2021, 1, 13, 8, 31, 40, 629*1000000, time.UTC), created.UpdatedDate)
+	assert.Equal(2, len(created.SecondaryIPS))
+	assert.Equal("198.186.193.51", created.SecondaryIPS[0].Address)
+	assert.Equal("255.255.255.240", created.SecondaryIPS[0].Netmask)
+	assert.Equal("198.186.193.63", created.SecondaryIPS[1].Address)
+	assert.Equal("255.255.255.225", created.SecondaryIPS[1].Netmask)
+	assert.Equal("interace-description-1", *created.SNMPAlias)
+	assert.Equal("127.0.0.1", *created.InterfaceIP)
+	assert.Equal("255.255.255.0", *created.InterfaceIPNetmask)
+	assert.Equal(models.ID(39903), *created.VRFID)
+	assert.Nil(created.VRF)
+}
+
+func TestDeleteInterface(t *testing.T) {
+	// arrange
+	deleteResponsePayload := "{}"
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
+	devicesAPI := api_resources.NewDevicesAPI(transport)
+
+	// act
+	deviceID := models.ID(42)
+	interfaceID := models.ID(43)
+	err := devicesAPI.Interfaces.Delete(nil, deviceID, interfaceID)
+
+	// assert
+	assert := assert.New(t)
+	require := require.New(t)
+	require.NoError(err)
+	assert.Zero(transport.RequestBody)
 }

@@ -61,19 +61,12 @@ func runCRUDRouter() {
 	models.SetOptional(&device.DeviceBGPFlowSpec, true)
 	models.SetOptional(&device.DeviceBGPNeighborIP, "127.0.0.42")
 	models.SetOptional(&device.DeviceBGPPassword, "bgp-optional-password")
-
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	PanicOnError(err)
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
-	fmt.Println("### GET")
-	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
-	PanicOnError(err)
-	PrettyPrint(gotDevice)
-	fmt.Println()
-
-	fmt.Println("### UPDATE")
+	fmt.Println("### UPDATE ROUTER")
 	createdDevice.SendingIPS = []string{"128.0.0.15", "128.0.0.16"}
 	createdDevice.DeviceSampleRate = 10
 	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
@@ -83,7 +76,30 @@ func runCRUDRouter() {
 	PrettyPrint(updatedDevice)
 	fmt.Println()
 
-	fmt.Println("### DELETE")
+	fmt.Println("### CREATE INTERFACE")
+	intf := models.NewInterface(
+		createdDevice.ID,
+		models.ID(2),
+		15,
+		"testapi-interface",
+	)
+	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
+	PanicOnError(err)
+	PrettyPrint(createdInterface)
+	fmt.Println()
+
+	fmt.Println("### GET ROUTER")
+	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
+	PanicOnError(err)
+	PrettyPrint(gotDevice)
+	fmt.Println()
+
+	fmt.Println("### DELETE INTERFACE")
+	err = client.Devices.Interfaces.Delete(context.Background(), createdInterface.DeviceID, createdInterface.ID)
+	fmt.Println("Success")
+	fmt.Println()
+
+	fmt.Println("### DELETE ROUTER")
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
 	PanicOnError(err)
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete

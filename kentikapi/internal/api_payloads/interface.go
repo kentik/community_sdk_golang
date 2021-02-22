@@ -2,6 +2,8 @@ package api_payloads
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -27,17 +29,27 @@ func (r GetInterfaceResponse) ToInterface() (result models.Interface, err error)
 	return payloadToInterface(r.Interface)
 }
 
+// CreateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request
+type CreateInterfaceRequest InterfacePayload
+
+// CreateInterfaceResponse represents DevicesAPI.InterfacesAPI Create JSON response
+type CreateInterfaceResponse InterfacePayload
+
+func (r CreateInterfaceResponse) ToInterface() (result models.Interface, err error) {
+	return payloadToInterface(InterfacePayload(r))
+}
+
 // InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	SNMPID               *models.ID            `json:"snmp_id,string,omitempty"`
-	SNMPSpeed            *int                  `json:"snmp_speed,string,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int
+	SNMPSpeed            interface{}           `json:"snmp_speed"` // caveat, GET returns snmp_speed as string but POST and PUT as int; handle manually
 	InterfaceDescription *string               `json:"interface_description,omitempty"`
 	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`
 	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
-	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`           // special case; vrf is returned only in get response
-	VRFID                *models.ID            `json:"vrf_id,string,omitempty"` // and vrf_id is returned normally in get/post/put
+	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`           // caveat, GET returns vrf as valid object, but POST and PUT as empty object
+	VRFID                interface{}           `json:"vrf_id,string,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int and it is optional; handle manually
 	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
@@ -90,14 +102,30 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 		return models.Interface{}, err
 	}
 
+	// "snmp_speed" is returned as string for get, but as int for post/put
+	speed, err := stringOrNumberToInt(p.SNMPSpeed)
+	if err != nil {
+		return models.Interface{}, err
+	}
+
+	// "vrf_id" is returned as string for get, but as int for post/put. And it is optional
+	var vrfID *int
+	if p.VRFID != nil {
+		vrfID = new(int)
+		*vrfID, err = stringOrNumberToInt(p.VRFID)
+		if err != nil {
+			return models.Interface{}, err
+		}
+	}
+
 	return models.Interface{
 		SNMPID:               *p.SNMPID,
-		SNMPSpeed:            *p.SNMPSpeed,
+		SNMPSpeed:            speed,
 		SNMPAlias:            p.SNMPAlias,
 		InterfaceDescription: p.InterfaceDescription,
 		InterfaceIP:          p.InterfaceIP,
 		InterfaceIPNetmask:   p.InterfaceIPNetmask,
-		VRFID:                p.VRFID,
+		VRFID:                vrfID,
 		VRF:                  vrf,
 		SecondaryIPS:         secondaryIPs,
 
@@ -114,13 +142,41 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 	}, nil
 }
 
+// InterfaceToPayload prepares POST/PUT request payload: fill only the user-provided fields
+func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
+	var vrf *vrfAttributesPayload
+	err := utils.ConvertOrNone(i.VRF, vrfAttributesToPayload, &vrf)
+	if err != nil {
+		return InterfacePayload{}, err
+	}
+
+	var secondaryIPs []secondaryIPPayload
+	err = utils.ConvertList(i.SecondaryIPS, secondaryIPToPayload, &secondaryIPs)
+	if err != nil {
+		return InterfacePayload{}, err
+	}
+
+	speed := strconv.Itoa(i.SNMPSpeed)
+	return InterfacePayload{
+		SNMPID:               &i.SNMPID,
+		SNMPSpeed:            &speed,
+		InterfaceDescription: i.InterfaceDescription,
+		SNMPAlias:            i.SNMPAlias,
+		InterfaceIP:          i.InterfaceIP,
+		InterfaceIPNetmask:   i.InterfaceIPNetmask,
+		VRF:                  vrf,
+		VRFID:                i.VRFID,
+		SecondaryIPs:         secondaryIPs,
+	}, nil
+}
+
 // vrfAttributesPayload represents JSON Interface.VRFAttributes payload as it is transmitted to and from KentikAPI
 // Note: it is returned only in get response, for post and put responses empty object is returned but vrf_id is set
 type vrfAttributesPayload struct {
 	// following fields can appear in request: post/put, response: get
-	Name               string  `json:"name" request:"post" response:"get"`
-	RouteTarget        string  `json:"route_target" request:"post" response:"get"`
-	RouteDistinguisher string  `json:"route_distinguisher" request:"post" response:"get"`
+	Name               string  `json:"name"`
+	RouteTarget        string  `json:"route_target"`
+	RouteDistinguisher string  `json:"route_distinguisher"`
 	Description        *string `json:"description,omitempty"`
 
 	// following fields can appear in request: post/put, response: none
@@ -145,6 +201,17 @@ func payloadToVRFAttributes(p vrfAttributesPayload) (models.VRFAttributes, error
 	}, nil
 }
 
+// vrfAttributesToPayload prepares POST/PUT request payload: fill only the user-provided fields
+func vrfAttributesToPayload(a models.VRFAttributes) (vrfAttributesPayload, error) {
+	return vrfAttributesPayload{
+		Name:                  a.Name,
+		RouteTarget:           a.RouteTarget,
+		RouteDistinguisher:    a.RouteDistinguisher,
+		Description:           a.Description,
+		ExtRouteDistinguisher: a.ExtRouteDistinguisher,
+	}, nil
+}
+
 // secondaryIPPayload represents JSON Interface.SecondaryIPPayload payload as it is transmitted to and from KentikAPI
 type secondaryIPPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
@@ -156,6 +223,14 @@ func payloadToSecondaryIP(p secondaryIPPayload) (models.SecondaryIP, error) {
 	return models.SecondaryIP{
 		Address: p.Address,
 		Netmask: p.Netmask,
+	}, nil
+}
+
+// secondaryIPToPayload prepares POST/PUT request payload: fill only the user-provided fields
+func secondaryIPToPayload(s models.SecondaryIP) (secondaryIPPayload, error) {
+	return secondaryIPPayload{
+		Address: s.Address,
+		Netmask: s.Netmask,
 	}, nil
 }
 
@@ -171,4 +246,21 @@ func payloadToTopNextHopASN(p topNextHopASNPayload) (models.TopNextHopASN, error
 		ASN:     p.ASN,
 		Packets: p.Packets,
 	}, nil
+}
+
+// special treatment of InterfacePayload.SNMPSpeed which sometime comes as string, sometimes as float
+func stringOrNumberToInt(i interface{}) (result int, err error) {
+	switch val := i.(type) {
+	case string:
+		result, err = strconv.Atoi(val)
+		if err != nil {
+			return 0, fmt.Errorf("stringOrFloatToInt Atoi conversion: %v", err)
+		}
+	case float64: // json.Unmarshall recognizes numbers as float64
+		return int(val), nil
+	default:
+		return 0, fmt.Errorf("stringOrFloatToInt input should be string or float64, got {%T}", i)
+	}
+
+	return
 }
