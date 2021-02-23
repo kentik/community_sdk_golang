@@ -7,3 +7,13 @@ type Site struct {
 	Longitude *float64
 	CompanyID ID
 }
+
+// NewSite creates a new Site with all necessary fields set
+// Optional fields that can be set for Site include:
+// - Longitude
+// - Latitude
+func NewSite(name string) *Site {
+	return &Site{
+		SiteName: name,
+	}
+}
