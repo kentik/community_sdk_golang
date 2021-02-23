@@ -2,8 +2,6 @@ package api_payloads
 
 import (
 	"encoding/json"
-	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -49,13 +47,13 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	SNMPID               *models.ID            `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
-	SNMPSpeed            interface{}           `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int; handle manually
+	SNMPSpeed            BrokenInt             `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int
 	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
 	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`
 	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
-	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`           // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
-	VRFID                interface{}           `json:"vrf_id,string,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int and it is optional; handle manually
+	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`    // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
+	VRFID                *BrokenInt            `json:"vrf_id,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int
 	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
@@ -109,30 +107,14 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 		return models.Interface{}, err
 	}
 
-	// "snmp_speed" is returned as string for get, but as int for post/put
-	speed, err := stringOrNumberToInt(p.SNMPSpeed)
-	if err != nil {
-		return models.Interface{}, err
-	}
-
-	// "vrf_id" is returned as string for get, but as int for post/put. And it is optional
-	var vrfID *int
-	if p.VRFID != nil {
-		vrfID = new(int)
-		*vrfID, err = stringOrNumberToInt(p.VRFID)
-		if err != nil {
-			return models.Interface{}, err
-		}
-	}
-
 	return models.Interface{
 		SNMPID:               *p.SNMPID,
-		SNMPSpeed:            speed,
+		SNMPSpeed:            int(p.SNMPSpeed),
 		InterfaceDescription: *p.InterfaceDescription,
 		SNMPAlias:            p.SNMPAlias,
 		InterfaceIP:          p.InterfaceIP,
 		InterfaceIPNetmask:   p.InterfaceIPNetmask,
-		VRFID:                vrfID,
+		VRFID:                (*int)(p.VRFID),
 		VRF:                  vrf,
 		SecondaryIPS:         secondaryIPs,
 
@@ -163,16 +145,15 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 		return InterfacePayload{}, err
 	}
 
-	speed := i.SNMPSpeed
 	return InterfacePayload{
 		SNMPID:               &i.SNMPID,
-		SNMPSpeed:            &speed,
+		SNMPSpeed:            BrokenInt(i.SNMPSpeed),
 		InterfaceDescription: &i.InterfaceDescription,
 		SNMPAlias:            i.SNMPAlias,
 		InterfaceIP:          i.InterfaceIP,
 		InterfaceIPNetmask:   i.InterfaceIPNetmask,
 		VRF:                  vrf,
-		VRFID:                i.VRFID,
+		VRFID:                (*BrokenInt)(i.VRFID),
 		SecondaryIPs:         secondaryIPs,
 	}, nil
 }
@@ -253,21 +234,4 @@ func payloadToTopNextHopASN(p topNextHopASNPayload) (models.TopNextHopASN, error
 		ASN:     p.ASN,
 		Packets: p.Packets,
 	}, nil
-}
-
-// special treatment of InterfacePayload.SNMPSpeed and InterfacePayload.VRFID, which sometimes come as string, sometimes as number
-func stringOrNumberToInt(i interface{}) (result int, err error) {
-	switch val := i.(type) {
-	case string:
-		result, err = strconv.Atoi(val)
-		if err != nil {
-			return 0, fmt.Errorf("stringOrFloatToInt Atoi conversion: %v", err)
-		}
-	case float64: // json.Unmarshall recognizes numbers as float64
-		return int(val), nil
-	default:
-		return 0, fmt.Errorf("stringOrFloatToInt input should be string or float64, got {%T}", i)
-	}
-
-	return
 }
