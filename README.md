@@ -37,6 +37,7 @@ Run all tests, including usage examples: `go test -tags examples ./...`
 
 Finished implementation:
 - devices (with interfaces)
+- plans
 
 Ongoing implementation:
 - users
@@ -50,6 +51,5 @@ ToDo:
 - custom applications
 - saved filters
 - query methods
-- plans
 - alerts
 - alerts active
