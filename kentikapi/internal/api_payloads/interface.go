@@ -13,7 +13,7 @@ import (
 // GetInterfaceResponse represents DevicesAPI.InterfacesAPI GetAll JSON response
 type GetAllInterfacesResponse []InterfacePayload
 
-func (p GetAllInterfacesResponse) ToInterfaces() (result []models.Interface, err error) {
+func (r GetAllInterfacesResponse) ToInterfaces() (result []models.Interface, err error) {
 	err = utils.ConvertList(p, payloadToInterface, &result)
 	return result, err
 }
