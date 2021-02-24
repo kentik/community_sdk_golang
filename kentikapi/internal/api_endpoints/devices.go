@@ -24,3 +24,19 @@ func ApplyDeviceLabels(id ResourceID) string {
 func GetInterface(deviceID, interfaceID ResourceID) string {
 	return fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID)
 }
+
+func GetAllInterfaces(deviceID ResourceID) string {
+	return fmt.Sprintf("/device/%v/interfaces", deviceID)
+}
+
+func CreateInterface(deviceID ResourceID) string {
+	return fmt.Sprintf("/device/%v/interface", deviceID)
+}
+
+func UpdateInterface(deviceID, interfaceID ResourceID) string {
+	return fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID)
+}
+
+func DeleteInterface(deviceID, interfaceID ResourceID) string {
+	return fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID)
+}

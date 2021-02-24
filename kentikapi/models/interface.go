@@ -2,18 +2,18 @@ package models
 
 import "time"
 
-// Note: Interfaces belong to DevicesAPI but it is wast so lives in a separate file
+// Note: InterfacesAPI belongs under DevicesAPI but it is vast so it lives in a separate file
 
 type Interface struct {
 	// read-write properties (can be updated in update call)
 	SNMPID               ID
 	SNMPSpeed            int
+	InterfaceDescription string // if fact, this is interface name, that's why not optional
 	SNMPAlias            *string
-	InterfaceDescription *string
 	InterfaceIP          *string
 	InterfaceIPNetmask   *string
-	VRFID                *ID
 	VRF                  *VRFAttributes
+	VRFID                *ID
 	SecondaryIPS         []SecondaryIP
 
 	// read-only properties (can't be updated in update call)
@@ -35,7 +35,7 @@ func NewInterface(deviceID ID, snmpID ID, snmpSpeed int, interfaceDescription st
 		DeviceID:             deviceID,
 		SNMPID:               snmpID,
 		SNMPSpeed:            snmpSpeed,
-		InterfaceDescription: &interfaceDescription,
+		InterfaceDescription: interfaceDescription,
 	}
 }
 

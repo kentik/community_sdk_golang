@@ -35,9 +35,11 @@ Run all tests, including usage examples: `go test -tags examples ./...`
 
 ## Development state
 
+Finished implementation:
+- devices (with interfaces)
+
 Ongoing implementation:
 - users
-- devices (with interfaces)
 - my kentik portal
 
 ToDo:

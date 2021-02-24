@@ -8,32 +8,32 @@ import (
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDevicesAPIExample(t *testing.T) {
-	defer func() {
-		if err := recover(); err != nil {
-			t.Fatal(err)
-		}
-	}()
-
-	runCRUDRouter()
-	runCRUDDNS()
-	runGetAllDevices()
-	runGetInterface()
+	assert := assert.New(t)
+	assert.NoError(runCRUDRouter())
+	assert.NoError(runCRUDDNS())
+	assert.NoError(runGetAllDevices())
+	assert.NoError(runGetAllInterfaces())
 }
 
-func runGetAllDevices() {
+func runGetAllDevices() error {
 	client := NewClient()
 
 	fmt.Println("### GET ALL")
 	devices, err := client.Devices.GetAll(context.Background())
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(devices)
 	fmt.Println()
+
+	return nil
 }
 
-func runCRUDRouter() {
+func runCRUDRouter() error {
 	var err error
 	client := NewClient()
 
@@ -58,38 +58,80 @@ func runCRUDRouter() {
 	models.SetOptional(&device.DeviceBGPFlowSpec, true)
 	models.SetOptional(&device.DeviceBGPNeighborIP, "127.0.0.42")
 	models.SetOptional(&device.DeviceBGPPassword, "bgp-optional-password")
-
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
-	fmt.Println("### GET")
-	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
-	PanicOnError(err)
-	PrettyPrint(gotDevice)
-	fmt.Println()
-
-	fmt.Println("### UPDATE")
+	fmt.Println("### UPDATE ROUTER")
 	createdDevice.SendingIPS = []string{"128.0.0.15", "128.0.0.16"}
 	createdDevice.DeviceSampleRate = 10
 	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
 	models.SetOptional(&createdDevice.DeviceBGPNeighborASN, "88")
 	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(updatedDevice)
 	fmt.Println()
 
-	fmt.Println("### DELETE")
-	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
-	PanicOnError(err)
-	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
-	PanicOnError(err)
+	fmt.Println("### CREATE INTERFACE")
+	intf := models.NewInterface(
+		createdDevice.ID,
+		models.ID(2),
+		15,
+		"testapi-interface",
+	)
+	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(createdInterface)
+	fmt.Println()
+
+	fmt.Println("### UPDATE INTERFACE")
+	createdInterface.SNMPSpeed = 24
+	updatedInterface, err := client.Devices.Interfaces.Update(context.Background(), *createdInterface)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(updatedInterface)
+	fmt.Println()
+
+	fmt.Println("### GET ROUTER")
+	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(gotDevice)
+	fmt.Println()
+
+	fmt.Println("### DELETE INTERFACE")
+	err = client.Devices.Interfaces.Delete(context.Background(), createdInterface.DeviceID, createdInterface.ID)
+	if err != nil {
+		return err
+	}
 	fmt.Println("Success")
 	fmt.Println()
+
+	fmt.Println("### DELETE ROUTER")
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
+	if err != nil {
+		return err
+	}
+	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
+	if err != nil {
+		return err
+	}
+	fmt.Println("Success")
+	fmt.Println()
+
+	return nil
 }
 
-func runCRUDDNS() {
+func runCRUDDNS() error {
 	var err error
 	client := NewClient()
 
@@ -105,7 +147,9 @@ func runCRUDDNS() {
 	models.SetOptional(&device.DeviceBGPFlowSpec, true)
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(createdDevice)
 	fmt.Println()
 
@@ -115,7 +159,9 @@ func runCRUDDNS() {
 	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
 	models.SetOptional(&createdDevice.DeviceBGPFlowSpec, false)
 	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(updatedDevice)
 	fmt.Println()
 
@@ -123,33 +169,45 @@ func runCRUDDNS() {
 	// fmt.Println("### APPLY LABELS")
 	// labelIDs := []models.ID{models.ID(3011), models.ID( 3012)}
 	// labels, err := client.Devices.ApplyLabels(context.Background(),createdDevice.ID, labelIDs)
-	// PanicOnError(err)
+	// if err != nil {
+	// 	return err
+	// }
 	// PrettyPrint(labels)
 	// fmt.Println()
 
 	fmt.Println("### GET")
 	gotDevice, err := client.Devices.Get(context.Background(), createdDevice.ID)
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(gotDevice)
 	fmt.Println()
 
 	fmt.Println("### DELETE")
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // archive
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	err = client.Devices.Delete(context.Background(), createdDevice.ID) // delete
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	fmt.Println("Success")
 	fmt.Println()
+
+	return nil
 }
 
-func runGetInterface() {
+func runGetAllInterfaces() error {
 	client := NewClient()
 
-	fmt.Println("### GET INTERFACE")
-	deviceID := models.ID(80166)
-	interfaceID := models.ID(9385804334)
-	intf, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
-	PanicOnError(err)
-	PrettyPrint(intf)
+	fmt.Println("### GET ALL INTERFACES")
+	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), models.ID(80166))
+	if err != nil {
+		return err
+	}
+	PrettyPrint(interfaces)
 	fmt.Println()
+
+	return nil
 }
