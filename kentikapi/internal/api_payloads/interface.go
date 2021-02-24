@@ -14,7 +14,7 @@ import (
 type GetAllInterfacesResponse []InterfacePayload
 
 func (r GetAllInterfacesResponse) ToInterfaces() (result []models.Interface, err error) {
-	err = utils.ConvertList(p, payloadToInterface, &result)
+	err = utils.ConvertList(r, payloadToInterface, &result)
 	return result, err
 }
 
@@ -47,13 +47,13 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	SNMPID               *models.ID            `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
-	SNMPSpeed            BrokenInt             `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int
+	SNMPSpeed            IntAsString           `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int
 	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
 	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`
 	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
 	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`    // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
-	VRFID                *BrokenInt            `json:"vrf_id,omitempty"` // caveat, GET returns vrf_id as string but POST and PUT as int
+	VRFID                *IntAsString          `json:"vrf_id,omitempty"` // caveat, GET returns vrf_id as string but POST and PUT as int
 	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
@@ -147,13 +147,13 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 
 	return InterfacePayload{
 		SNMPID:               &i.SNMPID,
-		SNMPSpeed:            BrokenInt(i.SNMPSpeed),
+		SNMPSpeed:            IntAsString(i.SNMPSpeed),
 		InterfaceDescription: &i.InterfaceDescription,
 		SNMPAlias:            i.SNMPAlias,
 		InterfaceIP:          i.InterfaceIP,
 		InterfaceIPNetmask:   i.InterfaceIPNetmask,
 		VRF:                  vrf,
-		VRFID:                (*BrokenInt)(i.VRFID),
+		VRFID:                (*IntAsString)(i.VRFID),
 		SecondaryIPs:         secondaryIPs,
 	}, nil
 }

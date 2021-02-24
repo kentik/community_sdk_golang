@@ -146,10 +146,6 @@ func (a *interfacesAPI) Create(ctx context.Context, intf models.Interface) (*mod
 // Delete interface
 func (a *interfacesAPI) Delete(ctx context.Context, deviceID, interfaceID models.ID) error {
 	return a.DeleteAndValidate(ctx, api_endpoints.DeleteInterface(deviceID, interfaceID), nil)
-		return err
-	}
-
-	return nil
 }
 
 // Update interface
