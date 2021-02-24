@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// BrokenInt evens out deserialization of numbers represented in JSON document sometimes as int and simetimes as string. Ugliness
+// BrokenInt evens out deserialization of numbers represented in JSON document sometimes as int and sometimes as string. Ugliness
 type BrokenInt int
 
 func (p *BrokenInt) UnmarshalJSON(data []byte) (err error) {
