@@ -336,6 +336,7 @@ func payloadToDeviceLabel(p deviceLabelPayload) (models.DeviceLabel, error) {
 	}, nil
 }
 
+// nolint: deadcode, unused
 func deviceLabelToPayload(d models.DeviceLabel) (deviceLabelPayload, error) {
 	return deviceLabelPayload{
 		ID:          d.ID,

@@ -1,0 +1,7 @@
+run:
+  build-tags:
+    - examples
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+# TODO(dfurman): enable more linters
