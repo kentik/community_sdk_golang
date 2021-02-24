@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-// Note: InterfacesAPI belong under DevicesAPI but it is wast so it lives in a separate file
+// Note: InterfacesAPI belongs under DevicesAPI but it is vast so it lives in a separate file
 
 type Interface struct {
 	// read-write properties (can be updated in update call)
