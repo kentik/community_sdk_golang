@@ -8,7 +8,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// Note: InterfacesAPI belong under DevicesAPI but it is wast so it lives in a separate file
+// Note: InterfacesAPI belong under DevicesAPI but it is vast so it lives in a separate file
 
 // GetInterfaceResponse represents DevicesAPI.InterfacesAPI GetAll JSON response
 type GetAllInterfacesResponse []InterfacePayload
