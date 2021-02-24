@@ -52,7 +52,7 @@ func validate(method string, direction string, path string, v reflect.Value) []s
 		for i := 0; i < v.NumField(); i++ {
 			field := v.Field(i)
 			fieldPath := path + "." + v.Type().Field(i).Name
-			if (field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface) && field.IsNil() {
+			if (field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface || field.Kind() == reflect.Slice) && field.IsNil() {
 				requiredForMethods := v.Type().Field(i).Tag.Get(direction)
 				if strings.Contains(requiredForMethods, method) {
 					missing = append(missing, fieldPath)

@@ -21,7 +21,7 @@ type Client struct {
 	// SavedFilters
 	// CustomDimensions
 	// CustomApplications
-	// Query
+	Query *api_resources.QueryAPI
 	// Plans
 	// MyKentikPortal
 	// Batch
@@ -57,7 +57,7 @@ func NewClient(c Config) *Client {
 		// SavedFilters
 		// CustomDimensions
 		// CustomApplications
-		// Query
+		Query: api_resources.NewQueryAPI(rc),
 		// Plans
 		// MyKentikPortal
 		// Batch
