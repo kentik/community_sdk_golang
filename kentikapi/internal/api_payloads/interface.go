@@ -53,7 +53,7 @@ type InterfacePayload struct {
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`
 	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
 	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`    // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
-	VRFID                *BrokenInt            `json:"vrf_id,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int
+	VRFID                *BrokenInt            `json:"vrf_id,omitempty"` // caveat, GET returns vrf_id as string but POST and PUT as int
 	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
