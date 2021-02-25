@@ -14,15 +14,15 @@ import (
 func TestGetSite(t *testing.T) {
 	// arrange
 	getResponsePayload := `
-    {
-        "site": {
-            "id": 42,
-            "site_name": "apitest-site-1",
-            "lat": 54.349276,
-            "lon": 18.659577,
-            "company_id": 3250
-        }
-    }`
+	{
+		"site": {
+			"id": 42,
+			"site_name": "apitest-site-1",
+			"lat": 54.349276,
+			"lon": 18.659577,
+			"company_id": 3250
+		}
+	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	sitesAPI := api_resources.NewSitesAPI(transport)
 	siteID := models.ID(42)
@@ -48,7 +48,7 @@ func TestGetSite(t *testing.T) {
 func TestGetAllSites(t *testing.T) {
 	// arrange
 	getResponsePayload := `
-    {
+	{
 		"sites": [
 			{
 				"id": 7758,
@@ -72,7 +72,7 @@ func TestGetAllSites(t *testing.T) {
 				"company_id": 74333
 			}
 		]
-    }`
+	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	sitesAPI := api_resources.NewSitesAPI(transport)
 
@@ -114,15 +114,15 @@ func TestGetAllSites(t *testing.T) {
 func TestCreateSite(t *testing.T) {
 	// arrange
 	createResponsePayload := `
-    {
-        "site": {
-            "id": 42,
-            "site_name": "apitest-site-1",
-            "lat": 54.349276,
-            "lon": 18.659577,
-            "company_id": "3250"
-        }     
-    }`
+	{
+		"site": {
+			"id": 42,
+			"site_name": "apitest-site-1",
+			"lat": 54.349276,
+			"lon": 18.659577,
+			"company_id": "3250"
+		}     
+	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	sitesAPI := api_resources.NewSitesAPI(transport)
 
@@ -155,13 +155,13 @@ func TestUpdatetSite(t *testing.T) {
 	// arrange
 	updateResponsePayload := `
 	{
-        "site": {
-            "id": "42",
-            "site_name": "new-site",
-            "lat": -15.0,
-            "lon": -45.0,
-            "company_id": "3250"
-        }
+		"site": {
+			"id": "42",
+			"site_name": "new-site",
+			"lat": -15.0,
+			"lon": -45.0,
+			"company_id": "3250"
+		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	sitesAPI := api_resources.NewSitesAPI(transport)
