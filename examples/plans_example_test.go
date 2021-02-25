@@ -5,27 +5,26 @@ package examples
 import (
 	"context"
 	"fmt"
-	"runtime/debug"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlansAPIExample(t *testing.T) {
-	defer func() {
-		if err := recover(); err != nil {
-			debug.PrintStack()
-			t.Fatal(err)
-		}
-	}()
-
-	runGetAllPlans()
+	assert := assert.New(t)
+	assert.NoError(runGetAllPlans())
 }
 
-func runGetAllPlans() {
+func runGetAllPlans() error {
 	client := NewClient()
 
 	fmt.Println("### GET ALL")
 	plans, err := client.Plans.GetAll(context.Background())
-	PanicOnError(err)
+	if err != nil {
+		return err
+	}
 	PrettyPrint(plans)
 	fmt.Println()
+
+	return nil
 }

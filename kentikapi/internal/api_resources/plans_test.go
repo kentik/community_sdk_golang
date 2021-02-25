@@ -13,57 +13,57 @@ import (
 func TestGetAllPlans(t *testing.T) {
 	// arrange
 	getResponsePayload := `
-    {
-        "plans":[
-            {
-                "active":true,
-                "bgp_enabled":true,
-                "cdate":"2020-09-03T08:41:57.489Z",
-                "company_id":74333,
-                "description":"Your Free Trial includes 6 devices at a maximum of 1000 fps each. Please contact...",
-                "deviceTypes":[
-                    {
-                        "device_type":"router"
-                    },
-                    {
-                        "device_type":"host-nprobe-dns-www"
-                    }
-                ],
-                "devices":[
-                    {
-                        "id":"77714",
-                        "device_name":"testapi_router_minimal_1",
-                        "device_type":"router"
-                    },
-                    {
-                        "id":"77720",
-                        "device_name":"testapi_dns_minimal_1",
-                        "device_type":"host-nprobe-dns-www"
-                    },
-                    { 
-                        "id":"77724",
-                        "device_name":"testapi_router_minimal_postman",
-                        "device_type":"router"
-                    },
-                    {
-                        "id":"77715",
-                        "device_name":"testapi_router_full_1",
-                        "device_type":"router"
-                    }
-                ],
-                "edate":"2020-09-03T08:41:57.489Z",
-                "fast_retention":30,
-                "full_retention":30,
-                "id":11466,
-                "max_bigdata_fps":30,
-                "max_devices":6,
-                "max_fps":1000,
-                "name":"Free Trial Plan",
-                "metadata":{
-                }
-            }
+	{
+		"plans":[
+			{
+				"active":true,
+				"bgp_enabled":true,
+				"cdate":"2020-09-03T08:41:57.489Z",
+				"company_id":74333,
+				"description":"Your Free Trial includes 6 devices at a maximum of 1000 fps each. Please contact...",
+				"deviceTypes":[
+					{
+						"device_type":"router"
+					},
+					{
+						"device_type":"host-nprobe-dns-www"
+					}
+				],
+				"devices":[
+					{
+						"id":"77714",
+						"device_name":"testapi_router_minimal_1",
+						"device_type":"router"
+					},
+					{
+						"id":"77720",
+						"device_name":"testapi_dns_minimal_1",
+						"device_type":"host-nprobe-dns-www"
+					},
+					{ 
+						"id":"77724",
+						"device_name":"testapi_router_minimal_postman",
+						"device_type":"router"
+					},
+					{
+						"id":"77715",
+						"device_name":"testapi_router_full_1",
+						"device_type":"router"
+					}
+				],
+				"edate":"2020-09-03T08:41:57.489Z",
+				"fast_retention":30,
+				"full_retention":30,
+				"id":11466,
+				"max_bigdata_fps":30,
+				"max_devices":6,
+				"max_fps":1000,
+				"name":"Free Trial Plan",
+				"metadata":{
+				}
+			}
 		]
-    }`
+	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	plansAPI := api_resources.NewPlansAPI(transport)
 
