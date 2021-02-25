@@ -336,19 +336,6 @@ func payloadToDeviceLabel(p deviceLabelPayload) (models.DeviceLabel, error) {
 	}, nil
 }
 
-// nolint: deadcode, unused
-func deviceLabelToPayload(d models.DeviceLabel) (deviceLabelPayload, error) {
-	return deviceLabelPayload{
-		ID:          d.ID,
-		Name:        d.Name,
-		Color:       d.Color,
-		UserID:      d.UserID,
-		CompanyID:   d.CompanyID,
-		CreatedDate: d.CreatedDate,
-		UpdatedDate: d.UpdatedDate,
-	}, nil
-}
-
 // deviceSitePayload represents JSON Device.Site payload as it is transmitted from KentikAPI.
 // deviceSitePayload embeddedd under Device differs from regular SitePayload in that all fields are optional.
 type deviceSitePayload struct {
