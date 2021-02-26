@@ -1,6 +1,7 @@
 package api_resources_test
 
 import (
+	"context"
 	"encoding/base64"
 	"testing"
 	"time"
@@ -50,7 +51,7 @@ func TestQuerySQL(t *testing.T) {
 	queryAPI := api_resources.NewQueryAPI(transport)
 
 	// act
-	result, err := queryAPI.SQL(nil, querySQL)
+	result, err := queryAPI.SQL(context.TODO(), querySQL)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -146,7 +147,7 @@ func TestQueryData(t *testing.T) {
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 
 	// act
-	result, err := queryAPI.Data(nil, queryObject)
+	result, err := queryAPI.Data(context.TODO(), queryObject)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -245,7 +246,7 @@ func TestQueryChart(t *testing.T) {
 	models.SetOptional(&queryObject.ImageType, models.ImageTypePNG)
 
 	// act
-	result, err := queryAPI.Chart(nil, queryObject)
+	result, err := queryAPI.Chart(context.TODO(), queryObject)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -344,7 +345,7 @@ func TestQueryURL(t *testing.T) {
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 
 	// act
-	result, err := queryAPI.URL(nil, queryObject)
+	result, err := queryAPI.URL(context.TODO(), queryObject)
 
 	// assert request properly formed
 	assert := assert.New(t)
