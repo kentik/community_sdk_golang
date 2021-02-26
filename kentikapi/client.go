@@ -20,7 +20,7 @@ type Client struct {
 	// Tags
 	// SavedFilters
 	// CustomDimensions
-	// CustomApplications
+	CustomApplications *api_resources.CustomApplicationsAPI
 	// Query
 	// Plans
 	// MyKentikPortal
@@ -56,7 +56,7 @@ func NewClient(c Config) *Client {
 		// Tags
 		// SavedFilters
 		// CustomDimensions
-		// CustomApplications
+		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
 		// Query
 		// Plans
 		// MyKentikPortal
