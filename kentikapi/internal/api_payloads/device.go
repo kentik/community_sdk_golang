@@ -124,13 +124,8 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		return models.Device{}, err
 	}
 
-	var snmp *models.SNMPv3Conf
-	if err = utils.ConvertOrNone(p.DeviceSNMPv3Conf, payloadToSNMPv3Conf, &snmp); err != nil {
-		return models.Device{}, err
-	}
-
-	var site *models.DeviceSite
-	if err = utils.ConvertOrNone(p.Site, payloadToDeviceSite, &site); err != nil {
+	snmp, err := payloadToSNMPv3Conf(p.DeviceSNMPv3Conf)
+	if err != nil {
 		return models.Device{}, err
 	}
 
@@ -163,7 +158,7 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		DeviceSampleRate:      *p.DeviceSampleRate,
 		Plan:                  plan,
 		SendingIPS:            p.SendingIPS,
-		Site:                  site,
+		Site:                  payloadToDeviceSite(p.Site),
 		PlanID:                p.PlanID,
 		SiteID:                p.SiteID,
 		Labels:                labels,
@@ -191,8 +186,6 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 
 // DeviceToPayload prepares POST/PUT request payload: fill only the user-provided fields
 func DeviceToPayload(d models.Device) (DevicePayload, error) {
-	var err error
-
 	deviceType := d.DeviceType.String()
 	deviceSubtype := d.DeviceSubType.String()
 
@@ -208,16 +201,6 @@ func DeviceToPayload(d models.Device) (DevicePayload, error) {
 		*bgpType = d.DeviceBGPType.String()
 	}
 
-	var site *deviceSitePayload
-	if err := utils.ConvertOrNone(d.Site, deviceSiteToPayload, &site); err != nil {
-		return DevicePayload{}, err
-	}
-
-	var snmp *snmpv3ConfPayload
-	if err = utils.ConvertOrNone(d.DeviceSNMPv3Conf, snmp3ConfToPayload, &snmp); err != nil {
-		return DevicePayload{}, err
-	}
-
 	return DevicePayload{
 		DeviceName:            &d.DeviceName,
 		DeviceType:            &deviceType,
@@ -230,7 +213,7 @@ func DeviceToPayload(d models.Device) (DevicePayload, error) {
 		DeviceDescription:     d.DeviceDescription,
 		DeviceSNMNPIP:         d.DeviceSNMNPIP,
 		DeviceSNMPCommunity:   d.DeviceSNMPCommunity,
-		DeviceSNMPv3Conf:      snmp,
+		DeviceSNMPv3Conf:      snmp3ConfToPayload(d.DeviceSNMPv3Conf),
 		MinimizeSNMP:          d.MinimizeSNMP,
 		DeviceBGPType:         bgpType,
 		DeviceBGPNeighborIP:   d.DeviceBGPNeighborIP,
@@ -268,20 +251,24 @@ type snmpv3ConfPayload struct {
 	PrivacyPassphrase        *string `json:"PrivacyPassphrase,omitempty"`
 }
 
-func payloadToSNMPv3Conf(p snmpv3ConfPayload) (models.SNMPv3Conf, error) {
+func payloadToSNMPv3Conf(p *snmpv3ConfPayload) (*models.SNMPv3Conf, error) {
+	if p == nil {
+		return nil, nil
+	}
+
 	var auth *models.AuthenticationProtocol
 	err := utils.ConvertOrNone(p.AuthenticationProtocol, models.AuthenticationProtocolString, &auth)
 	if err != nil {
-		return models.SNMPv3Conf{}, err
+		return nil, err
 	}
 
 	var priv *models.PrivacyProtocol
 	err = utils.ConvertOrNone(p.PrivacyProtocol, models.PrivacyProtocolString, &priv)
 	if err != nil {
-		return models.SNMPv3Conf{}, err
+		return nil, err
 	}
 
-	return models.SNMPv3Conf{
+	return &models.SNMPv3Conf{
 		UserName:                 p.UserName,
 		AuthenticationProtocol:   auth,
 		AuthenticationPassphrase: p.AuthenticationPassphrase,
@@ -290,7 +277,11 @@ func payloadToSNMPv3Conf(p snmpv3ConfPayload) (models.SNMPv3Conf, error) {
 	}, nil
 }
 
-func snmp3ConfToPayload(d models.SNMPv3Conf) (snmpv3ConfPayload, error) {
+func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
+	if d == nil {
+		return nil
+	}
+
 	var auth *string
 	if d.AuthenticationProtocol != nil {
 		auth = new(string)
@@ -302,13 +293,13 @@ func snmp3ConfToPayload(d models.SNMPv3Conf) (snmpv3ConfPayload, error) {
 		*priv = d.PrivacyProtocol.String()
 	}
 
-	return snmpv3ConfPayload{
+	return &snmpv3ConfPayload{
 		UserName:                 d.UserName,
 		AuthenticationProtocol:   auth,
 		AuthenticationPassphrase: d.AuthenticationPassphrase,
 		PrivacyProtocol:          priv,
 		PrivacyPassphrase:        d.PrivacyPassphrase,
-	}, nil
+	}
 }
 
 // deviceLabelPayload represents JSON Device.Label payload as it is transmitted from KentikAPI.
@@ -358,24 +349,14 @@ type deviceSitePayload struct {
 	SiteName  *string    `json:"site_name,omitempty"`
 }
 
-func payloadToDeviceSite(p deviceSitePayload) (models.DeviceSite, error) {
-	return models.DeviceSite{
+func payloadToDeviceSite(p *deviceSitePayload) *models.DeviceSite {
+	return &models.DeviceSite{
 		ID:        p.ID,
 		CompanyID: p.CompanyID,
 		Latitude:  p.Latitude,
 		Longitude: p.Longitude,
 		SiteName:  p.SiteName,
-	}, nil
-}
-
-func deviceSiteToPayload(d models.DeviceSite) (deviceSitePayload, error) {
-	return deviceSitePayload{
-		ID:        d.ID,
-		CompanyID: d.CompanyID,
-		Latitude:  d.Latitude,
-		Longitude: d.Longitude,
-		SiteName:  d.SiteName,
-	}, nil
+	}
 }
 
 // devicePlanPayload represents JSON Device.Plan payload as it is transmitted from KentikAPI.

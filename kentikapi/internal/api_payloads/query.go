@@ -197,12 +197,6 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 		dimensions[i] = d.String()
 	}
 
-	var filters *filtersPayload
-	err = utils.ConvertOrNone(q.FiltersObj, filtersToPayload, &filters)
-	if err != nil {
-		return queryPayload{}, err
-	}
-
 	var aggregates []aggregatePayload
 	err = utils.ConvertList(q.Aggregates, aggregateToPayload, &aggregates)
 	if err != nil {
@@ -218,7 +212,7 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	return queryPayload{
 		Metric:          q.Metric.String(),
 		Dimension:       dimensions,
-		FiltersObj:      filters,
+		FiltersObj:      filtersToPayload(q.FiltersObj),
 		SavedFilters:    []interface{}{}, // SavedFiltersAPI dependency
 		MatrixBy:        q.MatrixBy,
 		CIDR:            q.CIDR,
@@ -252,13 +246,17 @@ type filtersPayload struct {
 	FilterString *string       `json:"filterString,omitempty"`
 }
 
-func filtersToPayload(f models.Filters) (filtersPayload, error) {
-	return filtersPayload{
+func filtersToPayload(f *models.Filters) *filtersPayload {
+	if f == nil {
+		return nil
+	}
+
+	return &filtersPayload{
 		Connector:    f.Connector,
 		FilterGroups: f.FilterGroups,
 		Custom:       f.Custom,
 		FilterString: f.FilterString,
-	}, nil
+	}
 }
 
 type aggregatePayload struct {
