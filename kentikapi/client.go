@@ -18,7 +18,7 @@ type Client struct {
 	// DeviceLabels
 	Sites *api_resources.SitesAPI
 	Tags  *api_resources.TagsAPI
-	// SavedFilters
+	SavedFilters *api_resources.SavedFiltersAPI
 	// CustomDimensions
 	// CustomApplications
 	Query          *api_resources.QueryAPI
@@ -54,7 +54,7 @@ func NewClient(c Config) *Client {
 		// DeviceLabels
 		Sites: api_resources.NewSitesAPI(rc),
 		Tags:  api_resources.NewTagsAPI(rc),
-		// SavedFilters
+		SavedFilters: api_resources.NewSavedFiltersAPI(rc),
 		// CustomDimensions
 		// CustomApplications
 		Query:          api_resources.NewQueryAPI(rc),
