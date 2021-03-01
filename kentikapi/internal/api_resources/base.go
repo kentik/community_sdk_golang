@@ -3,6 +3,7 @@ package api_resources
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/validation"
@@ -26,7 +27,7 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 	}
 
 	if err = json.Unmarshal(responseBody, &output); err != nil {
-		return err
+		return fmt.Errorf("decode response body: %v", err)
 	}
 
 	if err = validation.CheckResponseRequiredFields("get", output); err != nil {
@@ -46,7 +47,7 @@ func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interfac
 
 	payload, err := json.Marshal(input)
 	if err != nil {
-		return err
+		return fmt.Errorf("encode request body: %v", err)
 	}
 
 	responseBody, err := b.Transport.Post(ctx, url, payload)
@@ -59,7 +60,7 @@ func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interfac
 	}
 
 	if err = json.Unmarshal(responseBody, &output); err != nil {
-		return err
+		return fmt.Errorf("decode response body: %v", err)
 	}
 
 	if err = validation.CheckResponseRequiredFields("post", output); err != nil {
@@ -79,7 +80,7 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 
 	payload, err := json.Marshal(input)
 	if err != nil {
-		return err
+		return fmt.Errorf("encode request body: %v", err)
 	}
 
 	responseBody, err := b.Transport.Put(ctx, url, payload)
@@ -92,7 +93,7 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 	}
 
 	if err = json.Unmarshal(responseBody, &output); err != nil {
-		return err
+		return fmt.Errorf("decode response body: %v", err)
 	}
 
 	if err = validation.CheckResponseRequiredFields("put", output); err != nil {
@@ -102,7 +103,7 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 	return nil
 }
 
-// Delete retrieves json at "url" unmarshalls and validates against required fields defined in struct tags of "output"
+// DeleteAndValidate retrieves json at "url" unmarshalls and validates against required fields defined in struct tags of "output"
 // output must be pointer to object
 func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output interface{}) error {
 	responseBody, err := b.Transport.Delete(ctx, url)
@@ -115,7 +116,7 @@ func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output inter
 	}
 
 	if err = json.Unmarshal(responseBody, &output); err != nil {
-		return err
+		return fmt.Errorf("decode response body: %v", err)
 	}
 
 	if err = validation.CheckResponseRequiredFields("get", output); err != nil {
