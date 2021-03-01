@@ -19,7 +19,7 @@ type Client struct {
 	// Sites
 	// Tags
 	// SavedFilters
-	// CustomDimensions
+	CustomDimensions *api_resources.CustomDimensionsAPI
 	// CustomApplications
 	// Query
 	// Plans
@@ -55,7 +55,7 @@ func NewClient(c Config) *Client {
 		// Sites
 		// Tags
 		// SavedFilters
-		// CustomDimensions
+		CustomDimensions: api_resources.NewCustomDimensionsAPI(rc),
 		// CustomApplications
 		// Query
 		// Plans
