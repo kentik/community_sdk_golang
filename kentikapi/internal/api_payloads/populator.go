@@ -6,6 +6,26 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
+// CreatePopulatorRequest represents CustomDimensionsAPI.Populators Create JSON request
+type CreatePopulatorRequest struct {
+	Payload PopulatorPayload `json:"populator"`
+}
+
+// CreatePopulatorResponse represents CustomDimensionsAPI.Populators Create JSON response
+type CreatePopulatorResponse struct {
+	Payload PopulatorPayload `json:"populator"`
+}
+
+func (r CreatePopulatorResponse) ToPopulator() (models.Populator, error) {
+	return payloadToPopulator(r.Payload)
+}
+
+// UpdatePopulatorRequest represents CustomDimensionsAPI.Populators Update JSON request
+type UpdatePopulatorRequest = CreatePopulatorRequest
+
+// UpdatePopulatorResponse represents CustomDimensionsAPI.Populators Update JSON response
+type UpdatePopulatorResponse = CreatePopulatorResponse
+
 // PopulatorPayload represents JSON Populator payload as it is transmitted to and from KentikAPI
 type PopulatorPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
@@ -77,4 +97,30 @@ func payloadToPopulator(p PopulatorPayload) (models.Populator, error) {
 		CreatedDate:   *p.CreatedDate,
 		UpdatedDate:   *p.UpdatedDate,
 	}, nil
+}
+
+// PopulatorToPayload prepares POST/PUT request payload: fill only the user-provided fields
+func PopulatorToPayload(p models.Populator) PopulatorPayload {
+	return PopulatorPayload{
+		Direction:     p.Direction.String(),
+		Value:         p.Value,
+		DeviceName:    p.DeviceName,
+		InterfaceName: p.InterfaceName,
+		Addr:          p.Addr,
+		Port:          p.Port,
+		TCPFlags:      p.TCPFlags,
+		Protocol:      p.Protocol,
+		ASN:           p.ASN,
+		NextHopASN:    p.NextHopASN,
+		NextHop:       p.NextHop,
+		BGPAsPath:     p.BGPAsPath,
+		BGPCommunity:  p.BGPCommunity,
+		DeviceType:    p.DeviceType,
+		Site:          p.Site,
+		LastHopAsName: p.LastHopAsName,
+		NextHopAsName: p.NextHopAsName,
+		MAC:           p.MAC,
+		Country:       p.Country,
+		VLans:         p.VLans,
+	}
 }

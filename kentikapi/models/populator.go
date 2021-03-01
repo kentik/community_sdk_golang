@@ -37,11 +37,12 @@ type Populator struct {
 }
 
 // NewPopulator creates a Populator with all necessary fields set
-func NewPopulator(value, deviceName string, direction PopulatorDirection) *Populator {
+func NewPopulator(dimensionID ID, value, deviceName string, direction PopulatorDirection) *Populator {
 	return &Populator{
-		Value:      value,
-		DeviceName: deviceName,
-		Direction:  direction,
+		DimensionID: dimensionID,
+		Value:       value,
+		DeviceName:  deviceName,
+		Direction:   direction,
 	}
 }
 
