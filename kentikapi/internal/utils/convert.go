@@ -1,6 +1,12 @@
 package utils
 
-import "reflect"
+import (
+	"reflect"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+)
 
 // ConvertFunc signature like: func IntToString(source int) (string, error)
 type ConvertFunc interface{}
@@ -79,4 +85,12 @@ func ConvertOrNone(input interface{}, convertFunc ConvertFunc, output interface{
 	// set value under that pointer's memory
 	vOutput.Elem().Set(results[0])
 	return nil
+}
+
+func ParseISO8601Timestamp(t testing.TB, timestamp string) *time.Time {
+	const iso8601Layout = "2006-01-02T15:04:05Z0700"
+	ts, err := time.Parse(iso8601Layout, timestamp)
+	assert.NoError(t, err)
+
+	return &ts
 }

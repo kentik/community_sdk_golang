@@ -17,7 +17,7 @@ func NewMyKentikPortalAPI(transport api_connection.Transport) *MyKentikPortalAPI
 	return &MyKentikPortalAPI{BaseAPI{Transport: transport}}
 }
 
-// GetAll list tenants
+// GetAll lists all tenants.
 func (a *MyKentikPortalAPI) GetAll(ctx context.Context) ([]models.Tenant, error) {
 	var response api_payloads.GetAllTenantsResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.TenantsPath, &response); err != nil {
@@ -39,7 +39,7 @@ func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*model
 
 func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context, tenantID models.ID, userEmail string) (*models.TenantUser, error) {
 	request := api_payloads.CreateTenantUserRequest{
-		User: api_payloads.UserCreatePayload{
+		User: api_payloads.CreateTenantUserPayload{
 			Email: userEmail,
 		}}
 	var response api_payloads.TenantUserPayload

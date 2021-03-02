@@ -7,7 +7,6 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetAllTenantsResponse represents My Kentik
 type GetAllTenantsResponse []TenantPayload
 
 func (p GetAllTenantsResponse) ToTenants() (result []models.Tenant, err error) {
@@ -43,9 +42,9 @@ func (p TenantPayload) ToTenant() (models.Tenant, error) {
 	if err != nil {
 		return models.Tenant{}, err
 	}
-	var companyID models.ID
+	var companyID *models.ID
 	if len(users) != 0 {
-		companyID = p.Users[0].CompanyID
+		companyID = &p.Users[0].CompanyID
 	}
 	return models.Tenant{
 		ID:          p.ID,
@@ -71,9 +70,9 @@ func (p TenantUserPayload) ToTenantUser() (models.TenantUser, error) {
 }
 
 type CreateTenantUserRequest struct {
-	User UserCreatePayload `json:"user"`
+	User CreateTenantUserPayload `json:"user"`
 }
 
-type UserCreatePayload struct {
+type CreateTenantUserPayload struct {
 	Email string `json:"user_email"`
 }

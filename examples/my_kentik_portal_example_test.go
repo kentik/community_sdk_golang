@@ -12,11 +12,11 @@ import (
 
 func TestMyKentikPortalAPIExample(t *testing.T) {
 	assert := assert.New(t)
-	assert.NoError(runCRUDexample())
+	assert.NoError(runCRUDExample())
 	assert.NoError(getAllTenants())
 }
 
-func runCRUDexample() error {
+func runCRUDExample() error {
 	client := NewClient()
 
 	fmt.Println("### GET")

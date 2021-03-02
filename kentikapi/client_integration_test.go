@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -80,8 +80,8 @@ func TestClient_GetAllUsers(t *testing.T) {
 				EmailService: true,
 				EmailProduct: true,
 				LastLogin:    nil,
-				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
-				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CreatedDate:  *utils.ParseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *utils.ParseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
 			}},
 		}, {
@@ -126,8 +126,8 @@ func TestClient_GetAllUsers(t *testing.T) {
 				EmailService: true,
 				EmailProduct: true,
 				LastLogin:    nil,
-				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
-				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CreatedDate:  *utils.ParseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *utils.ParseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
 			}, {
 				ID:           666666,
@@ -137,9 +137,9 @@ func TestClient_GetAllUsers(t *testing.T) {
 				Role:         "Administrator",
 				EmailService: false,
 				EmailProduct: false,
-				LastLogin:    parseISO8601Timestamp(t, lastLoginA),
-				CreatedDate:  *parseISO8601Timestamp(t, createdDateB),
-				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateB),
+				LastLogin:    utils.ParseISO8601Timestamp(t, lastLoginA),
+				CreatedDate:  *utils.ParseISO8601Timestamp(t, createdDateB),
+				UpdatedDate:  *utils.ParseISO8601Timestamp(t, updatedDateB),
 				CompanyID:    74333,
 			}},
 		},
@@ -226,8 +226,8 @@ func TestClientGetUser(t *testing.T) {
 				EmailService: true,
 				EmailProduct: true,
 				LastLogin:    nil,
-				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
-				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CreatedDate:  *utils.ParseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *utils.ParseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
 			},
 		},
@@ -284,12 +284,4 @@ func (s *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, _ *http.Request) {
 
 	rw.WriteHeader(s.responseCode)
 	_, s.lastWriteError = rw.Write(s.responseBody)
-}
-
-func parseISO8601Timestamp(t testing.TB, timestamp string) *time.Time {
-	const iso8601Layout = "2006-01-02T15:04:05Z0700"
-	ts, err := time.Parse(iso8601Layout, timestamp)
-	assert.NoError(t, err)
-
-	return &ts
 }

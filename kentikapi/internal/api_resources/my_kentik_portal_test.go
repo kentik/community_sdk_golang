@@ -1,8 +1,8 @@
 package api_resources_test
 
 import (
+	"context"
 	"testing"
-	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
@@ -49,63 +49,53 @@ func TestTenantsList(t *testing.T) {
 		}
 	]`
 
+	companyID := 74333
+
+	expected := []models.Tenant{
+		{
+			ID:          577,
+			CompanyID:   &companyID,
+			Name:        "test_tenant",
+			Description: "This is test tenant",
+			CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+			UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+			Users: []models.TenantUser{
+				{
+					ID:        148099,
+					CompanyID: 74333,
+					Email:     "test@tenant.user",
+					TenantID:  577,
+				}, {
+					ID:        148113,
+					CompanyID: 74333,
+					Email:     "user@testtenant.com",
+					TenantID:  577,
+				},
+			},
+		}, {
+			ID:          578,
+			Name:        "test_tenant2",
+			Description: "",
+			CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:57:53.425Z"),
+			UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:57:53.425Z"),
+			Users:       []models.TenantUser{},
+		},
+	}
+
 	transport := &api_connection.StubTransport{ResponseBody: getAllResponse}
 	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
 
 	//act
-	tenants, err := myKentikPortalAPI.GetAll(nil)
+	tenants, err := myKentikPortalAPI.GetAll(context.Background())
 
 	//assert
-	assert := assert.New(t)
-	require := require.New(t)
 
-	require.NoError(err)
-	assert.Zero(transport.RequestBody)
+	//TODO(lwolanin): validate the request path passed to transport
 
-	assert.Len(tenants, 2)
-	assert.Equal(models.ID(577), tenants[0].ID)
-	assert.Equal("test_tenant", tenants[0].Name)
-	assert.Equal("This is test tenant", tenants[0].Description)
-	assert.Len(tenants[0].Users, 2)
-	assert.Equal(2020, tenants[0].CreatedDate.Year())
-	assert.Equal(time.Month(12), tenants[0].CreatedDate.Month())
-	assert.Equal(21, tenants[0].CreatedDate.Day())
-	assert.Equal(10, tenants[0].CreatedDate.Hour())
-	assert.Equal(55, tenants[0].CreatedDate.Minute())
-	assert.Equal(52, tenants[0].CreatedDate.Second())
-	assert.Equal(2020, tenants[0].UpdatedDate.Year())
-	assert.Equal(time.Month(12), tenants[0].UpdatedDate.Month())
-	assert.Equal(21, tenants[0].UpdatedDate.Day())
-	assert.Equal(10, tenants[0].UpdatedDate.Hour())
-	assert.Equal(55, tenants[0].UpdatedDate.Minute())
-	assert.Equal(52, tenants[0].UpdatedDate.Second())
-	assert.Equal(models.ID(148099), tenants[0].Users[0].ID)
-	assert.Equal("test@tenant.user", tenants[0].Users[0].Email)
-	assert.Nil(tenants[0].Users[0].LastLogin)
-	assert.Equal(models.ID(577), tenants[0].Users[0].TenantID)
-	assert.Equal(models.ID(74333), tenants[0].Users[0].CompanyID)
-	assert.Equal(models.ID(148113), tenants[0].Users[1].ID)
-	assert.Equal("user@testtenant.com", tenants[0].Users[1].Email)
-	assert.Nil(tenants[0].Users[1].LastLogin)
-	assert.Equal(models.ID(577), tenants[0].Users[1].TenantID)
-	assert.Equal(models.ID(74333), tenants[0].Users[1].CompanyID)
+	require.NoError(t, err)
+	assert.Zero(t, transport.RequestBody)
 
-	assert.Equal(models.ID(578), tenants[1].ID)
-	assert.Equal("test_tenant2", tenants[1].Name)
-	assert.Equal("", tenants[1].Description)
-	assert.Empty(tenants[1].Users)
-	assert.Equal(2020, tenants[1].CreatedDate.Year())
-	assert.Equal(time.Month(12), tenants[1].CreatedDate.Month())
-	assert.Equal(21, tenants[1].CreatedDate.Day())
-	assert.Equal(10, tenants[1].CreatedDate.Hour())
-	assert.Equal(57, tenants[1].CreatedDate.Minute())
-	assert.Equal(53, tenants[1].CreatedDate.Second())
-	assert.Equal(2020, tenants[1].UpdatedDate.Year())
-	assert.Equal(time.Month(12), tenants[1].UpdatedDate.Month())
-	assert.Equal(21, tenants[1].UpdatedDate.Day())
-	assert.Equal(10, tenants[1].UpdatedDate.Hour())
-	assert.Equal(57, tenants[1].UpdatedDate.Minute())
-	assert.Equal(53, tenants[1].UpdatedDate.Second())
+	assert.Equal(t, expected, tenants)
 
 }
 
@@ -135,45 +125,43 @@ func TestGetTenantInfo(t *testing.T) {
 		"updated_date": "2020-12-21T10:55:52.449Z"
 	}`
 
+	companyID := 74333
+
+	expected := models.Tenant{
+		ID:          577,
+		CompanyID:   &companyID,
+		Name:        "test_tenant",
+		Description: "This is test tenant",
+		CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+		UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+		Users: []models.TenantUser{
+			{
+				ID:        148099,
+				CompanyID: 74333,
+				Email:     "test@tenant.user",
+				TenantID:  577,
+			}, {
+				ID:        148113,
+				CompanyID: 74333,
+				Email:     "user@testtenant.com",
+				TenantID:  577,
+			},
+		},
+	}
+
 	transport := &api_connection.StubTransport{ResponseBody: getTenantInfoResponse}
 	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
 
 	//act
-	tenant, err := myKentikPortalAPI.Get(nil, 577)
+	tenant, err := myKentikPortalAPI.Get(context.Background(), 577)
 
-	//assert
-	assert := assert.New(t)
-	require := require.New(t)
+	// assert
+	require.NoError(t, err)
+	assert.Zero(t, transport.RequestBody)
 
-	require.NoError(err)
-	assert.Zero(transport.RequestBody)
+	//TODO(lwolanin): validate the request path passed to transport
 
-	assert.Equal(models.ID(577), tenant.ID)
-	assert.Equal("test_tenant", tenant.Name)
-	assert.Equal("This is test tenant", tenant.Description)
-	assert.Len(tenant.Users, 2)
-	assert.Equal(2020, tenant.CreatedDate.Year())
-	assert.Equal(time.Month(12), tenant.CreatedDate.Month())
-	assert.Equal(21, tenant.CreatedDate.Day())
-	assert.Equal(10, tenant.CreatedDate.Hour())
-	assert.Equal(55, tenant.CreatedDate.Minute())
-	assert.Equal(52, tenant.CreatedDate.Second())
-	assert.Equal(2020, tenant.UpdatedDate.Year())
-	assert.Equal(time.Month(12), tenant.UpdatedDate.Month())
-	assert.Equal(21, tenant.UpdatedDate.Day())
-	assert.Equal(10, tenant.UpdatedDate.Hour())
-	assert.Equal(55, tenant.UpdatedDate.Minute())
-	assert.Equal(52, tenant.UpdatedDate.Second())
-	assert.Equal(models.ID(148099), tenant.Users[0].ID)
-	assert.Equal("test@tenant.user", tenant.Users[0].Email)
-	assert.Nil(tenant.Users[0].LastLogin)
-	assert.Equal(models.ID(577), tenant.Users[0].TenantID)
-	assert.Equal(models.ID(74333), tenant.Users[0].CompanyID)
-	assert.Equal(models.ID(148113), tenant.Users[1].ID)
-	assert.Equal("user@testtenant.com", tenant.Users[1].Email)
-	assert.Nil(tenant.Users[1].LastLogin)
-	assert.Equal(models.ID(577), tenant.Users[1].TenantID)
-	assert.Equal(models.ID(74333), tenant.Users[1].CompanyID)
+	assert.Equal(t, &expected, tenant)
 }
 
 func TestTenantUserCreate(t *testing.T) {
@@ -186,27 +174,28 @@ func TestTenantUserCreate(t *testing.T) {
 		"company_id": "74333"
 	}`
 
+	expected := models.TenantUser{
+		ID:        158564,
+		Email:     "test@test.test",
+		TenantID:  578,
+		CompanyID: 74333,
+	}
+
 	transport := &api_connection.StubTransport{ResponseBody: createTenantUserResponse}
 	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
 
 	//act
-	tenantUser, err := myKentikPortalAPI.CreateTenantUser(nil, 577, "test@test.test")
+	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), 577, "test@test.test")
 
-	//assert
-	assert := assert.New(t)
-	require := require.New(t)
+	// assert
+	//TODO(lwolanin): validate the request path passed to transport
 
-	require.NoError(err)
+	require.NoError(t, err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
-	assert.NotNil(payload.Get("user"))
-	assert.Equal("test@test.test", payload.String("user/user_email"))
+	assert.NotNil(t, payload.Get("user"))
+	assert.Equal(t, "test@test.test", payload.String("user/user_email"))
 
-	assert.Equal(models.ID(158564), tenantUser.ID)
-	assert.Equal("test@test.test", tenantUser.Email)
-	assert.Nil(tenantUser.LastLogin)
-	assert.Equal(models.ID(578), tenantUser.TenantID)
-	assert.Equal(models.ID(74333), tenantUser.CompanyID)
-
+	assert.Equal(t, &expected, tenantUser)
 }
 
 func TestTenantUserDelete(t *testing.T) {
@@ -218,11 +207,11 @@ func TestTenantUserDelete(t *testing.T) {
 	// act
 	tenantID := models.ID(478)
 	userID := models.ID(420)
-	err := myKentikPortalAPI.DeleteTenantUser(nil, tenantID, userID)
+	err := myKentikPortalAPI.DeleteTenantUser(context.Background(), tenantID, userID)
 
 	// assert
-	assert := assert.New(t)
-	require := require.New(t)
-	require.NoError(err)
-	assert.Zero(transport.RequestBody)
+	require.NoError(t, err)
+	assert.Zero(t, transport.RequestBody)
+
+	//TODO(lwolanin): validate the request path passed to transport
 }

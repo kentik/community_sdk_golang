@@ -4,7 +4,7 @@ import "time"
 
 type Tenant struct {
 	ID          ID
-	CompanyID   ID
+	CompanyID   *ID
 	Name        string
 	Description string
 	CreatedDate time.Time
