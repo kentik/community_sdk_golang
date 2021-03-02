@@ -1,6 +1,7 @@
 package api_resources_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
@@ -68,7 +69,7 @@ func TestGetAllPlans(t *testing.T) {
 	plansAPI := api_resources.NewPlansAPI(transport)
 
 	// act
-	plans, err := plansAPI.GetAll(nil)
+	plans, err := plansAPI.GetAll(context.Background())
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -76,6 +77,7 @@ func TestGetAllPlans(t *testing.T) {
 
 	require.NoError(err)
 	assert.Zero(transport.RequestBody)
+	assert.Equal("/plans", transport.RequestPath)
 
 	// and response properly parsed
 	require.Equal(1, len(plans))

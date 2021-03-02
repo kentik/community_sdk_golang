@@ -11,8 +11,7 @@ import (
 )
 
 func TestPlansAPIExample(t *testing.T) {
-	assert := assert.New(t)
-	assert.NoError(runGetAllPlans())
+	assert.NoError(t, runGetAllPlans())
 }
 
 func runGetAllPlans() error {
