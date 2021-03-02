@@ -13,9 +13,9 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	Users   *api_resources.UsersAPI
-	Devices *api_resources.DevicesAPI
-	// DeviceLabels
+	Users        *api_resources.UsersAPI
+	Devices      *api_resources.DevicesAPI
+	DeviceLabels *api_resources.DeviceLabelsAPI
 	// Sites
 	// Tags
 	// SavedFilters
@@ -49,9 +49,9 @@ func NewClient(c Config) *Client {
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		Users:   api_resources.NewUsersAPI(rc),
-		Devices: api_resources.NewDevicesAPI(rc),
-		// DeviceLabels
+		Users:        api_resources.NewUsersAPI(rc),
+		Devices:      api_resources.NewDevicesAPI(rc),
+		DeviceLabels: api_resources.NewDeviceLabelsAPI(rc),
 		// Sites
 		// Tags
 		// SavedFilters
