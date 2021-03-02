@@ -1,6 +1,7 @@
 package api_resources_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -112,7 +113,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	models.SetOptional(&router.DeviceBGPPassword, "bgp-optional-password")
 	models.SetOptional(&router.SiteID, 8483)
 	models.SetOptional(&router.DeviceBGPFlowSpec, true)
-	device, err := devicesAPI.Create(nil, *router)
+	device, err := devicesAPI.Create(context.Background(), *router)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -283,7 +284,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	models.SetOptional(&dns.DeviceDescription, "testapi dns with minimal config")
 	models.SetOptional(&dns.SiteID, 8483)
 	models.SetOptional(&dns.DeviceBGPFlowSpec, true)
-	device, err := devicesAPI.Create(nil, *dns)
+	device, err := devicesAPI.Create(context.Background(), *dns)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -455,7 +456,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	models.SetOptional(&router.DeviceBGPNeighborIPv6, "2001:db8:85a3:8d3:1319:8a2e:370:7348")
 	models.SetOptional(&router.DeviceBGPPassword, "bgp-optional-password")
 	models.SetOptional(&router.DeviceBGPFlowSpec, true)
-	device, err := devicesAPI.Update(nil, router)
+	device, err := devicesAPI.Update(context.Background(), router)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -516,7 +517,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Equal(0, len(device.Labels))
 	assert.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
-	assert.Equal(10, *&device.DeviceSampleRate)
+	assert.Equal(10, device.DeviceSampleRate)
 	assert.Equal(2, len(device.SendingIPS))
 	assert.Equal("128.0.0.10", device.SendingIPS[0])
 	assert.Equal("128.0.0.11", device.SendingIPS[1])
@@ -668,7 +669,7 @@ func TestGetDeviceRouter(t *testing.T) {
 	deviceID := models.ID(42)
 
 	// act
-	device, err := devicesAPI.Get(nil, deviceID)
+	device, err := devicesAPI.Get(context.Background(), deviceID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -730,7 +731,7 @@ func TestGetDeviceRouter(t *testing.T) {
 	assert.Equal(models.ID(42), device.AllInterfaces[1].DeviceID)
 	assert.Equal(7.0, device.AllInterfaces[1].SNMPSpeed)
 	assert.Equal("auto", *device.DeviceFlowType)
-	assert.Equal(1001, *&device.DeviceSampleRate)
+	assert.Equal(1001, device.DeviceSampleRate)
 	assert.Equal(2, len(device.SendingIPS))
 	assert.Equal("128.0.0.11", device.SendingIPS[0])
 	assert.Equal("128.0.0.12", device.SendingIPS[1])
@@ -826,7 +827,7 @@ func TestGetDeviceDNS(t *testing.T) {
 	deviceID := models.ID(43)
 
 	// act
-	device, err := devicesAPI.Get(nil, deviceID)
+	device, err := devicesAPI.Get(context.Background(), deviceID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1057,7 +1058,7 @@ func TestGetAllDevices(t *testing.T) {
 	devicesAPI := api_resources.NewDevicesAPI(transport)
 
 	// act
-	devices, err := devicesAPI.GetAll(nil)
+	devices, err := devicesAPI.GetAll(context.Background())
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1114,7 +1115,7 @@ func TestGetAllDevices(t *testing.T) {
 	assert.Equal("#5289D9", device.Labels[1].Color)
 	require.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
-	assert.Equal(1001, *&device.DeviceSampleRate)
+	assert.Equal(1001, device.DeviceSampleRate)
 	assert.Equal(2, len(device.SendingIPS))
 	assert.Equal("128.0.0.11", device.SendingIPS[0])
 	assert.Equal("128.0.0.12", device.SendingIPS[1])
@@ -1157,7 +1158,7 @@ func TestDeleteDevice(t *testing.T) {
 
 	// act
 	deviceID := models.ID(42)
-	err := devicesAPI.Delete(nil, deviceID)
+	err := devicesAPI.Delete(context.Background(), deviceID)
 
 	// assert
 	assert := assert.New(t)
@@ -1207,7 +1208,7 @@ func TestApplyLabels(t *testing.T) {
 	// act
 	deviceID := models.ID(42)
 	labels := []models.ID{models.ID(3011), models.ID(3012)}
-	result, err := devicesAPI.ApplyLabels(nil, deviceID, labels)
+	result, err := devicesAPI.ApplyLabels(context.Background(), deviceID, labels)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1274,7 +1275,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	// act
 	deviceID := models.ID(42)
 	interfaceID := models.ID(43)
-	intf, err := devicesAPI.Interfaces.Get(nil, deviceID, interfaceID)
+	intf, err := devicesAPI.Interfaces.Get(context.Background(), deviceID, interfaceID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1375,7 +1376,7 @@ func TestGetInterfaceFull(t *testing.T) {
 	// act
 	deviceID := models.ID(42)
 	interfaceID := models.ID(43)
-	intf, err := devicesAPI.Interfaces.Get(nil, deviceID, interfaceID)
+	intf, err := devicesAPI.Interfaces.Get(context.Background(), deviceID, interfaceID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1560,7 +1561,7 @@ func TestGetAllInterfaces(t *testing.T) {
 
 	// act
 	deviceID := models.ID(42)
-	interfaces, err := devicesAPI.Interfaces.GetAll(nil, deviceID)
+	interfaces, err := devicesAPI.Interfaces.GetAll(context.Background(), deviceID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1632,7 +1633,7 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 		8,
 		"testapi-interface-2",
 	)
-	created, err := devicesAPI.Interfaces.Create(nil, *intf)
+	created, err := devicesAPI.Interfaces.Create(context.Background(), *intf)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1713,7 +1714,7 @@ func TestCreateInterfaceFull(t *testing.T) {
 	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
 	intf.SecondaryIPS = []models.SecondaryIP{secondaryIP1, secondaryIP2}
 	intf.VRF = vrf
-	created, err := devicesAPI.Interfaces.Create(nil, *intf)
+	created, err := devicesAPI.Interfaces.Create(context.Background(), *intf)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1767,7 +1768,7 @@ func TestDeleteInterface(t *testing.T) {
 	// act
 	deviceID := models.ID(42)
 	interfaceID := models.ID(43)
-	err := devicesAPI.Interfaces.Delete(nil, deviceID, interfaceID)
+	err := devicesAPI.Interfaces.Delete(context.Background(), deviceID, interfaceID)
 
 	// assert
 	assert := assert.New(t)
@@ -1817,7 +1818,7 @@ func TestUpdatenteInterfaceMinimal(t *testing.T) {
 	deviceID := models.ID(42)
 	interfaceID := models.ID(43)
 	intf := models.Interface{SNMPSpeed: 75, DeviceID: deviceID, ID: interfaceID}
-	updated, err := devicesAPI.Interfaces.Update(nil, intf)
+	updated, err := devicesAPI.Interfaces.Update(context.Background(), intf)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -1909,7 +1910,7 @@ func TestUpdatenteInterfaceFull(t *testing.T) {
 	models.SetOptional(&intf.InterfaceIP, "127.0.44.55")
 	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
 	intf.VRF = vrf
-	updated, err := devicesAPI.Interfaces.Update(nil, intf)
+	updated, err := devicesAPI.Interfaces.Update(context.Background(), intf)
 
 	// assert request properly formed
 	assert := assert.New(t)

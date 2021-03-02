@@ -33,6 +33,9 @@ Run tests: `go test ./...`
 
 Run all tests, including usage examples: `go test -tags examples ./...`
 
+Install linters runner: [golangci-lint local installation](https://golangci-lint.run/usage/install/#local-installation)  
+Run golangci-lint: `golangci-lint run ./...`
+
 ## Development state
 
 Finished implementation:
