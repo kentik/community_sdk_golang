@@ -1,6 +1,7 @@
 package api_resources_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
@@ -28,7 +29,7 @@ func TestGetSite(t *testing.T) {
 	siteID := models.ID(42)
 
 	// act
-	site, err := sitesAPI.Get(nil, siteID)
+	site, err := sitesAPI.Get(context.Background(), siteID)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -77,7 +78,7 @@ func TestGetAllSites(t *testing.T) {
 	sitesAPI := api_resources.NewSitesAPI(transport)
 
 	// act
-	sites, err := sitesAPI.GetAll(nil)
+	sites, err := sitesAPI.GetAll(context.Background())
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -130,7 +131,7 @@ func TestCreateSite(t *testing.T) {
 	site := models.NewSite("apitest-site-1")
 	models.SetOptional(&site.Longitude, 18.659577)
 	models.SetOptional(&site.Latitude, 54.349276)
-	created, err := sitesAPI.Create(nil, *site)
+	created, err := sitesAPI.Create(context.Background(), *site)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -151,7 +152,7 @@ func TestCreateSite(t *testing.T) {
 	assert.Equal(models.ID(3250), created.CompanyID)
 }
 
-func TestUpdatetSite(t *testing.T) {
+func TestUpdateSite(t *testing.T) {
 	// arrange
 	updateResponsePayload := `
 	{
@@ -170,7 +171,7 @@ func TestUpdatetSite(t *testing.T) {
 	siteID := models.ID(42)
 	site := models.Site{ID: siteID, SiteName: "new-site"}
 	models.SetOptional(&site.Longitude, -45.0)
-	updated, err := sitesAPI.Update(nil, site)
+	updated, err := sitesAPI.Update(context.Background(), site)
 
 	// assert request properly formed
 	assert := assert.New(t)
@@ -199,11 +200,9 @@ func TestDeleteSite(t *testing.T) {
 
 	// act
 	siteID := models.ID(42)
-	err := sitesAPI.Delete(nil, siteID)
+	err := sitesAPI.Delete(context.Background(), siteID)
 
 	// assert
-	assert := assert.New(t)
-	require := require.New(t)
-	require.NoError(err)
-	assert.Zero(transport.RequestBody)
+	require.NoError(t, err)
+	assert.Zero(t, transport.RequestBody)
 }

@@ -12,9 +12,8 @@ import (
 )
 
 func TestSitesAPIExample(t *testing.T) {
-	assert := assert.New(t)
-	assert.NoError(runCRUD())
-	assert.NoError(runGetAll())
+	assert.NoError(t, runCRUD())
+	assert.NoError(t, runGetAll())
 }
 
 func runCRUD() error {
