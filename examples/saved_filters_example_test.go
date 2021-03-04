@@ -70,15 +70,15 @@ func runCRUDSavedFilters() error {
 	PrettyPrint(savedFilter)
 	fmt.Println()
 
-	// fmt.Println("### UPDATE")
-	// savedFilter.FilterDescription = "This description was updated just now."
-	// savedFilter.Filters.Connector = "All"
-	// savedFilter, err = client.SavedFilters.Update(context.Background(), *savedFilter)
-	// if err != nil {
-	// 	return err
-	// }
-	// PrettyPrint(savedFilter)
-	// fmt.Println()
+	fmt.Println("### UPDATE")
+	savedFilter.FilterDescription = "This description was updated just now."
+	savedFilter.Filters.Connector = "All"
+	savedFilter, err = client.SavedFilters.Update(context.Background(), *savedFilter)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(savedFilter)
+	fmt.Println()
 
 	fmt.Println("## DELETE")
 	err = client.SavedFilters.Detete(context.Background(), savedFilter.ID)

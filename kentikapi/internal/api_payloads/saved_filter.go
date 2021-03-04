@@ -39,7 +39,7 @@ type UpdateSavedFilterResponse struct {
 }
 
 type SavedFilterPayload struct {
-	ID                models.ID      `json:"id,omitempty"`
+	ID                IntAsString    `json:"id,omitempty"`
 	CompanyID         models.ID      `json:"company_id,string,omitempty"`
 	FilterName        string         `json:"filter_name"`
 	FilterDescription string         `json:"filter_description"`
@@ -54,8 +54,9 @@ func (p SavedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 	if err != nil {
 		return models.SavedFilter{}, err
 	}
+
 	return models.SavedFilter{
-		ID:                p.ID,
+		ID:                int(p.ID),
 		CompanyID:         p.CompanyID,
 		FilterName:        p.FilterName,
 		FilterDescription: p.FilterDescription,
@@ -68,7 +69,7 @@ func (p SavedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 
 func SavedFilterToPayload(sf models.SavedFilter) SavedFilterPayload {
 	return SavedFilterPayload{
-		ID:                sf.ID,
+		ID:                IntAsString(sf.ID),
 		CompanyID:         sf.CompanyID,
 		FilterName:        sf.FilterName,
 		FilterDescription: sf.FilterDescription,

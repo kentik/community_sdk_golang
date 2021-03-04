@@ -51,7 +51,6 @@ func (a *SavedFiltersAPI) Create(ctx context.Context, savedFilter models.SavedFi
 	return &result, err
 }
 
-// TODO(lwolanin) Fix Update which updates saved filters but fails on unmarshall.
 func (a *SavedFiltersAPI) Update(ctx context.Context, savedFilter models.SavedFilter) (*models.SavedFilter, error) {
 	var payload api_payloads.UpdateSavedFilterRequest
 	payload.SavedFilterPayload = api_payloads.SavedFilterToPayload(savedFilter)
