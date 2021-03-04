@@ -26,7 +26,7 @@ func demonstrateUsersCRUD() error {
 	client := NewClient()
 
 	fmt.Println("### client.Users.Create")
-	createdUser, err := client.Users.Create(ctx, *models.NewUser(models.UserRequiredFields{
+	user, err := client.Users.Create(ctx, *models.NewUser(models.UserRequiredFields{
 		Username:     "testuser",
 		UserFullName: "Test User",
 		UserEmail:    "test@user.example",
@@ -38,11 +38,11 @@ func demonstrateUsersCRUD() error {
 		return fmt.Errorf("client.Users.Create failed: %w", err)
 	}
 
-	PrettyPrint(createdUser)
+	PrettyPrint(user)
 	fmt.Println()
 
 	fmt.Println("### client.Users.Get")
-	user, err := client.Users.Get(ctx, createdUser.ID)
+	user, err = client.Users.Get(ctx, user.ID)
 	if err != nil {
 		return fmt.Errorf("client.Users.Get failed: %w", err)
 	}
@@ -50,8 +50,19 @@ func demonstrateUsersCRUD() error {
 	PrettyPrint(user)
 	fmt.Println()
 
+	fmt.Println("### client.Users.Update")
+	user.UserFullName = "Updated User"
+	user.EmailProduct = false
+	user, err = client.Users.Update(ctx, *user)
+	if err != nil {
+		return fmt.Errorf("client.Users.Update failed: %w", err)
+	}
+
+	PrettyPrint(user)
+	fmt.Println()
+
 	fmt.Println("### client.Users.Delete")
-	err = client.Users.Delete(context.Background(), createdUser.ID)
+	err = client.Users.Delete(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("client.Users.Delete failed: %w", err)
 	}

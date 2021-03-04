@@ -94,7 +94,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
 				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
-				UserAPIToken: "",
+				UserAPIToken: nil,
 			}},
 		}, {
 			name:         "multiple users",
@@ -147,7 +147,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
 				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
-				UserAPIToken: "",
+				UserAPIToken: nil,
 			}, {
 				ID:           666666,
 				Username:     "Alice",
@@ -160,7 +160,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				CreatedDate:  *parseISO8601Timestamp(t, createdDateB),
 				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateB),
 				CompanyID:    74333,
-				UserAPIToken: "",
+				UserAPIToken: nil,
 			}},
 		},
 	}
@@ -255,7 +255,7 @@ func TestClient_GetUser(t *testing.T) {
 				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
 				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
-				UserAPIToken: "****************************a997",
+				UserAPIToken: stringPointer("****************************a997"),
 			},
 		},
 	}
@@ -419,7 +419,7 @@ func TestClient_CreateUser(t *testing.T) {
 				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
 				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
 				CompanyID:    74333,
-				UserAPIToken: "",
+				UserAPIToken: nil,
 			},
 		},
 	}
@@ -450,6 +450,166 @@ func TestClient_CreateUser(t *testing.T) {
 			assert.Equal(t, 1, h.requestsCount)
 			assert.Equal(t, http.MethodPost, h.lastMethod)
 			assert.Equal(t, "/user", h.lastURL.Path)
+			assert.Equal(t, dummyAuthEmail, h.lastHeader.Get(authEmailKey))
+			assert.Equal(t, dummyAuthToken, h.lastHeader.Get(authAPITokenKey))
+			assert.Equal(t, tt.expectedRequestBody, unmarshalJSONToIf(t, h.lastRequestBody))
+
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
+
+func TestClient_UpdateUser(t *testing.T) {
+	tests := []struct {
+		name                string
+		user                models.User
+		updateFields        func(*models.User) *models.User
+		expectedRequestBody interface{}
+		responseCode        int
+		responseBody        string
+		expectedResult      *models.User
+		expectedError       bool
+	}{
+		{
+			name:                "empty user given, status bad request received",
+			user:                models.User{},
+			updateFields:        func(u *models.User) *models.User { return u },
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responseCode:        http.StatusBadRequest,
+			responseBody:        `{"error":"Bad Request"}`,
+			expectedError:       true,
+		}, {
+			name:                "invalid response format",
+			user:                models.User{},
+			updateFields:        func(u *models.User) *models.User { return u },
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responseCode:        http.StatusOK,
+			responseBody:        "invalid JSON",
+			expectedError:       true,
+		}, {
+			name: "empty response",
+			user: models.User{
+				ID:           145999,
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: true,
+				LastLogin:    nil,
+				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CompanyID:    74333,
+				UserAPIToken: nil,
+			},
+			updateFields: func(u *models.User) *models.User { return u },
+			expectedRequestBody: object{
+				"user": object{
+					"username":       "testuser",
+					"user_full_name": "Test User",
+					"user_email":     "test@user.example",
+					"role":           "Member",
+					"email_service":  true,
+					"email_product":  true,
+				},
+			},
+			responseCode:  http.StatusOK,
+			responseBody:  "{}",
+			expectedError: true,
+		}, {
+			name: "subset of fields updated",
+			user: models.User{
+				ID:           145999,
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: true,
+				LastLogin:    nil,
+				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CompanyID:    74333,
+				UserAPIToken: nil,
+			},
+			updateFields: func(u *models.User) *models.User {
+				u.UserFullName = "Updated Username"
+				u.EmailProduct = false
+				return u
+			},
+			expectedRequestBody: object{
+				"user": object{
+					"username":       "testuser",
+					"user_full_name": "Updated Username",
+					"user_email":     "test@user.example",
+					"role":           "Member",
+					"email_service":  true,
+					"email_product":  false,
+				},
+			},
+			responseCode: http.StatusOK,
+			responseBody: `{
+				"user": {
+					"id": "145999",
+					"username": "testuser",
+					"user_full_name": "Updated Username",
+					"user_email": "test@user.example",
+					"role": "Member",
+					"email_service": "true",
+					"email_product": "false",
+					"last_login": null,
+					"created_date": "` + createdDateA + `",
+					"updated_date": "` + updatedDateA + `",
+					"company_id": "74333",
+					"user_api_token": null,
+					"filters": {},
+					"saved_filters": []
+				}
+			}`,
+			expectedResult: &models.User{
+				ID:           145999,
+				Username:     "testuser",
+				UserFullName: "Updated Username",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: false,
+				LastLogin:    nil,
+				CreatedDate:  *parseISO8601Timestamp(t, createdDateA),
+				UpdatedDate:  *parseISO8601Timestamp(t, updatedDateA),
+				CompanyID:    74333,
+				UserAPIToken: nil,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			h := newSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
+			s := httptest.NewServer(h)
+			defer s.Close()
+
+			c := kentikapi.NewClient(kentikapi.Config{
+				APIURL:    s.URL,
+				AuthEmail: dummyAuthEmail,
+				AuthToken: dummyAuthToken,
+			})
+
+			// act
+			user := tt.updateFields(&tt.user)
+			result, err := c.Users.Update(context.Background(), *user)
+
+			// assert
+			t.Logf("Got result: %v, err: %v", result, err)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, 1, h.requestsCount)
+			assert.Equal(t, http.MethodPut, h.lastMethod)
+			assert.Equal(t, fmt.Sprintf("/user/%v", user.ID), h.lastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.lastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.lastHeader.Get(authAPITokenKey))
 			assert.Equal(t, tt.expectedRequestBody, unmarshalJSONToIf(t, h.lastRequestBody))
@@ -579,4 +739,8 @@ func unmarshalJSONToIf(t testing.TB, jsonString string) interface{} {
 	err := json.Unmarshal([]byte(jsonString), &data)
 	assert.NoError(t, err)
 	return data
+}
+
+func stringPointer(s string) *string {
+	return &s
 }

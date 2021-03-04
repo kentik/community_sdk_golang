@@ -32,19 +32,26 @@ type CreateUserRequest struct {
 
 type CreateUserResponse = GetUserResponse
 
+type UpdateUserRequest = CreateUserRequest
+
+type UpdateUserResponse = GetUserResponse
+
 type userPayload struct {
-	ID           IntAsString  `json:"id,omitempty"`
+	// following fields can appear in request: post/put, response: get/post/put
 	Username     string       `json:"username"`
 	UserFullName string       `json:"user_full_name"`
 	UserEmail    string       `json:"user_email"`
 	Role         string       `json:"role"`
 	EmailService boolAsString `json:"email_service"`
 	EmailProduct boolAsString `json:"email_product"`
-	LastLogin    *time.Time   `json:"last_login,omitempty"`
-	CreatedDate  *time.Time   `json:"created_date,omitempty" response:"get,post,put"`
-	UpdatedDate  *time.Time   `json:"updated_date,omitempty" response:"get,post,put"`
-	CompanyID    IntAsString  `json:"company_id,omitempty"`
-	UserAPIToken string       `json:"user_api_token,omitempty"`
+
+	// following fields can appear in request: none, response: get/post/put
+	ID           IntAsString `json:"id,omitempty"`
+	LastLogin    *time.Time  `json:"last_login,omitempty"`
+	CreatedDate  *time.Time  `json:"created_date,omitempty" response:"get,post,put"`
+	UpdatedDate  *time.Time  `json:"updated_date,omitempty" response:"get,post,put"`
+	CompanyID    IntAsString `json:"company_id,omitempty"`
+	UserAPIToken *string     `json:"user_api_token,omitempty"`
 }
 
 func (p userPayload) ToUser() *models.User {

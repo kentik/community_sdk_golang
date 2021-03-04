@@ -55,6 +55,22 @@ func (a *UsersAPI) Create(ctx context.Context, user models.User) (*models.User, 
 	return response.ToUser(), nil
 }
 
+// Update updates the user.
+func (a *UsersAPI) Update(ctx context.Context, user models.User) (*models.User, error) {
+	var response api_payloads.UpdateUserResponse
+	err := a.UpdateAndValidate(
+		ctx,
+		api_endpoints.GetUserPath(user.ID),
+		api_payloads.UpdateUserRequest{User: api_payloads.UserToPayload(user)},
+		&response,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ToUser(), err
+}
+
 // Delete removes user with given ID.
 func (a *UsersAPI) Delete(ctx context.Context, id models.ID) error {
 	if err := a.DeleteAndValidate(ctx, api_endpoints.GetUserPath(id), nil); err != nil {

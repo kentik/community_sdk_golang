@@ -4,7 +4,7 @@ import "time"
 
 // User model.
 type User struct {
-	ID           ID
+	// read-write properties (can be updated in update call)
 	Username     string
 	UserFullName string
 	UserEmail    string
@@ -12,11 +12,14 @@ type User struct {
 	Role         string
 	EmailService bool
 	EmailProduct bool
+
+	// read-only properties (can't be updated in update call)
+	ID           ID
 	LastLogin    *time.Time
 	CreatedDate  time.Time
 	UpdatedDate  time.Time
 	CompanyID    ID
-	UserAPIToken string
+	UserAPIToken *string
 }
 
 // UserRequiredFields is subset of User fields required to create a User.
