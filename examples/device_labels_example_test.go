@@ -12,11 +12,11 @@ import (
 )
 
 func TestDeviceLabelsAPIExample(t *testing.T) {
-	assert.NoError(t, runGetAll())
-	assert.NoError(t, runCRUD())
+	assert.NoError(t, runGetAllDeviceLabels())
+	assert.NoError(t, runCRUDDeviceLabels())
 }
 
-func runGetAll() error {
+func runGetAllDeviceLabels() error {
 	client := NewClient()
 
 	fmt.Println("### GET ALL")
@@ -30,7 +30,7 @@ func runGetAll() error {
 	return nil
 }
 
-func runCRUD() error {
+func runCRUDDeviceLabels() error {
 	var err error
 	client := NewClient()
 

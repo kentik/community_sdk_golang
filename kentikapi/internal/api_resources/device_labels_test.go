@@ -2,6 +2,7 @@ package api_resources_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -39,6 +40,7 @@ func TestCreateDeviceLabel(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/deviceLabels", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("apitest-device_label-1", payload.String("name"))
 	assert.Equal("#00FF00", payload.String("color"))
@@ -80,6 +82,7 @@ func TestUpdateDeviceLabel(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/deviceLabels/%v", label.ID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("apitest-device_label-one", payload.String("name"))
 	assert.Equal("#AA00FF", payload.String("color"))
@@ -127,6 +130,7 @@ func TestGetLabel(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/deviceLabels/%v", label.ID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -193,6 +197,7 @@ func TestGetAllLabels(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/deviceLabels", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -237,5 +242,6 @@ func TestDeleteDeviceLabel(t *testing.T) {
 
 	// assert
 	require.NoError(t, err)
+	assert.Equal(t, fmt.Sprintf("/deviceLabels/%v", labelID), transport.RequestPath)
 	assert.Zero(t, transport.RequestBody)
 }
