@@ -58,6 +58,7 @@ func TestQuerySQL(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/query/sql", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(querySQL, payload.String("query"))
 
@@ -154,6 +155,7 @@ func TestQueryData(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/query/topXdata", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(1, payload.Count("queries/*"))
 	assert.Equal("Left +Y Axis", payload.String("queries/*[1]/bucket"))
@@ -253,6 +255,7 @@ func TestQueryChart(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/query/topXchart", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(1, payload.Count("queries/*"))
 	assert.Equal("Left +Y Axis", payload.String("queries/*[1]/bucket"))
@@ -352,6 +355,7 @@ func TestQueryURL(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/query/url", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(1, payload.Count("queries/*"))
 	assert.Equal("Left +Y Axis", payload.String("queries/*[1]/bucket"))
