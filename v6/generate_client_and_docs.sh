@@ -14,9 +14,11 @@ function stage() {
 
 function checkPrerequsites() {
     stage "Checking prerequisites"
-
-    command docker --version > /dev/null 2>&1
-    [[ $? != 0 ]] && echo "You need to install docker to run the generator" && exit 1
+    
+    if ! docker --version > /dev/null 2>&1; then
+        echo "You need to install docker to run the generator"
+        exit 1
+    fi
 
     echo "Done"
 }
@@ -28,12 +30,12 @@ function generate_golang_client_from_openapi3_spec() {
     package="$2"
     output_dir="$3"
 
-    docker run --rm  -v `pwd`:/local \
+    docker run --rm  -v "$(pwd):/local" \
         openapitools/openapi-generator-cli generate  \
-        -i /local/$spec_file \
+        -i "/local/$spec_file" \
         -g go \
-        --package-name $package \
-        -o /local/$output_dir
+        --package-name "$package" \
+        -o "/local/$output_dir"
 
     echo "Done"
 }
@@ -45,12 +47,12 @@ function generate_markdown_from_openapi3_spec() {
     package="$2"
     output_dir="$3"
 
-    docker run --rm  -v `pwd`:/local \
+    docker run --rm  -v "$(pwd):/local" \
         openapitools/openapi-generator-cli generate  \
-        -i /local/$spec_file \
+        -i "/local/$spec_file" \
         -g markdown \
-        --package-name $package \
-        -o /local/$output_dir
+        --package-name "$package" \
+        -o "/local/$output_dir"
 
     echo "Done"
 }
@@ -59,7 +61,7 @@ function change_ownership_to_current_user() {
     dir="$1"
     stage "Changing ownership of $dir to $USER:$USER"
 
-    sudo chown  -R $USER:$USER  "$dir" # by default the generated output is in user:group root:root
+    sudo chown  -R "$USER:$USER"  "$dir" # by default the generated output is in user:group root:root
 
     echo "Done"
 }
