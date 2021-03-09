@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,9 +19,10 @@ func TestMyKentikPortalAPIExample(t *testing.T) {
 
 func runCRUDExample() error {
 	client := NewClient()
+	var tenant_id models.ID = 577
 
 	fmt.Println("### GET")
-	tenant, err := client.MyKentikPortal.Get(context.Background(), 577)
+	tenant, err := client.MyKentikPortal.Get(context.Background(), tenant_id)
 	if err != nil {
 		return err
 	}
@@ -28,7 +30,7 @@ func runCRUDExample() error {
 	PrettyPrint(tenant)
 
 	fmt.Println("### CREATE USER")
-	user, err := client.MyKentikPortal.CreateTenantUser(context.Background(), 577, "test1@user.com")
+	user, err := client.MyKentikPortal.CreateTenantUser(context.Background(), tenant_id, "test1@user.com")
 	if err != nil {
 		return err
 	}
@@ -36,7 +38,7 @@ func runCRUDExample() error {
 	PrettyPrint(user)
 
 	fmt.Println("### DELETE USER")
-	err = client.MyKentikPortal.DeleteTenantUser(context.Background(), 577, user.ID)
+	err = client.MyKentikPortal.DeleteTenantUser(context.Background(), tenant_id, user.ID)
 	if err != nil {
 		return err
 	}

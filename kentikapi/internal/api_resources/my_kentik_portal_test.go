@@ -3,6 +3,7 @@ package api_resources_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
@@ -57,8 +58,8 @@ func TestTenantsList(t *testing.T) {
 			CompanyID:   &companyID,
 			Name:        "test_tenant",
 			Description: "This is test tenant",
-			CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
-			UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+			CreatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
+			UpdatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
 			Users: []models.TenantUser{
 				{
 					ID:        148099,
@@ -76,8 +77,8 @@ func TestTenantsList(t *testing.T) {
 			ID:          578,
 			Name:        "test_tenant2",
 			Description: "",
-			CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:57:53.425Z"),
-			UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:57:53.425Z"),
+			CreatedDate: time.Date(2020, 12, 21, 10, 57, 53, 425e6, time.UTC),
+			UpdatedDate: time.Date(2020, 12, 21, 10, 57, 53, 425e6, time.UTC),
 			Users:       []models.TenantUser{},
 		},
 	}
@@ -132,8 +133,8 @@ func TestGetTenantInfo(t *testing.T) {
 		CompanyID:   &companyID,
 		Name:        "test_tenant",
 		Description: "This is test tenant",
-		CreatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
-		UpdatedDate: *utils.ParseISO8601Timestamp(t, "2020-12-21T10:55:52.449Z"),
+		CreatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
+		UpdatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
 		Users: []models.TenantUser{
 			{
 				ID:        148099,
@@ -188,7 +189,8 @@ func TestTenantUserCreate(t *testing.T) {
 	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), 577, "test@test.test")
 
 	// assert
-	//TODO(lwolanin): validate the request path passed to transport
+	//TODO(lwolanin): Validate the request path passed to transport
+	//TODO(lwolanin): Verify that that there is no redundant data sent in request body
 
 	require.NoError(t, err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)

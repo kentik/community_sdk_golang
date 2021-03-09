@@ -29,9 +29,9 @@ type TenantPayload struct {
 type TenantUserPayload struct {
 	ID        models.ID  `json:"id,string"`
 	Email     string     `json:"user_email"`
-	Name      *string    `json:"user_name"`
-	Fullname  *string    `json:"user_full_name"`
-	LastLogin *time.Time `json:"last_login"`
+	Name      *string    `json:"user_name,omitempty"`
+	Fullname  *string    `json:"user_full_name,omitempty"`
+	LastLogin *time.Time `json:"last_login,omitempty"`
 	TenantID  models.ID  `json:"tenant_id,string"`
 	CompanyID models.ID  `json:"company_id,string"`
 }
