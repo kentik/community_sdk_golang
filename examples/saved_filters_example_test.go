@@ -34,14 +34,6 @@ func runGetAllSavedFilters() error {
 func runCRUDSavedFilters() error {
 	client := NewClient()
 
-	fmt.Println("### GET")
-	savedFilter, err := client.SavedFilters.Get(context.Background(), 8275)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(savedFilter)
-	fmt.Println()
-
 	fmt.Println("### CREATE")
 	newSavedFilter := models.SavedFilter{
 		FilterName:        "New_Filter_test",
@@ -63,7 +55,15 @@ func runCRUDSavedFilters() error {
 			},
 		},
 	}
-	savedFilter, err = client.SavedFilters.Create(context.Background(), newSavedFilter)
+	savedFilter, err := client.SavedFilters.Create(context.Background(), newSavedFilter)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(savedFilter)
+	fmt.Println()
+
+	fmt.Println("### GET")
+	savedFilter, err = client.SavedFilters.Get(context.Background(), savedFilter.ID)
 	if err != nil {
 		return err
 	}

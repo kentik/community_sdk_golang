@@ -30,7 +30,7 @@ func (a *SavedFiltersAPI) Get(ctx context.Context, filterID models.ID) (*models.
 	var response api_payloads.GetSavedFilterResponse
 	err := a.GetAndValidate(ctx, api_endpoints.GetSavedFilter(filterID), &response)
 	if err != nil {
-		return &models.SavedFilter{}, err
+		return nil, err
 	}
 
 	savedFilter, err := response.ToSavedFilter()
