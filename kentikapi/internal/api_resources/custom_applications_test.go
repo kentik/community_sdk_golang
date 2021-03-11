@@ -2,6 +2,7 @@ package api_resources_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -54,6 +55,7 @@ func TestGetAll(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/customApplications", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -104,6 +106,7 @@ func TestCreateCustomApplication(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/customApplications", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("apitest-customapp-1", payload.String("name"))
 	assert.Equal("Testing custom application api", payload.String("description"))
@@ -144,8 +147,9 @@ func TestUpdateCustomApplication(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	applicationsAPI := api_resources.NewCustomApplicationsAPI(transport)
 
+	appID := models.ID(207)
 	app := models.CustomApplication{
-		ID:   models.ID(207),
+		ID:   appID,
 		Name: "apitest-customapp-one",
 	}
 	models.SetOptional(&app.Description, "TESTING CUSTOM APPS")
@@ -160,6 +164,7 @@ func TestUpdateCustomApplication(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customApplications/%v", appID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("apitest-customapp-one", payload.String("name"))
 	assert.Equal("TESTING CUSTOM APPS", payload.String("description"))
@@ -196,5 +201,6 @@ func TestDeleteCustomApplication(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customApplications/%v", appID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
