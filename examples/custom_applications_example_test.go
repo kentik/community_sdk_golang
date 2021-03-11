@@ -13,11 +13,11 @@ import (
 
 func TestCustomApplicationsAPIExample(t *testing.T) {
 	assert := assert.New(t)
-	assert.NoError(runCRUD())
-	assert.NoError(runGetAll())
+	assert.NoError(runCRUDCustomApplications())
+	assert.NoError(runGetAllCustomApplications())
 }
 
-func runCRUD() error {
+func runCRUDCustomApplications() error {
 	var err error
 	client := NewClient()
 
@@ -57,7 +57,7 @@ func runCRUD() error {
 	return nil
 }
 
-func runGetAll() error {
+func runGetAllCustomApplications() error {
 	client := NewClient()
 
 	fmt.Println("### GET ALL")
