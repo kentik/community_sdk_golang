@@ -39,14 +39,14 @@ type UpdateSavedFilterResponse struct {
 }
 
 type SavedFilterPayload struct {
-	ID                IntAsString    `json:"id,omitempty" response:"get,post,put"`
-	CompanyID         models.ID      `json:"company_id,string,omitempty" response:"get,post,put"`
-	FilterName        string         `json:"filter_name" response:"get,post,put"`
-	FilterDescription string         `json:"filter_description" response:"get,post,put"`
-	FilterLevel       string         `json:"filter_level,omitempty" response:"get,post,put"`
+	ID                IntAsString    `json:"id,omitempty"`
+	CompanyID         models.ID      `json:"company_id,string,omitempty"`
+	FilterName        string         `json:"filter_name"`
+	FilterDescription string         `json:"filter_description"`
+	FilterLevel       string         `json:"filter_level,omitempty"`
 	CreatedDate       *time.Time     `json:"cdate,omitempty" response:"get,post,put"`
 	UpdatedDate       *time.Time     `json:"edate,omitempty" response:"get,post,put"`
-	Filters           FiltersPayload `json:"filters" response:"get,post,put"`
+	Filters           FiltersPayload `json:"filters"`
 }
 
 func (p SavedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
@@ -81,7 +81,7 @@ func SavedFilterToPayload(sf models.SavedFilter) SavedFilterPayload {
 }
 
 type FiltersPayload struct {
-	Connector    string                `json:"connector" requset:"post,put" response:"get,post,put"`
+	Connector    string                `json:"connector"`
 	Custom       *bool                 `json:"custom,omitempty"`
 	FilterGroups []FilterGroupsPayload `json:"filterGroups" response:"get,post,put"`
 	FilterString *string               `json:"filterString,omitempty"`
@@ -116,11 +116,11 @@ func FiltersToPayload(f models.Filters) FiltersPayload {
 }
 
 type FilterGroupsPayload struct {
-	Connector    string          `json:"connector" response:"get,post,put"`
+	Connector    string          `json:"connector"`
 	FilterString *string         `json:"filterString,omitempty"`
 	ID           *models.ID      `json:"id,omitempty"`
 	Metric       *string         `json:"metric,omitempty"`
-	Not          bool            `json:"not" response:"get,post,put"`
+	Not          bool            `json:"not"`
 	Filters      []FilterPayload `json:"filters"`
 }
 
@@ -157,10 +157,10 @@ func FilterGroupsToPayload(fg models.FilterGroups) FilterGroupsPayload {
 }
 
 type FilterPayload struct {
-	FilterField string     `json:"filterField" response:"get,post,put"`
+	FilterField string     `json:"filterField"`
 	ID          *models.ID `json:"id,omitempty"`
-	FilterValue string     `json:"filterValue" response:"get,post,put"`
-	Operator    string     `json:"operator" response:"get,post,put"`
+	FilterValue string     `json:"filterValue"`
+	Operator    string     `json:"operator"`
 }
 
 func (p FilterPayload) ToFilter() (models.Filter, error) {
