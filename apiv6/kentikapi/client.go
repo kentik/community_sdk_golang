@@ -1,6 +1,6 @@
 package kentikapi
 
-import "github.com/kentik/community_sdk_golang/v6/kentikapi/cloudexport"
+import "github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client = cloudexport.APIClient

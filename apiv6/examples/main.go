@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kentik/community_sdk_golang/v6/kentikapi"
+	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
 )
 
 func main() {

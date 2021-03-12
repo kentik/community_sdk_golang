@@ -1,4 +1,4 @@
-module github.com/kentik/community_sdk_golang/v6
+module github.com/kentik/community_sdk_golang/apiv6
 
 go 1.15
 
