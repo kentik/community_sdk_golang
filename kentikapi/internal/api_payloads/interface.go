@@ -89,12 +89,6 @@ func (p *InterfacePayload) UnmarshalJSON(data []byte) error {
 func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 	var err error
 
-	var vrf *models.VRFAttributes
-	err = utils.ConvertOrNone(p.VRF, payloadToVRFAttributes, &vrf)
-	if err != nil {
-		return models.Interface{}, err
-	}
-
 	var secondaryIPs []models.SecondaryIP
 	err = utils.ConvertList(p.SecondaryIPs, payloadToSecondaryIP, &secondaryIPs)
 	if err != nil {
@@ -115,7 +109,7 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 		InterfaceIP:          p.InterfaceIP,
 		InterfaceIPNetmask:   p.InterfaceIPNetmask,
 		VRFID:                (*int)(p.VRFID),
-		VRF:                  vrf,
+		VRF:                  payloadToVRFAttributes(p.VRF),
 		SecondaryIPS:         secondaryIPs,
 
 		ID:                          *p.ID,
@@ -133,14 +127,8 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 
 // InterfaceToPayload prepares POST/PUT request payload: fill only the user-provided fields
 func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
-	var vrf *vrfAttributesPayload
-	err := utils.ConvertOrNone(i.VRF, vrfAttributesToPayload, &vrf)
-	if err != nil {
-		return InterfacePayload{}, err
-	}
-
 	var secondaryIPs []secondaryIPPayload
-	err = utils.ConvertList(i.SecondaryIPS, secondaryIPToPayload, &secondaryIPs)
+	err := utils.ConvertList(i.SecondaryIPS, secondaryIPToPayload, &secondaryIPs)
 	if err != nil {
 		return InterfacePayload{}, err
 	}
@@ -152,7 +140,7 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 		SNMPAlias:            i.SNMPAlias,
 		InterfaceIP:          i.InterfaceIP,
 		InterfaceIPNetmask:   i.InterfaceIPNetmask,
-		VRF:                  vrf,
+		VRF:                  vrfAttributesToPayload(i.VRF),
 		VRFID:                (*IntAsString)(i.VRFID),
 		SecondaryIPs:         secondaryIPs,
 	}, nil
@@ -176,8 +164,12 @@ type vrfAttributesPayload struct {
 	DeviceID  *models.ID `json:"device_id,string,omitempty" response:"get"`
 }
 
-func payloadToVRFAttributes(p vrfAttributesPayload) (models.VRFAttributes, error) {
-	return models.VRFAttributes{
+func payloadToVRFAttributes(p *vrfAttributesPayload) *models.VRFAttributes {
+	if p == nil {
+		return nil
+	}
+
+	return &models.VRFAttributes{
 		Name:                  p.Name,
 		RouteTarget:           p.RouteTarget,
 		RouteDistinguisher:    p.RouteDistinguisher,
@@ -186,18 +178,22 @@ func payloadToVRFAttributes(p vrfAttributesPayload) (models.VRFAttributes, error
 		ID:                    *p.ID,
 		CompanyID:             *p.CompanyID,
 		DeviceID:              *p.DeviceID,
-	}, nil
+	}
 }
 
 // vrfAttributesToPayload prepares POST/PUT request payload: fill only the user-provided fields
-func vrfAttributesToPayload(a models.VRFAttributes) (vrfAttributesPayload, error) {
-	return vrfAttributesPayload{
+func vrfAttributesToPayload(a *models.VRFAttributes) *vrfAttributesPayload {
+	if a == nil {
+		return nil
+	}
+
+	return &vrfAttributesPayload{
 		Name:                  a.Name,
 		RouteTarget:           a.RouteTarget,
 		RouteDistinguisher:    a.RouteDistinguisher,
 		Description:           a.Description,
 		ExtRouteDistinguisher: a.ExtRouteDistinguisher,
-	}, nil
+	}
 }
 
 // secondaryIPPayload represents JSON Interface.SecondaryIPPayload payload as it is transmitted to and from KentikAPI

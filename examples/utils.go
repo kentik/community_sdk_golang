@@ -75,6 +75,13 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 			}
 		}
 
+	case reflect.Map:
+		for _, key := range v.MapKeys() {
+			prettyPrintIndented("[%s]\n", level, key)
+			s := v.MapIndex(key)
+			prettyPrintRecursively(s.Type(), s, level+1)
+		}
+
 	case reflect.Ptr, reflect.Interface:
 		if v.IsNil() {
 			prettyPrintIndented("[empty]\n", level)
