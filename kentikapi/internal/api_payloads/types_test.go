@@ -10,27 +10,27 @@ import (
 func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 	tests := []struct {
 		input          string
-		expectedResult boolAsString
+		expectedResult BoolAsStringOrInt
 		expectedError  bool
 	}{
 		{
 			input:          `true`,
-			expectedResult: boolAsString(true),
+			expectedResult: BoolAsStringOrInt(true),
 		}, {
 			input:          `false`,
-			expectedResult: boolAsString(false),
+			expectedResult: BoolAsStringOrInt(false),
 		}, {
 			input:          `"true"`,
-			expectedResult: boolAsString(true),
+			expectedResult: BoolAsStringOrInt(true),
 		}, {
 			input:          `"True"`,
-			expectedResult: boolAsString(true),
+			expectedResult: BoolAsStringOrInt(true),
 		}, {
 			input:          `"false"`,
-			expectedResult: boolAsString(false),
+			expectedResult: BoolAsStringOrInt(false),
 		}, {
 			input:          `"False"`,
-			expectedResult: boolAsString(false),
+			expectedResult: BoolAsStringOrInt(false),
 		}, {
 			input:         `"invalid-string"`,
 			expectedError: true,
@@ -50,7 +50,7 @@ func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			var result boolAsString
+			var result BoolAsStringOrInt
 			err := json.Unmarshal([]byte(tt.input), &result)
 
 			if tt.expectedError {

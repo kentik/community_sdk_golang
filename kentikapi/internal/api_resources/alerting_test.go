@@ -17,9 +17,9 @@ var time2 = time.Date(2021, time.March, 19, 13, 50, 0, 0, time.Local)
 func TestCrerateManualMitigation(t *testing.T) {
 	createResponsePayload := `
 	{
-        "response": {
-            "result": "OK"
-        }
+		"response": {
+			"result": "OK"
+		}
     }`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	alertingAPI := api_resources.NewAlertingAPI(transport)
@@ -108,7 +108,18 @@ func TestGetActiveAlerts(t *testing.T) {
 		},
 	}
 
-	alerts, err := alertingAPI.GetActiveAlerts(context.Background(), time1, time2, "", "", true, true, false, false)
+	params := models.AlertsQueryParams{
+		StartTime:       &time1,
+		EndTime:         &time2,
+		FilterBy:        "",
+		FilterVal:       "",
+		ShowMitigations: true,
+		ShowAlarms:      true,
+		ShowMatches:     false,
+		LearningMode:    false,
+	}
+
+	alerts, err := alertingAPI.GetActiveAlerts(context.Background(), params)
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)
@@ -184,7 +195,19 @@ func TestGetAlertsHistory(t *testing.T) {
 		},
 	}
 
-	alerts, err := alertingAPI.GetAlertsHistory(context.Background(), time1, time1, "", "", "", true, true, false, false)
+	params := models.AlertsQueryParams{
+		StartTime:       &time1,
+		EndTime:         &time2,
+		FilterBy:        "",
+		FilterVal:       "",
+		SortOrder:       "",
+		ShowMitigations: true,
+		ShowAlarms:      true,
+		ShowMatches:     false,
+		LearningMode:    false,
+	}
+
+	alerts, err := alertingAPI.GetAlertsHistory(context.Background(), params)
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)

@@ -38,12 +38,12 @@ type UpdateUserResponse = GetUserResponse
 
 type userPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	Username     string       `json:"username"`
-	UserFullName string       `json:"user_full_name"`
-	UserEmail    string       `json:"user_email"`
-	Role         string       `json:"role"`
-	EmailService boolAsString `json:"email_service"`
-	EmailProduct boolAsString `json:"email_product"`
+	Username     string            `json:"username"`
+	UserFullName string            `json:"user_full_name"`
+	UserEmail    string            `json:"user_email"`
+	Role         string            `json:"role"`
+	EmailService BoolAsStringOrInt `json:"email_service"`
+	EmailProduct BoolAsStringOrInt `json:"email_product"`
 
 	// following fields can appear in request: none, response: get/post/put
 	ID           IntAsString `json:"id,omitempty"`
@@ -78,7 +78,7 @@ func UserToPayload(u models.User) userPayload {
 		UserFullName: u.UserFullName,
 		UserEmail:    u.UserEmail,
 		Role:         u.Role,
-		EmailService: boolAsString(u.EmailService),
-		EmailProduct: boolAsString(u.EmailProduct),
+		EmailService: BoolAsStringOrInt(u.EmailService),
+		EmailProduct: BoolAsStringOrInt(u.EmailProduct),
 	}
 }

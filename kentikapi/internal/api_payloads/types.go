@@ -32,27 +32,36 @@ func (p *IntAsString) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
-// boolAsString evens out deserialization of numbers represented in JSON document sometimes as bool and sometimes as string.
-type boolAsString bool
+// BoolAsStringOrInt evens out deserialization of numbers represented in JSON document sometimes as bool and sometimes as string.
+type BoolAsStringOrInt bool
 
-func (p *boolAsString) UnmarshalJSON(data []byte) (err error) {
+func (p *BoolAsStringOrInt) UnmarshalJSON(data []byte) (err error) {
 	var valueIf interface{}
 	if err = json.Unmarshal(data, &valueIf); err != nil {
-		return fmt.Errorf("boolAsString.UnmarshalJSON: %v", err)
+		return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON: %v", err)
 	}
 
 	switch value := valueIf.(type) {
 	case bool:
-		*p = boolAsString(value)
+		*p = BoolAsStringOrInt(value)
 	case string:
 		v, pErr := strconv.ParseBool(value)
 		if pErr != nil {
-			return fmt.Errorf("boolAsString.UnmarshalJSON: parse bool (%v): %v", value, pErr)
+			return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON: parse bool (%v): %v", value, pErr)
 		}
 
-		*p = boolAsString(v)
+		*p = BoolAsStringOrInt(v)
+	case int, float32, float64:
+		asString := string(data)
+		if asString == "1" {
+			*p = true
+		} else if asString == "0" {
+			*p = false
+		} else {
+			return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON: parse bool unexpected value %v", value)
+		}
 	default:
-		return fmt.Errorf("boolAsString.UnmarshalJSON input should be bool or string, got %v (%T)", value, value)
+		return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON input should be bool or string, got %v (%T)", value, value)
 	}
 
 	return nil

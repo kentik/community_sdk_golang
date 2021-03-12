@@ -3,7 +3,6 @@ package api_resources
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
@@ -31,44 +30,33 @@ func (a *AlertingAPI) CreateManualMitigation(ctx context.Context, mm models.Manu
 	}
 
 	if response.Response.Result != "OK" {
-		return errors.New("Creating Manual Mitigation Failed")
+		return errors.New("creating Manual Mitigation failed")
 	}
 
 	return nil
 }
 
-func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, startTime time.Time, endTime time.Time, filterBy string, filterVal string, showMitigations bool,
-	showAlarms bool, showMatches bool, learningMode bool) ([]models.Alarm, error) {
+func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, params models.AlertsQueryParams) ([]models.Alarm, error) {
 	var response api_payloads.GetActiveAlertsResponse
-	timeFormatStr := "2006-01-02T15:04:05"
-	path := api_endpoints.GetActiveAlertsPath(startTime.Format(timeFormatStr), endTime.Format(timeFormatStr), filterBy, filterVal, boolToInt(showMitigations),
-		boolToInt(showAlarms), boolToInt(showMatches), boolToInt(learningMode))
+
+	path := api_endpoints.GetActiveAlertsPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
+		params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)
 
 	if err := a.GetAndValidate(ctx, path, &response); err != nil {
 		return nil, err
 	}
 
-	return response.ToAlarms()
+	return response.ToAlarms(), nil
 }
 
-func (a *AlertingAPI) GetAlertsHistory(ctx context.Context, startTime time.Time, endTime time.Time, filterBy string, filterVal string, sortOrder string,
-	showMitigations bool, showAlarms bool, showMatches bool, learningMode bool) ([]models.HistoricalAlert, error) {
+func (a *AlertingAPI) GetAlertsHistory(ctx context.Context, params models.AlertsQueryParams) ([]models.HistoricalAlert, error) {
 	var response api_payloads.GetHistoricalAlertsResponse
-	timeFormatStr := "2006-01-02T15:04:05"
-	path := api_endpoints.GetAlertsHistoryPath(startTime.Format(timeFormatStr), endTime.Format(timeFormatStr), filterBy, filterVal, sortOrder,
-		boolToInt(showMitigations), boolToInt(showAlarms), boolToInt(showMatches), boolToInt(learningMode))
+	path := api_endpoints.GetAlertsHistoryPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
+		params.SortOrder, params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)
 
 	if err := a.GetAndValidate(ctx, path, &response); err != nil {
 		return nil, err
 	}
 
-	return response.ToHistoricalAlerts()
-}
-
-func boolToInt(val bool) int {
-	var intVal int
-	if val {
-		intVal = 1
-	}
-	return intVal
+	return response.ToHistoricalAlerts(), nil
 }

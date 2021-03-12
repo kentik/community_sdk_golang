@@ -18,11 +18,21 @@ func TestAlertingAPIExample(t *testing.T) {
 
 func runCreateManualMitigation() error {
 	client := NewClient()
+	time1 := time.Date(2020, time.January, 1, 12, 0, 0, 0, time.Local)
+	time2 := time.Date(2021, time.March, 8, 15, 30, 0, 0, time.Local)
 
 	fmt.Println("GET ALERTS")
-	startTime := time.Date(2020, time.January, 1, 12, 0, 0, 0, time.Local)
-	endTime := time.Date(2021, time.March, 8, 15, 30, 0, 0, time.Local)
-	alerts, err := client.Alerting.GetActiveAlerts(context.Background(), startTime, endTime, "", "", true, true, false, false)
+	params := models.AlertsQueryParams{
+		StartTime:       &time1,
+		EndTime:         &time2,
+		FilterBy:        "",
+		FilterVal:       "",
+		ShowMitigations: true,
+		ShowAlarms:      true,
+		ShowMatches:     false,
+		LearningMode:    false,
+	}
+	alerts, err := client.Alerting.GetActiveAlerts(context.Background(), params)
 	if err != nil {
 		return err
 	}
@@ -30,7 +40,8 @@ func runCreateManualMitigation() error {
 	fmt.Println()
 
 	fmt.Println("GET ALERTS HISTORY")
-	history, err := client.Alerting.GetAlertsHistory(context.Background(), startTime, endTime, "", "", "", true, true, false, false)
+	params.SortOrder = ""
+	history, err := client.Alerting.GetAlertsHistory(context.Background(), params)
 	if err != nil {
 		return err
 	}
