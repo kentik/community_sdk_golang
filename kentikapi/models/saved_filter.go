@@ -3,35 +3,56 @@ package models
 import "time"
 
 type SavedFilter struct {
-	ID                ID
-	CompanyID         ID
+	// read-write properties (can be updated in update call)
 	FilterName        string
 	FilterDescription string
 	FilterLevel       string
-	CreatedDate       time.Time
-	UpdatedDate       time.Time
 	Filters           Filters
+
+	// read-only properties (can't be updated in update call)
+	ID          ID
+	CompanyID   ID
+	CreatedDate time.Time
+	UpdatedDate time.Time
+}
+
+func NewSavedFilter(name string, description string, level string, filters Filters) SavedFilter {
+	return SavedFilter{
+		FilterName:        name,
+		FilterDescription: description,
+		FilterLevel:       level,
+		Filters:           filters,
+	}
 }
 
 type Filters struct {
+	// read-write properties
 	Connector    string
-	Custom       *bool
 	FilterGroups []FilterGroups
+
+	// read-only properties (reserved for internal use)
+	Custom       *bool
 	FilterString *string
 }
 
 type FilterGroups struct {
-	Connector    string
+	// read-write properties
+	Connector string
+	Not       bool
+	Filters   []Filter
+
+	// read-only properties
 	FilterString *string
 	ID           *ID
 	Metric       *string
-	Not          bool
-	Filters      []Filter
 }
 
 type Filter struct {
+	// read-write properties
 	FilterField string
-	ID          *ID
 	FilterValue string
 	Operator    string
+
+	// read-only properties
+	ID *ID
 }

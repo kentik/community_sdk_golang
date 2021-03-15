@@ -13,8 +13,8 @@ import (
 
 func TestSavedFiltersAPIExample(t *testing.T) {
 	assert := assert.New(t)
+	assert.NoError(runGetAllSavedFilters())
 	assert.NoError(runCRUDSavedFilters())
-	// assert.NoError(runGetAllSavedFilters())
 }
 
 func runGetAllSavedFilters() error {

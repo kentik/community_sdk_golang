@@ -7,7 +7,6 @@ import (
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -132,6 +131,8 @@ func TestSavedFiltersList(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expected, savedFilters)
+	assert.Empty(t, transport.RequestBody)
+	assert.Equal(t, "/saved-filters/custom", transport.RequestPath)
 }
 
 func TestGetSavedFilterInfo(t *testing.T) {
@@ -194,6 +195,8 @@ func TestGetSavedFilterInfo(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, &expected, savedFilter)
+	assert.Empty(t, transport.RequestBody)
+	assert.Equal(t, "/saved-filter/custom/8275", transport.RequestPath)
 }
 
 func TestCreateSavedFilter(t *testing.T) {
@@ -246,6 +249,9 @@ func TestCreateSavedFilter(t *testing.T) {
 		UpdatedDate: time.Date(2020, 12, 26, 10, 46, 13, 95e6, time.UTC),
 		ID:          8152,
 	}
+	expectedRequestPayload := "{\"filter_name\":\"test_filter1\",\"filter_description\":\"This is test filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
+		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\",\"filterGroups\":[{\"connector\":\"All\",\"not\":false," +
+		"\"filters\":[{\"filterField\":\"dst_as\",\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: postResponsePayload}
 	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
@@ -274,11 +280,8 @@ func TestCreateSavedFilter(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, &expected, savedFilter)
-
-	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
-	assert.Equal(t, "test_filter1", payload.String("filter_name"))
-	assert.Equal(t, "This is test filter description", payload.String("filter_description"))
-	assert.Nil(t, payload.Get("id"))
+	assert.Equal(t, "/saved-filter/custom", transport.RequestPath)
+	assert.Equal(t, expectedRequestPayload, transport.RequestBody)
 }
 
 func TestUpdateSavedFilter(t *testing.T) {
@@ -305,6 +308,9 @@ func TestUpdateSavedFilter(t *testing.T) {
 		"edate":"2020-12-16T11:26:19.187Z",
 		"filter_level":"company"
 	}`
+	expectedRequestPayload := "{\"id\":8153,\"filter_name\":\"test_filter1\",\"filter_description\":\"Updated Saved Filter description\"," +
+		"\"cdate\":\"0001-01-01T00:00:00Z\",\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\",\"filterGroups\":" +
+		"[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\",\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
@@ -335,6 +341,8 @@ func TestUpdateSavedFilter(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Updated Saved Filter description", updated.FilterDescription)
+	assert.Equal(t, expectedRequestPayload, transport.RequestBody)
+	assert.Equal(t, "/saved-filter/custom/8153", transport.RequestPath)
 }
 
 func TestDeleteSavedFilter(t *testing.T) {
@@ -347,4 +355,6 @@ func TestDeleteSavedFilter(t *testing.T) {
 	err := savedFiltersAPI.Detete(context.Background(), filterID)
 
 	assert.NoError(t, err)
+	assert.Empty(t, transport.RequestBody)
+	assert.Equal(t, "/saved-filter/custom/8153", transport.RequestPath)
 }

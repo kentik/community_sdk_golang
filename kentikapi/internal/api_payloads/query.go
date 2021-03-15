@@ -240,10 +240,10 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 }
 
 type filtersPayload struct {
-	Connector    string        `json:"connector"`
-	FilterGroups []interface{} `json:"filterGroups,omitempty"` // []FilterGroupsPayload; To be implemented in SavedFiltersAPI
-	Custom       *bool         `json:"custom,omitempty"`
-	FilterString *string       `json:"filterString,omitempty"`
+	Connector    string                `json:"connector"`
+	FilterGroups []FilterGroupsPayload `json:"filterGroups,omitempty"` // []FilterGroupsPayload; To be implemented in SavedFiltersAPI
+	Custom       *bool                 `json:"custom,omitempty"`
+	FilterString *string               `json:"filterString,omitempty"`
 }
 
 func filtersToPayload(f *models.Filters) *filtersPayload {
@@ -251,9 +251,15 @@ func filtersToPayload(f *models.Filters) *filtersPayload {
 		return nil
 	}
 
+	var filterGroupsPayloads []FilterGroupsPayload
+
+	for _, i := range f.FilterGroups {
+		filterGroupsPayloads = append(filterGroupsPayloads, FilterGroupsToPayload(i))
+	}
+
 	return &filtersPayload{
 		Connector:    f.Connector,
-		FilterGroups: f.FilterGroups,
+		FilterGroups: filterGroupsPayloads,
 		Custom:       f.Custom,
 		FilterString: f.FilterString,
 	}

@@ -73,13 +73,6 @@ func NewQuery(metric MetricType, dimension []DimensionType) *Query {
 	}
 }
 
-type Filters struct {
-	Connector    string
-	FilterGroups []interface{} // []FilterGroups; To be implemented in SavedFiltersAPI
-	Custom       *bool
-	FilterString *string
-}
-
 type Aggregate struct {
 	Name       string
 	Column     string
