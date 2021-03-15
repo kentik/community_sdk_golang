@@ -21,9 +21,9 @@ type Client struct {
 	// SavedFilters
 	// CustomDimensions
 	CustomApplications *api_resources.CustomApplicationsAPI
-	// Query
-	MyKentikPortal *api_resources.MyKentikPortalAPI
-	Plans          *api_resources.PlansAPI
+	Query              *api_resources.QueryAPI
+	MyKentikPortal     *api_resources.MyKentikPortalAPI
+	Plans              *api_resources.PlansAPI
 	// Batch
 	// Alerting
 
@@ -57,9 +57,9 @@ func NewClient(c Config) *Client {
 		// SavedFilters
 		// CustomDimensions
 		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
-		// Query
-		MyKentikPortal: api_resources.NewMyKentikPortalAPI(rc),
-		Plans:          api_resources.NewPlansAPI(rc),
+		Query:              api_resources.NewQueryAPI(rc),
+		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
+		Plans:              api_resources.NewPlansAPI(rc),
 		// Batch
 		// Alerting
 		config: c,
