@@ -21,6 +21,8 @@ func TestCrerateManualMitigation(t *testing.T) {
 			"result": "OK"
 		}
     }`
+	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":1234,"methodID":12345,"minutesBeforeAutoStop":"20"}`
+
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	alertingAPI := api_resources.NewAlertingAPI(transport)
 	mm := models.ManualMitigation{
@@ -32,6 +34,8 @@ func TestCrerateManualMitigation(t *testing.T) {
 	}
 
 	assert.NoError(t, alertingAPI.CreateManualMitigation(context.Background(), mm))
+	assert.Equal(t, "/alerts/manual-mitigate", transport.RequestPath)
+	assert.Equal(t, expectedRequestBody, transport.RequestBody)
 }
 
 func TestGetActiveAlerts(t *testing.T) {
@@ -123,6 +127,7 @@ func TestGetActiveAlerts(t *testing.T) {
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)
+	assert.Equal(t, "/alerts-active/alarms?endTime=2021-03-19T13%3A50%3A00&learningMode=0&showAlarms=1&showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00", transport.RequestPath)
 }
 
 func TestGetAlertsHistory(t *testing.T) {
@@ -211,4 +216,5 @@ func TestGetAlertsHistory(t *testing.T) {
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)
+	assert.Equal(t, "/alerts-active/alerts-history?endTime=2021-03-19T13%3A50%3A00&learningMode=0&showAlarms=1&showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00", transport.RequestPath)
 }

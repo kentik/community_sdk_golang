@@ -35,11 +35,11 @@ func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 			input:         `"invalid-string"`,
 			expectedError: true,
 		}, {
-			input:         `1`,
-			expectedError: true,
+			input:          `1`,
+			expectedResult: BoolAsStringOrInt(true),
 		}, {
-			input:         `0`,
-			expectedError: true,
+			input:          `0`,
+			expectedResult: BoolAsStringOrInt(false),
 		}, {
 			input:         `1.0`,
 			expectedError: true,

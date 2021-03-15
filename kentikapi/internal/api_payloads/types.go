@@ -32,7 +32,7 @@ func (p *IntAsString) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
-// BoolAsStringOrInt evens out deserialization of numbers represented in JSON document sometimes as bool and sometimes as string.
+// BoolAsStringOrInt evens out deserialization of numbers represented in JSON document as bool, string or number.
 type BoolAsStringOrInt bool
 
 func (p *BoolAsStringOrInt) UnmarshalJSON(data []byte) (err error) {
@@ -61,7 +61,7 @@ func (p *BoolAsStringOrInt) UnmarshalJSON(data []byte) (err error) {
 			return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON: parse bool unexpected value %v", value)
 		}
 	default:
-		return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON input should be bool or string, got %v (%T)", value, value)
+		return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON input should be bool, string or number, got %v (%T)", value, value)
 	}
 
 	return nil
