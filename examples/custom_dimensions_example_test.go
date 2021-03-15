@@ -16,11 +16,11 @@ import (
 
 func TestCustomDimensionsAPIExample(t *testing.T) {
 	assert := assert.New(t)
-	assert.NoError(runGetAll())
-	assert.NoError(runCRUD())
+	assert.NoError(runGetAllCustomDimensions())
+	assert.NoError(runCRUDCustomDimensions())
 }
 
-func runGetAll() error {
+func runGetAllCustomDimensions() error {
 	client := NewClient()
 
 	fmt.Println("### GET ALL")
@@ -34,7 +34,7 @@ func runGetAll() error {
 	return nil
 }
 
-func runCRUD() error {
+func runCRUDCustomDimensions() error {
 	var err error
 	client := NewClient()
 

@@ -2,6 +2,7 @@ package api_resources_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -38,6 +39,7 @@ func TestCreateCustomDimension(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/customdimension", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("c_testapi_dimension_1", payload.String("name"))
 	assert.Equal("dimension_display_name", payload.String("display_name"))
@@ -78,6 +80,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("dimension_display_name2", payload.String("display_name"))
 
@@ -159,6 +162,7 @@ func TestGetCustomDimension(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -231,6 +235,7 @@ func TestGetAllCustomDimensions(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/customdimensions", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -276,6 +281,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
 
@@ -344,6 +350,7 @@ func TestCreatePopulator(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v/populator", dimensionID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("populator"))
 	assert.Equal("testapi-dimension-value-1", payload.String("populator/value"))
@@ -446,6 +453,7 @@ func TestUpdatePopulator(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v/populator/%v", dimensionID, populatorID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("populator"))
 	assert.Equal("testapi-dimension-value-3", payload.String("populator/value"))
@@ -489,5 +497,6 @@ func TestDeletePopulator(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/customdimension/%v/populator/%v", dimensionID, populatorID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
