@@ -104,7 +104,7 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 }
 
 // DeleteAndValidate retrieves json at "url" unmarshalls and validates against required fields defined in struct tags of "output"
-// output must be pointer to object
+// output must be pointer to object or nil
 func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output interface{}) error {
 	responseBody, err := b.Transport.Delete(ctx, url)
 	if err != nil {

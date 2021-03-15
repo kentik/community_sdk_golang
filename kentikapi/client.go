@@ -20,10 +20,10 @@ type Client struct {
 	Tags  *api_resources.TagsAPI
 	// SavedFilters
 	// CustomDimensions
-	// CustomApplications
-	Query          *api_resources.QueryAPI
-	MyKentikPortal *api_resources.MyKentikPortalAPI
-	Plans          *api_resources.PlansAPI
+	CustomApplications *api_resources.CustomApplicationsAPI
+	Query              *api_resources.QueryAPI
+	MyKentikPortal     *api_resources.MyKentikPortalAPI
+	Plans              *api_resources.PlansAPI
 	// Batch
 	// Alerting
 
@@ -56,10 +56,10 @@ func NewClient(c Config) *Client {
 		Tags:  api_resources.NewTagsAPI(rc),
 		// SavedFilters
 		// CustomDimensions
-		// CustomApplications
-		Query:          api_resources.NewQueryAPI(rc),
-		MyKentikPortal: api_resources.NewMyKentikPortalAPI(rc),
-		Plans:          api_resources.NewPlansAPI(rc),
+		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
+		Query:              api_resources.NewQueryAPI(rc),
+		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
+		Plans:              api_resources.NewPlansAPI(rc),
 		// Batch
 		// Alerting
 		config: c,
