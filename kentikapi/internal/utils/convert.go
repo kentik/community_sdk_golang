@@ -1,6 +1,8 @@
 package utils
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // ConvertFunc signature like: func IntToString(source int) (string, error)
 type ConvertFunc interface{}

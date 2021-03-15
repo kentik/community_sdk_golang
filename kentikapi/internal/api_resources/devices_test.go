@@ -2,6 +2,7 @@ package api_resources_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -120,6 +121,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/device", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
 	assert.Equal("testapi_router_router_full", payload.String("device/device_name"))
@@ -291,6 +293,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/device", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
 	assert.Equal("testapi_dns-aws_subnet_bgp_other_device", payload.String("device/device_name"))
@@ -463,6 +466,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
 	assert.Equal(2, payload.Count("device/sending_ips/*"))
@@ -676,6 +680,7 @@ func TestGetDeviceRouter(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -834,6 +839,7 @@ func TestGetDeviceDNS(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -1065,6 +1071,7 @@ func TestGetAllDevices(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal("/devices", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -1164,6 +1171,7 @@ func TestDeleteDevice(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
 
@@ -1216,6 +1224,7 @@ func TestApplyLabels(t *testing.T) {
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/devices/%v/labels", deviceID), transport.RequestPath)
 	require.NotNil(payload.Get("labels"))
 	assert.Equal(2, payload.Count("labels/*"))
 	assert.Equal(models.ID(3011), payload.Int("labels/*[1]/id"))
@@ -1282,6 +1291,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -1383,6 +1393,7 @@ func TestGetInterfaceFull(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -1568,6 +1579,7 @@ func TestGetAllInterfaces(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interfaces", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
@@ -1640,6 +1652,7 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface", deviceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(2, payload.Int("snmp_id"))
 	assert.Equal(8, payload.Int("snmp_speed"))
@@ -1774,6 +1787,7 @@ func TestDeleteInterface(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
 
@@ -1825,6 +1839,7 @@ func TestUpdatenteInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(75, payload.Int("snmp_speed"))
 	assert.Zero(payload.GetAll("secondary_ips"))
@@ -1917,6 +1932,7 @@ func TestUpdatenteInterfaceFull(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 
 	assert.Equal("testapi-interface-44", payload.String("interface_description"))
