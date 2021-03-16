@@ -12,7 +12,7 @@ type CreateDeviceRequest struct {
 	Payload DevicePayload `json:"device"`
 }
 
-// UpdateDeviceRequest represents DevicesAPI Create JSON request
+// UpdateDeviceRequest represents DevicesAPI Update JSON request
 type UpdateDeviceRequest CreateDeviceRequest
 
 // ApplyLabelsRequest represents DevicesAPI ApplyLabels JSON request

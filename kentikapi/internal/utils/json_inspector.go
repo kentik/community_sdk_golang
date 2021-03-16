@@ -62,6 +62,15 @@ func (i *jsonPayloadInspector) Int(path string) int {
 	return result
 }
 
+// Float returns floating point number found at given path
+func (i *jsonPayloadInspector) Float(path string) float64 {
+	doc := i.Get(path)
+	i.require.NotNil(doc)
+	result, err := strconv.ParseFloat(doc.InnerText(), 64)
+	i.assert.NoError(err)
+	return result
+}
+
 // Bool returns boolean found at given path
 func (i *jsonPayloadInspector) Bool(path string) bool {
 	doc := i.Get(path)

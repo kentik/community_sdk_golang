@@ -5,7 +5,9 @@ package examples
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
+	"path"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -130,9 +132,9 @@ func runQueryChart() error {
 		return err
 	}
 	fmt.Printf("Returned chart image type: %s\n", result.ImageType)
-	filename := "/tmp/chart.png"
-	result.SaveImageAs(filename)
-	cmd := exec.Command("firefox", filename)
+	filePath := path.Join(os.TempDir(), "chart.png")
+	result.SaveImageAs(filePath)
+	cmd := exec.Command("firefox", filePath)
 	err = cmd.Run()
 	if err != nil {
 		return err

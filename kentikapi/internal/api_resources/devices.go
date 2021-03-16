@@ -81,11 +81,7 @@ func (a *DevicesAPI) Update(ctx context.Context, device models.Device) (*models.
 // Note: KentikAPI requires sending delete request twice to actually delete the device.
 // This is a safety measure preventing deletion by mistake.
 func (a *DevicesAPI) Delete(ctx context.Context, id models.ID) error {
-	if err := a.DeleteAndValidate(ctx, api_endpoints.GetDevice(id), nil); err != nil {
-		return err
-	}
-
-	return nil
+	return a.DeleteAndValidate(ctx, api_endpoints.GetDevice(id), nil)
 }
 
 // ApplyLabels assigns labels to given device

@@ -24,7 +24,7 @@ export KTAPI_AUTH_EMAIL=<your kentik api credentials email>
 export KTAPI_AUTH_TOKEN=<your kentik api credentials token>
 
 # Run from the repository root
-go test -tags examples -v ./examples/users_example_test.go
+go test -tags examples -count 1 -v ./examples/users_example_test.go
 ```
 
 ## Development
@@ -40,6 +40,7 @@ Run golangci-lint: `golangci-lint run ./...`
 
 Finished implementation:
 - devices (with interfaces)
+- plans
 
 Ongoing implementation:
 - users
@@ -53,6 +54,5 @@ ToDo:
 - custom applications
 - saved filters
 - query methods
-- plans
 - alerts
 - alerts active

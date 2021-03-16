@@ -99,3 +99,7 @@ func prettyPrintIndented(format string, level int, args ...interface{}) {
 	fmt.Printf("%*s", level*2, "")
 	fmt.Printf(format, args...)
 }
+
+func stringPointer(s string) *string {
+	return &s
+}

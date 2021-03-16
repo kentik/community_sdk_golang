@@ -9,6 +9,6 @@ const (
 	UsersPath = "/users"
 )
 
-func GetUser(id ResourceID) string {
+func GetUserPath(id ResourceID) string {
 	return fmt.Sprintf("%v/%v", UserPath, id)
 }
