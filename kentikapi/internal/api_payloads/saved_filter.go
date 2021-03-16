@@ -19,26 +19,26 @@ func (p GetAllSavedFilterResponse) ToSavedFilters() ([]models.SavedFilter, error
 }
 
 type GetSavedFilterResponse struct {
-	SavedFilterPayload
+	savedFilterPayload
 }
 
 type CreateSavedFilterRequest struct {
-	SavedFilterPayload
+	savedFilterPayload
 }
 
 type CreateSavedFilterResponse struct {
-	SavedFilterPayload
+	savedFilterPayload
 }
 
 type UpdateSavedFilterRequest struct {
-	SavedFilterPayload
+	savedFilterPayload
 }
 
 type UpdateSavedFilterResponse struct {
-	SavedFilterPayload
+	savedFilterPayload
 }
 
-type SavedFilterPayload struct {
+type savedFilterPayload struct {
 	ID                IntAsString    `json:"id,omitempty" response:"get,post,put"`
 	CompanyID         models.ID      `json:"company_id,string,omitempty" response:"get,post,put"`
 	FilterName        string         `json:"filter_name"`
@@ -46,10 +46,10 @@ type SavedFilterPayload struct {
 	FilterLevel       string         `json:"filter_level,omitempty"`
 	CreatedDate       *time.Time     `json:"cdate,omitempty" response:"get,post,put"`
 	UpdatedDate       *time.Time     `json:"edate,omitempty" response:"get,post,put"`
-	Filters           FiltersPayload `json:"filters"`
+	Filters           filtersPayload `json:"filters"`
 }
 
-func (p SavedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
+func (p savedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 	filters, err := p.Filters.ToFilters()
 	if err != nil {
 		return models.SavedFilter{}, err
@@ -67,8 +67,8 @@ func (p SavedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 	}, nil
 }
 
-func SavedFilterToPayload(sf models.SavedFilter) SavedFilterPayload {
-	return SavedFilterPayload{
+func SavedFilterToPayload(sf models.SavedFilter) savedFilterPayload {
+	return savedFilterPayload{
 		ID:                IntAsString(sf.ID),
 		CompanyID:         sf.CompanyID,
 		FilterName:        sf.FilterName,
@@ -80,16 +80,28 @@ func SavedFilterToPayload(sf models.SavedFilter) SavedFilterPayload {
 	}
 }
 
-type FiltersPayload struct {
+func SavedFilterToCreatePayload(sf models.SavedFilter) CreateSavedFilterRequest {
+	return CreateSavedFilterRequest{
+		savedFilterPayload: SavedFilterToPayload(sf),
+	}
+}
+
+func SavedFilterToUpdatePayload(sf models.SavedFilter) UpdateSavedFilterRequest {
+	return UpdateSavedFilterRequest{
+		savedFilterPayload: SavedFilterToPayload(sf),
+	}
+}
+
+type filtersPayload struct {
 	Connector    string                `json:"connector"`
 	Custom       *bool                 `json:"custom,omitempty"`
-	FilterGroups []FilterGroupsPayload `json:"filterGroups" response:"get,post,put"`
+	FilterGroups []filterGroupsPayload `json:"filterGroups"`
 	FilterString *string               `json:"filterString,omitempty"`
 }
 
-func (p FiltersPayload) ToFilters() (models.Filters, error) {
+func (p filtersPayload) ToFilters() (models.Filters, error) {
 	var filterGroups []models.FilterGroups
-	err := utils.ConvertList(p.FilterGroups, FilterGroupsPayload.ToFilterGroups, &filterGroups)
+	err := utils.ConvertList(p.FilterGroups, filterGroupsPayload.ToFilterGroups, &filterGroups)
 	if err != nil {
 		return models.Filters{}, err
 	}
@@ -101,13 +113,13 @@ func (p FiltersPayload) ToFilters() (models.Filters, error) {
 	}, nil
 }
 
-func FiltersToPayload(f models.Filters) FiltersPayload {
-	var filterGroups []FilterGroupsPayload
+func FiltersToPayload(f models.Filters) filtersPayload {
+	var filterGroups []filterGroupsPayload
 	for _, fg := range f.FilterGroups {
 		filterGroups = append(filterGroups, FilterGroupsToPayload(fg))
 	}
 
-	return FiltersPayload{
+	return filtersPayload{
 		Connector:    f.Connector,
 		Custom:       f.Custom,
 		FilterGroups: filterGroups,
@@ -115,18 +127,18 @@ func FiltersToPayload(f models.Filters) FiltersPayload {
 	}
 }
 
-type FilterGroupsPayload struct {
+type filterGroupsPayload struct {
 	Connector    string          `json:"connector"`
 	FilterString *string         `json:"filterString,omitempty"`
 	ID           *models.ID      `json:"id,omitempty"`
 	Metric       *string         `json:"metric,omitempty"`
 	Not          bool            `json:"not"`
-	Filters      []FilterPayload `json:"filters"`
+	Filters      []filterPayload `json:"filters"`
 }
 
-func (p FilterGroupsPayload) ToFilterGroups() (models.FilterGroups, error) {
+func (p filterGroupsPayload) ToFilterGroups() (models.FilterGroups, error) {
 	var filters []models.Filter
-	err := utils.ConvertList(p.Filters, FilterPayload.ToFilter, &filters)
+	err := utils.ConvertList(p.Filters, filterPayload.ToFilter, &filters)
 	if err != nil {
 		return models.FilterGroups{}, err
 	}
@@ -140,13 +152,13 @@ func (p FilterGroupsPayload) ToFilterGroups() (models.FilterGroups, error) {
 	}, nil
 }
 
-func FilterGroupsToPayload(fg models.FilterGroups) FilterGroupsPayload {
-	var filters []FilterPayload
+func FilterGroupsToPayload(fg models.FilterGroups) filterGroupsPayload {
+	var filters []filterPayload
 	for _, f := range fg.Filters {
 		filters = append(filters, FilterToPayload(f))
 	}
 
-	return FilterGroupsPayload{
+	return filterGroupsPayload{
 		Connector:    fg.Connector,
 		FilterString: fg.FilterString,
 		ID:           fg.ID,
@@ -156,14 +168,14 @@ func FilterGroupsToPayload(fg models.FilterGroups) FilterGroupsPayload {
 	}
 }
 
-type FilterPayload struct {
+type filterPayload struct {
 	FilterField string     `json:"filterField"`
 	ID          *models.ID `json:"id,omitempty"`
 	FilterValue string     `json:"filterValue"`
 	Operator    string     `json:"operator"`
 }
 
-func (p FilterPayload) ToFilter() (models.Filter, error) {
+func (p filterPayload) ToFilter() (models.Filter, error) {
 	return models.Filter{
 		FilterField: p.FilterField,
 		ID:          p.ID,
@@ -172,8 +184,8 @@ func (p FilterPayload) ToFilter() (models.Filter, error) {
 	}, nil
 }
 
-func FilterToPayload(f models.Filter) FilterPayload {
-	return FilterPayload{
+func FilterToPayload(f models.Filter) filterPayload {
+	return filterPayload{
 		FilterField: f.FilterField,
 		ID:          f.ID,
 		FilterValue: f.FilterValue,

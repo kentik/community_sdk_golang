@@ -249,6 +249,7 @@ func TestCreateSavedFilter(t *testing.T) {
 		UpdatedDate: time.Date(2020, 12, 26, 10, 46, 13, 95e6, time.UTC),
 		ID:          8152,
 	}
+	// TODO(lwolanin): To test request payloads use JSONPayloadInspector like in most of tests
 	expectedRequestPayload := "{\"filter_name\":\"test_filter1\",\"filter_description\":\"This is test filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
 		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\",\"filterGroups\":[{\"connector\":\"All\",\"not\":false," +
 		"\"filters\":[{\"filterField\":\"dst_as\",\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"

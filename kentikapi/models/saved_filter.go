@@ -16,6 +16,7 @@ type SavedFilter struct {
 	UpdatedDate time.Time
 }
 
+// NewSavedFilter creates a new SavedFilter with all required fields set.
 func NewSavedFilter(name string, description string, level string, filters Filters) SavedFilter {
 	return SavedFilter{
 		FilterName:        name,

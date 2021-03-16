@@ -39,8 +39,7 @@ func (a *SavedFiltersAPI) Get(ctx context.Context, filterID models.ID) (*models.
 }
 
 func (a *SavedFiltersAPI) Create(ctx context.Context, savedFilter models.SavedFilter) (*models.SavedFilter, error) {
-	var payload api_payloads.CreateSavedFilterRequest
-	payload.SavedFilterPayload = api_payloads.SavedFilterToPayload(savedFilter)
+	payload := api_payloads.SavedFilterToCreatePayload(savedFilter)
 
 	var response api_payloads.CreateSavedFilterResponse
 	if err := a.PostAndValidate(ctx, api_endpoints.SavedFilterPath, payload, &response); err != nil {
@@ -52,8 +51,7 @@ func (a *SavedFiltersAPI) Create(ctx context.Context, savedFilter models.SavedFi
 }
 
 func (a *SavedFiltersAPI) Update(ctx context.Context, savedFilter models.SavedFilter) (*models.SavedFilter, error) {
-	var payload api_payloads.UpdateSavedFilterRequest
-	payload.SavedFilterPayload = api_payloads.SavedFilterToPayload(savedFilter)
+	payload := api_payloads.SavedFilterToUpdatePayload(savedFilter)
 
 	var response api_payloads.UpdateSavedFilterResponse
 	if err := a.UpdateAndValidate(ctx, api_endpoints.GetSavedFilter(savedFilter.ID), payload, &response); err != nil {
