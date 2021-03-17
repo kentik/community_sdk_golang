@@ -19,7 +19,7 @@ type Client struct {
 	Sites        *api_resources.SitesAPI
 	Tags         *api_resources.TagsAPI
 	// SavedFilters
-	// CustomDimensions
+	CustomDimensions   *api_resources.CustomDimensionsAPI
 	CustomApplications *api_resources.CustomApplicationsAPI
 	Query              *api_resources.QueryAPI
 	MyKentikPortal     *api_resources.MyKentikPortalAPI
@@ -55,7 +55,7 @@ func NewClient(c Config) *Client {
 		Sites:        api_resources.NewSitesAPI(rc),
 		Tags:         api_resources.NewTagsAPI(rc),
 		// SavedFilters
-		// CustomDimensions
+		CustomDimensions:   api_resources.NewCustomDimensionsAPI(rc),
 		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
 		Query:              api_resources.NewQueryAPI(rc),
 		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
