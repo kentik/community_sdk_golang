@@ -13,17 +13,17 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	Users   *api_resources.UsersAPI
-	Devices *api_resources.DevicesAPI
-	// DeviceLabels
-	Sites *api_resources.SitesAPI
-	Tags  *api_resources.TagsAPI
+	Users        *api_resources.UsersAPI
+	Devices      *api_resources.DevicesAPI
+	DeviceLabels *api_resources.DeviceLabelsAPI
+	Sites        *api_resources.SitesAPI
+	Tags         *api_resources.TagsAPI
 	// SavedFilters
-	CustomDimensions *api_resources.CustomDimensionsAPI
-	// CustomApplications
-	Query          *api_resources.QueryAPI
-	MyKentikPortal *api_resources.MyKentikPortalAPI
-	Plans          *api_resources.PlansAPI
+	CustomDimensions   *api_resources.CustomDimensionsAPI
+	CustomApplications *api_resources.CustomApplicationsAPI
+	Query              *api_resources.QueryAPI
+	MyKentikPortal     *api_resources.MyKentikPortalAPI
+	Plans              *api_resources.PlansAPI
 	// Batch
 	// Alerting
 
@@ -49,17 +49,17 @@ func NewClient(c Config) *Client {
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		Users:   api_resources.NewUsersAPI(rc),
-		Devices: api_resources.NewDevicesAPI(rc),
-		// DeviceLabels
-		Sites: api_resources.NewSitesAPI(rc),
-		Tags:  api_resources.NewTagsAPI(rc),
+		Users:        api_resources.NewUsersAPI(rc),
+		Devices:      api_resources.NewDevicesAPI(rc),
+		DeviceLabels: api_resources.NewDeviceLabelsAPI(rc),
+		Sites:        api_resources.NewSitesAPI(rc),
+		Tags:         api_resources.NewTagsAPI(rc),
 		// SavedFilters
-		CustomDimensions: api_resources.NewCustomDimensionsAPI(rc),
-		// CustomApplications
-		Query:          api_resources.NewQueryAPI(rc),
-		MyKentikPortal: api_resources.NewMyKentikPortalAPI(rc),
-		Plans:          api_resources.NewPlansAPI(rc),
+		CustomDimensions:   api_resources.NewCustomDimensionsAPI(rc),
+		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
+		Query:              api_resources.NewQueryAPI(rc),
+		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
+		Plans:              api_resources.NewPlansAPI(rc),
 		// Batch
 		// Alerting
 		config: c,
