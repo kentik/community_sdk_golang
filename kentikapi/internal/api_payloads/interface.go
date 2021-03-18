@@ -47,7 +47,7 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	SNMPID               *models.ID            `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
-	SNMPSpeed            IntAsString           `json:"snmp_speed,omitempty" request:"post" response:"get,post,put"` // caveat, GET returns snmp_speed as string but POST and PUT as int
+	SNMPSpeed            IntAsString           `json:"snmp_speed,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int
 	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
 	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
 	InterfaceIP          *string               `json:"interface_ip,omitempty"`

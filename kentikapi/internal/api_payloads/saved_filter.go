@@ -39,8 +39,8 @@ type UpdateSavedFilterResponse struct {
 }
 
 type savedFilterPayload struct {
-	ID                IntAsString    `json:"id,omitempty" response:"get,post,put"`
-	CompanyID         models.ID      `json:"company_id,string,omitempty" response:"get,post,put"`
+	ID                IntAsString    `json:"id,omitempty"`
+	CompanyID         models.ID      `json:"company_id,string,omitempty"`
 	FilterName        string         `json:"filter_name"`
 	FilterDescription string         `json:"filter_description"`
 	FilterLevel       string         `json:"filter_level,omitempty"`
