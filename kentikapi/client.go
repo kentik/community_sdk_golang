@@ -25,7 +25,7 @@ type Client struct {
 	MyKentikPortal     *api_resources.MyKentikPortalAPI
 	Plans              *api_resources.PlansAPI
 	// Batch
-	// Alerting
+	Alerting *api_resources.AlertingAPI
 
 	config Config
 }
@@ -61,7 +61,7 @@ func NewClient(c Config) *Client {
 		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
 		Plans:              api_resources.NewPlansAPI(rc),
 		// Batch
-		// Alerting
-		config: c,
+		Alerting: api_resources.NewAlertingAPI(rc),
+		config:   c,
 	}
 }
