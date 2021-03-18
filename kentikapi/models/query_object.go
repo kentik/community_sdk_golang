@@ -32,7 +32,7 @@ type Query struct {
 	Metric          MetricType
 	Dimension       []DimensionType
 	FiltersObj      *Filters
-	SavedFilters    []interface{}  // []SavedFilter; To be implemented in SavedFiltersAPI
+	SavedFilters    []SavedFilter
 	MatrixBy        []string       // DimensionType or custom dimension, required non-nil even if no elements
 	CIDR            *int           // valid: number 0..32
 	CIDR6           *int           // valid: number 0..128
@@ -71,13 +71,6 @@ func NewQuery(metric MetricType, dimension []DimensionType) *Query {
 		DeviceName:      []string{},
 		MatrixBy:        []string{},
 	}
-}
-
-type Filters struct {
-	Connector    string
-	FilterGroups []interface{} // []FilterGroups; To be implemented in SavedFiltersAPI
-	Custom       *bool
-	FilterString *string
 }
 
 type Aggregate struct {

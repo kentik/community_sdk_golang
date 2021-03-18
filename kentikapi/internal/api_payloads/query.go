@@ -161,32 +161,32 @@ func queryArrayItemToPayload(i models.QueryArrayItem) (queryArrayItemPayload, er
 }
 
 type queryPayload struct {
-	Metric          string             `json:"metric"`
-	Dimension       []string           `json:"dimension,omitempty"`
-	FiltersObj      *filtersPayload    `json:"filters_obj,omitempty"`
-	SavedFilters    []interface{}      `json:"saved_filters,omitempty"` // []SavedFilterPayload; To be implemented in SavedFiltersAPI
-	MatrixBy        []string           `json:"matrixBy" request:"post"` // matrixBy is required in request even if empty. Otherwise Chart query hangs
-	CIDR            *int               `json:"cidr,omitempty"`
-	CIDR6           *int               `json:"cidr6,omitempty"`
-	PPSThreshold    *int               `json:"pps_threshold,omitempty"`
-	TopX            int                `json:"topx"`
-	Depth           int                `json:"depth"`
-	FastData        string             `json:"fastData"`
-	TimeFormat      string             `json:"time_format"`
-	HostnameLookup  bool               `json:"hostname_lookup"`
-	LookbackSeconds int                `json:"lookback_seconds"`
-	StartingTime    *string            `json:"starting_time,omitempty"` // format YYYY-MM-DD HH:mm:00
-	EndingTime      *string            `json:"ending_time,omitempty"`   // format YYYY-MM-DD HH:mm:00
-	AllSelected     *bool              `json:"all_selected,omitempty"`
-	DeviceName      []string           `json:"device_name" request:"post"` // device_name is required in request even if empty
-	Descriptor      string             `json:"descriptor"`
-	Aggregates      []aggregatePayload `json:"aggregates,omitempty"`
-	Outsort         *string            `json:"outsort,omitempty"`
-	QueryTitle      string             `json:"query_title"`
-	VizType         *string            `json:"viz_type,omitempty"`
-	ShowOverlay     *bool              `json:"show_overlay,omitempty"`
-	OverlayDay      *int               `json:"overlay_day,omitempty"`
-	SyncAxes        *bool              `json:"sync_axes,omitempty"`
+	Metric          string               `json:"metric"`
+	Dimension       []string             `json:"dimension,omitempty"`
+	FiltersObj      *filtersPayload      `json:"filters_obj,omitempty"`
+	SavedFilters    []savedFilterPayload `json:"saved_filters,omitempty"`
+	MatrixBy        []string             `json:"matrixBy" request:"post"` // matrixBy is required in request even if empty. Otherwise Chart query hangs
+	CIDR            *int                 `json:"cidr,omitempty"`
+	CIDR6           *int                 `json:"cidr6,omitempty"`
+	PPSThreshold    *int                 `json:"pps_threshold,omitempty"`
+	TopX            int                  `json:"topx"`
+	Depth           int                  `json:"depth"`
+	FastData        string               `json:"fastData"`
+	TimeFormat      string               `json:"time_format"`
+	HostnameLookup  bool                 `json:"hostname_lookup"`
+	LookbackSeconds int                  `json:"lookback_seconds"`
+	StartingTime    *string              `json:"starting_time,omitempty"` // format YYYY-MM-DD HH:mm:00
+	EndingTime      *string              `json:"ending_time,omitempty"`   // format YYYY-MM-DD HH:mm:00
+	AllSelected     *bool                `json:"all_selected,omitempty"`
+	DeviceName      []string             `json:"device_name" request:"post"` // device_name is required in request even if empty
+	Descriptor      string               `json:"descriptor"`
+	Aggregates      []aggregatePayload   `json:"aggregates,omitempty"`
+	Outsort         *string              `json:"outsort,omitempty"`
+	QueryTitle      string               `json:"query_title"`
+	VizType         *string              `json:"viz_type,omitempty"`
+	ShowOverlay     *bool                `json:"show_overlay,omitempty"`
+	OverlayDay      *int                 `json:"overlay_day,omitempty"`
+	SyncAxes        *bool                `json:"sync_axes,omitempty"`
 }
 
 func queryToPayload(q models.Query) (queryPayload, error) {
@@ -209,11 +209,16 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 		*viztype = q.VizType.String()
 	}
 
+	var savedFiltersPayloads []savedFilterPayload
+	for _, i := range q.SavedFilters {
+		savedFiltersPayloads = append(savedFiltersPayloads, SavedFilterToPayload(i))
+	}
+
 	return queryPayload{
 		Metric:          q.Metric.String(),
 		Dimension:       dimensions,
 		FiltersObj:      filtersToPayload(q.FiltersObj),
-		SavedFilters:    []interface{}{}, // SavedFiltersAPI dependency
+		SavedFilters:    savedFiltersPayloads,
 		MatrixBy:        q.MatrixBy,
 		CIDR:            q.CIDR,
 		CIDR6:           q.CIDR6,
@@ -239,21 +244,20 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	}, nil
 }
 
-type filtersPayload struct {
-	Connector    string        `json:"connector"`
-	FilterGroups []interface{} `json:"filterGroups,omitempty"` // []FilterGroupsPayload; To be implemented in SavedFiltersAPI
-	Custom       *bool         `json:"custom,omitempty"`
-	FilterString *string       `json:"filterString,omitempty"`
-}
-
 func filtersToPayload(f *models.Filters) *filtersPayload {
 	if f == nil {
 		return nil
 	}
 
+	var filterGroupsPayloads []filterGroupsPayload
+
+	for _, i := range f.FilterGroups {
+		filterGroupsPayloads = append(filterGroupsPayloads, FilterGroupsToPayload(i))
+	}
+
 	return &filtersPayload{
 		Connector:    f.Connector,
-		FilterGroups: f.FilterGroups,
+		FilterGroups: filterGroupsPayloads,
 		Custom:       f.Custom,
 		FilterString: f.FilterString,
 	}
