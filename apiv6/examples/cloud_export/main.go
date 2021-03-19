@@ -5,18 +5,20 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kentik/community_sdk_golang/apiv6/examples"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
 )
 
 func main() {
-	client := NewClient()
+	client := examples.NewClient()
 	var err error
 
 	if err = runCRUD(client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	if err = runGetAll(client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -42,7 +44,7 @@ func runCRUD(client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	PrettyPrint(createResp)
+	examples.PrettyPrint(createResp)
 	fmt.Println()
 
 	fmt.Println("### UPDATE")
@@ -54,7 +56,7 @@ func runCRUD(client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	PrettyPrint(updateResp)
+	examples.PrettyPrint(updateResp)
 	fmt.Println()
 
 	fmt.Println("### GET")
@@ -63,7 +65,7 @@ func runCRUD(client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	PrettyPrint(getResp)
+	examples.PrettyPrint(getResp)
 	fmt.Println()
 
 	fmt.Println("### DELETE")
@@ -73,7 +75,7 @@ func runCRUD(client *kentikapi.Client) error {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
 	fmt.Println("Success")
-	PrettyPrint(deleteResp)
+	examples.PrettyPrint(deleteResp)
 	fmt.Println()
 
 	return nil
@@ -88,7 +90,7 @@ func runGetAll(client *kentikapi.Client) error {
 	}
 	exports := *getAllResp.Exports
 	fmt.Println("Num exports:", len(exports))
-	PrettyPrint(exports)
+	examples.PrettyPrint(exports)
 	fmt.Println()
 
 	return nil
