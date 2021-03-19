@@ -26,10 +26,10 @@ func CreatePopulator(customDimensionID ResourceID) string {
 	return fmt.Sprintf("/customdimension/%v/populator", customDimensionID)
 }
 
-func UpdatePopulator(customDimensionID ResourceID, pupulatorID ResourceID) string {
-	return fmt.Sprintf("/customdimension/%v/populator/%v", customDimensionID, pupulatorID)
+func UpdatePopulator(customDimensionID ResourceID, populatorID ResourceID) string {
+	return fmt.Sprintf("/customdimension/%v/populator/%v", customDimensionID, populatorID)
 }
 
-func DeletePopulator(customDimensionID ResourceID, pupulatorID ResourceID) string {
-	return fmt.Sprintf("/customdimension/%v/populator/%v", customDimensionID, pupulatorID)
+func DeletePopulator(customDimensionID ResourceID, populatorID ResourceID) string {
+	return fmt.Sprintf("/customdimension/%v/populator/%v", customDimensionID, populatorID)
 }

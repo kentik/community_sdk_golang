@@ -38,21 +38,17 @@ Run golangci-lint: `golangci-lint run ./...`
 
 ## Development state
 
-Finished implementation:
-- devices (with interfaces)
-- plans
-
-Ongoing implementation:
+Implemented API resources:
 - users
-- my kentik portal
-
-ToDo:
 - sites
 - tags
+- devices (with interfaces)
 - device labels
 - custom dimensions (with populators)
 - custom applications
 - saved filters
+- my kentik portal
 - query methods
+- plans
 - alerts
 - alerts active
