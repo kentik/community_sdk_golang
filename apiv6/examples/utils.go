@@ -75,7 +75,11 @@ func PanicOnError(err error) {
 func NewClient() *kentikapi.Client {
 	email, token, err := readCredentialsFromEnv()
 	PanicOnError(err)
-	return kentikapi.NewClient(email, token)
+	cfg := kentikapi.Config{
+		AuthEmail: email,
+		AuthToken: token,
+	}
+	return kentikapi.NewClient(cfg)
 }
 
 func readCredentialsFromEnv() (authEmail, authToken string, _ error) {
