@@ -13,12 +13,12 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	Users        *api_resources.UsersAPI
-	Devices      *api_resources.DevicesAPI
-	DeviceLabels *api_resources.DeviceLabelsAPI
-	Sites        *api_resources.SitesAPI
-	Tags         *api_resources.TagsAPI
-	SavedFilters *api_resources.SavedFiltersAPI
+	Users              *api_resources.UsersAPI
+	Devices            *api_resources.DevicesAPI
+	DeviceLabels       *api_resources.DeviceLabelsAPI
+	Sites              *api_resources.SitesAPI
+	Tags               *api_resources.TagsAPI
+	SavedFilters       *api_resources.SavedFiltersAPI
 	CustomDimensions   *api_resources.CustomDimensionsAPI
 	CustomApplications *api_resources.CustomApplicationsAPI
 	Query              *api_resources.QueryAPI
@@ -49,12 +49,12 @@ func NewClient(c Config) *Client {
 		AuthToken: c.AuthToken,
 	})
 	return &Client{
-		Users:        api_resources.NewUsersAPI(rc),
-		Devices:      api_resources.NewDevicesAPI(rc),
-		DeviceLabels: api_resources.NewDeviceLabelsAPI(rc),
-		Sites:        api_resources.NewSitesAPI(rc),
-		Tags:         api_resources.NewTagsAPI(rc),
-		SavedFilters: api_resources.NewSavedFiltersAPI(rc),
+		Users:              api_resources.NewUsersAPI(rc),
+		Devices:            api_resources.NewDevicesAPI(rc),
+		DeviceLabels:       api_resources.NewDeviceLabelsAPI(rc),
+		Sites:              api_resources.NewSitesAPI(rc),
+		Tags:               api_resources.NewTagsAPI(rc),
+		SavedFilters:       api_resources.NewSavedFiltersAPI(rc),
 		CustomDimensions:   api_resources.NewCustomDimensionsAPI(rc),
 		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
 		Query:              api_resources.NewQueryAPI(rc),
