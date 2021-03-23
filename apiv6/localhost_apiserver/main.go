@@ -10,6 +10,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
@@ -17,13 +18,21 @@ import (
 )
 
 func main() {
-	log.Printf("Server started")
+	port, storageFilePath := readPortStorage()
 
-	repo := cloudexportstub.NewCloudExportRepo("CloudExportStorage.json")
+	repo := cloudexportstub.NewCloudExportRepo(storageFilePath)
 	CloudExportAdminServiceApiService := cloudexportstub.NewCloudExportAdminServiceApiService(repo)
 	CloudExportAdminServiceApiController := cloudexportstub.NewCloudExportAdminServiceApiController(CloudExportAdminServiceApiService)
 
 	router := cloudexportstub.NewRouter(CloudExportAdminServiceApiController)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Printf("Server started, port %s, storage %s", port, storageFilePath)
+	log.Fatal(http.ListenAndServe(port, router))
+}
+
+func readPortStorage() (port string, storage string) {
+	flag.StringVar(&port, "port", ":8080", "Port number for the server to listen to")
+	flag.StringVar(&storage, "storage", "CloudExportStorage.json", "JSON file path for the server to read and write the data to")
+	flag.Parse()
+	return
 }

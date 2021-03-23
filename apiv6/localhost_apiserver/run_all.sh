@@ -23,7 +23,7 @@ function checkPrerequsites() {
 function run() {
     stage "Running localhost api server on port 8080"
 
-    go run .
+    go run . -port ":8080" -storage "CloudExportStorage.json"
 
     echo "Done"
 }
