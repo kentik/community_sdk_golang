@@ -62,7 +62,11 @@ func (r *CloudExportRepo) Create(e V202101beta1CloudExport) (*V202101beta1CloudE
 	newExport.ApiRoot = "http://localhost:8080"
 	newExport.FlowDest = "http://localhost:8080/flow"
 	newExport.CurrentStatus = &CloudExportv202101beta1Status{
-		Status: "OK",
+		Status:               "OK",
+		ErrorMessage:         "No errors",
+		FlowFound:            true,
+		ApiAccess:            true,
+		StorageAccountAccess: true,
 	}
 
 	r.items = append(r.items, newExport)
