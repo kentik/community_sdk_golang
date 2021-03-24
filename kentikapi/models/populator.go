@@ -46,10 +46,10 @@ func NewPopulator(dimensionID ID, value, deviceName string, direction PopulatorD
 	}
 }
 
-type PopulatorDirection int
+type PopulatorDirection string
 
 const (
-	PopulatorDirectionSrc    PopulatorDirection = iota // "SRC"
-	PopulatorDirectionDst                              // "DST"
-	PopulatorDirectionEither                           // "EITHER"
+	PopulatorDirectionSrc    PopulatorDirection = "SRC"
+	PopulatorDirectionDst    PopulatorDirection = "DST"
+	PopulatorDirectionEither PopulatorDirection = "EITHER"
 )

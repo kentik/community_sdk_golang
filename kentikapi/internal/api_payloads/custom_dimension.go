@@ -1,7 +1,6 @@
 package api_payloads
 
 import (
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -10,9 +9,12 @@ type GetAllCustomDimensionsResponse struct {
 	Payload []CustomDimensionPayload `json:"customDimensions"`
 }
 
-func (r GetAllCustomDimensionsResponse) ToCustomDimensions() (result []models.CustomDimension, err error) {
-	err = utils.ConvertList(r.Payload, payloadToCustomDimension, &result)
-	return result, err
+func (r GetAllCustomDimensionsResponse) ToCustomDimensions() []models.CustomDimension {
+	result := make([]models.CustomDimension, 0, len(r.Payload))
+	for _, p := range r.Payload {
+		result = append(result, payloadToCustomDimension(p))
+	}
+	return result
 }
 
 // GetCustomDimensionResponse represents CustomDimensionsAPI Get JSON response
@@ -20,7 +22,7 @@ type GetCustomDimensionResponse struct {
 	Payload CustomDimensionPayload `json:"customDimension"`
 }
 
-func (r GetCustomDimensionResponse) ToCustomDimension() (models.CustomDimension, error) {
+func (r GetCustomDimensionResponse) ToCustomDimension() models.CustomDimension {
 	return payloadToCustomDimension(r.Payload)
 }
 
@@ -52,31 +54,20 @@ type CustomDimensionPayload struct {
 }
 
 // payloadToCustomDimension transforms GET/POST/PUT response payload into CustomDimension
-func payloadToCustomDimension(p CustomDimensionPayload) (models.CustomDimension, error) {
-	cdType, err := models.CustomDimensionTypeString(*p.Type)
-	if err != nil {
-		return models.CustomDimension{}, err
-	}
-
-	var populators []models.Populator
-	err = utils.ConvertList(p.Populators, payloadToPopulator, &populators)
-	if err != nil {
-		return models.CustomDimension{}, err
-	}
-
+func payloadToCustomDimension(p CustomDimensionPayload) models.CustomDimension {
 	return models.CustomDimension{
 		Name:        *p.Name,
 		DisplayName: p.DisplayName,
-		Type:        cdType,
-		Populators:  populators,
+		Type:        models.CustomDimensionType(*p.Type),
+		Populators:  payloadToPopulators(p.Populators),
 		ID:          *p.ID,
 		CompanyID:   *p.CompanyID,
-	}, nil
+	}
 }
 
 // CustomDimensionToPayload prepares POST/PUT request payload: fill only the user-provided fields
 func CustomDimensionToPayload(cd models.CustomDimension) CustomDimensionPayload {
-	cdType := cd.Type.String()
+	cdType := string(cd.Type)
 	return CustomDimensionPayload{
 		Name:        &cd.Name,
 		DisplayName: cd.DisplayName,
