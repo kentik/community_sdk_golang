@@ -33,7 +33,7 @@ func NewCloudExportAdminServiceApiService(repo *CloudExportRepo) CloudExportAdmi
 // CloudExportAdminServiceCreateCloudExport -
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceCreateCloudExport(ctx context.Context, v202101beta1CreateCloudExportRequest V202101beta1CreateCloudExportRequest) (ImplResponse, error) {
 	if export, err := s.repo.Create(v202101beta1CreateCloudExportRequest.Export); err != nil {
-		return Response(http.StatusBadRequest, nil), err
+		return errorResponse(http.StatusBadRequest, "cloud export CREATE failed", err), nil
 	} else {
 		resp := V202101beta1CreateCloudExportResponse{Export: *export}
 		return Response(http.StatusOK, &resp), nil
@@ -43,7 +43,7 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceCreateCloudEx
 // CloudExportAdminServiceUpdateCloudExport -
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceUpdateCloudExport(ctx context.Context, exportId string, v202101beta1UpdateCloudExportRequest V202101beta1UpdateCloudExportRequest) (ImplResponse, error) {
 	if export, err := s.repo.Update(v202101beta1UpdateCloudExportRequest.Export); err != nil {
-		return Response(http.StatusBadRequest, nil), err
+		return errorResponse(http.StatusBadRequest, "cloud export UPDATE failed", err), nil
 	} else {
 		resp := V202101beta1UpdateCloudExportResponse{Export: *export}
 		return Response(http.StatusOK, &resp), nil
@@ -53,7 +53,7 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceUpdateCloudEx
 // CloudExportAdminServiceDeleteCloudExport -
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceDeleteCloudExport(ctx context.Context, exportId string) (ImplResponse, error) {
 	if err := s.repo.Delete(exportId); err != nil {
-		return Response(http.StatusNotFound, nil), err
+		return errorResponse(http.StatusNotFound, "cloud export DELETE failed", err), nil
 	} else {
 		resp := map[string]interface{}{}
 		return Response(http.StatusOK, &resp), nil
@@ -63,7 +63,8 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceDeleteCloudEx
 // CloudExportAdminServiceGetCloudExport -
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceGetCloudExport(ctx context.Context, exportId string) (ImplResponse, error) {
 	if export := s.repo.Get(exportId); export == nil {
-		return Response(http.StatusNotFound, nil), fmt.Errorf("No such cloud export %q", exportId)
+		err := fmt.Errorf("no such cloud export %q", exportId)
+		return errorResponse(http.StatusNotFound, "cloud export GET failed", err), nil
 	} else {
 		resp := V202101beta1GetCloudExportResponse{Export: *export}
 		return Response(http.StatusOK, &resp), nil
@@ -76,7 +77,7 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceListCloudExpo
 	return Response(http.StatusOK, &resp), nil
 }
 
-// CloudExportAdminServicePatchCloudExport -
+// CloudExportAdminServicePatchCloudExport - not used.
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServicePatchCloudExport(ctx context.Context, exportId string, v202101beta1PatchCloudExportRequest V202101beta1PatchCloudExportRequest) (ImplResponse, error) {
 	// TODO - update CloudExportAdminServicePatchCloudExport with the required logic for this service method.
 	// Add api_cloud_export_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
@@ -88,4 +89,15 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServicePatchCloudExp
 	//return Response(0, GooglerpcStatus{}), nil
 
 	return Response(http.StatusNotImplemented, nil), errors.New("CloudExportAdminServicePatchCloudExport method not implemented")
+}
+
+func errorResponse(httpCode int, message string, err error) ImplResponse {
+	const grpcCodeUnknown = 2 // translation httpCode -> grpcCode not relevant here
+
+	grpcResponse := GooglerpcStatus{
+		Code:    grpcCodeUnknown,
+		Message: fmt.Sprintf("%v: %v", message, err.Error()),
+		Details: []ProtobufAny{},
+	}
+	return Response(httpCode, grpcResponse)
 }
