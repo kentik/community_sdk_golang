@@ -7,6 +7,8 @@ info:
     url: https://github.com/kentik/api
 tags:
   - name: CloudExportAdminService
+servers:
+  - url: http://localhost:8080
 paths:
   /cloud_export/v202101beta1/exports:
     get:

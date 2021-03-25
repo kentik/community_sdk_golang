@@ -11,12 +11,14 @@ package cloudexportstub
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 // A Route defines the parameters for an api endpoint
@@ -38,6 +40,7 @@ type Router interface {
 // NewRouter creates a new router for any number of api routers
 func NewRouter(routers ...Router) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+
 	for _, api := range routers {
 		for _, route := range api.Routes() {
 			var handler http.Handler
@@ -52,6 +55,12 @@ func NewRouter(routers ...Router) *mux.Router {
 		}
 	}
 
+	cors := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost"}),
+		handlers.AllowedHeaders([]string{"content-type"}),
+		handlers.AllowCredentials(),
+	)
+	router.Use(cors)
 	return router
 }
 
