@@ -5,5 +5,11 @@ For testing the client without the need of interacting with live server (no vali
 ## Run on port 8080
 
 ```bash
-./run_all.sh
+./run_server.sh
+```
+
+## Try it out with swagger
+
+```bash
+./run_swagger.sh
 ```
