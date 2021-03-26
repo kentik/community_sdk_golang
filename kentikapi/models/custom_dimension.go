@@ -22,9 +22,9 @@ func NewCustomDimension(name, displayName string, dimensionType CustomDimensionT
 	}
 }
 
-type CustomDimensionType int
+type CustomDimensionType string
 
 const (
-	CustomDimensionTypeStr    CustomDimensionType = iota // "string"
-	CustomDimensionTypeUint32                            // "uint32"
+	CustomDimensionTypeStr    CustomDimensionType = "string"
+	CustomDimensionTypeUint32 CustomDimensionType = "uint32"
 )

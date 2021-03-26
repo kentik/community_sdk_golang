@@ -3,11 +3,13 @@ package api_resources_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -39,6 +41,7 @@ func TestCreateCustomDimension(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
 	assert.Equal("/customdimension", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("c_testapi_dimension_1", payload.String("name"))
@@ -80,6 +83,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal("dimension_display_name2", payload.String("display_name"))
@@ -94,95 +98,238 @@ func TestUpdateCustomDimension(t *testing.T) {
 }
 
 func TestGetCustomDimension(t *testing.T) {
-	// arrange
-	getResponsePayload := `
-	{
-		"customDimension": {
-			"id": 42,
-			"name": "c_testapi_dimension_1",
-			"display_name": "dimension_display_name",
-			"type": "string",
-			"company_id": "74333",
-			"populators": [
-				{
-					"id": 1510871096,
-					"dimension_id": 24001,
-					"value": "testapi-dimension-value-1",
-					"direction": "DST",
-					"device_name": "128.0.0.100,device1",
-					"interface_name": "interface1,interface2",
-					"addr": "128.0.0.1/32,128.0.0.2/32",
-					"addr_count": 2,
-					"port": "1001,1002",
-					"tcp_flags": "160",
-					"protocol": "6,17",
-					"asn": "101,102",
-					"nexthop_asn": "201,202",
-					"nexthop": "128.0.200.1/32,128.0.200.2/32",
-					"bgp_aspath": "3001,3002",
-					"bgp_community": "401:499,501:599",
-					"user": "144319",
-					"created_date": "2020-12-15T08:32:19.503788Z",
-					"updated_date": "2020-12-15T08:32:19.503788Z",
+	tests := []struct {
+		name           string
+		transportError error
+		responseBody   string
+		expectedResult *models.CustomDimension
+		expectedError  bool
+	}{
+		{
+			name:           "transport error",
+			transportError: assert.AnError,
+			expectedError:  true,
+		}, {
+			name:          "invalid response format",
+			responseBody:  "invalid JSON",
+			expectedError: true,
+		}, {
+			name:          "empty response",
+			responseBody:  "{}",
+			expectedError: true,
+		}, {
+			name: "custom dimension returned",
+			responseBody: `{
+				"customDimension": {
+					"id": 42,
+					"name": "c_testapi_dimension_1",
+					"display_name": "dimension_display_name",
+					"type": "string",
 					"company_id": "74333",
-					"device_type": "device-type1",
-					"site": "site1,site2,site3",
-					"lasthop_as_name": "asn101,asn102",
-					"nexthop_as_name": "asn201,asn202",
-					"mac": "FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF",
-					"mac_count": 2,
-					"country": "NL,SE",
-					"vlans": "2001,2002"
-				},
-				{
-					"id": 1510862280,
-					"dimension_id": 24001,
-					"value": "testapi-dimension-value-3",
-					"direction": "SRC",
-					"addr_count": 0,
-					"user": "144319",
-					"created_date": "2020-12-15T07:55:23.0Z",
-					"updated_date": "2020-12-15T11:11:30.0Z",
+					"populators": [
+						{
+							"id": 1510871096,
+							"dimension_id": 24001,
+							"value": "testapi-dimension-value-1",
+							"direction": "DST",
+							"device_name": "128.0.0.100,device1",
+							"interface_name": "interface1,interface2",
+							"addr": "128.0.0.1/32,128.0.0.2/32",
+							"addr_count": 2,
+							"port": "1001,1002",
+							"tcp_flags": "160",
+							"protocol": "6,17",
+							"asn": "101,102",
+							"nexthop_asn": "201,202",
+							"nexthop": "128.0.200.1/32,128.0.200.2/32",
+							"bgp_aspath": "3001,3002",
+							"bgp_community": "401:499,501:599",
+							"user": "144319",
+							"created_date": "2020-12-15T08:32:19.503788Z",
+							"updated_date": "2020-12-15T08:32:19.503788Z",
+							"company_id": "74333",
+							"device_type": "device-type1",
+							"site": "site1,site2,site3",
+							"lasthop_as_name": "asn101,asn102",
+							"nexthop_as_name": "asn201,asn202",
+							"mac": "FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF",
+							"mac_count": 2,
+							"country": "NL,SE",
+							"vlans": "2001,2002"
+						},
+						{
+							"id": 1510862280,
+							"dimension_id": 24001,
+							"value": "testapi-dimension-value-3",
+							"direction": "SRC",
+							"addr_count": 0,
+							"user": "144319",
+							"created_date": "2020-12-15T07:55:23.0Z",
+							"updated_date": "2020-12-15T11:11:30.0Z",
+							"company_id": "74333",
+							"site": "site3",
+							"mac_count": 0
+						}
+					]
+				}      
+			}`,
+			expectedResult: &models.CustomDimension{
+				DisplayName: "dimension_display_name",
+				Name:        "c_testapi_dimension_1",
+				Type:        models.CustomDimensionTypeStr,
+				ID:          42,
+				CompanyID:   74333,
+				Populators: []models.Populator{{
+					Value:         "testapi-dimension-value-1",
+					Direction:     models.PopulatorDirectionDst,
+					DeviceName:    "128.0.0.100,device1",
+					InterfaceName: testutil.StringPointer("interface1,interface2"),
+					Addr:          testutil.StringPointer("128.0.0.1/32,128.0.0.2/32"),
+					Port:          testutil.StringPointer("1001,1002"),
+					TCPFlags:      testutil.StringPointer("160"),
+					Protocol:      testutil.StringPointer("6,17"),
+					ASN:           testutil.StringPointer("101,102"),
+					NextHopASN:    testutil.StringPointer("201,202"),
+					NextHop:       testutil.StringPointer("128.0.200.1/32,128.0.200.2/32"),
+					BGPAsPath:     testutil.StringPointer("3001,3002"),
+					BGPCommunity:  testutil.StringPointer("401:499,501:599"),
+					DeviceType:    testutil.StringPointer("device-type1"),
+					Site:          testutil.StringPointer("site1,site2,site3"),
+					LastHopAsName: testutil.StringPointer("asn101,asn102"),
+					NextHopAsName: testutil.StringPointer("asn201,asn202"),
+					MAC:           testutil.StringPointer("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF"),
+					Country:       testutil.StringPointer("NL,SE"),
+					VLans:         testutil.StringPointer("2001,2002"),
+					ID:            1510871096,
+					CompanyID:     74333,
+					DimensionID:   24001,
+					User:          testutil.StringPointer("144319"),
+					MACCount:      2,
+					AddrCount:     2,
+					CreatedDate:   time.Date(2020, 12, 15, 8, 32, 19, 503788000, time.UTC),
+					UpdatedDate:   time.Date(2020, 12, 15, 8, 32, 19, 503788000, time.UTC),
+				}, {
+					Value:       "testapi-dimension-value-3",
+					Direction:   models.PopulatorDirectionSrc,
+					Site:        testutil.StringPointer("site3"),
+					ID:          1510862280,
+					CompanyID:   74333,
+					DimensionID: 24001,
+					User:        testutil.StringPointer("144319"),
+					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
+					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
+				}},
+			},
+		}, {
+			name: "custom dimension with unknown enums returned",
+			responseBody: `{
+				"customDimension": {
+					"id": 42,
+					"name": "c_testapi_dimension_1",
+					"display_name": "dimension_display_name",
+					"type": "t_teapot",
 					"company_id": "74333",
-					"site": "site3",
-					"mac_count": 0
-				}
-			]
-		}      
-	}`
-	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
-	dimensionID := models.ID(42)
+					"populators": [
+						{
+							"id": 1510862280,
+							"dimension_id": 24001,
+							"value": "testapi-dimension-value-3",
+							"direction": "d_teapot",
+							"addr_count": 0,
+							"user": "144319",
+							"created_date": "2020-12-15T07:55:23.0Z",
+							"updated_date": "2020-12-15T11:11:30.0Z",
+							"company_id": "74333",
+							"mac_count": 0
+						}
+					]
+				}      
+			}`,
+			expectedResult: &models.CustomDimension{
+				DisplayName: "dimension_display_name",
+				Name:        "c_testapi_dimension_1",
+				Type:        models.CustomDimensionType("t_teapot"),
+				ID:          42,
+				CompanyID:   74333,
+				Populators: []models.Populator{{
+					Value:       "testapi-dimension-value-3",
+					Direction:   models.PopulatorDirection("d_teapot"),
+					ID:          1510862280,
+					CompanyID:   74333,
+					DimensionID: 24001,
+					User:        testutil.StringPointer("144319"),
+					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
+					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
+				}},
+			},
+		}, {
+			name: "custom dimension with empty enums returned",
+			responseBody: `{
+				"customDimension": {
+					"id": 42,
+					"name": "c_testapi_dimension_1",
+					"display_name": "dimension_display_name",
+					"type": "",
+					"company_id": "74333",
+					"populators": [
+						{
+							"id": 1510862280,
+							"dimension_id": 24001,
+							"value": "testapi-dimension-value-3",
+							"direction": "",
+							"addr_count": 0,
+							"user": "144319",
+							"created_date": "2020-12-15T07:55:23.0Z",
+							"updated_date": "2020-12-15T11:11:30.0Z",
+							"company_id": "74333",
+							"mac_count": 0
+						}
+					]
+				}      
+			}`,
+			expectedResult: &models.CustomDimension{
+				DisplayName: "dimension_display_name",
+				Name:        "c_testapi_dimension_1",
+				Type:        models.CustomDimensionType(""),
+				ID:          42,
+				CompanyID:   74333,
+				Populators: []models.Populator{{
+					Value:       "testapi-dimension-value-3",
+					Direction:   models.PopulatorDirection(""),
+					ID:          1510862280,
+					CompanyID:   74333,
+					DimensionID: 24001,
+					User:        testutil.StringPointer("144319"),
+					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
+					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
+				}},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
+			customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+			dimensionID := 42
 
-	// act
-	dimension, err := customDimensionsAPI.Get(context.Background(), dimensionID)
+			// act
+			dimension, err := customDimensionsAPI.Get(context.Background(), dimensionID)
 
-	// assert request properly formed
-	assert := assert.New(t)
-	require := require.New(t)
+			// assert
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 
-	require.NoError(err)
-	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
-	assert.Zero(transport.RequestBody)
+			assert.Equal(t, http.MethodGet, transport.RequestMethod)
+			assert.Equal(t, fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
+			assert.Zero(t, transport.RequestBody)
 
-	// and response properly parsed
-	assert.Equal(models.ID(42), dimension.ID)
-	assert.Equal("c_testapi_dimension_1", dimension.Name)
-	assert.Equal("dimension_display_name", dimension.DisplayName)
-	assert.Equal(models.CustomDimensionTypeStr, dimension.Type)
-	assert.Equal(models.ID(74333), dimension.CompanyID)
-	assert.Len(dimension.Populators, 2)
-	assert.Equal(models.ID(1510862280), dimension.Populators[1].ID)
-	assert.Equal(models.ID(24001), dimension.Populators[1].DimensionID)
-	assert.Equal("testapi-dimension-value-3", dimension.Populators[1].Value)
-	assert.Equal(models.PopulatorDirectionSrc, dimension.Populators[1].Direction)
-	assert.Equal(0, dimension.Populators[1].AddrCount)
-	assert.Equal("144319", *dimension.Populators[1].User)
-	assert.Equal(time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC), dimension.Populators[1].CreatedDate)
-	assert.Equal(time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC), dimension.Populators[1].UpdatedDate)
-	assert.Equal(models.ID(74333), dimension.Populators[1].CompanyID)
-	assert.Equal("site3", *dimension.Populators[1].Site)
-	assert.Equal(0, dimension.Populators[1].MACCount)
+			assert.Equal(t, tt.expectedResult, dimension)
+		})
+	}
 }
 
 func TestGetAllCustomDimensions(t *testing.T) {
@@ -235,6 +382,7 @@ func TestGetAllCustomDimensions(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodGet, transport.RequestMethod)
 	assert.Equal("/customdimensions", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
@@ -281,6 +429,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(http.MethodDelete, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/customdimension/%v", dimensionID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
@@ -350,6 +499,7 @@ func TestCreatePopulator(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/customdimension/%v/populator", dimensionID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("populator"))
@@ -453,6 +603,7 @@ func TestUpdatePopulator(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/customdimension/%v/populator/%v", dimensionID, populatorID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("populator"))
@@ -497,6 +648,7 @@ func TestDeletePopulator(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(http.MethodDelete, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/customdimension/%v/populator/%v", dimensionID, populatorID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }

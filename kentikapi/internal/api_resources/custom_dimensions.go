@@ -29,7 +29,7 @@ func (a *CustomDimensionsAPI) GetAll(ctx context.Context) ([]models.CustomDimens
 		return []models.CustomDimension{}, err
 	}
 
-	return response.ToCustomDimensions()
+	return response.ToCustomDimensions(), nil
 }
 
 // Get custom dimension with given ID
@@ -39,8 +39,8 @@ func (a *CustomDimensionsAPI) Get(ctx context.Context, id models.ID) (*models.Cu
 		return nil, err
 	}
 
-	customDimension, err := response.ToCustomDimension()
-	return &customDimension, err
+	result := response.ToCustomDimension()
+	return &result, nil
 }
 
 // Create new custom dimension
@@ -53,8 +53,8 @@ func (a *CustomDimensionsAPI) Create(ctx context.Context, customDimension models
 		return nil, err
 	}
 
-	result, err := response.ToCustomDimension()
-	return &result, err
+	result := response.ToCustomDimension()
+	return &result, nil
 }
 
 // Update custom dimension
@@ -67,8 +67,8 @@ func (a *CustomDimensionsAPI) Update(ctx context.Context, customDimension models
 		return nil, err
 	}
 
-	result, err := response.ToCustomDimension()
-	return &result, err
+	result := response.ToCustomDimension()
+	return &result, nil
 }
 
 // Delete custom dimension
@@ -90,8 +90,8 @@ func (a *populatorsAPI) Create(ctx context.Context, populator models.Populator) 
 		return nil, err
 	}
 
-	result, err := response.ToPopulator()
-	return &result, err
+	result := response.ToPopulator()
+	return &result, nil
 }
 
 // Update populator
@@ -104,8 +104,8 @@ func (a *populatorsAPI) Update(ctx context.Context, populator models.Populator) 
 		return nil, err
 	}
 
-	result, err := response.ToPopulator()
-	return &result, err
+	result := response.ToPopulator()
+	return &result, nil
 }
 
 // Delete populator

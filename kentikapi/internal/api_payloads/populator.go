@@ -16,7 +16,7 @@ type CreatePopulatorResponse struct {
 	Payload PopulatorPayload `json:"populator"`
 }
 
-func (r CreatePopulatorResponse) ToPopulator() (models.Populator, error) {
+func (r CreatePopulatorResponse) ToPopulator() models.Populator {
 	return payloadToPopulator(r.Payload)
 }
 
@@ -61,14 +61,18 @@ type PopulatorPayload struct {
 	UpdatedDate *time.Time `json:"updated_date" response:"get,post,put"`
 }
 
-// payloadToPopulator transforms GET/POST/PUT response payload into Populator
-func payloadToPopulator(p PopulatorPayload) (models.Populator, error) {
-	direction, err := models.PopulatorDirectionString(p.Direction)
-	if err != nil {
-		return models.Populator{}, err
+func payloadToPopulators(p []PopulatorPayload) []models.Populator {
+	result := make([]models.Populator, 0, len(p))
+	for _, pp := range p {
+		result = append(result, payloadToPopulator(pp))
 	}
+	return result
+}
+
+// payloadToPopulator transforms GET/POST/PUT response payload into Populator
+func payloadToPopulator(p PopulatorPayload) models.Populator {
 	return models.Populator{
-		Direction:     direction,
+		Direction:     models.PopulatorDirection(p.Direction),
 		Value:         p.Value,
 		DeviceName:    p.DeviceName,
 		InterfaceName: p.InterfaceName,
@@ -96,13 +100,13 @@ func payloadToPopulator(p PopulatorPayload) (models.Populator, error) {
 		AddrCount:     *p.AddrCount,
 		CreatedDate:   *p.CreatedDate,
 		UpdatedDate:   *p.UpdatedDate,
-	}, nil
+	}
 }
 
 // PopulatorToPayload prepares POST/PUT request payload: fill only the user-provided fields
 func PopulatorToPayload(p models.Populator) PopulatorPayload {
 	return PopulatorPayload{
-		Direction:     p.Direction.String(),
+		Direction:     string(p.Direction),
 		Value:         p.Value,
 		DeviceName:    p.DeviceName,
 		InterfaceName: p.InterfaceName,
