@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,6 +24,26 @@ func UnmarshalJSONToIf(t testing.TB, jsonString string) interface{} {
 	return data
 }
 
-func StringPointer(s string) *string {
-	return &s
+func BoolPtr(v bool) *bool {
+	return &v
+}
+
+func Float64Ptr(v float64) *float64 {
+	return &v
+}
+
+func IDPtr(v models.ID) *models.ID {
+	return &v
+}
+
+func IntPtr(v int) *int {
+	return &v
+}
+
+func StringPtr(v string) *string {
+	return &v
+}
+
+func TimePtr(v time.Time) *time.Time {
+	return &v
 }

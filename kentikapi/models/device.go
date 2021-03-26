@@ -184,72 +184,72 @@ type AppliedLabels struct {
 	Labels     []DeviceLabel
 }
 
-type DeviceType int
+type DeviceType string
 
 const (
-	DeviceTypeRouter           DeviceType = iota // "router"
-	DeviceTypeHostNProbeDNSWWW                   // "host-nprobe-dns-www"
+	DeviceTypeRouter           DeviceType = "router"
+	DeviceTypeHostNProbeDNSWWW DeviceType = "host-nprobe-dns-www"
 )
 
-type DeviceSubtype int
+type DeviceSubtype string
 
 const (
 	// for DeviceType = DeviceTypeRouter
-	DeviceSubtypeRouter                 DeviceSubtype = iota // "router"
-	DeviceSubtypeCiscoAsa                                    // "cisco_asa"
-	DeviceSubtypePaloalto                                    // "paloalto"
-	DeviceSubtypeSilverpeak                                  // "silverpeak"
-	DeviceSubtypeMpls                                        // "mpls"
-	DeviceSubtypeViptela                                     // "viptela"
-	DeviceSubtypePfeSyslog                                   // "pfe_syslog"
-	DeviceSubtypeSyslog                                      // "syslog"
-	DeviceSubtypeMeraki                                      // "meraki"
-	DeviceSubtypeIstio                                       // "istio"
-	DeviceSubtypeIosxr                                       // "ios_xr"
-	DeviceSubtypeCiscoZoneBasedFirewall                      // "cisco_zone_based_firewall"
-	DeviceSubtypeCiscoNbar                                   // "cisco_nbar"
-	DeviceSubtypeCiscoAsaSyslog                              // "cisco_asa_syslog"
-	DeviceSubtypeAdvancedSflow                               // "advanced_sflow"
-	DeviceSubtypeA10Cgn                                      // "a10_cgn"
+	DeviceSubtypeRouter                 DeviceSubtype = "router"
+	DeviceSubtypeCiscoAsa               DeviceSubtype = "cisco_asa"
+	DeviceSubtypePaloalto               DeviceSubtype = "paloalto"
+	DeviceSubtypeSilverpeak             DeviceSubtype = "silverpeak"
+	DeviceSubtypeMpls                   DeviceSubtype = "mpls"
+	DeviceSubtypeViptela                DeviceSubtype = "viptela"
+	DeviceSubtypePfeSyslog              DeviceSubtype = "pfe_syslog"
+	DeviceSubtypeSyslog                 DeviceSubtype = "syslog"
+	DeviceSubtypeMeraki                 DeviceSubtype = "meraki"
+	DeviceSubtypeIstio                  DeviceSubtype = "istio"
+	DeviceSubtypeIosxr                  DeviceSubtype = "ios_xr"
+	DeviceSubtypeCiscoZoneBasedFirewall DeviceSubtype = "cisco_zone_based_firewall"
+	DeviceSubtypeCiscoNbar              DeviceSubtype = "cisco_nbar"
+	DeviceSubtypeCiscoAsaSyslog         DeviceSubtype = "cisco_asa_syslog"
+	DeviceSubtypeAdvancedSflow          DeviceSubtype = "advanced_sflow"
+	DeviceSubtypeA10Cgn                 DeviceSubtype = "a10_cgn"
 
 	// for DeviceType = DeviceTypeHostNProbeDNSWWW
-	DeviceSubtypeKprobe      // "kprobe"
-	DeviceSubtypeNprobe      // "nprobe"
-	DeviceSubtypeAwsSubnet   // "aws_subnet"
-	DeviceSubtypeAzureSubnet // "azure_subnet"
-	DeviceSubtypeGcpSubnet   // "gcp_subnet"
-	DeviceSubtypeKappa       // "kappa", not in api documentation
-	DeviceSubtypeIbmSubnet   // "ibm_subnet, not in api documentation
+	DeviceSubtypeKprobe      DeviceSubtype = "kprobe"
+	DeviceSubtypeNprobe      DeviceSubtype = "nprobe"
+	DeviceSubtypeAwsSubnet   DeviceSubtype = "aws_subnet"
+	DeviceSubtypeAzureSubnet DeviceSubtype = "azure_subnet"
+	DeviceSubtypeGcpSubnet   DeviceSubtype = "gcp_subnet"
+	DeviceSubtypeKappa       DeviceSubtype = "kappa"      // not in the API documentation
+	DeviceSubtypeIbmSubnet   DeviceSubtype = "ibm_subnet" // not in the API documentation
 )
 
-type DeviceBGPType int
+type DeviceBGPType string
 
 const (
-	DeviceBGPTypeNone        DeviceBGPType = iota // "none"
-	DeviceBGPTypeDevice                           // "device
-	DeviceBGPTypeOtherDevice                      // "other_device"
+	DeviceBGPTypeNone        DeviceBGPType = "none"
+	DeviceBGPTypeDevice      DeviceBGPType = "device"
+	DeviceBGPTypeOtherDevice DeviceBGPType = "other_device"
 )
 
-type AuthenticationProtocol int
+type AuthenticationProtocol string
 
 const (
-	AuthenticationProtocolNoAuth AuthenticationProtocol = iota // "NoAuth"
-	AuthenticationProtocolMD5                                  // "MD5"
-	AuthenticationProtocolSHA                                  // "SHA"
+	AuthenticationProtocolNoAuth AuthenticationProtocol = "NoAuth"
+	AuthenticationProtocolMD5    AuthenticationProtocol = "MD5"
+	AuthenticationProtocolSHA    AuthenticationProtocol = "SHA"
 )
 
-type PrivacyProtocol int
+type PrivacyProtocol string
 
 const (
-	PrivacyProtocolNoPriv PrivacyProtocol = iota // "NoPriv"
-	PrivacyProtocolDES                           // "DES"
-	PrivacyProtocolAES                           // "AES"
+	PrivacyProtocolNoPriv PrivacyProtocol = "NoPriv"
+	PrivacyProtocolDES    PrivacyProtocol = "DES"
+	PrivacyProtocolAES    PrivacyProtocol = "AES"
 )
 
-type CDNAttribute int
+type CDNAttribute string
 
 const (
-	CDNAttributeNone CDNAttribute = iota // "None"
-	CDNAttributeYes                      // "Y""
-	CDNAttributeNo                       // "N""
+	CDNAttributeNone CDNAttribute = "None"
+	CDNAttributeYes  CDNAttribute = "Y"
+	CDNAttributeNo   CDNAttribute = "N"
 )

@@ -246,7 +246,7 @@ func TestClient_GetUser(t *testing.T) {
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
 				CompanyID:    74333,
-				UserAPIToken: testutil.StringPointer("****************************a997"),
+				UserAPIToken: testutil.StringPtr("****************************a997"),
 			},
 		},
 	}

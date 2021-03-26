@@ -45,12 +45,7 @@ func (a *DevicesAPI) Get(ctx context.Context, id models.ID) (*models.Device, err
 
 // Create new device
 func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.Device, error) {
-	payload, err := api_payloads.DeviceToPayload(device)
-	if err != nil {
-		return nil, err
-	}
-
-	request := api_payloads.CreateDeviceRequest{Payload: payload}
+	request := api_payloads.CreateDeviceRequest{Payload: api_payloads.DeviceToPayload(device)}
 	var response api_payloads.CreateDeviceResponse
 	if err := a.PostAndValidate(ctx, api_endpoints.DevicePath, request, &response); err != nil {
 		return nil, err
@@ -62,12 +57,7 @@ func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.
 
 // Update device
 func (a *DevicesAPI) Update(ctx context.Context, device models.Device) (*models.Device, error) {
-	payload, err := api_payloads.DeviceToPayload(device)
-	if err != nil {
-		return nil, err
-	}
-
-	request := api_payloads.UpdateDeviceRequest{Payload: payload}
+	request := api_payloads.UpdateDeviceRequest{Payload: api_payloads.DeviceToPayload(device)}
 	var response api_payloads.UpdateDeviceResponse
 	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateDevice(device.ID), request, &response); err != nil {
 		return nil, err
