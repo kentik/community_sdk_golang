@@ -51,7 +51,7 @@ You need to provide valid credentials as environment variables so that the provi
 
 ```bash
 make build
-dlv exec ./terraform-provider-cloudexport
+dlv exec ./terraform-provider-kentik-cloudexport
 r -debug
 c
 # attach with terraform following the just-printed out instruction in your terminal
@@ -76,7 +76,7 @@ terraform apply
 
 Note: you need to provide kentikapi credentials either in .tf file:
 ```terraform
-provider "cloudexport" {
+provider "kentik-cloudexport" {
   email="john@acme.com"
   token="test123"
 }

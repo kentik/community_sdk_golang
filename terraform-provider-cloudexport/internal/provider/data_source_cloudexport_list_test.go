@@ -18,11 +18,11 @@ func TestDataSourceCloudExportList(t *testing.T) {
 			{
 				Config: testCloudExportDataSourceList,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cloudexport_list.exports", "items.0.name", "test_terraform_aws_export"),
-					resource.TestCheckResourceAttr("data.cloudexport_list.exports", "items.1.name", "test_terraform_gce_export"),
-					resource.TestCheckResourceAttr("data.cloudexport_list.exports", "items.2.name", "test_terraform_ibm_export"),
-					resource.TestCheckResourceAttr("data.cloudexport_list.exports", "items.3.name", "test_terraform_azure_export"),
-					resource.TestCheckResourceAttr("data.cloudexport_list.exports", "items.4.name", "test_terraform_bgp_export"),
+					resource.TestCheckResourceAttr("data.kentik-cloudexport_list.exports", "items.0.name", "test_terraform_aws_export"),
+					resource.TestCheckResourceAttr("data.kentik-cloudexport_list.exports", "items.1.name", "test_terraform_gce_export"),
+					resource.TestCheckResourceAttr("data.kentik-cloudexport_list.exports", "items.2.name", "test_terraform_ibm_export"),
+					resource.TestCheckResourceAttr("data.kentik-cloudexport_list.exports", "items.3.name", "test_terraform_azure_export"),
+					resource.TestCheckResourceAttr("data.kentik-cloudexport_list.exports", "items.4.name", "test_terraform_bgp_export"),
 				),
 			},
 		},
@@ -31,9 +31,9 @@ func TestDataSourceCloudExportList(t *testing.T) {
 
 // for specific items attributes, see: CloudExportTestData.json
 const testCloudExportDataSourceList = `
-provider "cloudexport" {
+provider "kentik-cloudexport" {
 	# apiurl = "http://localhost:8080" # KTAPI_URL env variable used instead
 }
   
-data "cloudexport_list" "exports" {}
+data "kentik-cloudexport_list" "exports" {}
 `

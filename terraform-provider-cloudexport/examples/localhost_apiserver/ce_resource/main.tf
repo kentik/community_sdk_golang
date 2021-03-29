@@ -1,13 +1,13 @@
 terraform {
   required_providers {
-    cloudexport = {
+    kentik-cloudexport = {
       version = "0.1.0"
-      source  = "kentik.com/automation/cloudexport"
+      source  = "kentik.com/automation/kentik-cloudexport"
     }
   }
 }
 
-provider "cloudexport" {
+provider "kentik-cloudexport" {
   apiurl = "http://localhost:8080"
 
   # email and token not used when connecting to localhost_apiserver
@@ -16,7 +16,7 @@ provider "cloudexport" {
 }
 
 # create cloudexport for AWS
-resource "cloudexport_item" "terraform_aws_export" {
+resource "kentik-cloudexport_item" "terraform_aws_export" {
   name           = "test_terraform_aws_export"
   type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
   enabled        = true
@@ -33,11 +33,11 @@ resource "cloudexport_item" "terraform_aws_export" {
 }
 
 output "aws" {
-  value = cloudexport_item.terraform_aws_export
+  value = kentik-cloudexport_item.terraform_aws_export
 }
 
 # create cloudexport for AZURE
-resource "cloudexport_item" "terraform_azure_export" {
+resource "kentik-cloudexport_item" "terraform_azure_export" {
   name           = "test_terraform_azure_export"
   type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
   enabled        = true
@@ -55,11 +55,11 @@ resource "cloudexport_item" "terraform_azure_export" {
 }
 
 output "azure" {
-  value = cloudexport_item.terraform_azure_export
+  value = kentik-cloudexport_item.terraform_azure_export
 }
 
 # create cloudexport for IBM
-resource "cloudexport_item" "terraform_ibm_export" {
+resource "kentik-cloudexport_item" "terraform_ibm_export" {
   name           = "test_terraform_ibm_export"
   type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
   enabled        = false
@@ -72,11 +72,11 @@ resource "cloudexport_item" "terraform_ibm_export" {
 }
 
 output "ibm" {
-  value = cloudexport_item.terraform_ibm_export
+  value = kentik-cloudexport_item.terraform_ibm_export
 }
 
 # create cloudexport for GCE
-resource "cloudexport_item" "terraform_gce_export" {
+resource "kentik-cloudexport_item" "terraform_gce_export" {
   name           = "test_terraform_gce_export"
   type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
   enabled        = false
@@ -90,11 +90,11 @@ resource "cloudexport_item" "terraform_gce_export" {
 }
 
 output "gce" {
-  value = cloudexport_item.terraform_gce_export
+  value = kentik-cloudexport_item.terraform_gce_export
 }
 
 # create cloudexport for BGP
-resource "cloudexport_item" "terraform_bgp_export" {
+resource "kentik-cloudexport_item" "terraform_bgp_export" {
   name           = "test_terraform_bgp_export"
   type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
   enabled        = false
@@ -109,5 +109,5 @@ resource "cloudexport_item" "terraform_bgp_export" {
 }
 
 output "bgp" {
-  value = cloudexport_item.terraform_bgp_export
+  value = kentik-cloudexport_item.terraform_bgp_export
 }

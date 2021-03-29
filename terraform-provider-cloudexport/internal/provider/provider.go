@@ -46,11 +46,11 @@ func New(version string) func() *schema.Provider {
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"cloudexport_list": dataSourceCloudExportList(),
-				"cloudexport_item": dataSourceCloudExportItem(),
+				"kentik-cloudexport_list": dataSourceCloudExportList(),
+				"kentik-cloudexport_item": dataSourceCloudExportItem(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"cloudexport_item": resourceCloudExport(),
+				"kentik-cloudexport_item": resourceCloudExport(),
 			},
 		}
 

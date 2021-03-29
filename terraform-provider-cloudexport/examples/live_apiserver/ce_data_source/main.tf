@@ -1,13 +1,13 @@
 terraform {
   required_providers {
-    cloudexport = {
+    kentik-cloudexport = {
       version = "0.1.0"
-      source  = "kentik.com/automation/cloudexport"
+      source  = "kentik.com/automation/kentik-cloudexport"
     }
   }
 }
 
-provider "cloudexport" {
+provider "kentik-cloudexport" {
   # by default, provider reads kentikapi credentials from env variables: KTAPI_AUTH_EMAIL and KTAPI_AUTH_TOKEN 
 
   # email="john@acme.com"
@@ -15,17 +15,17 @@ provider "cloudexport" {
 }
 
 # fetch all cloud exports
-data "cloudexport_list" "exports" {}
+data "kentik-cloudexport_list" "exports" {}
 
 output "export_list" {
-  value = data.cloudexport_list.exports
+  value = data.kentik-cloudexport_list.exports
 }
 
 # fetch single cloud export - it must exist or error will be reported
-# data "cloudexport_item" "export" {
+# data "kentik-cloudexport_item" "export" {
 #   id = "3"
 # }
 
 # output "export_3" {
-#   value = data.cloudexport_item.export
+#   value = data.kentik-cloudexport_item.export
 # }
