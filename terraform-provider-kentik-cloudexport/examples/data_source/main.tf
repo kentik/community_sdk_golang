@@ -8,10 +8,11 @@ terraform {
 }
 
 provider "kentik-cloudexport" {
-  # by default, provider reads kentikapi credentials from env variables: KTAPI_AUTH_EMAIL and KTAPI_AUTH_TOKEN 
+  # email, token and apiurl privided in KTAPI_AUTH_EMAIL, KTAPI_AUTH_TOKEN, KTAPI_URL env variables
 
   # email="john@acme.com"
-  # token="test123"
+  # token="token123"
+  # apiurl = "http://localhost:8080"
 }
 
 # fetch all cloud exports

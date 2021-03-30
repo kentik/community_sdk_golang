@@ -10,9 +10,14 @@ function stage() {
 }
 
 function die() {
-    echo "Exit 1"
+    echo "Error. Exit 1"
     exit 1
 }
+
+apiurl="http://localhost:8080" # localhost apiserver url
+
+stage "Kentik CloudExport Terraform Provider example - localhost apiserver"
+echo "Please make sure apiserver at $apiurl is running"
 
 stage "Build & install plugin"
 pushd ../../../  > /dev/null || die
@@ -23,5 +28,5 @@ stage "Terraform init & apply"
 rm -rf .terraform .terraform.lock.hcl
 
 # export TF_LOG=ERROR
-terraform init || die
-terraform apply
+KTAPI_URL="$apiurl" terraform init || die
+KTAPI_URL="$apiurl" terraform apply

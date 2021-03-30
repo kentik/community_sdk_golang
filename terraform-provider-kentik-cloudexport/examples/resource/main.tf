@@ -8,11 +8,11 @@ terraform {
 }
 
 provider "kentik-cloudexport" {
-  apiurl = "http://localhost:8080"
+  # email, token and apiurl privided in KTAPI_AUTH_EMAIL, KTAPI_AUTH_TOKEN, KTAPI_URL env variables
 
-  # email and token not used when connecting to localhost_apiserver
   # email="john@acme.com"
   # token="token123"
+  # apiurl = "http://localhost:8080"
 }
 
 # create cloudexport for AWS

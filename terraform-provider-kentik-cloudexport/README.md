@@ -57,14 +57,6 @@ c
 # attach with terraform following the just-printed out instruction in your terminal
 ```
 
-## TODO
-
-- add acceptance tests that communicate with live api server (once api server "HTTP DELETE" issue is fixed)
-- prepare resources and data-sources documentation
-- prepare config for GoReleaser
-- publish to registry.terraform.io
-
-
 ## Using the provider
 
 In folder with Terraform .tf definition file for cloud export resources/data sources:
@@ -74,11 +66,12 @@ terraform init
 terraform apply
 ```
 
-Note: you need to provide kentikapi credentials either in .tf file:
+Note: you need to provide kentikapi credentials and also you can provide custom apiserver url, either in .tf file:
 ```terraform
 provider "kentik-cloudexport" {
   email="john@acme.com"
   token="test123"
+  # apiurl= "http://localhost:8080" # custom apiserver
 }
 ```
 
@@ -87,6 +80,7 @@ or as environment variables:
 ```bash
 export KTAPI_AUTH_EMAIL="john@acme.com"
 export KTAPI_AUTH_TOKEN="test123"
+# export KTAPI_URL="http://localhost:8080" # custom apiserver
 ```
 
 See: [examples](./examples/)  
@@ -100,3 +94,11 @@ To compile the provider, run `go install`. This will build the provider and put 
 To generate or update documentation, run `go generate`.
 
 In order to run the full suite of Acceptance tests, run `make testacc`.
+
+
+## TODO
+
+- add acceptance tests that communicate with live api server (once api server "HTTP DELETE" issue is fixed)
+- prepare resources and data-sources documentation
+- prepare config for GoReleaser
+- publish to registry.terraform.io

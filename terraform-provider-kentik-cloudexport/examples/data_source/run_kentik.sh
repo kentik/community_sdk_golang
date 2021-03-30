@@ -10,9 +10,12 @@ function stage() {
 }
 
 function die() {
-    echo "Exit 1"
+    echo "Error. Exit 1"
     exit 1
 }
+
+stage "Kentik CloudExport Terraform Provider example - Kentik apiserver"
+echo "The provider will connect to live Kentik apiserver"
 
 stage "Build & install plugin"
 pushd ../../../  > /dev/null || die
