@@ -303,19 +303,19 @@ func cloudExportToMap(e *cloudexport.V202101beta1CloudExport) map[string]interfa
 
 // resourceDataToCloudExport is used for API create/update operations to fill cloudexport item from terraform resource
 func resourceDataToCloudExport(d *schema.ResourceData) (*cloudexport.V202101beta1CloudExport, error) {
-	export := cloudexport.NewV202101beta1CloudExport()
+	// Note: only set the user-writable attributes, read-only attributes that are generated on server side:
+	// apiRoot and flowDest, are left with nil values and so are not serialized and not sent to apiserver
 
-	export.SetId(d.Get("id").(string))
+	export := cloudexport.NewV202101beta1CloudExport()
+	export.SetId(d.Get("id").(string)) // id is required for UPDATE request
 	export.SetType(cloudexport.V202101beta1CloudExportType(d.Get("type").(string)))
 	export.SetEnabled(d.Get("enabled").(bool))
 	export.SetName(d.Get("name").(string))
 	export.SetDescription(d.Get("description").(string))
-	export.SetApiRoot(d.Get("api_root").(string))
-	export.SetFlowDest(d.Get("flow_dest").(string))
 	export.SetPlanId(d.Get("plan_id").(string))
 
 	// validation: for any given cloud_provider, there should also be an object of the same name, containing configuration details
-	// eg for cloud_provider="ibm", ibm{...} object should be provided
+	// eg for cloud_provider="ibm", ibm{...} object should be defined
 	cloudProvider := d.Get("cloud_provider").(string)
 	providerObj, ok := d.GetOk(cloudProvider)
 	if !ok {

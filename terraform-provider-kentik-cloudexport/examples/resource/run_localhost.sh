@@ -20,7 +20,7 @@ stage "Kentik CloudExport Terraform Provider example - localhost apiserver"
 echo "Please make sure apiserver at $apiurl is running"
 
 stage "Build & install plugin"
-pushd ../../../  > /dev/null || die
+pushd ../../  > /dev/null || die
 make install || die
 popd  > /dev/null || die
 
@@ -28,5 +28,8 @@ stage "Terraform init & apply"
 rm -rf .terraform .terraform.lock.hcl
 
 # export TF_LOG=ERROR
-KTAPI_URL="$apiurl" terraform init || die
-KTAPI_URL="$apiurl" terraform apply
+export KTAPI_URL="$apiurl" 
+export KTAPI_AUTH_EMAIL="dummy@acme.com" # authorization not used by localhost_apiserver
+export KTAPI_AUTH_TOKEN="dummy"          # authorization not used by localhost_apiserver
+terraform init || die
+terraform apply
