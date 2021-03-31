@@ -304,15 +304,33 @@ func cloudExportToMap(e *cloudexport.V202101beta1CloudExport) map[string]interfa
 // resourceDataToCloudExport is used for API create/update operations to fill cloudexport item from terraform resource
 func resourceDataToCloudExport(d *schema.ResourceData) (*cloudexport.V202101beta1CloudExport, error) {
 	// Note: only set the user-writable attributes, read-only attributes that are generated on server side:
-	// apiRoot and flowDest, are left with nil values and so are not serialized and not sent to apiserver
+	// ApiRoot, CurrentStatus and FlowDest, are left with nil values and so are not serialized and not sent to apiserver
 
 	export := cloudexport.NewV202101beta1CloudExport()
-	export.SetId(d.Get("id").(string)) // id is required for UPDATE request
-	export.SetType(cloudexport.V202101beta1CloudExportType(d.Get("type").(string)))
-	export.SetEnabled(d.Get("enabled").(bool))
-	export.SetName(d.Get("name").(string))
-	export.SetDescription(d.Get("description").(string))
-	export.SetPlanId(d.Get("plan_id").(string))
+
+	if id, ok := d.GetOk("id"); ok {
+		export.SetId(id.(string))
+	}
+
+	if type_, ok := d.GetOk("type"); ok {
+		export.SetType(cloudexport.V202101beta1CloudExportType(type_.(string)))
+	}
+
+	if enabled, ok := d.GetOk("enabled"); ok {
+		export.SetEnabled(enabled.(bool))
+	}
+
+	if name, ok := d.GetOk("name"); ok {
+		export.SetName(name.(string))
+	}
+
+	if description, ok := d.GetOk("description"); ok {
+		export.SetDescription(description.(string))
+	}
+
+	if planID, ok := d.GetOk("plan_id"); ok {
+		export.SetPlanId(planID.(string))
+	}
 
 	// validation: for any given cloud_provider, there should also be an object of the same name, containing configuration details
 	// eg for cloud_provider="ibm", ibm{...} object should be defined
