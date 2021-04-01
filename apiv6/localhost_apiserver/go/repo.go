@@ -59,7 +59,7 @@ func (r *CloudExportRepo) Create(e V202101beta1CloudExport) (*V202101beta1CloudE
 
 	newExport := e
 
-	// cloudexport server assigns ApiRoot and FlowDest if not specified by user
+	// cloudexport service assigns ApiRoot and FlowDest if not specified by user
 	if e.ApiRoot == nil {
 		newExport.ApiRoot = stringPtr("http://localhost:8080/api")
 	}
