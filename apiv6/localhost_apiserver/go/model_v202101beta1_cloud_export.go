@@ -25,9 +25,9 @@ type V202101beta1CloudExport struct {
 	// An optional, longer description.
 	Description string `json:"description,omitempty"`
 
-	ApiRoot string `json:"apiRoot,omitempty"`
+	ApiRoot *string `json:"apiRoot,omitempty"` // NOTE: updated by hand to pointer type
 
-	FlowDest string `json:"flowDest,omitempty"`
+	FlowDest *string `json:"flowDest,omitempty"` // NOTE: updated by hand to pointer type
 
 	// The identifier of the Kentik plan associated with this task.
 	PlanId string `json:"planId,omitempty"`
