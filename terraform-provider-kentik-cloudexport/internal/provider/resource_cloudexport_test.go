@@ -44,8 +44,8 @@ func TestResourceCloudExportAWS(t *testing.T) {
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "enabled", "false"),
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "name", "resource_test_terraform_aws_export_updated"),
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "description", "resource test aws export updated"),
-					// resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "api_root", "http://api.dummy.com"),
-					// resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "flow_dest", "http://flow.dummy.com"),
+					// resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "api_root", "http://api.dummy2.com"),
+					// resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "flow_dest", "http://flow.dummy2.com"),
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "plan_id", "3333"),
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "cloud_provider", "aws"),
 					resource.TestCheckResourceAttr("kentik-cloudexport_item.test_aws", "aws.0.bucket", "resource-terraform-aws-bucket-updated"),
@@ -288,6 +288,8 @@ resource "kentik-cloudexport_item" "test_aws" {
 	type= "CLOUD_EXPORT_TYPE_CUSTOMER_MANAGED"
 	enabled=false
 	description= "resource test aws export updated"
+	# api_root= "http://api.dummy2.com"
+	# flow_dest= "http://flow.dummy2.com"
 	plan_id= "3333"
 	cloud_provider= "aws"
 	aws {

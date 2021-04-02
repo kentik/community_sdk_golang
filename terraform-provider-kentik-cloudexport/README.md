@@ -70,7 +70,7 @@ Note: you need to provide kentikapi credentials and also you can provide custom 
 ```terraform
 provider "kentik-cloudexport" {
   email="john@acme.com"
-  token="test123"
+  token="token123"
   # apiurl= "http://localhost:8080" # custom apiserver
 }
 ```
@@ -79,7 +79,7 @@ or as environment variables:
 
 ```bash
 export KTAPI_AUTH_EMAIL="john@acme.com"
-export KTAPI_AUTH_TOKEN="test123"
+export KTAPI_AUTH_TOKEN="token123"
 # export KTAPI_URL="http://localhost:8080" # custom apiserver
 ```
 
@@ -89,11 +89,11 @@ See: [examples](./examples/)
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+To install the provider, run `make install`. This will place the compiled provider binary under `~/.terraform.d/plugins/`.
+
+In order to run the full suite of tests, run `make test`.
 
 To generate or update documentation, run `go generate`.
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
 
 
 ## TODO
