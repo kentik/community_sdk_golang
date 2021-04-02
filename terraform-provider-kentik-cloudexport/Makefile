@@ -15,20 +15,6 @@ default: install
 build:
 	go build -o ${BINARY}
 
-release:
-	GOOS=darwin GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_darwin_amd64
-	GOOS=freebsd GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_freebsd_386
-	GOOS=freebsd GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_freebsd_amd64
-	GOOS=freebsd GOARCH=arm go build -o ./bin/${BINARY}_${VERSION}_freebsd_arm
-	GOOS=linux GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_linux_386
-	GOOS=linux GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_linux_amd64
-	GOOS=linux GOARCH=arm go build -o ./bin/${BINARY}_${VERSION}_linux_arm
-	GOOS=openbsd GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_openbsd_386
-	GOOS=openbsd GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_openbsd_amd64
-	GOOS=solaris GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_solaris_amd64
-	GOOS=windows GOARCH=386 go build -o ./bin/${BINARY}_${VERSION}_windows_386
-	GOOS=windows GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_windows_amd64
-
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
@@ -43,11 +29,12 @@ test:
 	sleep 1 # let the server some warm up time
 
 	# run tests; set KTAPI_URL to our local apiserver url - otherwise the provider will try to connect to live kentik server
-	echo $(TEST) | KTAPI_URL="http://${APISERVER_ADDR}" xargs go test $(TESTARGS) -run="." -timeout=30s -parallel=4 -count=1 -v || true # "true" to also kill the localhost_apiserver in case when tests fail
+	echo $(TEST) | KTAPI_URL="http://${APISERVER_ADDR}" KTAPI_AUTH_EMAIL="dummy@acme.com" KTAPI_AUTH_TOKEN="dummy" xargs go test $(TESTARGS) -run="." -timeout=5m -parallel=4 -count=1 -v \
+		|| (pkill -f localhost_apiserver && exit 1) # if error - stop local apiserver and exit with error
 
-	# stop the local apiserver
+	# if success - just stop the local apiserver
 	pkill -f localhost_apiserver
 
 testacc:
 	echo "Currently no acceptance tests that run against live apiserver are available. You can run tests against local apiserver with: make test"
-	# TF_ACC=1 go test $(TEST) -run "." -v $(TESTARGS) -timeout 1m
+	# TF_ACC=1 go test $(TEST) -run "." -v $(TESTARGS) -timeout 5m
