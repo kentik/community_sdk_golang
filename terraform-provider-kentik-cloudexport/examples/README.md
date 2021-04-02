@@ -1,4 +1,4 @@
-# kentik cloudexport terraform examples
+# kentik-cloudexport provider examples
 
 ## run_localhost.sh
 

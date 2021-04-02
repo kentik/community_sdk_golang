@@ -1,20 +1,3 @@
-terraform {
-  required_providers {
-    kentik-cloudexport = {
-      version = "0.1.0"
-      source  = "kentik.com/automation/kentik-cloudexport"
-    }
-  }
-}
-
-provider "kentik-cloudexport" {
-  # email, token and apiurl are read from KTAPI_AUTH_EMAIL, KTAPI_AUTH_TOKEN, KTAPI_URL env variables if not specified here
-
-  # email="john@acme.com"
-  # token="token123"
-  # apiurl = "http://localhost:8080"
-}
-
 # create cloudexport for AWS
 resource "kentik-cloudexport_item" "terraform_aws_export" {
   name           = "test_terraform_aws_export"
@@ -91,23 +74,4 @@ resource "kentik-cloudexport_item" "terraform_gce_export" {
 
 output "gce" {
   value = kentik-cloudexport_item.terraform_gce_export
-}
-
-# create cloudexport for BGP
-resource "kentik-cloudexport_item" "terraform_bgp_export" {
-  name           = "test_terraform_bgp_export"
-  type           = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
-  enabled        = false
-  description    = "terraform bgp cloud export2"
-  plan_id        = "11467"
-  cloud_provider = "bgp"
-  bgp {
-    apply_bgp         = true
-    use_bgp_device_id = "1324"
-    device_bgp_type   = "router"
-  }
-}
-
-output "bgp" {
-  value = kentik-cloudexport_item.terraform_bgp_export
 }

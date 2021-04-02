@@ -20,7 +20,7 @@ stage "Kentik CloudExport Terraform Provider example - localhost apiserver"
 echo "Please make sure apiserver at $apiurl is running"
 
 stage "Build & install plugin"
-pushd ../../  > /dev/null || die
+pushd ../../../  > /dev/null || die
 make install || die
 popd  > /dev/null || die
 
