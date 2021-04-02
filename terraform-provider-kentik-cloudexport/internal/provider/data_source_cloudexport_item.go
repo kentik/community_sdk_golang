@@ -19,7 +19,7 @@ func dataSourceCloudExportItem() *schema.Resource {
 func dataSourceCloudExportItemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*kentikapi.Client)
 	exportID := d.Get("id").(string)
-	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(context.Background(), exportID)
+	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(ctx, exportID)
 	getResp, httpResp, err := req.Execute()
 	if err != nil {
 		return diagError("Failed to read cloud export item", err, httpResp)

@@ -31,7 +31,7 @@ func resourceCloudExportCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 	createReqPayload := *cloudexport.NewV202101beta1CreateCloudExportRequest()
 	createReqPayload.Export = export
-	createReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceCreateCloudExport(context.Background()).V202101beta1CreateCloudExportRequest(createReqPayload)
+	createReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceCreateCloudExport(ctx).V202101beta1CreateCloudExportRequest(createReqPayload)
 	createResp, httpResp, err := createReq.Execute()
 	if err != nil {
 		return diagError("Failed to create cloud export", err, httpResp)
@@ -47,7 +47,7 @@ func resourceCloudExportRead(ctx context.Context, d *schema.ResourceData, m inte
 	client := m.(*kentikapi.Client)
 
 	exportID := d.Get("id").(string)
-	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(context.Background(), exportID)
+	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(ctx, exportID)
 	getResp, httpResp, err := req.Execute()
 	if err != nil {
 		return diagError("Failed to read cloud export", err, httpResp)
@@ -74,7 +74,7 @@ func resourceCloudExportUpdate(ctx context.Context, d *schema.ResourceData, m in
 		updateReqPayload.Export = export
 		client := m.(*kentikapi.Client)
 		exportID := d.Get("id").(string)
-		updateReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceUpdateCloudExport(context.Background(), exportID).V202101beta1UpdateCloudExportRequest(updateReqPayload)
+		updateReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceUpdateCloudExport(ctx, exportID).V202101beta1UpdateCloudExportRequest(updateReqPayload)
 		_, httpResp, err := updateReq.Execute()
 		if err != nil {
 			return diagError("Failed to update cloud export", err, httpResp)
@@ -88,7 +88,7 @@ func resourceCloudExportDelete(ctx context.Context, d *schema.ResourceData, m in
 	client := m.(*kentikapi.Client)
 	exportID := d.Get("id").(string)
 
-	deleteReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceDeleteCloudExport(context.Background(), exportID)
+	deleteReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceDeleteCloudExport(ctx, exportID)
 	_, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return diagError("Failed to delete cloud export", err, httpResp)

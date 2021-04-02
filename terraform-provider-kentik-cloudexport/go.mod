@@ -1,4 +1,4 @@
-module github.com/kentik/community_sdk_golang/terraform
+module github.com/kentik/community_sdk_golang/terraform-provider-kentik-cloudexport
 
 go 1.15
 

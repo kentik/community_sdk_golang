@@ -10,27 +10,25 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
 )
 
-var cloudExportListSchema = map[string]*schema.Schema{
-	"items": &schema.Schema{
-		Type:     schema.TypeList,
-		Computed: true,
-		Elem: &schema.Resource{
-			Schema: makeCloudExportSchema(READ_LIST),
-		},
-	},
-}
-
 func dataSourceCloudExportList() *schema.Resource {
 	return &schema.Resource{
 		Description: "DataSource representing list of cloud exports",
 		ReadContext: dataSourceCloudExportListRead,
-		Schema:      cloudExportListSchema,
+		Schema: map[string]*schema.Schema{
+			"items": &schema.Schema{
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: makeCloudExportSchema(READ_LIST),
+				},
+			},
+		},
 	}
 }
 
 func dataSourceCloudExportListRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*kentikapi.Client)
-	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceListCloudExport(context.Background())
+	req := client.CloudExportAdminServiceApi.CloudExportAdminServiceListCloudExport(ctx)
 	listResp, httpResp, err := req.Execute()
 	if err != nil {
 		return diagError("Failed to read cloud export list", err, httpResp)
