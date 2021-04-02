@@ -99,6 +99,4 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ## TODO
 
 - add acceptance tests that communicate with live api server (once api server "HTTP DELETE" issue is fixed)
-- prepare resources and data-sources documentation
-- prepare config for GoReleaser
 - publish to registry.terraform.io
