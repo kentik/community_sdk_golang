@@ -66,3 +66,7 @@ func (p *BoolAsStringOrInt) UnmarshalJSON(data []byte) (err error) {
 
 	return nil
 }
+
+func stringPtr(s string) *string {
+	return &s
+}

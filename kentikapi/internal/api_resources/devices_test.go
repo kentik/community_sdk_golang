@@ -3,11 +3,13 @@ package api_resources_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -121,6 +123,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
 	assert.Equal("/device", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -293,6 +296,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
 	assert.Equal("/device", transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -466,6 +470,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	require.NotNil(payload.Get("device"))
@@ -549,343 +554,554 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Equal(models.DeviceSubtypePaloalto, device.DeviceSubType)
 }
 
-func TestGetDeviceRouter(t *testing.T) {
-	// arrange
-	getResponsePayload := `
-    {
-        "device": {
-            "id": "42",
-            "company_id": "74333",
-            "device_name": "testapi_router_full_1",
-            "device_type": "router",
-            "device_status": "V",
-            "device_description": "testapi router with full config",
-            "site": {
-                "id": 8483,
-                "site_name": "marina gdańsk",
-                "lat": 54.348972,
-                "lon": 18.659791,
-                "company_id": 74333
-            },
-            "plan": {
-                "active": true,
-                "bgp_enabled": true,
-                "cdate": "2020-09-03T08:41:57.489Z",
-                "company_id": 74333,
-                "description": "Your Free Trial includes 6 devices (...)",
-                "deviceTypes": [],
-                "devices": [],
-                "edate": "2020-09-03T08:41:57.489Z",
-                "fast_retention": 30,
-                "full_retention": 30,
-                "id": 11466,
-                "max_bigdata_fps": 30,
-                "max_devices": 6,
-                "max_fps": 1000,
-                "name": "Free Trial Plan",
-                "metadata": {}
-            },
-            "labels": [
-                        {
-                            "id": 2590,
-                            "name": "AWS: terraform-demo-aws",
-                            "description": null,
-                            "edate": "2020-10-05T15:28:00.276Z",
-                            "cdate": "2020-10-05T15:28:00.276Z",
-                            "user_id": "133210",
-                            "company_id": "74333",
-                            "color": "#5340A5",
-                            "order": null,
-                            "_pivot_device_id": "77715",
-                            "_pivot_label_id": "2590"
-                        },
-                        {
-                            "id": 2751,
-                            "name": "GCP: traffic-generator-gcp",
-                            "description": null,
-                            "edate": "2020-11-20T12:54:49.575Z",
-                            "cdate": "2020-11-20T12:54:49.575Z",
-                            "user_id": "136885",
-                            "company_id": "74333",
-                            "color": "#5289D9",
-                            "order": null,
-                            "_pivot_device_id": "77373",
-                            "_pivot_label_id": "2751"
-                        }
-                    ],
-            "all_interfaces": [
-                {
-                    "interface_description": "testapi-interface-1",
-                    "initial_snmp_speed": null,
-                    "device_id": "42",
-                    "snmp_speed": "75"
-                },
-                {
-                    "interface_description": "testapi-interface-2",
-                    "initial_snmp_speed": "7",
-                    "device_id": "42",
-                    "snmp_speed": "7"
-                }
-            ],
-            "device_flow_type": "auto",
-            "device_sample_rate": "1001",
-            "sending_ips": [
-                "128.0.0.11",
-                "128.0.0.12"
-            ],
-            "device_snmp_ip": "129.0.0.1",
-            "device_snmp_community": "",
-            "minimize_snmp": false,
-            "device_bgp_type": "device",
-            "device_bgp_neighbor_ip": "127.0.0.1",
-            "device_bgp_neighbor_ip6": null,
-            "device_bgp_neighbor_asn": "11",
-            "device_bgp_flowspec": true,
-            "device_bgp_password": "*********ass",
-            "use_bgp_device_id": null,
-            "custom_columns": "",
-            "custom_column_data": [],
-            "device_chf_client_port": null,
-            "device_chf_client_protocol": null,
-            "device_chf_interface": null,
-            "device_agent_type": null,
-            "max_flow_rate": 1000,
-            "max_big_flow_rate": 30,
-            "device_proxy_bgp": "",
-            "device_proxy_bgp6": "",
-            "created_date": "2020-12-17T08:24:45.074Z",
-            "updated_date": "2020-12-17T08:24:45.074Z",
-            "device_snmp_v3_conf": {
-                "UserName": "John",
-                "AuthenticationProtocol": "MD5",
-                "AuthenticationPassphrase": "john_md5_pass",
-                "PrivacyProtocol": "DES",
-                "PrivacyPassphrase": "**********ass"
-            },
-            "bgpPeerIP4": "208.76.14.223",
-            "bgpPeerIP6": "2620:129:1:2::1",
-            "snmp_last_updated": null,
-            "device_subtype": "router"
-        }
-    }`
-	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := api_resources.NewDevicesAPI(transport)
-	deviceID := models.ID(42)
+func TestGetDevice(t *testing.T) {
+	tests := []struct {
+		name           string
+		transportError error
+		responseBody   string
+		expectedResult *models.Device
+		expectedError  bool
+	}{
+		{
+			name:           "transport error",
+			transportError: assert.AnError,
+			expectedError:  true,
+		}, {
+			name:          "invalid response format",
+			responseBody:  "invalid JSON",
+			expectedError: true,
+		}, {
+			name:          "empty response",
+			responseBody:  "{}",
+			expectedError: true,
+		}, {
+			name: "minimal device returned",
+			responseBody: `{
+				"device": {
+					"id": "43",
+					"company_id": "74333",
+					"device_name": "testapi_dns_minimal_1",
+					"device_type": "router",
+					"device_subtype": "router",
+					"plan": {},
+					"device_sample_rate": "1",
+					"created_date": "2020-12-17T12:53:01.025Z",
+					"updated_date": "2020-12-17T12:53:01.025Z"
+				}
+			}`,
+			expectedResult: &models.Device{
+				DeviceSampleRate:    1,
+				ID:              43,
+				DeviceName:      "testapi_dns_minimal_1",
+				DeviceType:      models.DeviceTypeRouter,
+				DeviceSubType:   models.DeviceSubtypeRouter,
+				CompanyID:       74333,
+				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				Plan: models.DevicePlan{
+					DeviceTypes: []models.PlanDeviceType{},
+					Devices:     []models.PlanDevice{},
+				},
+				Labels:        []models.DeviceLabel{},
+				AllInterfaces: []models.AllInterfaces{},
+			},
+		}, {
+			name: "device router returned",
+			responseBody: `{
+				"device": {
+					"id": "42",
+					"company_id": "74333",
+					"device_name": "testapi_router_full_1",
+					"device_type": "router",
+					"device_status": "V",
+					"device_description": "testapi router with full config",
+					"site": {
+						"id": 8483,
+						"site_name": "marina gdańsk",
+						"lat": 54.348972,
+						"lon": 18.659791,
+						"company_id": 74333
+					},
+					"plan": {
+						"active": true,
+						"bgp_enabled": true,
+						"cdate": "2020-09-03T08:41:57.489Z",
+						"company_id": 74333,
+						"description": "Your Free Trial includes 6 devices (...)",
+						"deviceTypes": [],
+						"devices": [],
+						"edate": "2020-09-03T08:41:57.489Z",
+						"fast_retention": 30,
+						"full_retention": 30,
+						"id": 11466,
+						"max_bigdata_fps": 30,
+						"max_devices": 6,
+						"max_fps": 1000,
+						"name": "Free Trial Plan",
+						"metadata": {}
+					},
+					"labels": [
+						{
+							"id": 2590,
+							"name": "AWS: terraform-demo-aws",
+							"description": null,
+							"edate": "2020-10-05T15:28:00.276Z",
+							"cdate": "2020-10-05T15:28:00.276Z",
+							"user_id": "133210",
+							"company_id": "74333",
+							"color": "#5340A5",
+							"order": null,
+							"_pivot_device_id": "77715",
+							"_pivot_label_id": "2590"
+						},
+						{
+							"id": 2751,
+							"name": "GCP: traffic-generator-gcp",
+							"description": null,
+							"edate": "2020-11-20T12:54:49.575Z",
+							"cdate": "2020-11-20T12:54:49.575Z",
+							"user_id": "136885",
+							"company_id": "74333",
+							"color": "#5289D9",
+							"order": null,
+							"_pivot_device_id": "77373",
+							"_pivot_label_id": "2751"
+						}
+					],
+					"all_interfaces": [
+						{
+							"interface_description": "testapi-interface-1",
+							"initial_snmp_speed": null,
+							"device_id": "42",
+							"snmp_speed": "75"
+						},
+						{
+							"interface_description": "testapi-interface-2",
+							"initial_snmp_speed": "7",
+							"device_id": "42",
+							"snmp_speed": "7"
+						}
+					],
+					"device_flow_type": "auto",
+					"device_sample_rate": "1001",
+					"sending_ips": [
+						"128.0.0.11",
+						"128.0.0.12"
+					],
+					"device_snmp_ip": "129.0.0.1",
+					"device_snmp_community": "",
+					"minimize_snmp": false,
+					"device_bgp_type": "device",
+					"device_bgp_neighbor_ip": "127.0.0.1",
+					"device_bgp_neighbor_ip6": null,
+					"device_bgp_neighbor_asn": "11",
+					"device_bgp_flowspec": true,
+					"device_bgp_password": "*********ass",
+					"use_bgp_device_id": null,
+					"custom_columns": "",
+					"custom_column_data": [],
+					"device_chf_client_port": null,
+					"device_chf_client_protocol": null,
+					"device_chf_interface": null,
+					"device_agent_type": null,
+					"max_flow_rate": 1000,
+					"max_big_flow_rate": 30,
+					"device_proxy_bgp": "",
+					"device_proxy_bgp6": "",
+					"created_date": "2020-12-17T08:24:45.074Z",
+					"updated_date": "2020-12-17T08:24:45.074Z",
+					"device_snmp_v3_conf": {
+						"UserName": "John",
+						"AuthenticationProtocol": "MD5",
+						"AuthenticationPassphrase": "john_md5_pass",
+						"PrivacyProtocol": "DES",
+						"PrivacyPassphrase": "**********ass"
+					},
+					"bgpPeerIP4": "208.76.14.223",
+					"bgpPeerIP6": "2620:129:1:2::1",
+					"snmp_last_updated": null,
+					"device_subtype": "router"
+				}
+			}`,
+			expectedResult: &models.Device{
+				PlanID:              nil,
+				SiteID:              nil,
+				DeviceDescription:   testutil.StringPtr("testapi router with full config"),
+				DeviceSampleRate:    1001,
+				SendingIPS:          []string{"128.0.0.11", "128.0.0.12"},
+				DeviceSNMNPIP:       testutil.StringPtr("129.0.0.1"),
+				DeviceSNMPCommunity: testutil.StringPtr(""),
+				MinimizeSNMP:        testutil.BoolPtr(false),
+				DeviceBGPType: func() *models.DeviceBGPType {
+					v := models.DeviceBGPTypeDevice
+					return &v
+				}(),
+				DeviceBGPNeighborIP:   testutil.StringPtr("127.0.0.1"),
+				DeviceBGPNeighborIPv6: nil,
+				DeviceBGPNeighborASN:  testutil.StringPtr("11"),
+				DeviceBGPFlowSpec:     testutil.BoolPtr(true),
+				DeviceBGPPassword:     testutil.StringPtr("*********ass"),
+				UseBGPDeviceID:        nil,
+				DeviceSNMPv3Conf: &models.SNMPv3Conf{
+					UserName: "John",
+					AuthenticationProtocol: func() *models.AuthenticationProtocol {
+						v := models.AuthenticationProtocolMD5
+						return &v
+					}(),
+					AuthenticationPassphrase: testutil.StringPtr("john_md5_pass"),
+					PrivacyProtocol: func() *models.PrivacyProtocol {
+						v := models.PrivacyProtocolDES
+						return &v
+					}(),
+					PrivacyPassphrase: testutil.StringPtr("**********ass"),
+				},
+				CDNAttr:         nil,
+				ID:              42,
+				DeviceName:      "testapi_router_full_1",
+				DeviceType:      models.DeviceTypeRouter,
+				DeviceSubType:   models.DeviceSubtypeRouter,
+				DeviceStatus:    testutil.StringPtr("V"),
+				DeviceFlowType:  testutil.StringPtr("auto"),
+				CompanyID:       74333,
+				SNMPLastUpdated: nil,
+				CreatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
+				UpdatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
+				BGPPeerIP4:      testutil.StringPtr("208.76.14.223"),
+				BGPPeerIP6:      testutil.StringPtr("2620:129:1:2::1"),
+				Plan: models.DevicePlan{
+					ID:            testutil.IDPtr(11466),
+					CompanyID:     testutil.IDPtr(74333),
+					Name:          testutil.StringPtr("Free Trial Plan"),
+					Description:   testutil.StringPtr("Your Free Trial includes 6 devices (...)"),
+					Active:        testutil.BoolPtr(true),
+					MaxDevices:    testutil.IntPtr(6),
+					MaxFPS:        testutil.IntPtr(1000),
+					BGPEnabled:    testutil.BoolPtr(true),
+					FastRetention: testutil.IntPtr(30),
+					FullRetention: testutil.IntPtr(30),
+					CreatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					UpdatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					MaxBigdataFPS: testutil.IntPtr(30),
+					DeviceTypes:   []models.PlanDeviceType{},
+					Devices:       []models.PlanDevice{},
+				},
+				Site: &models.DeviceSite{
+					ID:        testutil.IDPtr(8483),
+					CompanyID: testutil.IDPtr(74333),
+					Latitude:  testutil.Float64Ptr(54.348972),
+					Longitude: testutil.Float64Ptr(18.659791),
+					SiteName:  testutil.StringPtr("marina gdańsk"),
+				},
+				Labels: []models.DeviceLabel{
+					{
+						Name:        "AWS: terraform-demo-aws",
+						Color:       "#5340A5",
+						Devices:     nil,
+						ID:          2590,
+						UserID:      testutil.IDPtr(133210),
+						CompanyID:   74333,
+						CreatedDate: time.Date(2020, 10, 5, 15, 28, 00, 276*1000000, time.UTC),
+						UpdatedDate: time.Date(2020, 10, 5, 15, 28, 00, 276*1000000, time.UTC),
+					},
+					{
+						Name:        "GCP: traffic-generator-gcp",
+						Color:       "#5289D9",
+						Devices:     nil,
+						ID:          2751,
+						UserID:      testutil.IDPtr(136885),
+						CompanyID:   74333,
+						CreatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
+						UpdatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
+					},
+				},
+				AllInterfaces: []models.AllInterfaces{
+					{
+						InterfaceDescription: "testapi-interface-1",
+						DeviceID:             42,
+						SNMPSpeed:            75,
+						InitialSNMPSpeed:     nil,
+					},
+					{
+						InterfaceDescription: "testapi-interface-2",
+						DeviceID:             42,
+						SNMPSpeed:            7,
+						InitialSNMPSpeed:     testutil.Float64Ptr(7),
+					},
+				},
+			},
+		}, {
+			name: "device DNS returned",
+			responseBody: `{
+				"device": {
+					"id": "43",
+					"company_id": "74333",
+					"device_name": "testapi_dns_minimal_1",
+					"device_type": "host-nprobe-dns-www",
+					"device_status": "V",
+					"device_description": "testapi dns with minimal config",
+					"site": {},
+					"plan": {
+						"active": true,
+						"bgp_enabled": true,
+						"cdate": "2020-09-03T08:41:57.489Z",
+						"company_id": 74333,
+						"description": "Your Free Trial includes 6 devices (...)",
+						"deviceTypes": [],
+						"devices": [],
+						"edate": "2020-09-03T08:41:57.489Z",
+						"fast_retention": 30,
+						"full_retention": 30,
+						"id": 11466,
+						"max_bigdata_fps": 30,
+						"max_devices": 6,
+						"max_fps": 1000,
+						"name": "Free Trial Plan",
+						"metadata": {}
+					},
+					"labels": [],
+					"all_interfaces": [],
+					"device_flow_type": "auto",
+					"device_sample_rate": "1",
+					"sending_ips": [],
+					"device_snmp_ip": null,
+					"device_snmp_community": "",
+					"minimize_snmp": false,
+					"device_bgp_type": "none",
+					"device_bgp_neighbor_ip": null,
+					"device_bgp_neighbor_ip6": null,
+					"device_bgp_neighbor_asn": null,
+					"device_bgp_flowspec": false,
+					"device_bgp_password": null,
+					"use_bgp_device_id": null,
+					"custom_columns": "",
+					"custom_column_data": [],
+					"device_chf_client_port": null,
+					"device_chf_client_protocol": null,
+					"device_chf_interface": null,
+					"device_agent_type": null,
+					"max_flow_rate": 1000,
+					"max_big_flow_rate": 30,
+					"device_proxy_bgp": "",
+					"device_proxy_bgp6": "",
+					"created_date": "2020-12-17T12:53:01.025Z",
+					"updated_date": "2020-12-17T12:53:01.025Z",
+					"device_snmp_v3_conf": null,
+					"cdn_attr": "Y",
+					"snmp_last_updated": null,
+					"device_subtype": "aws_subnet"
+				}
+			}`,
+			expectedResult: &models.Device{
+				PlanID:              nil,
+				SiteID:              nil,
+				DeviceDescription:   testutil.StringPtr("testapi dns with minimal config"),
+				DeviceSampleRate:    1,
+				SendingIPS:          []string{},
+				DeviceSNMNPIP:       nil,
+				DeviceSNMPCommunity: testutil.StringPtr(""),
+				MinimizeSNMP:        testutil.BoolPtr(false),
+				DeviceBGPType: func() *models.DeviceBGPType {
+					v := models.DeviceBGPTypeNone
+					return &v
+				}(),
+				DeviceBGPNeighborIP:   nil,
+				DeviceBGPNeighborIPv6: nil,
+				DeviceBGPNeighborASN:  nil,
+				DeviceBGPFlowSpec:     testutil.BoolPtr(false),
+				DeviceBGPPassword:     nil,
+				UseBGPDeviceID:        nil,
+				DeviceSNMPv3Conf:      nil,
+				CDNAttr: func() *models.CDNAttribute {
+					v := models.CDNAttributeYes
+					return &v
+				}(),
+				ID:              43,
+				DeviceName:      "testapi_dns_minimal_1",
+				DeviceType:      models.DeviceTypeHostNProbeDNSWWW,
+				DeviceSubType:   models.DeviceSubtypeAwsSubnet,
+				DeviceStatus:    testutil.StringPtr("V"),
+				DeviceFlowType:  testutil.StringPtr("auto"),
+				CompanyID:       74333,
+				SNMPLastUpdated: nil,
+				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				BGPPeerIP4:      nil,
+				BGPPeerIP6:      nil,
+				Plan: models.DevicePlan{
+					ID:            testutil.IDPtr(11466),
+					CompanyID:     testutil.IDPtr(74333),
+					Name:          testutil.StringPtr("Free Trial Plan"),
+					Description:   testutil.StringPtr("Your Free Trial includes 6 devices (...)"),
+					Active:        testutil.BoolPtr(true),
+					MaxDevices:    testutil.IntPtr(6),
+					MaxFPS:        testutil.IntPtr(1000),
+					BGPEnabled:    testutil.BoolPtr(true),
+					FastRetention: testutil.IntPtr(30),
+					FullRetention: testutil.IntPtr(30),
+					CreatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					UpdatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					MaxBigdataFPS: testutil.IntPtr(30),
+					DeviceTypes:   []models.PlanDeviceType{},
+					Devices:       []models.PlanDevice{},
+				},
+				Site: &models.DeviceSite{
+					ID:        nil,
+					CompanyID: nil,
+					Latitude:  nil,
+					Longitude: nil,
+					SiteName:  nil,
+				},
+				Labels:        []models.DeviceLabel{},
+				AllInterfaces: []models.AllInterfaces{},
+			},
+		}, {
+			name: "device with unknown enums returned",
+			responseBody: `{
+				"device": {
+					"id": "43",
+					"company_id": "74333",
+					"device_name": "testapi_dns_minimal_1",
+					"device_type": "dt_teapot",
+					"device_subtype": "ds_teapot",
+					"plan": {},
+					"device_sample_rate": "1",
+					"device_bgp_type": "dbt_teapot",
+					"created_date": "2020-12-17T12:53:01.025Z",
+					"updated_date": "2020-12-17T12:53:01.025Z",
+					"device_snmp_v3_conf": {
+						"UserName": "John",
+						"AuthenticationProtocol": "ap_teapot",
+						"AuthenticationPassphrase": "Auth_Pass",
+						"PrivacyProtocol": "pp_teapot",
+						"PrivacyPassphrase": "******ass"
+					},
+					"cdn_attr": "cdna_teapot"
+				}
+			}`,
+			expectedResult: &models.Device{
+				DeviceSampleRate:    1,
+				DeviceBGPType: func() *models.DeviceBGPType {
+					v := models.DeviceBGPType("dbt_teapot")
+					return &v
+				}(),
+				DeviceSNMPv3Conf: &models.SNMPv3Conf{
+					UserName: "John",
+					AuthenticationProtocol: func() *models.AuthenticationProtocol {
+						v := models.AuthenticationProtocol("ap_teapot")
+						return &v
+					}(),
+					AuthenticationPassphrase: testutil.StringPtr("Auth_Pass"),
+					PrivacyProtocol: func() *models.PrivacyProtocol {
+						v := models.PrivacyProtocol("pp_teapot")
+						return &v
+					}(),
+					PrivacyPassphrase: testutil.StringPtr("******ass"),
+				},
+				CDNAttr: func() *models.CDNAttribute {
+					v := models.CDNAttribute("cdna_teapot")
+					return &v
+				}(),
+				ID:              43,
+				DeviceName:      "testapi_dns_minimal_1",
+				DeviceType:      models.DeviceType("dt_teapot"),
+				DeviceSubType:   models.DeviceSubtype("ds_teapot"),
+				CompanyID:       74333,
+				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				Plan: models.DevicePlan{
+					DeviceTypes: []models.PlanDeviceType{},
+					Devices:     []models.PlanDevice{},
+				},
+				Labels:        []models.DeviceLabel{},
+				AllInterfaces: []models.AllInterfaces{},
+			},
+		}, {
+			name: "device with empty enums returned",
+			responseBody: `{
+				"device": {
+					"id": "43",
+					"company_id": "74333",
+					"device_name": "testapi_dns_minimal_1",
+					"device_type": "",
+					"device_subtype": "",
+					"plan": {},
+					"device_sample_rate": "1",
+					"device_bgp_type": "",
+					"created_date": "2020-12-17T12:53:01.025Z",
+					"updated_date": "2020-12-17T12:53:01.025Z",
+					"device_snmp_v3_conf": {
+						"UserName": "John",
+						"AuthenticationProtocol": "",
+						"AuthenticationPassphrase": "Auth_Pass",
+						"PrivacyProtocol": "",
+						"PrivacyPassphrase": "******ass"
+					},
+					"cdn_attr": ""
+				}
+			}`,
+			expectedResult: &models.Device{
+				DeviceSampleRate:    1,
+				DeviceBGPType: func() *models.DeviceBGPType {
+					v := models.DeviceBGPType("")
+					return &v
+				}(),
+				DeviceSNMPv3Conf: &models.SNMPv3Conf{
+					UserName: "John",
+					AuthenticationProtocol: func() *models.AuthenticationProtocol {
+						v := models.AuthenticationProtocol("")
+						return &v
+					}(),
+					AuthenticationPassphrase: testutil.StringPtr("Auth_Pass"),
+					PrivacyProtocol: func() *models.PrivacyProtocol {
+						v := models.PrivacyProtocol("")
+						return &v
+					}(),
+					PrivacyPassphrase: testutil.StringPtr("******ass"),
+				},
+				CDNAttr: func() *models.CDNAttribute {
+					v := models.CDNAttribute("")
+					return &v
+				}(),
+				ID:              43,
+				DeviceName:      "testapi_dns_minimal_1",
+				DeviceType:      models.DeviceType(""),
+				DeviceSubType:   models.DeviceSubtype(""),
+				CompanyID:       74333,
+				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				Plan: models.DevicePlan{
+					DeviceTypes: []models.PlanDeviceType{},
+					Devices:     []models.PlanDevice{},
+				},
+				Labels:        []models.DeviceLabel{},
+				AllInterfaces: []models.AllInterfaces{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
+			devicesAPI := api_resources.NewDevicesAPI(transport)
+			deviceID := 43
 
-	// act
-	device, err := devicesAPI.Get(context.Background(), deviceID)
+			// act
+			result, err := devicesAPI.Get(context.Background(), deviceID)
 
-	// assert request properly formed
-	assert := assert.New(t)
-	require := require.New(t)
+			// assert
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 
-	require.NoError(err)
-	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
-	assert.Zero(transport.RequestBody)
+			assert.Equal(t, http.MethodGet, transport.RequestMethod)
+			assert.Equal(t, fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
+			assert.Zero(t, transport.RequestBody)
 
-	// and response properly parsed
-	assert.Equal(models.ID(42), device.ID)
-	assert.Equal(models.ID(74333), device.CompanyID)
-	assert.Equal("testapi_router_full_1", device.DeviceName)
-	assert.Equal(models.DeviceTypeRouter, device.DeviceType)
-	assert.Equal("testapi router with full config", *device.DeviceDescription)
-	require.NotNil(device.Site)
-	assert.Equal(models.ID(8483), *device.Site.ID)
-	assert.Equal("marina gdańsk", *device.Site.SiteName)
-	assert.Equal(54.348972, *device.Site.Latitude)
-	assert.Equal(18.659791, *device.Site.Longitude)
-	assert.Equal(models.ID(74333), *device.Site.CompanyID)
-	require.NotNil(device.Plan)
-	assert.True(*device.Plan.Active)
-	assert.True(*device.Plan.BGPEnabled)
-	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.CreatedDate)
-	assert.Equal(models.ID(74333), *device.Plan.CompanyID)
-	assert.Equal("Your Free Trial includes 6 devices (...)", *device.Plan.Description)
-	assert.Equal(0, len(device.Plan.DeviceTypes))
-	assert.Equal(0, len(device.Plan.Devices))
-	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.UpdatedDate)
-	assert.Equal(30, *device.Plan.FastRetention)
-	assert.Equal(30, *device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
-	assert.Equal(30, *device.Plan.MaxBigdataFPS)
-	assert.Equal(6, *device.Plan.MaxDevices)
-	assert.Equal(1000, *device.Plan.MaxFPS)
-	assert.Equal("Free Trial Plan", *device.Plan.Name)
-	assert.Equal(2, len(device.Labels))
-	assert.Equal(models.ID(2590), device.Labels[0].ID)
-	assert.Equal("AWS: terraform-demo-aws", device.Labels[0].Name)
-	assert.Equal(time.Date(2020, 10, 5, 15, 28, 00, 276*1000000, time.UTC), device.Labels[0].UpdatedDate)
-	assert.Equal(time.Date(2020, 10, 5, 15, 28, 00, 276*1000000, time.UTC), device.Labels[0].CreatedDate)
-	assert.Equal(models.ID(133210), *device.Labels[0].UserID)
-	assert.Equal(models.ID(74333), device.Labels[0].CompanyID)
-	assert.Equal("#5340A5", device.Labels[0].Color)
-	assert.Equal(models.ID(2751), device.Labels[1].ID)
-	assert.Equal("GCP: traffic-generator-gcp", device.Labels[1].Name)
-	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), device.Labels[1].UpdatedDate)
-	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), device.Labels[1].CreatedDate)
-	assert.Equal(models.ID(136885), *device.Labels[1].UserID)
-	assert.Equal(models.ID(74333), device.Labels[1].CompanyID)
-	assert.Equal("#5289D9", device.Labels[1].Color)
-	assert.Equal(2, len(device.AllInterfaces))
-	assert.Equal("testapi-interface-1", device.AllInterfaces[0].InterfaceDescription)
-	assert.Nil(device.AllInterfaces[0].InitialSNMPSpeed)
-	assert.Equal(models.ID(42), device.AllInterfaces[0].DeviceID)
-	assert.Equal(75.0, device.AllInterfaces[0].SNMPSpeed)
-	assert.Equal("testapi-interface-2", device.AllInterfaces[1].InterfaceDescription)
-	assert.Equal(7.0, *device.AllInterfaces[1].InitialSNMPSpeed)
-	assert.Equal(models.ID(42), device.AllInterfaces[1].DeviceID)
-	assert.Equal(7.0, device.AllInterfaces[1].SNMPSpeed)
-	assert.Equal("auto", *device.DeviceFlowType)
-	assert.Equal(1001, device.DeviceSampleRate)
-	assert.Equal(2, len(device.SendingIPS))
-	assert.Equal("128.0.0.11", device.SendingIPS[0])
-	assert.Equal("128.0.0.12", device.SendingIPS[1])
-	assert.Equal("129.0.0.1", *device.DeviceSNMNPIP)
-	assert.Equal("", *device.DeviceSNMPCommunity)
-	assert.False(*device.MinimizeSNMP)
-	assert.Equal(models.DeviceBGPTypeDevice, *device.DeviceBGPType)
-	assert.Equal("127.0.0.1", *device.DeviceBGPNeighborIP)
-	assert.Nil(device.DeviceBGPNeighborIPv6)
-	assert.Equal("11", *device.DeviceBGPNeighborASN)
-	assert.True(*device.DeviceBGPFlowSpec)
-	assert.Equal("*********ass", *device.DeviceBGPPassword)
-	assert.Nil(device.UseBGPDeviceID)
-	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.CreatedDate)
-	assert.Equal(time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC), device.UpdatedDate)
-	require.NotNil(device.DeviceSNMPv3Conf)
-	assert.Equal("John", device.DeviceSNMPv3Conf.UserName)
-	assert.Equal(models.AuthenticationProtocolMD5, *device.DeviceSNMPv3Conf.AuthenticationProtocol)
-	assert.Equal("john_md5_pass", *device.DeviceSNMPv3Conf.AuthenticationPassphrase)
-	assert.Equal(models.PrivacyProtocolDES, *device.DeviceSNMPv3Conf.PrivacyProtocol)
-	assert.Equal("**********ass", *device.DeviceSNMPv3Conf.PrivacyPassphrase)
-	assert.Equal("208.76.14.223", *device.BGPPeerIP4)
-	assert.Equal("2620:129:1:2::1", *device.BGPPeerIP6)
-	assert.Nil(device.SNMPLastUpdated)
-	assert.Equal(models.DeviceSubtypeRouter, device.DeviceSubType)
-}
-
-func TestGetDeviceDNS(t *testing.T) {
-	// arrange
-	getResponsePayload := `
-    {
-        "device": {
-            "id": "43",
-            "company_id": "74333",
-            "device_name": "testapi_dns_minimal_1",
-            "device_type": "host-nprobe-dns-www",
-            "device_status": "V",
-            "device_description": "testapi dns with minimal config",
-            "site": {},
-            "plan": {
-                "active": true,
-                "bgp_enabled": true,
-                "cdate": "2020-09-03T08:41:57.489Z",
-                "company_id": 74333,
-                "description": "Your Free Trial includes 6 devices (...)",
-                "deviceTypes": [],
-                "devices": [],
-                "edate": "2020-09-03T08:41:57.489Z",
-                "fast_retention": 30,
-                "full_retention": 30,
-                "id": 11466,
-                "max_bigdata_fps": 30,
-                "max_devices": 6,
-                "max_fps": 1000,
-                "name": "Free Trial Plan",
-                "metadata": {}
-            },
-            "labels": [],
-            "all_interfaces": [],
-            "device_flow_type": "auto",
-            "device_sample_rate": "1",
-            "sending_ips": [],
-            "device_snmp_ip": null,
-            "device_snmp_community": "",
-            "minimize_snmp": false,
-            "device_bgp_type": "none",
-            "device_bgp_neighbor_ip": null,
-            "device_bgp_neighbor_ip6": null,
-            "device_bgp_neighbor_asn": null,
-            "device_bgp_flowspec": false,
-            "device_bgp_password": null,
-            "use_bgp_device_id": null,
-            "custom_columns": "",
-            "custom_column_data": [],
-            "device_chf_client_port": null,
-            "device_chf_client_protocol": null,
-            "device_chf_interface": null,
-            "device_agent_type": null,
-            "max_flow_rate": 1000,
-            "max_big_flow_rate": 30,
-            "device_proxy_bgp": "",
-            "device_proxy_bgp6": "",
-            "created_date": "2020-12-17T12:53:01.025Z",
-            "updated_date": "2020-12-17T12:53:01.025Z",
-            "device_snmp_v3_conf": null,
-            "cdn_attr": "Y",
-            "snmp_last_updated": null,
-            "device_subtype": "aws_subnet"
-        }
-    }`
-	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := api_resources.NewDevicesAPI(transport)
-	deviceID := models.ID(43)
-
-	// act
-	device, err := devicesAPI.Get(context.Background(), deviceID)
-
-	// assert request properly formed
-	assert := assert.New(t)
-	require := require.New(t)
-
-	require.NoError(err)
-	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
-	assert.Zero(transport.RequestBody)
-
-	// and response properly parsed
-	assert.Equal(models.ID(43), device.ID)
-	assert.Equal(models.ID(74333), device.CompanyID)
-	assert.Equal("testapi_dns_minimal_1", device.DeviceName)
-	assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
-	assert.Equal("testapi dns with minimal config", *device.DeviceDescription)
-	assert.Zero(*device.Site) // empty site in response body
-	assert.True(*device.Plan.Active)
-	assert.True(*device.Plan.BGPEnabled)
-	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.CreatedDate)
-	assert.Equal(models.ID(74333), *device.Plan.CompanyID)
-	assert.Equal("Your Free Trial includes 6 devices (...)", *device.Plan.Description)
-	assert.Equal(0, len(device.Plan.DeviceTypes))
-	assert.Equal(0, len(device.Plan.Devices))
-	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.UpdatedDate)
-	assert.Equal(30, *device.Plan.FastRetention)
-	assert.Equal(30, *device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
-	assert.Equal(30, *device.Plan.MaxBigdataFPS)
-	assert.Equal(6, *device.Plan.MaxDevices)
-	assert.Equal(1000, *device.Plan.MaxFPS)
-	assert.Equal("Free Trial Plan", *device.Plan.Name)
-	assert.Equal(0, len(device.Labels))
-	assert.Equal(0, len(device.AllInterfaces))
-	assert.Equal("auto", *device.DeviceFlowType)
-	assert.Equal(1, device.DeviceSampleRate)
-	assert.Equal(0, len(device.SendingIPS))
-	assert.Nil(device.DeviceSNMNPIP)
-	assert.Equal("", *device.DeviceSNMPCommunity)
-	assert.False(*device.MinimizeSNMP)
-	assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
-	assert.Nil(device.DeviceBGPNeighborIP)
-	assert.Nil(device.DeviceBGPNeighborIPv6)
-	assert.Nil(device.DeviceBGPNeighborASN)
-	assert.False(*device.DeviceBGPFlowSpec)
-	assert.Nil(device.UseBGPDeviceID)
-	assert.Equal(time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC), device.CreatedDate)
-	assert.Equal(time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC), device.UpdatedDate)
-	assert.Nil(device.DeviceSNMPv3Conf)
-	assert.Equal(models.CDNAttributeYes, *device.CDNAttr)
-	assert.Nil(device.BGPPeerIP4)
-	assert.Nil(device.BGPPeerIP6)
-	assert.Nil(device.SNMPLastUpdated)
-	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
 }
 
 func TestGetAllDevices(t *testing.T) {
@@ -1071,6 +1287,7 @@ func TestGetAllDevices(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodGet, transport.RequestMethod)
 	assert.Equal("/devices", transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
@@ -1171,6 +1388,7 @@ func TestDeleteDevice(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(http.MethodDelete, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
@@ -1224,6 +1442,7 @@ func TestApplyLabels(t *testing.T) {
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/devices/%v/labels", deviceID), transport.RequestPath)
 	require.NotNil(payload.Get("labels"))
 	assert.Equal(2, payload.Count("labels/*"))
@@ -1291,6 +1510,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodGet, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
@@ -1393,6 +1613,7 @@ func TestGetInterfaceFull(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodGet, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
@@ -1579,6 +1800,7 @@ func TestGetAllInterfaces(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodGet, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interfaces", deviceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 
@@ -1652,6 +1874,7 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface", deviceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(2, payload.Int("snmp_id"))
@@ -1734,6 +1957,8 @@ func TestCreateInterfaceFull(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPost, transport.RequestMethod)
+	assert.Equal(fmt.Sprintf("/device/%v/interface", deviceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(2, payload.Int("snmp_id"))
 	assert.Equal(8, payload.Int("snmp_speed"))
@@ -1787,11 +2012,12 @@ func TestDeleteInterface(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 	require.NoError(err)
+	assert.Equal(http.MethodDelete, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	assert.Zero(transport.RequestBody)
 }
 
-func TestUpdatenteInterfaceMinimal(t *testing.T) {
+func TestUpdateInterfaceMinimal(t *testing.T) {
 	updateResponsePayload := `
     {
         "id": "43",
@@ -1839,6 +2065,7 @@ func TestUpdatenteInterfaceMinimal(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 	assert.Equal(75, payload.Int("snmp_speed"))
@@ -1867,7 +2094,7 @@ func TestUpdatenteInterfaceMinimal(t *testing.T) {
 	assert.Nil(updated.InitialSNMPSpeed)
 }
 
-func TestUpdatenteInterfaceFull(t *testing.T) {
+func TestUpdateInterfaceFull(t *testing.T) {
 	updateResponsePayload := `
     {
         "id": "43",
@@ -1932,6 +2159,7 @@ func TestUpdatenteInterfaceFull(t *testing.T) {
 	require := require.New(t)
 
 	require.NoError(err)
+	assert.Equal(http.MethodPut, transport.RequestMethod)
 	assert.Equal(fmt.Sprintf("/device/%v/interface/%v", deviceID, interfaceID), transport.RequestPath)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
 
