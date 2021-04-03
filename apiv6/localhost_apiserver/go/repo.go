@@ -58,9 +58,16 @@ func (r *CloudExportRepo) Create(e V202101beta1CloudExport) (*V202101beta1CloudE
 	}
 
 	newExport := e
+
+	// cloudexport service assigns ApiRoot and FlowDest if it is not specified by user
+	if e.ApiRoot == nil {
+		newExport.ApiRoot = stringPtr("http://localhost:8080/api")
+	}
+	if e.FlowDest == nil {
+		newExport.FlowDest = stringPtr("http://localhost:8080/flow")
+	}
+
 	newExport.Id = r.allocateNewID()
-	newExport.ApiRoot = "http://localhost:8080"
-	newExport.FlowDest = "http://localhost:8080/flow"
 	newExport.CurrentStatus = &CloudExportv202101beta1Status{
 		Status:               "OK",
 		ErrorMessage:         "No errors",
@@ -134,6 +141,10 @@ func (r *CloudExportRepo) allocateNewID() string {
 		}
 	}
 	return strconv.FormatInt(int64(id)+1, 10)
+}
+
+func stringPtr(s string) *string {
+	return &s
 }
 
 func (r *CloudExportRepo) load() {
