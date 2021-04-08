@@ -8,6 +8,8 @@ info:
 tags:
   - name: SyntheticsDataService
   - name: SyntheticsAdminService
+servers:
+  - url: http://localhost:8080
 paths:
   /synthetics/v202101beta1/agents:
     get:

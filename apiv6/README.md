@@ -4,3 +4,4 @@
 
 Implemented API resources:
 - cloud export
+- synthetics

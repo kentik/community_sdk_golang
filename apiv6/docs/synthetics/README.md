@@ -1,0 +1,103 @@
+# Documentation for Synthetics Monitoring API
+
+<a name="documentation-for-api-endpoints"></a>
+## Documentation for API Endpoints
+
+All URIs are relative to *http://localhost:8080*
+
+Class | Method | HTTP request | Description
+------------ | ------------- | ------------- | -------------
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceCreateAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicecreateagent) | **POST** /synthetics/v202101beta1/agents | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceCreateTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicecreatetest) | **POST** /synthetics/v202101beta1/tests | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceDeleteAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicedeleteagent) | **DELETE** /synthetics/v202101beta1/agents/{agent.id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceDeleteTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicedeletetest) | **DELETE** /synthetics/v202101beta1/tests/{id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceGetAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicegetagent) | **GET** /synthetics/v202101beta1/agents/{agent.id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceGetTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicegettest) | **GET** /synthetics/v202101beta1/tests/{id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceListAgents**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicelistagents) | **GET** /synthetics/v202101beta1/agents | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceListTests**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicelisttests) | **GET** /synthetics/v202101beta1/tests | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServicePatchAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchagent) | **PATCH** /synthetics/v202101beta1/agents/{agent.id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServicePatchTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchtest) | **PATCH** /synthetics/v202101beta1/tests/{id} | 
+*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceSetTestStatus**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicesetteststatus) | **PUT** /synthetics/v202101beta1/tests/{id}/status | 
+*SyntheticsDataServiceApi* | [**syntheticsDataServiceGetHealthForTests**](Apis/SyntheticsDataServiceApi.md#syntheticsdataservicegethealthfortests) | **POST** /synthetics/v202101beta1/health/tests | Get health data for a set of tests
+*SyntheticsDataServiceApi* | [**syntheticsDataServiceGetTraceForTest**](Apis/SyntheticsDataServiceApi.md#syntheticsdataservicegettracefortest) | **POST** /synthetics/v202101beta1/tests/{id}/results/trace | TODO: Get traces for a single test. Not implemented.
+
+
+<a name="documentation-for-models"></a>
+## Documentation for Models
+
+ - [ProtobufAny](./Models/ProtobufAny.md)
+ - [RpcStatus](./Models/RpcStatus.md)
+ - [V202101beta1ASN](./Models/V202101beta1ASN.md)
+ - [V202101beta1Agent](./Models/V202101beta1Agent.md)
+ - [V202101beta1AgentHealth](./Models/V202101beta1AgentHealth.md)
+ - [V202101beta1AgentStatus](./Models/V202101beta1AgentStatus.md)
+ - [V202101beta1AgentTest](./Models/V202101beta1AgentTest.md)
+ - [V202101beta1City](./Models/V202101beta1City.md)
+ - [V202101beta1Country](./Models/V202101beta1Country.md)
+ - [V202101beta1CreateTestRequest](./Models/V202101beta1CreateTestRequest.md)
+ - [V202101beta1CreateTestResponse](./Models/V202101beta1CreateTestResponse.md)
+ - [V202101beta1DNSTaskDefinition](./Models/V202101beta1DNSTaskDefinition.md)
+ - [V202101beta1DnsTest](./Models/V202101beta1DnsTest.md)
+ - [V202101beta1FlowTest](./Models/V202101beta1FlowTest.md)
+ - [V202101beta1Geo](./Models/V202101beta1Geo.md)
+ - [V202101beta1GetAgentResponse](./Models/V202101beta1GetAgentResponse.md)
+ - [V202101beta1GetHealthForTestsRequest](./Models/V202101beta1GetHealthForTestsRequest.md)
+ - [V202101beta1GetHealthForTestsResponse](./Models/V202101beta1GetHealthForTestsResponse.md)
+ - [V202101beta1GetTestResponse](./Models/V202101beta1GetTestResponse.md)
+ - [V202101beta1GetTraceForTestRequest](./Models/V202101beta1GetTraceForTestRequest.md)
+ - [V202101beta1GetTraceForTestResponse](./Models/V202101beta1GetTraceForTestResponse.md)
+ - [V202101beta1HTTPTaskDefinition](./Models/V202101beta1HTTPTaskDefinition.md)
+ - [V202101beta1Health](./Models/V202101beta1Health.md)
+ - [V202101beta1HealthMoment](./Models/V202101beta1HealthMoment.md)
+ - [V202101beta1HealthSettings](./Models/V202101beta1HealthSettings.md)
+ - [V202101beta1HostnameTest](./Models/V202101beta1HostnameTest.md)
+ - [V202101beta1IPFamily](./Models/V202101beta1IPFamily.md)
+ - [V202101beta1IPInfo](./Models/V202101beta1IPInfo.md)
+ - [V202101beta1IpTest](./Models/V202101beta1IpTest.md)
+ - [V202101beta1KnockTaskDefinition](./Models/V202101beta1KnockTaskDefinition.md)
+ - [V202101beta1ListAgentsResponse](./Models/V202101beta1ListAgentsResponse.md)
+ - [V202101beta1ListTestsResponse](./Models/V202101beta1ListTestsResponse.md)
+ - [V202101beta1PatchAgentRequest](./Models/V202101beta1PatchAgentRequest.md)
+ - [V202101beta1PatchAgentResponse](./Models/V202101beta1PatchAgentResponse.md)
+ - [V202101beta1PatchTestResponse](./Models/V202101beta1PatchTestResponse.md)
+ - [V202101beta1PingTaskDefinition](./Models/V202101beta1PingTaskDefinition.md)
+ - [V202101beta1Region](./Models/V202101beta1Region.md)
+ - [V202101beta1SetTestStatusRequest](./Models/V202101beta1SetTestStatusRequest.md)
+ - [V202101beta1ShakeTaskDefinition](./Models/V202101beta1ShakeTaskDefinition.md)
+ - [V202101beta1SiteTest](./Models/V202101beta1SiteTest.md)
+ - [V202101beta1TagTest](./Models/V202101beta1TagTest.md)
+ - [V202101beta1Task](./Models/V202101beta1Task.md)
+ - [V202101beta1TaskHealth](./Models/V202101beta1TaskHealth.md)
+ - [V202101beta1TaskState](./Models/V202101beta1TaskState.md)
+ - [V202101beta1Test](./Models/V202101beta1Test.md)
+ - [V202101beta1TestHealth](./Models/V202101beta1TestHealth.md)
+ - [V202101beta1TestMonitoringSettings](./Models/V202101beta1TestMonitoringSettings.md)
+ - [V202101beta1TestPingSettings](./Models/V202101beta1TestPingSettings.md)
+ - [V202101beta1TestSettings](./Models/V202101beta1TestSettings.md)
+ - [V202101beta1TestStatus](./Models/V202101beta1TestStatus.md)
+ - [V202101beta1TestTraceSettings](./Models/V202101beta1TestTraceSettings.md)
+ - [V202101beta1Trace](./Models/V202101beta1Trace.md)
+ - [V202101beta1TraceHop](./Models/V202101beta1TraceHop.md)
+ - [V202101beta1TraceTaskDefinition](./Models/V202101beta1TraceTaskDefinition.md)
+ - [V202101beta1TracerouteResult](./Models/V202101beta1TracerouteResult.md)
+ - [V202101beta1UrlTest](./Models/V202101beta1UrlTest.md)
+ - [V202101beta1UserInfo](./Models/V202101beta1UserInfo.md)
+
+
+<a name="documentation-for-authorization"></a>
+## Documentation for Authorization
+
+<a name="X-CH-Auth-API-Token"></a>
+### X-CH-Auth-API-Token
+
+- **Type**: API key
+- **API key parameter name**: X-CH-Auth-API-Token
+- **Location**: HTTP header
+
+<a name="X-CH-Auth-Email"></a>
+### X-CH-Auth-Email
+
+- **Type**: API key
+- **API key parameter name**: X-CH-Auth-Email
+- **Location**: HTTP header
+
