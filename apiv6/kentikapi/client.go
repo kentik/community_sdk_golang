@@ -28,6 +28,7 @@ func NewClient(c Config) *Client {
 
 	cloudexportClient := cloudexport.NewAPIClient(makeCloudExportConfig(c))
 	syntheticsClient := synthetics.NewAPIClient(makeSyntheticsConfig(c))
+
 	return &Client{
 		CloudExportAdminServiceApi: cloudexportClient.CloudExportAdminServiceApi,
 		SyntheticsAdminServiceApi:  syntheticsClient.SyntheticsAdminServiceApi,
