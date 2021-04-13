@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -14,11 +15,13 @@ docs/V202101beta1ASN.md
 docs/V202101beta1Agent.md
 docs/V202101beta1AgentHealth.md
 docs/V202101beta1AgentStatus.md
+docs/V202101beta1AgentTaskConfig.md
 docs/V202101beta1AgentTest.md
 docs/V202101beta1City.md
 docs/V202101beta1Country.md
 docs/V202101beta1CreateTestRequest.md
 docs/V202101beta1CreateTestResponse.md
+docs/V202101beta1DNS.md
 docs/V202101beta1DNSTaskDefinition.md
 docs/V202101beta1DnsTest.md
 docs/V202101beta1FlowTest.md
@@ -40,6 +43,10 @@ docs/V202101beta1IpTest.md
 docs/V202101beta1KnockTaskDefinition.md
 docs/V202101beta1ListAgentsResponse.md
 docs/V202101beta1ListTestsResponse.md
+docs/V202101beta1MeshColumn.md
+docs/V202101beta1MeshMetric.md
+docs/V202101beta1MeshMetrics.md
+docs/V202101beta1MeshResponse.md
 docs/V202101beta1PatchAgentRequest.md
 docs/V202101beta1PatchAgentResponse.md
 docs/V202101beta1PatchTestResponse.md
@@ -73,12 +80,14 @@ model_rpc_status.go
 model_v202101beta1_agent.go
 model_v202101beta1_agent_health.go
 model_v202101beta1_agent_status.go
+model_v202101beta1_agent_task_config.go
 model_v202101beta1_agent_test_.go
 model_v202101beta1_asn.go
 model_v202101beta1_city.go
 model_v202101beta1_country.go
 model_v202101beta1_create_test_request.go
 model_v202101beta1_create_test_response.go
+model_v202101beta1_dns.go
 model_v202101beta1_dns_task_definition.go
 model_v202101beta1_dns_test_.go
 model_v202101beta1_flow_test_.go
@@ -100,6 +109,10 @@ model_v202101beta1_ip_test_.go
 model_v202101beta1_knock_task_definition.go
 model_v202101beta1_list_agents_response.go
 model_v202101beta1_list_tests_response.go
+model_v202101beta1_mesh_column.go
+model_v202101beta1_mesh_metric.go
+model_v202101beta1_mesh_metrics.go
+model_v202101beta1_mesh_response.go
 model_v202101beta1_patch_agent_request.go
 model_v202101beta1_patch_agent_response.go
 model_v202101beta1_patch_test_response.go

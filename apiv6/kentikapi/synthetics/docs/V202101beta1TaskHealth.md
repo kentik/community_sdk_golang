@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Task** | Pointer to [**V202101beta1Task**](V202101beta1Task.md) |  | [optional] 
 **Agents** | Pointer to [**[]V202101beta1AgentHealth**](V202101beta1AgentHealth.md) |  | [optional] 
 **OverallHealth** | Pointer to [**V202101beta1Health**](V202101beta1Health.md) |  | [optional] 
+**TargetAgent** | Pointer to [**V202101beta1Agent**](V202101beta1Agent.md) |  | [optional] 
 
 ## Methods
 
@@ -101,6 +102,31 @@ SetOverallHealth sets OverallHealth field to given value.
 `func (o *V202101beta1TaskHealth) HasOverallHealth() bool`
 
 HasOverallHealth returns a boolean if a field has been set.
+
+### GetTargetAgent
+
+`func (o *V202101beta1TaskHealth) GetTargetAgent() V202101beta1Agent`
+
+GetTargetAgent returns the TargetAgent field if non-nil, zero value otherwise.
+
+### GetTargetAgentOk
+
+`func (o *V202101beta1TaskHealth) GetTargetAgentOk() (*V202101beta1Agent, bool)`
+
+GetTargetAgentOk returns a tuple with the TargetAgent field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTargetAgent
+
+`func (o *V202101beta1TaskHealth) SetTargetAgent(v V202101beta1Agent)`
+
+SetTargetAgent sets TargetAgent field to given value.
+
+### HasTargetAgent
+
+`func (o *V202101beta1TaskHealth) HasTargetAgent() bool`
+
+HasTargetAgent returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

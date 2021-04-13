@@ -27,28 +27,29 @@ var (
 // SyntheticsDataServiceApiService SyntheticsDataServiceApi service
 type SyntheticsDataServiceApiService service
 
-type ApiSyntheticsDataServiceGetHealthForTestsRequest struct {
+type ApiGetHealthForTestsRequest struct {
 	ctx                                  _context.Context
 	ApiService                           *SyntheticsDataServiceApiService
 	v202101beta1GetHealthForTestsRequest *V202101beta1GetHealthForTestsRequest
 }
 
-func (r ApiSyntheticsDataServiceGetHealthForTestsRequest) V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest V202101beta1GetHealthForTestsRequest) ApiSyntheticsDataServiceGetHealthForTestsRequest {
+func (r ApiGetHealthForTestsRequest) V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest V202101beta1GetHealthForTestsRequest) ApiGetHealthForTestsRequest {
 	r.v202101beta1GetHealthForTestsRequest = &v202101beta1GetHealthForTestsRequest
 	return r
 }
 
-func (r ApiSyntheticsDataServiceGetHealthForTestsRequest) Execute() (V202101beta1GetHealthForTestsResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsDataServiceGetHealthForTestsExecute(r)
+func (r ApiGetHealthForTestsRequest) Execute() (V202101beta1GetHealthForTestsResponse, *_nethttp.Response, error) {
+	return r.ApiService.GetHealthForTestsExecute(r)
 }
 
 /*
- * SyntheticsDataServiceGetHealthForTests Get health data for a set of tests
+ * GetHealthForTests Get health status for synthetics test.
+ * Get synthetics health test for login user. Also returns mesh data on request.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiSyntheticsDataServiceGetHealthForTestsRequest
+ * @return ApiGetHealthForTestsRequest
  */
-func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTests(ctx _context.Context) ApiSyntheticsDataServiceGetHealthForTestsRequest {
-	return ApiSyntheticsDataServiceGetHealthForTestsRequest{
+func (a *SyntheticsDataServiceApiService) GetHealthForTests(ctx _context.Context) ApiGetHealthForTestsRequest {
+	return ApiGetHealthForTestsRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -58,7 +59,7 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTests
  * Execute executes the request
  * @return V202101beta1GetHealthForTestsResponse
  */
-func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTestsExecute(r ApiSyntheticsDataServiceGetHealthForTestsRequest) (V202101beta1GetHealthForTestsResponse, *_nethttp.Response, error) {
+func (a *SyntheticsDataServiceApiService) GetHealthForTestsExecute(r ApiGetHealthForTestsRequest) (V202101beta1GetHealthForTestsResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -68,7 +69,7 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTests
 		localVarReturnValue  V202101beta1GetHealthForTestsResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsDataServiceApiService.SyntheticsDataServiceGetHealthForTests")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsDataServiceApiService.GetHealthForTests")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -104,7 +105,21 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTests
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -159,30 +174,31 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetHealthForTests
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsDataServiceGetTraceForTestRequest struct {
+type ApiGetTraceForTestRequest struct {
 	ctx                                _context.Context
 	ApiService                         *SyntheticsDataServiceApiService
 	id                                 string
 	v202101beta1GetTraceForTestRequest *V202101beta1GetTraceForTestRequest
 }
 
-func (r ApiSyntheticsDataServiceGetTraceForTestRequest) V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest V202101beta1GetTraceForTestRequest) ApiSyntheticsDataServiceGetTraceForTestRequest {
+func (r ApiGetTraceForTestRequest) V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest V202101beta1GetTraceForTestRequest) ApiGetTraceForTestRequest {
 	r.v202101beta1GetTraceForTestRequest = &v202101beta1GetTraceForTestRequest
 	return r
 }
 
-func (r ApiSyntheticsDataServiceGetTraceForTestRequest) Execute() (V202101beta1GetTraceForTestResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsDataServiceGetTraceForTestExecute(r)
+func (r ApiGetTraceForTestRequest) Execute() (V202101beta1GetTraceForTestResponse, *_nethttp.Response, error) {
+	return r.ApiService.GetTraceForTestExecute(r)
 }
 
 /*
- * SyntheticsDataServiceGetTraceForTest TODO: Get traces for a single test. Not implemented.
+ * GetTraceForTest Get trace route data.
+ * Get trace route data for the specific test id.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param id Test id
- * @return ApiSyntheticsDataServiceGetTraceForTestRequest
+ * @return ApiGetTraceForTestRequest
  */
-func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetTraceForTest(ctx _context.Context, id string) ApiSyntheticsDataServiceGetTraceForTestRequest {
-	return ApiSyntheticsDataServiceGetTraceForTestRequest{
+func (a *SyntheticsDataServiceApiService) GetTraceForTest(ctx _context.Context, id string) ApiGetTraceForTestRequest {
+	return ApiGetTraceForTestRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -193,7 +209,7 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetTraceForTest(c
  * Execute executes the request
  * @return V202101beta1GetTraceForTestResponse
  */
-func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetTraceForTestExecute(r ApiSyntheticsDataServiceGetTraceForTestRequest) (V202101beta1GetTraceForTestResponse, *_nethttp.Response, error) {
+func (a *SyntheticsDataServiceApiService) GetTraceForTestExecute(r ApiGetTraceForTestRequest) (V202101beta1GetTraceForTestResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -203,7 +219,7 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetTraceForTestEx
 		localVarReturnValue  V202101beta1GetTraceForTestResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsDataServiceApiService.SyntheticsDataServiceGetTraceForTest")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsDataServiceApiService.GetTraceForTest")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -240,7 +256,21 @@ func (a *SyntheticsDataServiceApiService) SyntheticsDataServiceGetTraceForTestEx
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key

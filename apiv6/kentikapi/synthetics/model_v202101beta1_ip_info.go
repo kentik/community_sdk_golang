@@ -19,6 +19,7 @@ type V202101beta1IPInfo struct {
 	Ip  *string          `json:"ip,omitempty"`
 	Asn *V202101beta1ASN `json:"asn,omitempty"`
 	Geo *V202101beta1Geo `json:"geo,omitempty"`
+	Dns *V202101beta1DNS `json:"dns,omitempty"`
 }
 
 // NewV202101beta1IPInfo instantiates a new V202101beta1IPInfo object
@@ -134,6 +135,38 @@ func (o *V202101beta1IPInfo) SetGeo(v V202101beta1Geo) {
 	o.Geo = &v
 }
 
+// GetDns returns the Dns field value if set, zero value otherwise.
+func (o *V202101beta1IPInfo) GetDns() V202101beta1DNS {
+	if o == nil || o.Dns == nil {
+		var ret V202101beta1DNS
+		return ret
+	}
+	return *o.Dns
+}
+
+// GetDnsOk returns a tuple with the Dns field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1IPInfo) GetDnsOk() (*V202101beta1DNS, bool) {
+	if o == nil || o.Dns == nil {
+		return nil, false
+	}
+	return o.Dns, true
+}
+
+// HasDns returns a boolean if a field has been set.
+func (o *V202101beta1IPInfo) HasDns() bool {
+	if o != nil && o.Dns != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDns gets a reference to the given V202101beta1DNS and assigns it to the Dns field.
+func (o *V202101beta1IPInfo) SetDns(v V202101beta1DNS) {
+	o.Dns = &v
+}
+
 func (o V202101beta1IPInfo) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Ip != nil {
@@ -144,6 +177,9 @@ func (o V202101beta1IPInfo) MarshalJSON() ([]byte, error) {
 	}
 	if o.Geo != nil {
 		toSerialize["geo"] = o.Geo
+	}
+	if o.Dns != nil {
+		toSerialize["dns"] = o.Dns
 	}
 	return json.Marshal(toSerialize)
 }

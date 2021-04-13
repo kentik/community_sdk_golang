@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Code** | Pointer to **string** |  | [optional] 
+**Id** | Pointer to **string** |  | [optional] 
 **Name** | Pointer to **string** |  | [optional] 
 
 ## Methods
@@ -26,30 +26,30 @@ NewV202101beta1RegionWithDefaults instantiates a new V202101beta1Region object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetCode
+### GetId
 
-`func (o *V202101beta1Region) GetCode() string`
+`func (o *V202101beta1Region) GetId() string`
 
-GetCode returns the Code field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetCodeOk
+### GetIdOk
 
-`func (o *V202101beta1Region) GetCodeOk() (*string, bool)`
+`func (o *V202101beta1Region) GetIdOk() (*string, bool)`
 
-GetCodeOk returns a tuple with the Code field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetCode
+### SetId
 
-`func (o *V202101beta1Region) SetCode(v string)`
+`func (o *V202101beta1Region) SetId(v string)`
 
-SetCode sets Code field to given value.
+SetId sets Id field to given value.
 
-### HasCode
+### HasId
 
-`func (o *V202101beta1Region) HasCode() bool`
+`func (o *V202101beta1Region) HasId() bool`
 
-HasCode returns a boolean if a field has been set.
+HasId returns a boolean if a field has been set.
 
 ### GetName
 

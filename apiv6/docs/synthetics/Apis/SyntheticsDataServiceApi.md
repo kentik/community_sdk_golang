@@ -4,15 +4,17 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**syntheticsDataServiceGetHealthForTests**](SyntheticsDataServiceApi.md#syntheticsDataServiceGetHealthForTests) | **POST** /synthetics/v202101beta1/health/tests | Get health data for a set of tests
-[**syntheticsDataServiceGetTraceForTest**](SyntheticsDataServiceApi.md#syntheticsDataServiceGetTraceForTest) | **POST** /synthetics/v202101beta1/tests/{id}/results/trace | TODO: Get traces for a single test. Not implemented.
+[**getHealthForTests**](SyntheticsDataServiceApi.md#getHealthForTests) | **POST** /synthetics/v202101beta1/health/tests | Get health status for synthetics test.
+[**getTraceForTest**](SyntheticsDataServiceApi.md#getTraceForTest) | **POST** /synthetics/v202101beta1/tests/{id}/results/trace | Get trace route data.
 
 
-<a name="syntheticsDataServiceGetHealthForTests"></a>
-# **syntheticsDataServiceGetHealthForTests**
-> v202101beta1GetHealthForTestsResponse syntheticsDataServiceGetHealthForTests(V202101beta1GetHealthForTestsRequest)
+<a name="getHealthForTests"></a>
+# **getHealthForTests**
+> v202101beta1GetHealthForTestsResponse getHealthForTests(V202101beta1GetHealthForTestsRequest)
 
-Get health data for a set of tests
+Get health status for synthetics test.
+
+    Get synthetics health test for login user. Also returns mesh data on request.
 
 ### Parameters
 
@@ -26,18 +28,20 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[X-CH-Auth-API-Token](../README.md#X-CH-Auth-API-Token)
+[email](../README.md#email), [token](../README.md#token)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
 - **Accept**: application/json
 
-<a name="syntheticsDataServiceGetTraceForTest"></a>
-# **syntheticsDataServiceGetTraceForTest**
-> v202101beta1GetTraceForTestResponse syntheticsDataServiceGetTraceForTest(id, V202101beta1GetTraceForTestRequest)
+<a name="getTraceForTest"></a>
+# **getTraceForTest**
+> v202101beta1GetTraceForTestResponse getTraceForTest(id, V202101beta1GetTraceForTestRequest)
 
-TODO: Get traces for a single test. Not implemented.
+Get trace route data.
+
+    Get trace route data for the specific test id.
 
 ### Parameters
 
@@ -52,7 +56,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[X-CH-Auth-API-Token](../README.md#X-CH-Auth-API-Token)
+[email](../README.md#email), [token](../README.md#token)
 
 ### HTTP request headers
 

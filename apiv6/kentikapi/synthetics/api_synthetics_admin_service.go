@@ -27,28 +27,29 @@ var (
 // SyntheticsAdminServiceApiService SyntheticsAdminServiceApi service
 type SyntheticsAdminServiceApiService service
 
-type ApiSyntheticsAdminServiceCreateAgentRequest struct {
+type ApiAgentCreateRequest struct {
 	ctx        _context.Context
 	ApiService *SyntheticsAdminServiceApiService
 	body       *map[string]interface{}
 }
 
-func (r ApiSyntheticsAdminServiceCreateAgentRequest) Body(body map[string]interface{}) ApiSyntheticsAdminServiceCreateAgentRequest {
+func (r ApiAgentCreateRequest) Body(body map[string]interface{}) ApiAgentCreateRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiSyntheticsAdminServiceCreateAgentRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceCreateAgentExecute(r)
+func (r ApiAgentCreateRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+	return r.ApiService.AgentCreateExecute(r)
 }
 
 /*
- * SyntheticsAdminServiceCreateAgent Method for SyntheticsAdminServiceCreateAgent
+ * AgentCreate Create Agent.
+ * Create agent from request. Returns created agent.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiSyntheticsAdminServiceCreateAgentRequest
+ * @return ApiAgentCreateRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateAgent(ctx _context.Context) ApiSyntheticsAdminServiceCreateAgentRequest {
-	return ApiSyntheticsAdminServiceCreateAgentRequest{
+func (a *SyntheticsAdminServiceApiService) AgentCreate(ctx _context.Context) ApiAgentCreateRequest {
+	return ApiAgentCreateRequest{
 		ApiService: a,
 		ctx:        ctx,
 	}
@@ -58,7 +59,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateAgent(ctx
  * Execute executes the request
  * @return map[string]interface{}
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateAgentExecute(r ApiSyntheticsAdminServiceCreateAgentRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) AgentCreateExecute(r ApiAgentCreateRequest) (map[string]interface{}, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -68,7 +69,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateAgentExec
 		localVarReturnValue  map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceCreateAgent")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.AgentCreate")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -104,139 +105,21 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateAgentExec
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+				localVarHeaderParams["X-CH-Auth-Email"] = key
 			}
 		}
 	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v RpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiSyntheticsAdminServiceCreateTestRequest struct {
-	ctx                           _context.Context
-	ApiService                    *SyntheticsAdminServiceApiService
-	v202101beta1CreateTestRequest *V202101beta1CreateTestRequest
-}
-
-func (r ApiSyntheticsAdminServiceCreateTestRequest) V202101beta1CreateTestRequest(v202101beta1CreateTestRequest V202101beta1CreateTestRequest) ApiSyntheticsAdminServiceCreateTestRequest {
-	r.v202101beta1CreateTestRequest = &v202101beta1CreateTestRequest
-	return r
-}
-
-func (r ApiSyntheticsAdminServiceCreateTestRequest) Execute() (V202101beta1CreateTestResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceCreateTestExecute(r)
-}
-
-/*
- * SyntheticsAdminServiceCreateTest Method for SyntheticsAdminServiceCreateTest
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiSyntheticsAdminServiceCreateTestRequest
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateTest(ctx _context.Context) ApiSyntheticsAdminServiceCreateTestRequest {
-	return ApiSyntheticsAdminServiceCreateTestRequest{
-		ApiService: a,
-		ctx:        ctx,
-	}
-}
-
-/*
- * Execute executes the request
- * @return V202101beta1CreateTestResponse
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateTestExecute(r ApiSyntheticsAdminServiceCreateTestRequest) (V202101beta1CreateTestResponse, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  V202101beta1CreateTestResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceCreateTest")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/synthetics/v202101beta1/tests"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1CreateTestRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1CreateTestRequest is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.v202101beta1CreateTestRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -291,24 +174,25 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceCreateTestExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsAdminServiceDeleteAgentRequest struct {
+type ApiAgentDeleteRequest struct {
 	ctx        _context.Context
 	ApiService *SyntheticsAdminServiceApiService
 	agentId    string
 }
 
-func (r ApiSyntheticsAdminServiceDeleteAgentRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceDeleteAgentExecute(r)
+func (r ApiAgentDeleteRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+	return r.ApiService.AgentDeleteExecute(r)
 }
 
 /*
- * SyntheticsAdminServiceDeleteAgent Method for SyntheticsAdminServiceDeleteAgent
+ * AgentDelete Delete an agent.
+ * Deletes the agent specified with id.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param agentId
- * @return ApiSyntheticsAdminServiceDeleteAgentRequest
+ * @return ApiAgentDeleteRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteAgent(ctx _context.Context, agentId string) ApiSyntheticsAdminServiceDeleteAgentRequest {
-	return ApiSyntheticsAdminServiceDeleteAgentRequest{
+func (a *SyntheticsAdminServiceApiService) AgentDelete(ctx _context.Context, agentId string) ApiAgentDeleteRequest {
+	return ApiAgentDeleteRequest{
 		ApiService: a,
 		ctx:        ctx,
 		agentId:    agentId,
@@ -319,7 +203,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteAgent(ctx
  * Execute executes the request
  * @return map[string]interface{}
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteAgentExecute(r ApiSyntheticsAdminServiceDeleteAgentRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) AgentDeleteExecute(r ApiAgentDeleteRequest) (map[string]interface{}, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -329,7 +213,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteAgentExec
 		localVarReturnValue  map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceDeleteAgent")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.AgentDelete")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -361,132 +245,21 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteAgentExec
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+				localVarHeaderParams["X-CH-Auth-Email"] = key
 			}
 		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v RpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiSyntheticsAdminServiceDeleteTestRequest struct {
-	ctx        _context.Context
-	ApiService *SyntheticsAdminServiceApiService
-	id         string
-}
-
-func (r ApiSyntheticsAdminServiceDeleteTestRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceDeleteTestExecute(r)
-}
-
-/*
- * SyntheticsAdminServiceDeleteTest Method for SyntheticsAdminServiceDeleteTest
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param id
- * @return ApiSyntheticsAdminServiceDeleteTestRequest
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteTest(ctx _context.Context, id string) ApiSyntheticsAdminServiceDeleteTestRequest {
-	return ApiSyntheticsAdminServiceDeleteTestRequest{
-		ApiService: a,
-		ctx:        ctx,
-		id:         id,
-	}
-}
-
-/*
- * Execute executes the request
- * @return map[string]interface{}
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteTestExecute(r ApiSyntheticsAdminServiceDeleteTestRequest) (map[string]interface{}, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodDelete
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceDeleteTest")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/synthetics/v202101beta1/tests/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", _neturl.PathEscape(parameterToString(r.id, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -541,24 +314,25 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceDeleteTestExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsAdminServiceGetAgentRequest struct {
+type ApiAgentGetRequest struct {
 	ctx        _context.Context
 	ApiService *SyntheticsAdminServiceApiService
 	agentId    string
 }
 
-func (r ApiSyntheticsAdminServiceGetAgentRequest) Execute() (V202101beta1GetAgentResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceGetAgentExecute(r)
+func (r ApiAgentGetRequest) Execute() (V202101beta1GetAgentResponse, *_nethttp.Response, error) {
+	return r.ApiService.AgentGetExecute(r)
 }
 
 /*
- * SyntheticsAdminServiceGetAgent Method for SyntheticsAdminServiceGetAgent
+ * AgentGet Get information about an agent.
+ * Returns information about export specified with export ID.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param agentId
- * @return ApiSyntheticsAdminServiceGetAgentRequest
+ * @return ApiAgentGetRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetAgent(ctx _context.Context, agentId string) ApiSyntheticsAdminServiceGetAgentRequest {
-	return ApiSyntheticsAdminServiceGetAgentRequest{
+func (a *SyntheticsAdminServiceApiService) AgentGet(ctx _context.Context, agentId string) ApiAgentGetRequest {
+	return ApiAgentGetRequest{
 		ApiService: a,
 		ctx:        ctx,
 		agentId:    agentId,
@@ -569,7 +343,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetAgent(ctx _c
  * Execute executes the request
  * @return V202101beta1GetAgentResponse
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetAgentExecute(r ApiSyntheticsAdminServiceGetAgentRequest) (V202101beta1GetAgentResponse, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) AgentGetExecute(r ApiAgentGetRequest) (V202101beta1GetAgentResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -579,7 +353,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetAgentExecute
 		localVarReturnValue  V202101beta1GetAgentResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceGetAgent")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.AgentGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -611,132 +385,21 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetAgentExecute
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+				localVarHeaderParams["X-CH-Auth-Email"] = key
 			}
 		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v RpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiSyntheticsAdminServiceGetTestRequest struct {
-	ctx        _context.Context
-	ApiService *SyntheticsAdminServiceApiService
-	id         string
-}
-
-func (r ApiSyntheticsAdminServiceGetTestRequest) Execute() (V202101beta1GetTestResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceGetTestExecute(r)
-}
-
-/*
- * SyntheticsAdminServiceGetTest Method for SyntheticsAdminServiceGetTest
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param id
- * @return ApiSyntheticsAdminServiceGetTestRequest
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetTest(ctx _context.Context, id string) ApiSyntheticsAdminServiceGetTestRequest {
-	return ApiSyntheticsAdminServiceGetTestRequest{
-		ApiService: a,
-		ctx:        ctx,
-		id:         id,
-	}
-}
-
-/*
- * Execute executes the request
- * @return V202101beta1GetTestResponse
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetTestExecute(r ApiSyntheticsAdminServiceGetTestRequest) (V202101beta1GetTestResponse, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  V202101beta1GetTestResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceGetTest")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/synthetics/v202101beta1/tests/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", _neturl.PathEscape(parameterToString(r.id, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -791,281 +454,31 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceGetTestExecute(
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsAdminServiceListAgentsRequest struct {
-	ctx        _context.Context
-	ApiService *SyntheticsAdminServiceApiService
-}
-
-func (r ApiSyntheticsAdminServiceListAgentsRequest) Execute() (V202101beta1ListAgentsResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceListAgentsExecute(r)
-}
-
-/*
- * SyntheticsAdminServiceListAgents Method for SyntheticsAdminServiceListAgents
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiSyntheticsAdminServiceListAgentsRequest
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceListAgents(ctx _context.Context) ApiSyntheticsAdminServiceListAgentsRequest {
-	return ApiSyntheticsAdminServiceListAgentsRequest{
-		ApiService: a,
-		ctx:        ctx,
-	}
-}
-
-/*
- * Execute executes the request
- * @return V202101beta1ListAgentsResponse
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceListAgentsExecute(r ApiSyntheticsAdminServiceListAgentsRequest) (V202101beta1ListAgentsResponse, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  V202101beta1ListAgentsResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceListAgents")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/synthetics/v202101beta1/agents"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-CH-Auth-API-Token"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v RpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiSyntheticsAdminServiceListTestsRequest struct {
-	ctx        _context.Context
-	ApiService *SyntheticsAdminServiceApiService
-	preset     *bool
-}
-
-func (r ApiSyntheticsAdminServiceListTestsRequest) Preset(preset bool) ApiSyntheticsAdminServiceListTestsRequest {
-	r.preset = &preset
-	return r
-}
-
-func (r ApiSyntheticsAdminServiceListTestsRequest) Execute() (V202101beta1ListTestsResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceListTestsExecute(r)
-}
-
-/*
- * SyntheticsAdminServiceListTests Method for SyntheticsAdminServiceListTests
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiSyntheticsAdminServiceListTestsRequest
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceListTests(ctx _context.Context) ApiSyntheticsAdminServiceListTestsRequest {
-	return ApiSyntheticsAdminServiceListTestsRequest{
-		ApiService: a,
-		ctx:        ctx,
-	}
-}
-
-/*
- * Execute executes the request
- * @return V202101beta1ListTestsResponse
- */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceListTestsExecute(r ApiSyntheticsAdminServiceListTestsRequest) (V202101beta1ListTestsResponse, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  V202101beta1ListTestsResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceListTests")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/synthetics/v202101beta1/tests"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	if r.preset != nil {
-		localVarQueryParams.Add("preset", parameterToString(*r.preset, ""))
-	}
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-CH-Auth-API-Token"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v RpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiSyntheticsAdminServicePatchAgentRequest struct {
+type ApiAgentPatchRequest struct {
 	ctx                           _context.Context
 	ApiService                    *SyntheticsAdminServiceApiService
 	agentId                       string
 	v202101beta1PatchAgentRequest *V202101beta1PatchAgentRequest
 }
 
-func (r ApiSyntheticsAdminServicePatchAgentRequest) V202101beta1PatchAgentRequest(v202101beta1PatchAgentRequest V202101beta1PatchAgentRequest) ApiSyntheticsAdminServicePatchAgentRequest {
+func (r ApiAgentPatchRequest) V202101beta1PatchAgentRequest(v202101beta1PatchAgentRequest V202101beta1PatchAgentRequest) ApiAgentPatchRequest {
 	r.v202101beta1PatchAgentRequest = &v202101beta1PatchAgentRequest
 	return r
 }
 
-func (r ApiSyntheticsAdminServicePatchAgentRequest) Execute() (V202101beta1PatchAgentResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServicePatchAgentExecute(r)
+func (r ApiAgentPatchRequest) Execute() (V202101beta1PatchAgentResponse, *_nethttp.Response, error) {
+	return r.ApiService.AgentPatchExecute(r)
 }
 
 /*
- * SyntheticsAdminServicePatchAgent Method for SyntheticsAdminServicePatchAgent
+ * AgentPatch Patch an agent.
+ * Partially Updates the attributes of agent specified with id and update_mask fields.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param agentId
- * @return ApiSyntheticsAdminServicePatchAgentRequest
+ * @return ApiAgentPatchRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgent(ctx _context.Context, agentId string) ApiSyntheticsAdminServicePatchAgentRequest {
-	return ApiSyntheticsAdminServicePatchAgentRequest{
+func (a *SyntheticsAdminServiceApiService) AgentPatch(ctx _context.Context, agentId string) ApiAgentPatchRequest {
+	return ApiAgentPatchRequest{
 		ApiService: a,
 		ctx:        ctx,
 		agentId:    agentId,
@@ -1076,7 +489,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgent(ctx 
  * Execute executes the request
  * @return V202101beta1PatchAgentResponse
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgentExecute(r ApiSyntheticsAdminServicePatchAgentRequest) (V202101beta1PatchAgentResponse, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) AgentPatchExecute(r ApiAgentPatchRequest) (V202101beta1PatchAgentResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
@@ -1086,7 +499,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgentExecu
 		localVarReturnValue  V202101beta1PatchAgentResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServicePatchAgent")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.AgentPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -1123,7 +536,21 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgentExecu
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -1178,24 +605,161 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchAgentExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsAdminServicePatchTestRequest struct {
+type ApiAgentsListRequest struct {
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+}
+
+func (r ApiAgentsListRequest) Execute() (V202101beta1ListAgentsResponse, *_nethttp.Response, error) {
+	return r.ApiService.AgentsListExecute(r)
+}
+
+/*
+ * AgentsList List Agents.
+ * Returns a list of agents.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiAgentsListRequest
+ */
+func (a *SyntheticsAdminServiceApiService) AgentsList(ctx _context.Context) ApiAgentsListRequest {
+	return ApiAgentsListRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return V202101beta1ListAgentsResponse
+ */
+func (a *SyntheticsAdminServiceApiService) AgentsListExecute(r ApiAgentsListRequest) (V202101beta1ListAgentsResponse, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  V202101beta1ListAgentsResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.AgentsList")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/synthetics/v202101beta1/agents"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v RpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiExportPatchRequest struct {
 	ctx        _context.Context
 	ApiService *SyntheticsAdminServiceApiService
 	id         string
 }
 
-func (r ApiSyntheticsAdminServicePatchTestRequest) Execute() (V202101beta1PatchTestResponse, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServicePatchTestExecute(r)
+func (r ApiExportPatchRequest) Execute() (V202101beta1PatchTestResponse, *_nethttp.Response, error) {
+	return r.ApiService.ExportPatchExecute(r)
 }
 
 /*
- * SyntheticsAdminServicePatchTest Method for SyntheticsAdminServicePatchTest
+ * ExportPatch Patch a Synthetics Test.
+ * Partially Updates the attributes of synthetics test specified with id and update_mask fields.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param id
- * @return ApiSyntheticsAdminServicePatchTestRequest
+ * @return ApiExportPatchRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTest(ctx _context.Context, id string) ApiSyntheticsAdminServicePatchTestRequest {
-	return ApiSyntheticsAdminServicePatchTestRequest{
+func (a *SyntheticsAdminServiceApiService) ExportPatch(ctx _context.Context, id string) ApiExportPatchRequest {
+	return ApiExportPatchRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -1206,7 +770,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTest(ctx _
  * Execute executes the request
  * @return V202101beta1PatchTestResponse
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTestExecute(r ApiSyntheticsAdminServicePatchTestRequest) (V202101beta1PatchTestResponse, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) ExportPatchExecute(r ApiExportPatchRequest) (V202101beta1PatchTestResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
@@ -1216,7 +780,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTestExecut
 		localVarReturnValue  V202101beta1PatchTestResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServicePatchTest")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.ExportPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -1248,7 +812,21 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTestExecut
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
@@ -1303,30 +881,172 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServicePatchTestExecut
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiSyntheticsAdminServiceSetTestStatusRequest struct {
-	ctx                              _context.Context
-	ApiService                       *SyntheticsAdminServiceApiService
-	id                               string
-	v202101beta1SetTestStatusRequest *V202101beta1SetTestStatusRequest
+type ApiTestCreateRequest struct {
+	ctx                           _context.Context
+	ApiService                    *SyntheticsAdminServiceApiService
+	v202101beta1CreateTestRequest *V202101beta1CreateTestRequest
 }
 
-func (r ApiSyntheticsAdminServiceSetTestStatusRequest) V202101beta1SetTestStatusRequest(v202101beta1SetTestStatusRequest V202101beta1SetTestStatusRequest) ApiSyntheticsAdminServiceSetTestStatusRequest {
-	r.v202101beta1SetTestStatusRequest = &v202101beta1SetTestStatusRequest
+func (r ApiTestCreateRequest) V202101beta1CreateTestRequest(v202101beta1CreateTestRequest V202101beta1CreateTestRequest) ApiTestCreateRequest {
+	r.v202101beta1CreateTestRequest = &v202101beta1CreateTestRequest
 	return r
 }
 
-func (r ApiSyntheticsAdminServiceSetTestStatusRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
-	return r.ApiService.SyntheticsAdminServiceSetTestStatusExecute(r)
+func (r ApiTestCreateRequest) Execute() (V202101beta1CreateTestResponse, *_nethttp.Response, error) {
+	return r.ApiService.TestCreateExecute(r)
 }
 
 /*
- * SyntheticsAdminServiceSetTestStatus Method for SyntheticsAdminServiceSetTestStatus
+ * TestCreate Create Synthetics Test.
+ * Create synthetics test from request. Returns created test.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiTestCreateRequest
+ */
+func (a *SyntheticsAdminServiceApiService) TestCreate(ctx _context.Context) ApiTestCreateRequest {
+	return ApiTestCreateRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return V202101beta1CreateTestResponse
+ */
+func (a *SyntheticsAdminServiceApiService) TestCreateExecute(r ApiTestCreateRequest) (V202101beta1CreateTestResponse, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  V202101beta1CreateTestResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.TestCreate")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/synthetics/v202101beta1/tests"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if r.v202101beta1CreateTestRequest == nil {
+		return localVarReturnValue, nil, reportError("v202101beta1CreateTestRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.v202101beta1CreateTestRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v RpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiTestDeleteRequest struct {
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	id         string
+}
+
+func (r ApiTestDeleteRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+	return r.ApiService.TestDeleteExecute(r)
+}
+
+/*
+ * TestDelete Delete an Synthetics Test.
+ * Deletes the synthetics test specified with id.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param id
- * @return ApiSyntheticsAdminServiceSetTestStatusRequest
+ * @return ApiTestDeleteRequest
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceSetTestStatus(ctx _context.Context, id string) ApiSyntheticsAdminServiceSetTestStatusRequest {
-	return ApiSyntheticsAdminServiceSetTestStatusRequest{
+func (a *SyntheticsAdminServiceApiService) TestDelete(ctx _context.Context, id string) ApiTestDeleteRequest {
+	return ApiTestDeleteRequest{
 		ApiService: a,
 		ctx:        ctx,
 		id:         id,
@@ -1337,7 +1057,293 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceSetTestStatus(c
  * Execute executes the request
  * @return map[string]interface{}
  */
-func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceSetTestStatusExecute(r ApiSyntheticsAdminServiceSetTestStatusRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *SyntheticsAdminServiceApiService) TestDeleteExecute(r ApiTestDeleteRequest) (map[string]interface{}, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodDelete
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  map[string]interface{}
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.TestDelete")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/synthetics/v202101beta1/tests/{id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", _neturl.PathEscape(parameterToString(r.id, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v RpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiTestGetRequest struct {
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	id         string
+}
+
+func (r ApiTestGetRequest) Execute() (V202101beta1GetTestResponse, *_nethttp.Response, error) {
+	return r.ApiService.TestGetExecute(r)
+}
+
+/*
+ * TestGet Get information about Synthetics Test.
+ * Returns information about synthetics test specified with test ID.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param id
+ * @return ApiTestGetRequest
+ */
+func (a *SyntheticsAdminServiceApiService) TestGet(ctx _context.Context, id string) ApiTestGetRequest {
+	return ApiTestGetRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return V202101beta1GetTestResponse
+ */
+func (a *SyntheticsAdminServiceApiService) TestGetExecute(r ApiTestGetRequest) (V202101beta1GetTestResponse, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  V202101beta1GetTestResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.TestGet")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/synthetics/v202101beta1/tests/{id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", _neturl.PathEscape(parameterToString(r.id, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v RpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiTestStatusUpdateRequest struct {
+	ctx                              _context.Context
+	ApiService                       *SyntheticsAdminServiceApiService
+	id                               string
+	v202101beta1SetTestStatusRequest *V202101beta1SetTestStatusRequest
+}
+
+func (r ApiTestStatusUpdateRequest) V202101beta1SetTestStatusRequest(v202101beta1SetTestStatusRequest V202101beta1SetTestStatusRequest) ApiTestStatusUpdateRequest {
+	r.v202101beta1SetTestStatusRequest = &v202101beta1SetTestStatusRequest
+	return r
+}
+
+func (r ApiTestStatusUpdateRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+	return r.ApiService.TestStatusUpdateExecute(r)
+}
+
+/*
+ * TestStatusUpdate Update a test status.
+ * Update the status of a test.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param id
+ * @return ApiTestStatusUpdateRequest
+ */
+func (a *SyntheticsAdminServiceApiService) TestStatusUpdate(ctx _context.Context, id string) ApiTestStatusUpdateRequest {
+	return ApiTestStatusUpdateRequest{
+		ApiService: a,
+		ctx:        ctx,
+		id:         id,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return map[string]interface{}
+ */
+func (a *SyntheticsAdminServiceApiService) TestStatusUpdateExecute(r ApiTestStatusUpdateRequest) (map[string]interface{}, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
@@ -1347,7 +1353,7 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceSetTestStatusEx
 		localVarReturnValue  map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.SyntheticsAdminServiceSetTestStatus")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.TestStatusUpdate")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -1384,7 +1390,166 @@ func (a *SyntheticsAdminServiceApiService) SyntheticsAdminServiceSetTestStatusEx
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["X-CH-Auth-API-Token"]; ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-API-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v RpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiTestsListRequest struct {
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	preset     *bool
+}
+
+func (r ApiTestsListRequest) Preset(preset bool) ApiTestsListRequest {
+	r.preset = &preset
+	return r
+}
+
+func (r ApiTestsListRequest) Execute() (V202101beta1ListTestsResponse, *_nethttp.Response, error) {
+	return r.ApiService.TestsListExecute(r)
+}
+
+/*
+ * TestsList List Synthetics Tests.
+ * Returns a list of syntehtics tests.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiTestsListRequest
+ */
+func (a *SyntheticsAdminServiceApiService) TestsList(ctx _context.Context) ApiTestsListRequest {
+	return ApiTestsListRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return V202101beta1ListTestsResponse
+ */
+func (a *SyntheticsAdminServiceApiService) TestsListExecute(r ApiTestsListRequest) (V202101beta1ListTestsResponse, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  V202101beta1ListTestsResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SyntheticsAdminServiceApiService.TestsList")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/synthetics/v202101beta1/tests"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+
+	if r.preset != nil {
+		localVarQueryParams.Add("preset", parameterToString(*r.preset, ""))
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["email"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-CH-Auth-Email"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["token"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key

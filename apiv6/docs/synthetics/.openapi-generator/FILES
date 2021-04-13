@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 Apis/SyntheticsAdminServiceApi.md
 Apis/SyntheticsDataServiceApi.md
 Models/ProtobufAny.md
@@ -6,11 +7,13 @@ Models/V202101beta1ASN.md
 Models/V202101beta1Agent.md
 Models/V202101beta1AgentHealth.md
 Models/V202101beta1AgentStatus.md
+Models/V202101beta1AgentTaskConfig.md
 Models/V202101beta1AgentTest.md
 Models/V202101beta1City.md
 Models/V202101beta1Country.md
 Models/V202101beta1CreateTestRequest.md
 Models/V202101beta1CreateTestResponse.md
+Models/V202101beta1DNS.md
 Models/V202101beta1DNSTaskDefinition.md
 Models/V202101beta1DnsTest.md
 Models/V202101beta1FlowTest.md
@@ -32,6 +35,10 @@ Models/V202101beta1IpTest.md
 Models/V202101beta1KnockTaskDefinition.md
 Models/V202101beta1ListAgentsResponse.md
 Models/V202101beta1ListTestsResponse.md
+Models/V202101beta1MeshColumn.md
+Models/V202101beta1MeshMetric.md
+Models/V202101beta1MeshMetrics.md
+Models/V202101beta1MeshResponse.md
 Models/V202101beta1PatchAgentRequest.md
 Models/V202101beta1PatchAgentResponse.md
 Models/V202101beta1PatchTestResponse.md

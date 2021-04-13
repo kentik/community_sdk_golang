@@ -19,6 +19,7 @@ type V202101beta1TaskHealth struct {
 	Task          *V202101beta1Task          `json:"task,omitempty"`
 	Agents        *[]V202101beta1AgentHealth `json:"agents,omitempty"`
 	OverallHealth *V202101beta1Health        `json:"overallHealth,omitempty"`
+	TargetAgent   *V202101beta1Agent         `json:"targetAgent,omitempty"`
 }
 
 // NewV202101beta1TaskHealth instantiates a new V202101beta1TaskHealth object
@@ -134,6 +135,38 @@ func (o *V202101beta1TaskHealth) SetOverallHealth(v V202101beta1Health) {
 	o.OverallHealth = &v
 }
 
+// GetTargetAgent returns the TargetAgent field value if set, zero value otherwise.
+func (o *V202101beta1TaskHealth) GetTargetAgent() V202101beta1Agent {
+	if o == nil || o.TargetAgent == nil {
+		var ret V202101beta1Agent
+		return ret
+	}
+	return *o.TargetAgent
+}
+
+// GetTargetAgentOk returns a tuple with the TargetAgent field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TaskHealth) GetTargetAgentOk() (*V202101beta1Agent, bool) {
+	if o == nil || o.TargetAgent == nil {
+		return nil, false
+	}
+	return o.TargetAgent, true
+}
+
+// HasTargetAgent returns a boolean if a field has been set.
+func (o *V202101beta1TaskHealth) HasTargetAgent() bool {
+	if o != nil && o.TargetAgent != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetTargetAgent gets a reference to the given V202101beta1Agent and assigns it to the TargetAgent field.
+func (o *V202101beta1TaskHealth) SetTargetAgent(v V202101beta1Agent) {
+	o.TargetAgent = &v
+}
+
 func (o V202101beta1TaskHealth) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Task != nil {
@@ -144,6 +177,9 @@ func (o V202101beta1TaskHealth) MarshalJSON() ([]byte, error) {
 	}
 	if o.OverallHealth != nil {
 		toSerialize["overallHealth"] = o.OverallHealth
+	}
+	if o.TargetAgent != nil {
+		toSerialize["targetAgent"] = o.TargetAgent
 	}
 	return json.Marshal(toSerialize)
 }

@@ -4,16 +4,18 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**SyntheticsDataServiceGetHealthForTests**](SyntheticsDataServiceApi.md#SyntheticsDataServiceGetHealthForTests) | **Post** /synthetics/v202101beta1/health/tests | Get health data for a set of tests
-[**SyntheticsDataServiceGetTraceForTest**](SyntheticsDataServiceApi.md#SyntheticsDataServiceGetTraceForTest) | **Post** /synthetics/v202101beta1/tests/{id}/results/trace | TODO: Get traces for a single test. Not implemented.
+[**GetHealthForTests**](SyntheticsDataServiceApi.md#GetHealthForTests) | **Post** /synthetics/v202101beta1/health/tests | Get health status for synthetics test.
+[**GetTraceForTest**](SyntheticsDataServiceApi.md#GetTraceForTest) | **Post** /synthetics/v202101beta1/tests/{id}/results/trace | Get trace route data.
 
 
 
-## SyntheticsDataServiceGetHealthForTests
+## GetHealthForTests
 
-> V202101beta1GetHealthForTestsResponse SyntheticsDataServiceGetHealthForTests(ctx).V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest).Execute()
+> V202101beta1GetHealthForTestsResponse GetHealthForTests(ctx).V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest).Execute()
 
-Get health data for a set of tests
+Get health status for synthetics test.
+
+
 
 ### Example
 
@@ -32,13 +34,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     api_client := openapiclient.NewAPIClient(configuration)
-    resp, r, err := api_client.SyntheticsDataServiceApi.SyntheticsDataServiceGetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest).Execute()
+    resp, r, err := api_client.SyntheticsDataServiceApi.GetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `SyntheticsDataServiceApi.SyntheticsDataServiceGetHealthForTests``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `SyntheticsDataServiceApi.GetHealthForTests``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `SyntheticsDataServiceGetHealthForTests`: V202101beta1GetHealthForTestsResponse
-    fmt.Fprintf(os.Stdout, "Response from `SyntheticsDataServiceApi.SyntheticsDataServiceGetHealthForTests`: %v\n", resp)
+    // response from `GetHealthForTests`: V202101beta1GetHealthForTestsResponse
+    fmt.Fprintf(os.Stdout, "Response from `SyntheticsDataServiceApi.GetHealthForTests`: %v\n", resp)
 }
 ```
 
@@ -48,7 +50,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiSyntheticsDataServiceGetHealthForTestsRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetHealthForTestsRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -61,7 +63,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[X-CH-Auth-API-Token](../README.md#X-CH-Auth-API-Token)
+[email](../README.md#email), [token](../README.md#token)
 
 ### HTTP request headers
 
@@ -73,11 +75,13 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## SyntheticsDataServiceGetTraceForTest
+## GetTraceForTest
 
-> V202101beta1GetTraceForTestResponse SyntheticsDataServiceGetTraceForTest(ctx, id).V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest).Execute()
+> V202101beta1GetTraceForTestResponse GetTraceForTest(ctx, id).V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest).Execute()
 
-TODO: Get traces for a single test. Not implemented.
+Get trace route data.
+
+
 
 ### Example
 
@@ -97,13 +101,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     api_client := openapiclient.NewAPIClient(configuration)
-    resp, r, err := api_client.SyntheticsDataServiceApi.SyntheticsDataServiceGetTraceForTest(context.Background(), id).V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest).Execute()
+    resp, r, err := api_client.SyntheticsDataServiceApi.GetTraceForTest(context.Background(), id).V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `SyntheticsDataServiceApi.SyntheticsDataServiceGetTraceForTest``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `SyntheticsDataServiceApi.GetTraceForTest``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `SyntheticsDataServiceGetTraceForTest`: V202101beta1GetTraceForTestResponse
-    fmt.Fprintf(os.Stdout, "Response from `SyntheticsDataServiceApi.SyntheticsDataServiceGetTraceForTest`: %v\n", resp)
+    // response from `GetTraceForTest`: V202101beta1GetTraceForTestResponse
+    fmt.Fprintf(os.Stdout, "Response from `SyntheticsDataServiceApi.GetTraceForTest`: %v\n", resp)
 }
 ```
 
@@ -117,7 +121,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiSyntheticsDataServiceGetTraceForTestRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetTraceForTestRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -131,7 +135,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[X-CH-Auth-API-Token](../README.md#X-CH-Auth-API-Token)
+[email](../README.md#email), [token](../README.md#token)
 
 ### HTTP request headers
 

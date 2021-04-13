@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Agent** | Pointer to [**V202101beta1Agent**](V202101beta1Agent.md) |  | [optional] 
-**UpdateMask** | Pointer to **string** |  | [optional] 
+**Mask** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -51,30 +51,30 @@ SetAgent sets Agent field to given value.
 
 HasAgent returns a boolean if a field has been set.
 
-### GetUpdateMask
+### GetMask
 
-`func (o *V202101beta1PatchAgentRequest) GetUpdateMask() string`
+`func (o *V202101beta1PatchAgentRequest) GetMask() string`
 
-GetUpdateMask returns the UpdateMask field if non-nil, zero value otherwise.
+GetMask returns the Mask field if non-nil, zero value otherwise.
 
-### GetUpdateMaskOk
+### GetMaskOk
 
-`func (o *V202101beta1PatchAgentRequest) GetUpdateMaskOk() (*string, bool)`
+`func (o *V202101beta1PatchAgentRequest) GetMaskOk() (*string, bool)`
 
-GetUpdateMaskOk returns a tuple with the UpdateMask field if it's non-nil, zero value otherwise
+GetMaskOk returns a tuple with the Mask field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetUpdateMask
+### SetMask
 
-`func (o *V202101beta1PatchAgentRequest) SetUpdateMask(v string)`
+`func (o *V202101beta1PatchAgentRequest) SetMask(v string)`
 
-SetUpdateMask sets UpdateMask field to given value.
+SetMask sets Mask field to given value.
 
-### HasUpdateMask
+### HasMask
 
-`func (o *V202101beta1PatchAgentRequest) HasUpdateMask() bool`
+`func (o *V202101beta1PatchAgentRequest) HasMask() bool`
 
-HasUpdateMask returns a boolean if a field has been set.
+HasMask returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

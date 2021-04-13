@@ -8,6 +8,8 @@ Name | Type | Description | Notes
 **Tasks** | Pointer to [**[]V202101beta1TaskHealth**](V202101beta1TaskHealth.md) |  | [optional] 
 **OverallHealth** | Pointer to [**V202101beta1Health**](V202101beta1Health.md) |  | [optional] 
 **HealthTs** | Pointer to [**[]V202101beta1Health**](V202101beta1Health.md) |  | [optional] 
+**AgentTaskConfig** | Pointer to [**[]V202101beta1AgentTaskConfig**](V202101beta1AgentTaskConfig.md) |  | [optional] 
+**Mesh** | Pointer to [**[]V202101beta1MeshResponse**](V202101beta1MeshResponse.md) |  | [optional] 
 
 ## Methods
 
@@ -127,6 +129,56 @@ SetHealthTs sets HealthTs field to given value.
 `func (o *V202101beta1TestHealth) HasHealthTs() bool`
 
 HasHealthTs returns a boolean if a field has been set.
+
+### GetAgentTaskConfig
+
+`func (o *V202101beta1TestHealth) GetAgentTaskConfig() []V202101beta1AgentTaskConfig`
+
+GetAgentTaskConfig returns the AgentTaskConfig field if non-nil, zero value otherwise.
+
+### GetAgentTaskConfigOk
+
+`func (o *V202101beta1TestHealth) GetAgentTaskConfigOk() (*[]V202101beta1AgentTaskConfig, bool)`
+
+GetAgentTaskConfigOk returns a tuple with the AgentTaskConfig field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAgentTaskConfig
+
+`func (o *V202101beta1TestHealth) SetAgentTaskConfig(v []V202101beta1AgentTaskConfig)`
+
+SetAgentTaskConfig sets AgentTaskConfig field to given value.
+
+### HasAgentTaskConfig
+
+`func (o *V202101beta1TestHealth) HasAgentTaskConfig() bool`
+
+HasAgentTaskConfig returns a boolean if a field has been set.
+
+### GetMesh
+
+`func (o *V202101beta1TestHealth) GetMesh() []V202101beta1MeshResponse`
+
+GetMesh returns the Mesh field if non-nil, zero value otherwise.
+
+### GetMeshOk
+
+`func (o *V202101beta1TestHealth) GetMeshOk() (*[]V202101beta1MeshResponse, bool)`
+
+GetMeshOk returns a tuple with the Mesh field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMesh
+
+`func (o *V202101beta1TestHealth) SetMesh(v []V202101beta1MeshResponse)`
+
+SetMesh sets Mesh field to given value.
+
+### HasMesh
+
+`func (o *V202101beta1TestHealth) HasMesh() bool`
+
+HasMesh returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

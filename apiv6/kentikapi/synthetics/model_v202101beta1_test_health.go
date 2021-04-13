@@ -16,10 +16,12 @@ import (
 
 // V202101beta1TestHealth struct for V202101beta1TestHealth
 type V202101beta1TestHealth struct {
-	TestId        *string                   `json:"testId,omitempty"`
-	Tasks         *[]V202101beta1TaskHealth `json:"tasks,omitempty"`
-	OverallHealth *V202101beta1Health       `json:"overallHealth,omitempty"`
-	HealthTs      *[]V202101beta1Health     `json:"healthTs,omitempty"`
+	TestId          *string                        `json:"testId,omitempty"`
+	Tasks           *[]V202101beta1TaskHealth      `json:"tasks,omitempty"`
+	OverallHealth   *V202101beta1Health            `json:"overallHealth,omitempty"`
+	HealthTs        *[]V202101beta1Health          `json:"healthTs,omitempty"`
+	AgentTaskConfig *[]V202101beta1AgentTaskConfig `json:"agentTaskConfig,omitempty"`
+	Mesh            *[]V202101beta1MeshResponse    `json:"mesh,omitempty"`
 }
 
 // NewV202101beta1TestHealth instantiates a new V202101beta1TestHealth object
@@ -167,6 +169,70 @@ func (o *V202101beta1TestHealth) SetHealthTs(v []V202101beta1Health) {
 	o.HealthTs = &v
 }
 
+// GetAgentTaskConfig returns the AgentTaskConfig field value if set, zero value otherwise.
+func (o *V202101beta1TestHealth) GetAgentTaskConfig() []V202101beta1AgentTaskConfig {
+	if o == nil || o.AgentTaskConfig == nil {
+		var ret []V202101beta1AgentTaskConfig
+		return ret
+	}
+	return *o.AgentTaskConfig
+}
+
+// GetAgentTaskConfigOk returns a tuple with the AgentTaskConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestHealth) GetAgentTaskConfigOk() (*[]V202101beta1AgentTaskConfig, bool) {
+	if o == nil || o.AgentTaskConfig == nil {
+		return nil, false
+	}
+	return o.AgentTaskConfig, true
+}
+
+// HasAgentTaskConfig returns a boolean if a field has been set.
+func (o *V202101beta1TestHealth) HasAgentTaskConfig() bool {
+	if o != nil && o.AgentTaskConfig != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetAgentTaskConfig gets a reference to the given []V202101beta1AgentTaskConfig and assigns it to the AgentTaskConfig field.
+func (o *V202101beta1TestHealth) SetAgentTaskConfig(v []V202101beta1AgentTaskConfig) {
+	o.AgentTaskConfig = &v
+}
+
+// GetMesh returns the Mesh field value if set, zero value otherwise.
+func (o *V202101beta1TestHealth) GetMesh() []V202101beta1MeshResponse {
+	if o == nil || o.Mesh == nil {
+		var ret []V202101beta1MeshResponse
+		return ret
+	}
+	return *o.Mesh
+}
+
+// GetMeshOk returns a tuple with the Mesh field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestHealth) GetMeshOk() (*[]V202101beta1MeshResponse, bool) {
+	if o == nil || o.Mesh == nil {
+		return nil, false
+	}
+	return o.Mesh, true
+}
+
+// HasMesh returns a boolean if a field has been set.
+func (o *V202101beta1TestHealth) HasMesh() bool {
+	if o != nil && o.Mesh != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMesh gets a reference to the given []V202101beta1MeshResponse and assigns it to the Mesh field.
+func (o *V202101beta1TestHealth) SetMesh(v []V202101beta1MeshResponse) {
+	o.Mesh = &v
+}
+
 func (o V202101beta1TestHealth) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.TestId != nil {
@@ -180,6 +246,12 @@ func (o V202101beta1TestHealth) MarshalJSON() ([]byte, error) {
 	}
 	if o.HealthTs != nil {
 		toSerialize["healthTs"] = o.HealthTs
+	}
+	if o.AgentTaskConfig != nil {
+		toSerialize["agentTaskConfig"] = o.AgentTaskConfig
+	}
+	if o.Mesh != nil {
+		toSerialize["mesh"] = o.Mesh
 	}
 	return json.Marshal(toSerialize)
 }

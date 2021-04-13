@@ -22,6 +22,7 @@ Name | Type | Description | Notes
 **region** | [**String**](string.md) |  | [optional] [default to null]
 **country** | [**String**](string.md) |  | [optional] [default to null]
 **testIds** | [**List**](string.md) |  | [optional] [default to null]
+**localIp** | [**String**](string.md) |  | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

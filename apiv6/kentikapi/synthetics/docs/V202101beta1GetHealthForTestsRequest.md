@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **EndTime** | Pointer to **time.Time** | End of the time interval for this query. | [optional] 
 **AgentIds** | Pointer to **[]string** |  | [optional] 
 **TaskIds** | Pointer to **[]string** | Optionally only look at a subset of tasks -- this lets you limit targets. | [optional] 
+**Augment** | Pointer to **bool** |  | [optional] 
 
 ## Methods
 
@@ -153,6 +154,31 @@ SetTaskIds sets TaskIds field to given value.
 `func (o *V202101beta1GetHealthForTestsRequest) HasTaskIds() bool`
 
 HasTaskIds returns a boolean if a field has been set.
+
+### GetAugment
+
+`func (o *V202101beta1GetHealthForTestsRequest) GetAugment() bool`
+
+GetAugment returns the Augment field if non-nil, zero value otherwise.
+
+### GetAugmentOk
+
+`func (o *V202101beta1GetHealthForTestsRequest) GetAugmentOk() (*bool, bool)`
+
+GetAugmentOk returns a tuple with the Augment field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAugment
+
+`func (o *V202101beta1GetHealthForTestsRequest) SetAugment(v bool)`
+
+SetAugment sets Augment field to given value.
+
+### HasAugment
+
+`func (o *V202101beta1GetHealthForTestsRequest) HasAugment() bool`
+
+HasAugment returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

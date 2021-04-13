@@ -16,8 +16,8 @@ import (
 
 // V202101beta1PatchAgentRequest struct for V202101beta1PatchAgentRequest
 type V202101beta1PatchAgentRequest struct {
-	Agent      *V202101beta1Agent `json:"agent,omitempty"`
-	UpdateMask *string            `json:"updateMask,omitempty"`
+	Agent *V202101beta1Agent `json:"agent,omitempty"`
+	Mask  *string            `json:"mask,omitempty"`
 }
 
 // NewV202101beta1PatchAgentRequest instantiates a new V202101beta1PatchAgentRequest object
@@ -69,36 +69,36 @@ func (o *V202101beta1PatchAgentRequest) SetAgent(v V202101beta1Agent) {
 	o.Agent = &v
 }
 
-// GetUpdateMask returns the UpdateMask field value if set, zero value otherwise.
-func (o *V202101beta1PatchAgentRequest) GetUpdateMask() string {
-	if o == nil || o.UpdateMask == nil {
+// GetMask returns the Mask field value if set, zero value otherwise.
+func (o *V202101beta1PatchAgentRequest) GetMask() string {
+	if o == nil || o.Mask == nil {
 		var ret string
 		return ret
 	}
-	return *o.UpdateMask
+	return *o.Mask
 }
 
-// GetUpdateMaskOk returns a tuple with the UpdateMask field value if set, nil otherwise
+// GetMaskOk returns a tuple with the Mask field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1PatchAgentRequest) GetUpdateMaskOk() (*string, bool) {
-	if o == nil || o.UpdateMask == nil {
+func (o *V202101beta1PatchAgentRequest) GetMaskOk() (*string, bool) {
+	if o == nil || o.Mask == nil {
 		return nil, false
 	}
-	return o.UpdateMask, true
+	return o.Mask, true
 }
 
-// HasUpdateMask returns a boolean if a field has been set.
-func (o *V202101beta1PatchAgentRequest) HasUpdateMask() bool {
-	if o != nil && o.UpdateMask != nil {
+// HasMask returns a boolean if a field has been set.
+func (o *V202101beta1PatchAgentRequest) HasMask() bool {
+	if o != nil && o.Mask != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetUpdateMask gets a reference to the given string and assigns it to the UpdateMask field.
-func (o *V202101beta1PatchAgentRequest) SetUpdateMask(v string) {
-	o.UpdateMask = &v
+// SetMask gets a reference to the given string and assigns it to the Mask field.
+func (o *V202101beta1PatchAgentRequest) SetMask(v string) {
+	o.Mask = &v
 }
 
 func (o V202101beta1PatchAgentRequest) MarshalJSON() ([]byte, error) {
@@ -106,8 +106,8 @@ func (o V202101beta1PatchAgentRequest) MarshalJSON() ([]byte, error) {
 	if o.Agent != nil {
 		toSerialize["agent"] = o.Agent
 	}
-	if o.UpdateMask != nil {
-		toSerialize["updateMask"] = o.UpdateMask
+	if o.Mask != nil {
+		toSerialize["mask"] = o.Mask
 	}
 	return json.Marshal(toSerialize)
 }

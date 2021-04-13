@@ -7,19 +7,19 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceCreateAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicecreateagent) | **POST** /synthetics/v202101beta1/agents | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceCreateTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicecreatetest) | **POST** /synthetics/v202101beta1/tests | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceDeleteAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicedeleteagent) | **DELETE** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceDeleteTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicedeletetest) | **DELETE** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceGetAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicegetagent) | **GET** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceGetTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicegettest) | **GET** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceListAgents**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicelistagents) | **GET** /synthetics/v202101beta1/agents | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceListTests**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicelisttests) | **GET** /synthetics/v202101beta1/tests | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServicePatchAgent**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchagent) | **PATCH** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServicePatchTest**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchtest) | **PATCH** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**syntheticsAdminServiceSetTestStatus**](Apis/SyntheticsAdminServiceApi.md#syntheticsadminservicesetteststatus) | **PUT** /synthetics/v202101beta1/tests/{id}/status | 
-*SyntheticsDataServiceApi* | [**syntheticsDataServiceGetHealthForTests**](Apis/SyntheticsDataServiceApi.md#syntheticsdataservicegethealthfortests) | **POST** /synthetics/v202101beta1/health/tests | Get health data for a set of tests
-*SyntheticsDataServiceApi* | [**syntheticsDataServiceGetTraceForTest**](Apis/SyntheticsDataServiceApi.md#syntheticsdataservicegettracefortest) | **POST** /synthetics/v202101beta1/tests/{id}/results/trace | TODO: Get traces for a single test. Not implemented.
+*SyntheticsAdminServiceApi* | [**agentCreate**](Apis/SyntheticsAdminServiceApi.md#agentcreate) | **POST** /synthetics/v202101beta1/agents | Create Agent.
+*SyntheticsAdminServiceApi* | [**agentDelete**](Apis/SyntheticsAdminServiceApi.md#agentdelete) | **DELETE** /synthetics/v202101beta1/agents/{agent.id} | Delete an agent.
+*SyntheticsAdminServiceApi* | [**agentGet**](Apis/SyntheticsAdminServiceApi.md#agentget) | **GET** /synthetics/v202101beta1/agents/{agent.id} | Get information about an agent.
+*SyntheticsAdminServiceApi* | [**agentPatch**](Apis/SyntheticsAdminServiceApi.md#agentpatch) | **PATCH** /synthetics/v202101beta1/agents/{agent.id} | Patch an agent.
+*SyntheticsAdminServiceApi* | [**agentsList**](Apis/SyntheticsAdminServiceApi.md#agentslist) | **GET** /synthetics/v202101beta1/agents | List Agents.
+*SyntheticsAdminServiceApi* | [**exportPatch**](Apis/SyntheticsAdminServiceApi.md#exportpatch) | **PATCH** /synthetics/v202101beta1/tests/{id} | Patch a Synthetics Test.
+*SyntheticsAdminServiceApi* | [**testCreate**](Apis/SyntheticsAdminServiceApi.md#testcreate) | **POST** /synthetics/v202101beta1/tests | Create Synthetics Test.
+*SyntheticsAdminServiceApi* | [**testDelete**](Apis/SyntheticsAdminServiceApi.md#testdelete) | **DELETE** /synthetics/v202101beta1/tests/{id} | Delete an Synthetics Test.
+*SyntheticsAdminServiceApi* | [**testGet**](Apis/SyntheticsAdminServiceApi.md#testget) | **GET** /synthetics/v202101beta1/tests/{id} | Get information about Synthetics Test.
+*SyntheticsAdminServiceApi* | [**testStatusUpdate**](Apis/SyntheticsAdminServiceApi.md#teststatusupdate) | **PUT** /synthetics/v202101beta1/tests/{id}/status | Update a test status.
+*SyntheticsAdminServiceApi* | [**testsList**](Apis/SyntheticsAdminServiceApi.md#testslist) | **GET** /synthetics/v202101beta1/tests | List Synthetics Tests.
+*SyntheticsDataServiceApi* | [**getHealthForTests**](Apis/SyntheticsDataServiceApi.md#gethealthfortests) | **POST** /synthetics/v202101beta1/health/tests | Get health status for synthetics test.
+*SyntheticsDataServiceApi* | [**getTraceForTest**](Apis/SyntheticsDataServiceApi.md#gettracefortest) | **POST** /synthetics/v202101beta1/tests/{id}/results/trace | Get trace route data.
 
 
 <a name="documentation-for-models"></a>
@@ -31,11 +31,13 @@ Class | Method | HTTP request | Description
  - [V202101beta1Agent](./Models/V202101beta1Agent.md)
  - [V202101beta1AgentHealth](./Models/V202101beta1AgentHealth.md)
  - [V202101beta1AgentStatus](./Models/V202101beta1AgentStatus.md)
+ - [V202101beta1AgentTaskConfig](./Models/V202101beta1AgentTaskConfig.md)
  - [V202101beta1AgentTest](./Models/V202101beta1AgentTest.md)
  - [V202101beta1City](./Models/V202101beta1City.md)
  - [V202101beta1Country](./Models/V202101beta1Country.md)
  - [V202101beta1CreateTestRequest](./Models/V202101beta1CreateTestRequest.md)
  - [V202101beta1CreateTestResponse](./Models/V202101beta1CreateTestResponse.md)
+ - [V202101beta1DNS](./Models/V202101beta1DNS.md)
  - [V202101beta1DNSTaskDefinition](./Models/V202101beta1DNSTaskDefinition.md)
  - [V202101beta1DnsTest](./Models/V202101beta1DnsTest.md)
  - [V202101beta1FlowTest](./Models/V202101beta1FlowTest.md)
@@ -57,6 +59,10 @@ Class | Method | HTTP request | Description
  - [V202101beta1KnockTaskDefinition](./Models/V202101beta1KnockTaskDefinition.md)
  - [V202101beta1ListAgentsResponse](./Models/V202101beta1ListAgentsResponse.md)
  - [V202101beta1ListTestsResponse](./Models/V202101beta1ListTestsResponse.md)
+ - [V202101beta1MeshColumn](./Models/V202101beta1MeshColumn.md)
+ - [V202101beta1MeshMetric](./Models/V202101beta1MeshMetric.md)
+ - [V202101beta1MeshMetrics](./Models/V202101beta1MeshMetrics.md)
+ - [V202101beta1MeshResponse](./Models/V202101beta1MeshResponse.md)
  - [V202101beta1PatchAgentRequest](./Models/V202101beta1PatchAgentRequest.md)
  - [V202101beta1PatchAgentResponse](./Models/V202101beta1PatchAgentResponse.md)
  - [V202101beta1PatchTestResponse](./Models/V202101beta1PatchTestResponse.md)
@@ -87,17 +93,17 @@ Class | Method | HTTP request | Description
 <a name="documentation-for-authorization"></a>
 ## Documentation for Authorization
 
-<a name="X-CH-Auth-API-Token"></a>
-### X-CH-Auth-API-Token
-
-- **Type**: API key
-- **API key parameter name**: X-CH-Auth-API-Token
-- **Location**: HTTP header
-
-<a name="X-CH-Auth-Email"></a>
-### X-CH-Auth-Email
+<a name="email"></a>
+### email
 
 - **Type**: API key
 - **API key parameter name**: X-CH-Auth-Email
+- **Location**: HTTP header
+
+<a name="token"></a>
+### token
+
+- **Type**: API key
+- **API key parameter name**: X-CH-Auth-API-Token
 - **Location**: HTTP header
 

@@ -16,8 +16,8 @@ import (
 
 // V202101beta1GetTraceForTestResponse struct for V202101beta1GetTraceForTestResponse
 type V202101beta1GetTraceForTestResponse struct {
-	IpInfo  *[]V202101beta1IPInfo           `json:"ipInfo,omitempty"`
-	Results *[]V202101beta1TracerouteResult `json:"results,omitempty"`
+	IpInfo      *[]V202101beta1IPInfo           `json:"ipInfo,omitempty"`
+	TraceRoutes *[]V202101beta1TracerouteResult `json:"traceRoutes,omitempty"`
 }
 
 // NewV202101beta1GetTraceForTestResponse instantiates a new V202101beta1GetTraceForTestResponse object
@@ -69,36 +69,36 @@ func (o *V202101beta1GetTraceForTestResponse) SetIpInfo(v []V202101beta1IPInfo) 
 	o.IpInfo = &v
 }
 
-// GetResults returns the Results field value if set, zero value otherwise.
-func (o *V202101beta1GetTraceForTestResponse) GetResults() []V202101beta1TracerouteResult {
-	if o == nil || o.Results == nil {
+// GetTraceRoutes returns the TraceRoutes field value if set, zero value otherwise.
+func (o *V202101beta1GetTraceForTestResponse) GetTraceRoutes() []V202101beta1TracerouteResult {
+	if o == nil || o.TraceRoutes == nil {
 		var ret []V202101beta1TracerouteResult
 		return ret
 	}
-	return *o.Results
+	return *o.TraceRoutes
 }
 
-// GetResultsOk returns a tuple with the Results field value if set, nil otherwise
+// GetTraceRoutesOk returns a tuple with the TraceRoutes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1GetTraceForTestResponse) GetResultsOk() (*[]V202101beta1TracerouteResult, bool) {
-	if o == nil || o.Results == nil {
+func (o *V202101beta1GetTraceForTestResponse) GetTraceRoutesOk() (*[]V202101beta1TracerouteResult, bool) {
+	if o == nil || o.TraceRoutes == nil {
 		return nil, false
 	}
-	return o.Results, true
+	return o.TraceRoutes, true
 }
 
-// HasResults returns a boolean if a field has been set.
-func (o *V202101beta1GetTraceForTestResponse) HasResults() bool {
-	if o != nil && o.Results != nil {
+// HasTraceRoutes returns a boolean if a field has been set.
+func (o *V202101beta1GetTraceForTestResponse) HasTraceRoutes() bool {
+	if o != nil && o.TraceRoutes != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetResults gets a reference to the given []V202101beta1TracerouteResult and assigns it to the Results field.
-func (o *V202101beta1GetTraceForTestResponse) SetResults(v []V202101beta1TracerouteResult) {
-	o.Results = &v
+// SetTraceRoutes gets a reference to the given []V202101beta1TracerouteResult and assigns it to the TraceRoutes field.
+func (o *V202101beta1GetTraceForTestResponse) SetTraceRoutes(v []V202101beta1TracerouteResult) {
+	o.TraceRoutes = &v
 }
 
 func (o V202101beta1GetTraceForTestResponse) MarshalJSON() ([]byte, error) {
@@ -106,8 +106,8 @@ func (o V202101beta1GetTraceForTestResponse) MarshalJSON() ([]byte, error) {
 	if o.IpInfo != nil {
 		toSerialize["ipInfo"] = o.IpInfo
 	}
-	if o.Results != nil {
-		toSerialize["results"] = o.Results
+	if o.TraceRoutes != nil {
+		toSerialize["traceRoutes"] = o.TraceRoutes
 	}
 	return json.Marshal(toSerialize)
 }

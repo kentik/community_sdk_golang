@@ -13,9 +13,10 @@ const authAPITokenKey = "X-CH-Auth-API-Token"
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	// API Services
+	// cloudexport
 	CloudExportAdminServiceApi *cloudexport.CloudExportAdminServiceApiService
 
+	// synthetics
 	SyntheticsAdminServiceApi *synthetics.SyntheticsAdminServiceApiService
 	SyntheticsDataServiceApi  *synthetics.SyntheticsDataServiceApiService
 }

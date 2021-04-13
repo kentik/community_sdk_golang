@@ -8,12 +8,15 @@ info:
 tags:
   - name: SyntheticsDataService
   - name: SyntheticsAdminService
+  - name: CloudExportAdminService
 servers:
   - url: http://localhost:8080
 paths:
   /synthetics/v202101beta1/agents:
     get:
-      operationId: SyntheticsAdminService_ListAgents
+      summary: List Agents.
+      description: Returns a list of agents.
+      operationId: AgentsList
       responses:
         "200":
           description: A successful response.
@@ -30,7 +33,9 @@ paths:
       tags:
         - SyntheticsAdminService
     post:
-      operationId: SyntheticsAdminService_CreateAgent
+      summary: Create Agent.
+      description: Create agent from request. Returns created agent.
+      operationId: AgentCreate
       responses:
         "200":
           description: A successful response.
@@ -54,7 +59,10 @@ paths:
         - SyntheticsAdminService
   "/synthetics/v202101beta1/agents/{agent.id}":
     patch:
-      operationId: SyntheticsAdminService_PatchAgent
+      summary: Patch an agent.
+      description: Partially Updates the attributes of agent specified with id and
+        update_mask fields.
+      operationId: AgentPatch
       responses:
         "200":
           description: A successful response.
@@ -83,7 +91,9 @@ paths:
       tags:
         - SyntheticsAdminService
     get:
-      operationId: SyntheticsAdminService_GetAgent
+      summary: Get information about an agent.
+      description: Returns information about export specified with export ID.
+      operationId: AgentGet
       responses:
         "200":
           description: A successful response.
@@ -106,7 +116,9 @@ paths:
       tags:
         - SyntheticsAdminService
     delete:
-      operationId: SyntheticsAdminService_DeleteAgent
+      summary: Delete an agent.
+      description: Deletes the agent specified with id.
+      operationId: AgentDelete
       responses:
         "200":
           description: A successful response.
@@ -130,8 +142,10 @@ paths:
         - SyntheticsAdminService
   /synthetics/v202101beta1/health/tests:
     post:
-      summary: Get health data for a set of tests
-      operationId: SyntheticsDataService_GetHealthForTests
+      summary: Get health status for synthetics test.
+      description: Get synthetics health test for login user. Also returns mesh data on
+        request.
+      operationId: GetHealthForTests
       responses:
         "200":
           description: A successful response.
@@ -155,7 +169,9 @@ paths:
         - SyntheticsDataService
   /synthetics/v202101beta1/tests:
     get:
-      operationId: SyntheticsAdminService_ListTests
+      summary: List Synthetics Tests.
+      description: Returns a list of syntehtics tests.
+      operationId: TestsList
       responses:
         "200":
           description: A successful response.
@@ -178,7 +194,9 @@ paths:
       tags:
         - SyntheticsAdminService
     post:
-      operationId: SyntheticsAdminService_CreateTest
+      summary: Create Synthetics Test.
+      description: Create synthetics test from request. Returns created test.
+      operationId: TestCreate
       responses:
         "200":
           description: A successful response.
@@ -202,7 +220,9 @@ paths:
         - SyntheticsAdminService
   "/synthetics/v202101beta1/tests/{id}":
     get:
-      operationId: SyntheticsAdminService_GetTest
+      summary: Get information about Synthetics Test.
+      description: Returns information about synthetics test specified with test ID.
+      operationId: TestGet
       responses:
         "200":
           description: A successful response.
@@ -225,7 +245,9 @@ paths:
       tags:
         - SyntheticsAdminService
     delete:
-      operationId: SyntheticsAdminService_DeleteTest
+      summary: Delete an Synthetics Test.
+      description: Deletes the synthetics test specified with id.
+      operationId: TestDelete
       responses:
         "200":
           description: A successful response.
@@ -248,7 +270,10 @@ paths:
       tags:
         - SyntheticsAdminService
     patch:
-      operationId: SyntheticsAdminService_PatchTest
+      summary: Patch a Synthetics Test.
+      description: Partially Updates the attributes of synthetics test specified with id
+        and update_mask fields.
+      operationId: ExportPatch
       responses:
         "200":
           description: A successful response.
@@ -272,8 +297,9 @@ paths:
         - SyntheticsAdminService
   "/synthetics/v202101beta1/tests/{id}/results/trace":
     post:
-      summary: "TODO: Get traces for a single test. Not implemented."
-      operationId: SyntheticsDataService_GetTraceForTest
+      summary: Get trace route data.
+      description: Get trace route data for the specific test id.
+      operationId: GetTraceForTest
       responses:
         "200":
           description: A successful response.
@@ -304,7 +330,9 @@ paths:
         - SyntheticsDataService
   "/synthetics/v202101beta1/tests/{id}/status":
     put:
-      operationId: SyntheticsAdminService_SetTestStatus
+      summary: Update a test status.
+      description: Update the status of a test.
+      operationId: TestStatusUpdate
       responses:
         "200":
           description: A successful response.
@@ -333,20 +361,20 @@ paths:
       tags:
         - SyntheticsAdminService
 security:
-  - X-CH-Auth-API-Email: []
-    X-CH-Auth-API-Token: []
+  - email: []
+    token: []
 externalDocs:
   description: More about Kentik APIs
   url: https://docs.kentik.com/api
 components:
   securitySchemes:
-    X-CH-Auth-API-Token:
-      type: apiKey
-      name: X-CH-Auth-API-Token
-      in: header
-    X-CH-Auth-Email:
+    email:
       type: apiKey
       name: X-CH-Auth-Email
+      in: header
+    token:
+      type: apiKey
+      name: X-CH-Auth-API-Token
       in: header
   schemas:
     protobufAny:
@@ -424,6 +452,8 @@ components:
           type: array
           items:
             type: string
+        localIp:
+          type: string
     v202101beta1AgentHealth:
       type: object
       properties:
@@ -443,6 +473,16 @@ components:
         - AGENT_STATUS_WAIT
         - AGENT_STATUS_DELETED
       default: AGENT_STATUS_UNSPECIFIED
+    v202101beta1AgentTaskConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+        targets:
+          type: array
+          items:
+            type: string
     v202101beta1AgentTest:
       type: object
       properties:
@@ -455,10 +495,10 @@ components:
           type: string
         name:
           type: string
-        lat:
+        latitude:
           type: number
           format: double
-        long:
+        longitude:
           type: number
           format: double
     v202101beta1Country:
@@ -482,6 +522,11 @@ components:
       properties:
         test:
           $ref: "#/components/schemas/v202101beta1Test"
+    v202101beta1DNS:
+      type: object
+      properties:
+        name:
+          type: string
     v202101beta1DNSTaskDefinition:
       type: object
       properties:
@@ -566,6 +611,8 @@ components:
             type: string
           description: Optionally only look at a subset of tasks -- this lets you limit
             targets.
+        augment:
+          type: boolean
     v202101beta1GetHealthForTestsResponse:
       type: object
       properties:
@@ -609,7 +656,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/v202101beta1IPInfo"
-        results:
+        traceRoutes:
           type: array
           items:
             $ref: "#/components/schemas/v202101beta1TracerouteResult"
@@ -747,6 +794,8 @@ components:
           $ref: "#/components/schemas/v202101beta1ASN"
         geo:
           $ref: "#/components/schemas/v202101beta1Geo"
+        dns:
+          $ref: "#/components/schemas/v202101beta1DNS"
     v202101beta1IpTest:
       type: object
       properties:
@@ -791,12 +840,69 @@ components:
         invalidTestsCount:
           type: integer
           format: int64
+    v202101beta1MeshColumn:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        alias:
+          type: string
+        target:
+          type: string
+        metrics:
+          $ref: "#/components/schemas/v202101beta1MeshMetrics"
+        health:
+          type: array
+          items:
+            $ref: "#/components/schemas/v202101beta1MeshMetrics"
+    v202101beta1MeshMetric:
+      type: object
+      properties:
+        name:
+          type: string
+        health:
+          type: string
+        value:
+          type: string
+          format: int64
+    v202101beta1MeshMetrics:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        latency:
+          $ref: "#/components/schemas/v202101beta1MeshMetric"
+        packetLoss:
+          $ref: "#/components/schemas/v202101beta1MeshMetric"
+        jitter:
+          $ref: "#/components/schemas/v202101beta1MeshMetric"
+    v202101beta1MeshResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        localIp:
+          type: string
+        ip:
+          type: string
+        alias:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/v202101beta1MeshColumn"
+      title: "TODO: Mesh support"
     v202101beta1PatchAgentRequest:
       type: object
       properties:
         agent:
           $ref: "#/components/schemas/v202101beta1Agent"
-        updateMask:
+        mask:
           type: string
     v202101beta1PatchAgentResponse:
       type: object
@@ -825,8 +931,9 @@ components:
     v202101beta1Region:
       type: object
       properties:
-        code:
+        id:
           type: string
+          format: int64
         name:
           type: string
     v202101beta1SetTestStatusRequest:
@@ -900,6 +1007,8 @@ components:
             $ref: "#/components/schemas/v202101beta1AgentHealth"
         overallHealth:
           $ref: "#/components/schemas/v202101beta1Health"
+        targetAgent:
+          $ref: "#/components/schemas/v202101beta1Agent"
     v202101beta1TaskState:
       type: string
       enum:
@@ -951,6 +1060,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/v202101beta1Health"
+        agentTaskConfig:
+          type: array
+          items:
+            $ref: "#/components/schemas/v202101beta1AgentTaskConfig"
+        mesh:
+          type: array
+          items:
+            $ref: "#/components/schemas/v202101beta1MeshResponse"
     v202101beta1TestMonitoringSettings:
       type: object
       properties:

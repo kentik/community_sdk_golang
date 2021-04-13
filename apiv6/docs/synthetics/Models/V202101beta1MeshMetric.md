@@ -1,10 +1,11 @@
-# V202101beta1Region
+# V202101beta1MeshMetric
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | [**String**](string.md) |  | [optional] [default to null]
 **name** | [**String**](string.md) |  | [optional] [default to null]
+**health** | [**String**](string.md) |  | [optional] [default to null]
+**value** | [**String**](string.md) |  | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

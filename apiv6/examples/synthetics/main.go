@@ -11,6 +11,21 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
+// Current status:
+// CreateAgent                     POST   - missing request payload data struct in swagger spec
+// CreateTest                      POST   - api call returns http 500
+// DeleteAgent                     DELETE - OK
+// DeleteTest                      DELETE - OK
+// GetAgent                        GET    - OK
+// GetTest                         GET    - OK
+// ListAgents                      GET    - OK
+// ListTests                       GET    - OK
+// PatchAgent                      PATCH  - api call returns  http 500
+// PatchTest                       PATCH  - missing payload for the request in swagger spec
+// SetTestStatus                   PUT    - OK
+// GetHealthForTests               POST   - OK
+// GetTraceForTest                 POST   - OK
+
 func main() {
 	runAdminServiceExamples()
 	runDataServiceExamples()
@@ -20,58 +35,63 @@ func runAdminServiceExamples() {
 	client := examples.NewClient()
 	var err error
 
+	// (13.04.2021 - API call for CREATE returns http 500)
 	// if err = runCRUDTest(client); err != nil {
 	// 	fmt.Println(err)
 	// 	os.Exit(1)
 	// }
 
-	// if err = runGetAllTests(client); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
+	if err = runGetAllTests(client); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	// if err = runGetTest(client, "3337"); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
+	if err = runGetTest(client, "3337"); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
+	// (13.04.2021 - swagger spec for PATCH incomplete)
 	// if err = runPatchTest(client, "3334"); err != nil {
 	// 	fmt.Println(err)
 	// 	os.Exit(1)
 	// }
 
+	// (works but let's not delete anything we hadn't created ourselves)
 	// if err = runDeleteTest(client, "3334"); err != nil {
 	// 	fmt.Println(err)
 	// 	os.Exit(1)
 	// }
 
-	// if err = runSetTestStatus(client, "3337"); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
-
-	// private agent ids: 1717 and 1729
-	// if err = runCRUDAgent(client); err != nil {
-	// 		fmt.Println(err)
-	// 		os.Exit(1)
-	// }
-
-	// if err = runGetAllAgents(client); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
-
-	// if err = runGetAgent(client, "1717"); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
-
-	if err = runPatchAgent(client, "1717"); err != nil {
+	if err = runSetTestStatus(client, "3337"); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	// if err = runDeleteAgent(client, "9999s"); err != nil {
+	// (13.04.2021 - swagger spec for CREATE incomplete)
+	// if err = runCRUDAgent(client); err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
+
+	if err = runGetAllAgents(client); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if err = runGetAgent(client, "1717"); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// (13.04.2021 - API call for PATCH returns http 500)
+	// if err = runPatchAgent(client, "1717"); err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
+
+	// (13.04.2021 - works but let's not delete anything we hadn't created ourselves)
+	// if err = runDeleteAgent(client, "1728"); err != nil {
 	// 	fmt.Println(err)
 	// 	os.Exit(1)
 	// }
@@ -86,10 +106,10 @@ func runDataServiceExamples() {
 		os.Exit(1)
 	}
 
-	// if err = runGetTraceForTest(client, "3337"); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
+	if err = runGetTraceForTest(client, "3337"); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 // NOTE: CREATE returns http 500
@@ -98,7 +118,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	test := makeExampleTest()
 	createReqPayload := *synthetics.NewV202101beta1CreateTestRequest()
 	createReqPayload.Test = test
-	createReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceCreateTest(context.Background()).V202101beta1CreateTestRequest(createReqPayload)
+	createReq := client.SyntheticsAdminServiceApi.TestCreate(context.Background()).V202101beta1CreateTestRequest(createReqPayload)
 	createResp, httpResp, err := createReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -107,12 +127,12 @@ func runCRUDTest(client *kentikapi.Client) error {
 	fmt.Println()
 	created := *createResp.Test
 
-	// NOTE: PATCH is missing the request payload in swagger spec. Doesnt compile.
+	// NOTE: PATCH is missing the request payload in swagger spec, so currently doesnt compile.
 	// fmt.Println("### PATCH")
 	// created.SetStatus(synthetics.V202101BETA1TESTSTATUS_PAUSED) // change from ACTIVE
 	// patchReqPayload := *synthetics.NewV202101beta1PatchTestRequest()
 	// patchReqPayload.Test = created
-	// patchReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServicePatchTest(context.Background(), *created.Id).V202101beta1PatchTestRequest(patchReqPayload)
+	// patchReq := client.SyntheticsAdminServiceApi.ExportPatch(context.Background(), *created.Id).V202101beta1PatchTestRequest(patchReqPayload)
 	// patchResp, httpResp, err := patchReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -121,7 +141,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	// fmt.Println()
 
 	fmt.Println("### GET")
-	getReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceGetTest(context.Background(), *created.Id)
+	getReq := client.SyntheticsAdminServiceApi.TestGet(context.Background(), *created.Id)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -130,7 +150,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### DELETE")
-	deleteReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceDeleteTest(context.Background(), *created.Id)
+	deleteReq := client.SyntheticsAdminServiceApi.TestDelete(context.Background(), *created.Id)
 	deleteResp, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -146,15 +166,20 @@ func runCRUDTest(client *kentikapi.Client) error {
 func runGetAllTests(client *kentikapi.Client) error {
 	fmt.Println("### GET ALL TESTS")
 
-	getAllReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceListTests(context.Background())
+	getAllReq := client.SyntheticsAdminServiceApi.TestsList(context.Background())
 	getAllResp, httpResp, err := getAllReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	tests := *getAllResp.Tests
-	fmt.Println("Num tests:", len(tests))
-	fmt.Println("Num invalid tests:", *getAllResp.InvalidTestsCount)
-	examples.PrettyPrint(tests)
+
+	if getAllResp.Tests != nil {
+		tests := *getAllResp.Tests
+		fmt.Println("Num tests:", len(tests))
+		fmt.Println("Num invalid tests:", *getAllResp.InvalidTestsCount)
+		examples.PrettyPrint(tests)
+	} else {
+		fmt.Println("[no tests received]")
+	}
 	fmt.Println()
 
 	return nil
@@ -164,7 +189,7 @@ func runGetAllTests(client *kentikapi.Client) error {
 func runGetTest(client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET TEST")
 
-	getReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceGetTest(context.Background(), testID)
+	getReq := client.SyntheticsAdminServiceApi.TestGet(context.Background(), testID)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -175,17 +200,17 @@ func runGetTest(client *kentikapi.Client, testID string) error {
 	return nil
 }
 
-// NOTE: PATCH test is misformed; missing request payload
+// NOTE: PATCH is missing the request payload in swagger spec, so currently doesnt compile
 func runPatchTest(client *kentikapi.Client, testID string) error {
-	fmt.Println("### PATCH TEST")
+	// fmt.Println("### PATCH TEST")
 
 	// test := synthetics.NewV202101beta1Test()
-	// test.SetId("3337")
-	// test.SetName("failing codilime ip test - updated")
+	// test.SetId(testID)
+	// test.SetName("updated name")
 	// patchReqPayload := synthetics.NewV202101beta1PatchTestRequest()
 	// patchReqPayload.SetTest(test)
 
-	// patchReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServicePatchTest(context.Background(), testID).V202101beta1PatchTestRequest(patchReqPayload)
+	// patchReq := client.SyntheticsAdminServiceApi.ExportPatch(context.Background(), testID).V202101beta1PatchTestRequest(patchReqPayload)
 	// patchResp, httpResp, err := patchReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -200,7 +225,7 @@ func runPatchTest(client *kentikapi.Client, testID string) error {
 func runDeleteTest(client *kentikapi.Client, testID string) error {
 	fmt.Println("### DELETE TEST")
 
-	deleteReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceDeleteTest(context.Background(), testID)
+	deleteReq := client.SyntheticsAdminServiceApi.TestDelete(context.Background(), testID)
 	deleteResp, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -220,7 +245,7 @@ func runSetTestStatus(client *kentikapi.Client, testID string) error {
 	setStatusReqPayload.Id = &testID
 	status := synthetics.V202101BETA1TESTSTATUS_ACTIVE
 	setStatusReqPayload.Status = &status
-	setStatusReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceSetTestStatus(context.Background(), testID).V202101beta1SetTestStatusRequest(setStatusReqPayload)
+	setStatusReq := client.SyntheticsAdminServiceApi.TestStatusUpdate(context.Background(), testID).V202101beta1SetTestStatusRequest(setStatusReqPayload)
 
 	getResp, httpResp, err := setStatusReq.Execute()
 	if err != nil {
@@ -239,17 +264,21 @@ func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
 
 	healthPayload := *synthetics.NewV202101beta1GetHealthForTestsRequest()
 	healthPayload.SetEndTime(time.Now())
-	healthPayload.SetStartTime(time.Now().Add(-time.Hour * 24 * 1))
+	healthPayload.SetStartTime(time.Now().Add(-time.Hour * 24))
 	healthPayload.SetIds(testIDs)
 
-	getHealthReq := client.SyntheticsDataServiceApi.SyntheticsDataServiceGetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(healthPayload)
+	getHealthReq := client.SyntheticsDataServiceApi.GetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(healthPayload)
 	getHealthResp, httpResp, err := getHealthReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	healthItems := *getHealthResp.Health
-	fmt.Println("Num health items:", len(healthItems))
-	examples.PrettyPrint(healthItems)
+	if getHealthResp.Health != nil {
+		healthItems := *getHealthResp.Health
+		fmt.Println("Num health items:", len(healthItems))
+		examples.PrettyPrint(healthItems)
+	} else {
+		fmt.Println("[no health items received]")
+	}
 	fmt.Println()
 
 	return nil
@@ -262,9 +291,9 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	tracePayload := *synthetics.NewV202101beta1GetTraceForTestRequest()
 	tracePayload.SetId(testID)
 	tracePayload.SetEndTime(time.Now())
-	tracePayload.SetStartTime(time.Now().Add(-time.Hour * 24 * 1))
+	tracePayload.SetStartTime(time.Now().Add(-time.Hour * 1))
 
-	getTraceReq := client.SyntheticsDataServiceApi.SyntheticsDataServiceGetTraceForTest(context.Background(), "3337").V202101beta1GetTraceForTestRequest(tracePayload)
+	getTraceReq := client.SyntheticsDataServiceApi.GetTraceForTest(context.Background(), testID).V202101beta1GetTraceForTestRequest(tracePayload)
 	getTraceResp, httpResp, err := getTraceReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -275,15 +304,15 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 		fmt.Println("Num ip items:", len(ipItems))
 		examples.PrettyPrint(ipItems)
 	} else {
-		fmt.Println("[no ip items]")
+		fmt.Println("[no ip items received]")
 	}
 
-	if getTraceResp.Results != nil {
-		results := *getTraceResp.Results
-		fmt.Println("Num results:", len(results))
+	if getTraceResp.TraceRoutes != nil {
+		results := *getTraceResp.TraceRoutes
+		fmt.Println("Num trace routes:", len(results))
 		examples.PrettyPrint(results)
 	} else {
-		fmt.Println("[no results]")
+		fmt.Println("[no trace routes received]")
 	}
 
 	fmt.Println()
@@ -291,14 +320,14 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	return nil
 }
 
-// NOTE: CREATE not implemented; Agent API seems to be ongoing work
+// NOTE: CREATE not implemented in swagger spec
 func runCRUDAgent(client *kentikapi.Client) error {
-	// fmt.Println("### CREATE") // create not really supported in openapi spec V202101beta1
+	// fmt.Println("### CREATE AGENT") // create not really supported in openapi spec V202101beta1
 	// agent := *synthetics.NewV202101beta1Agent()
 	// agent.SetName("test-agent-name")
 	// createReqPayload := *synthetics.NewV202101beta1CreateAgentRequest() // no such function: NewV202101beta1CreateAgentRequest
 	// createReqPayload.Agent = agent
-	// createReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceCreateAgent(context.Background()).V202101beta1CreateAgentRequest(createReqPayload)
+	// createReq := client.SyntheticsAdminServiceApi.AgentCreate(context.Background()).V202101beta1CreateAgentRequest(createReqPayload)
 	// createResp, httpResp, err := createReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -306,9 +335,9 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	// examples.PrettyPrint(createResp)
 	// fmt.Println()
 
-	// fmt.Println("### UPDATE") // createResp is generic object so no way to extract agent ID to use in UPDATE request
+	// fmt.Println("### UPDATE AGENT")
 	// agent.SetName("test-agent-name-updated")
-	// updateReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServicePatchAgent(context.Background(), *createResp.Agent.Id)
+	// updateReq := client.SyntheticsAdminServiceApi.AgentPatch(context.Background(), *createResp.Agent.Id)
 	// updateResp, httpResp, err := updateReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -316,8 +345,8 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	// examples.PrettyPrint(updateResp)
 	// fmt.Println()
 
-	// fmt.Println("### GET") // createResp is generic object so no way to extract agent ID to use in GET request
-	// getReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceGetAgent(context.Background(), *createResp.Agent.Id)
+	// fmt.Println("### GET AGENT")
+	// getReq := client.SyntheticsAdminServiceApi.AgentGet(context.Background(), *createResp.Agent.Id)
 	// getResp, httpResp, err := getReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -325,8 +354,8 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	// examples.PrettyPrint(getResp)
 	// fmt.Println()
 
-	// fmt.Println("### DELETE") // createResp is generic object so no way to extract agent ID to use in DELETE request
-	// deleteReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceDeleteAgent(context.Background(), *createResp.Agent.Id)
+	// fmt.Println("### DELETE AGENT")
+	// deleteReq := client.SyntheticsAdminServiceApi.AgentDelete(context.Background(), *createResp.Agent.Id)
 	// deleteResp, httpResp, err := deleteReq.Execute()
 	// if err != nil {
 	// 	return fmt.Errorf("%v %v", err, httpResp)
@@ -342,14 +371,18 @@ func runCRUDAgent(client *kentikapi.Client) error {
 func runGetAllAgents(client *kentikapi.Client) error {
 	fmt.Println("### GET ALL AGENTS")
 
-	getAllReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceListAgents(context.Background())
+	getAllReq := client.SyntheticsAdminServiceApi.AgentsList(context.Background())
 	getAllResp, httpResp, err := getAllReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	agents := *getAllResp.Agents
-	fmt.Println("Num agents:", len(agents))
-	examples.PrettyPrint(agents)
+	if getAllResp.Agents != nil {
+		agents := *getAllResp.Agents
+		fmt.Println("Num agents:", len(agents))
+		examples.PrettyPrint(agents)
+	} else {
+		fmt.Println("[no agents received]")
+	}
 	fmt.Println()
 
 	return nil
@@ -359,7 +392,7 @@ func runGetAllAgents(client *kentikapi.Client) error {
 func runGetAgent(client *kentikapi.Client, agentID string) error {
 	fmt.Println("### GET AGENT")
 
-	getReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceGetAgent(context.Background(), agentID)
+	getReq := client.SyntheticsAdminServiceApi.AgentGet(context.Background(), agentID)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -380,9 +413,9 @@ func runPatchAgent(client *kentikapi.Client, agentID string) error {
 
 	patchReqPayload := *synthetics.NewV202101beta1PatchAgentRequest()
 	patchReqPayload.SetAgent(agent)
-	patchReqPayload.SetUpdateMask("")
+	patchReqPayload.SetMask("")
 
-	patchReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServicePatchAgent(context.Background(), agentID).V202101beta1PatchAgentRequest(patchReqPayload)
+	patchReq := client.SyntheticsAdminServiceApi.AgentPatch(context.Background(), agentID).V202101beta1PatchAgentRequest(patchReqPayload)
 	patchResp, httpResp, err := patchReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -396,7 +429,7 @@ func runPatchAgent(client *kentikapi.Client, agentID string) error {
 // NOTE: DELETE agent works
 func runDeleteAgent(client *kentikapi.Client, agentID string) error {
 	fmt.Println("### DELETE AGENT")
-	deleteReq := client.SyntheticsAdminServiceApi.SyntheticsAdminServiceDeleteAgent(context.Background(), agentID)
+	deleteReq := client.SyntheticsAdminServiceApi.AgentDelete(context.Background(), agentID)
 	deleteResp, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)

@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **IpInfo** | Pointer to [**[]V202101beta1IPInfo**](V202101beta1IPInfo.md) |  | [optional] 
-**Results** | Pointer to [**[]V202101beta1TracerouteResult**](V202101beta1TracerouteResult.md) |  | [optional] 
+**TraceRoutes** | Pointer to [**[]V202101beta1TracerouteResult**](V202101beta1TracerouteResult.md) |  | [optional] 
 
 ## Methods
 
@@ -51,30 +51,30 @@ SetIpInfo sets IpInfo field to given value.
 
 HasIpInfo returns a boolean if a field has been set.
 
-### GetResults
+### GetTraceRoutes
 
-`func (o *V202101beta1GetTraceForTestResponse) GetResults() []V202101beta1TracerouteResult`
+`func (o *V202101beta1GetTraceForTestResponse) GetTraceRoutes() []V202101beta1TracerouteResult`
 
-GetResults returns the Results field if non-nil, zero value otherwise.
+GetTraceRoutes returns the TraceRoutes field if non-nil, zero value otherwise.
 
-### GetResultsOk
+### GetTraceRoutesOk
 
-`func (o *V202101beta1GetTraceForTestResponse) GetResultsOk() (*[]V202101beta1TracerouteResult, bool)`
+`func (o *V202101beta1GetTraceForTestResponse) GetTraceRoutesOk() (*[]V202101beta1TracerouteResult, bool)`
 
-GetResultsOk returns a tuple with the Results field if it's non-nil, zero value otherwise
+GetTraceRoutesOk returns a tuple with the TraceRoutes field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetResults
+### SetTraceRoutes
 
-`func (o *V202101beta1GetTraceForTestResponse) SetResults(v []V202101beta1TracerouteResult)`
+`func (o *V202101beta1GetTraceForTestResponse) SetTraceRoutes(v []V202101beta1TracerouteResult)`
 
-SetResults sets Results field to given value.
+SetTraceRoutes sets TraceRoutes field to given value.
 
-### HasResults
+### HasTraceRoutes
 
-`func (o *V202101beta1GetTraceForTestResponse) HasResults() bool`
+`func (o *V202101beta1GetTraceForTestResponse) HasTraceRoutes() bool`
 
-HasResults returns a boolean if a field has been set.
+HasTraceRoutes returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

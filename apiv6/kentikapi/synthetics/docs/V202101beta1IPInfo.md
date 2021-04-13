@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Ip** | Pointer to **string** |  | [optional] 
 **Asn** | Pointer to [**V202101beta1ASN**](V202101beta1ASN.md) |  | [optional] 
 **Geo** | Pointer to [**V202101beta1Geo**](V202101beta1Geo.md) |  | [optional] 
+**Dns** | Pointer to [**V202101beta1DNS**](V202101beta1DNS.md) |  | [optional] 
 
 ## Methods
 
@@ -101,6 +102,31 @@ SetGeo sets Geo field to given value.
 `func (o *V202101beta1IPInfo) HasGeo() bool`
 
 HasGeo returns a boolean if a field has been set.
+
+### GetDns
+
+`func (o *V202101beta1IPInfo) GetDns() V202101beta1DNS`
+
+GetDns returns the Dns field if non-nil, zero value otherwise.
+
+### GetDnsOk
+
+`func (o *V202101beta1IPInfo) GetDnsOk() (*V202101beta1DNS, bool)`
+
+GetDnsOk returns a tuple with the Dns field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDns
+
+`func (o *V202101beta1IPInfo) SetDns(v V202101beta1DNS)`
+
+SetDns sets Dns field to given value.
+
+### HasDns
+
+`func (o *V202101beta1IPInfo) HasDns() bool`
+
+HasDns returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

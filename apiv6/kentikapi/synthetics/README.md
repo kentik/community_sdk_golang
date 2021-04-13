@@ -79,19 +79,19 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceCreateAgent**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicecreateagent) | **Post** /synthetics/v202101beta1/agents | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceCreateTest**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicecreatetest) | **Post** /synthetics/v202101beta1/tests | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceDeleteAgent**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicedeleteagent) | **Delete** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceDeleteTest**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicedeletetest) | **Delete** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceGetAgent**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicegetagent) | **Get** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceGetTest**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicegettest) | **Get** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceListAgents**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicelistagents) | **Get** /synthetics/v202101beta1/agents | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceListTests**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicelisttests) | **Get** /synthetics/v202101beta1/tests | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServicePatchAgent**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchagent) | **Patch** /synthetics/v202101beta1/agents/{agent.id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServicePatchTest**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicepatchtest) | **Patch** /synthetics/v202101beta1/tests/{id} | 
-*SyntheticsAdminServiceApi* | [**SyntheticsAdminServiceSetTestStatus**](docs/SyntheticsAdminServiceApi.md#syntheticsadminservicesetteststatus) | **Put** /synthetics/v202101beta1/tests/{id}/status | 
-*SyntheticsDataServiceApi* | [**SyntheticsDataServiceGetHealthForTests**](docs/SyntheticsDataServiceApi.md#syntheticsdataservicegethealthfortests) | **Post** /synthetics/v202101beta1/health/tests | Get health data for a set of tests
-*SyntheticsDataServiceApi* | [**SyntheticsDataServiceGetTraceForTest**](docs/SyntheticsDataServiceApi.md#syntheticsdataservicegettracefortest) | **Post** /synthetics/v202101beta1/tests/{id}/results/trace | TODO: Get traces for a single test. Not implemented.
+*SyntheticsAdminServiceApi* | [**AgentCreate**](docs/SyntheticsAdminServiceApi.md#agentcreate) | **Post** /synthetics/v202101beta1/agents | Create Agent.
+*SyntheticsAdminServiceApi* | [**AgentDelete**](docs/SyntheticsAdminServiceApi.md#agentdelete) | **Delete** /synthetics/v202101beta1/agents/{agent.id} | Delete an agent.
+*SyntheticsAdminServiceApi* | [**AgentGet**](docs/SyntheticsAdminServiceApi.md#agentget) | **Get** /synthetics/v202101beta1/agents/{agent.id} | Get information about an agent.
+*SyntheticsAdminServiceApi* | [**AgentPatch**](docs/SyntheticsAdminServiceApi.md#agentpatch) | **Patch** /synthetics/v202101beta1/agents/{agent.id} | Patch an agent.
+*SyntheticsAdminServiceApi* | [**AgentsList**](docs/SyntheticsAdminServiceApi.md#agentslist) | **Get** /synthetics/v202101beta1/agents | List Agents.
+*SyntheticsAdminServiceApi* | [**ExportPatch**](docs/SyntheticsAdminServiceApi.md#exportpatch) | **Patch** /synthetics/v202101beta1/tests/{id} | Patch a Synthetics Test.
+*SyntheticsAdminServiceApi* | [**TestCreate**](docs/SyntheticsAdminServiceApi.md#testcreate) | **Post** /synthetics/v202101beta1/tests | Create Synthetics Test.
+*SyntheticsAdminServiceApi* | [**TestDelete**](docs/SyntheticsAdminServiceApi.md#testdelete) | **Delete** /synthetics/v202101beta1/tests/{id} | Delete an Synthetics Test.
+*SyntheticsAdminServiceApi* | [**TestGet**](docs/SyntheticsAdminServiceApi.md#testget) | **Get** /synthetics/v202101beta1/tests/{id} | Get information about Synthetics Test.
+*SyntheticsAdminServiceApi* | [**TestStatusUpdate**](docs/SyntheticsAdminServiceApi.md#teststatusupdate) | **Put** /synthetics/v202101beta1/tests/{id}/status | Update a test status.
+*SyntheticsAdminServiceApi* | [**TestsList**](docs/SyntheticsAdminServiceApi.md#testslist) | **Get** /synthetics/v202101beta1/tests | List Synthetics Tests.
+*SyntheticsDataServiceApi* | [**GetHealthForTests**](docs/SyntheticsDataServiceApi.md#gethealthfortests) | **Post** /synthetics/v202101beta1/health/tests | Get health status for synthetics test.
+*SyntheticsDataServiceApi* | [**GetTraceForTest**](docs/SyntheticsDataServiceApi.md#gettracefortest) | **Post** /synthetics/v202101beta1/tests/{id}/results/trace | Get trace route data.
 
 
 ## Documentation For Models
@@ -102,11 +102,13 @@ Class | Method | HTTP request | Description
  - [V202101beta1Agent](docs/V202101beta1Agent.md)
  - [V202101beta1AgentHealth](docs/V202101beta1AgentHealth.md)
  - [V202101beta1AgentStatus](docs/V202101beta1AgentStatus.md)
+ - [V202101beta1AgentTaskConfig](docs/V202101beta1AgentTaskConfig.md)
  - [V202101beta1AgentTest](docs/V202101beta1AgentTest.md)
  - [V202101beta1City](docs/V202101beta1City.md)
  - [V202101beta1Country](docs/V202101beta1Country.md)
  - [V202101beta1CreateTestRequest](docs/V202101beta1CreateTestRequest.md)
  - [V202101beta1CreateTestResponse](docs/V202101beta1CreateTestResponse.md)
+ - [V202101beta1DNS](docs/V202101beta1DNS.md)
  - [V202101beta1DNSTaskDefinition](docs/V202101beta1DNSTaskDefinition.md)
  - [V202101beta1DnsTest](docs/V202101beta1DnsTest.md)
  - [V202101beta1FlowTest](docs/V202101beta1FlowTest.md)
@@ -128,6 +130,10 @@ Class | Method | HTTP request | Description
  - [V202101beta1KnockTaskDefinition](docs/V202101beta1KnockTaskDefinition.md)
  - [V202101beta1ListAgentsResponse](docs/V202101beta1ListAgentsResponse.md)
  - [V202101beta1ListTestsResponse](docs/V202101beta1ListTestsResponse.md)
+ - [V202101beta1MeshColumn](docs/V202101beta1MeshColumn.md)
+ - [V202101beta1MeshMetric](docs/V202101beta1MeshMetric.md)
+ - [V202101beta1MeshMetrics](docs/V202101beta1MeshMetrics.md)
+ - [V202101beta1MeshResponse](docs/V202101beta1MeshResponse.md)
  - [V202101beta1PatchAgentRequest](docs/V202101beta1PatchAgentRequest.md)
  - [V202101beta1PatchAgentResponse](docs/V202101beta1PatchAgentResponse.md)
  - [V202101beta1PatchTestResponse](docs/V202101beta1PatchTestResponse.md)
@@ -159,22 +165,22 @@ Class | Method | HTTP request | Description
 
 
 
-### X-CH-Auth-API-Token
-
-- **Type**: API key
-- **API key parameter name**: X-CH-Auth-API-Token
-- **Location**: HTTP header
-
-Note, each API key must be added to a map of `map[string]APIKey` where the key is: X-CH-Auth-API-Token and passed in as the auth context for each request.
-
-
-### X-CH-Auth-Email
+### email
 
 - **Type**: API key
 - **API key parameter name**: X-CH-Auth-Email
 - **Location**: HTTP header
 
 Note, each API key must be added to a map of `map[string]APIKey` where the key is: X-CH-Auth-Email and passed in as the auth context for each request.
+
+
+### token
+
+- **Type**: API key
+- **API key parameter name**: X-CH-Auth-API-Token
+- **Location**: HTTP header
+
+Note, each API key must be added to a map of `map[string]APIKey` where the key is: X-CH-Auth-API-Token and passed in as the auth context for each request.
 
 
 ## Documentation for Utility Methods

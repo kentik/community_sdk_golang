@@ -16,7 +16,7 @@ import (
 
 // V202101beta1Region struct for V202101beta1Region
 type V202101beta1Region struct {
-	Code *string `json:"code,omitempty"`
+	Id   *string `json:"id,omitempty"`
 	Name *string `json:"name,omitempty"`
 }
 
@@ -37,36 +37,36 @@ func NewV202101beta1RegionWithDefaults() *V202101beta1Region {
 	return &this
 }
 
-// GetCode returns the Code field value if set, zero value otherwise.
-func (o *V202101beta1Region) GetCode() string {
-	if o == nil || o.Code == nil {
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *V202101beta1Region) GetId() string {
+	if o == nil || o.Id == nil {
 		var ret string
 		return ret
 	}
-	return *o.Code
+	return *o.Id
 }
 
-// GetCodeOk returns a tuple with the Code field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1Region) GetCodeOk() (*string, bool) {
-	if o == nil || o.Code == nil {
+func (o *V202101beta1Region) GetIdOk() (*string, bool) {
+	if o == nil || o.Id == nil {
 		return nil, false
 	}
-	return o.Code, true
+	return o.Id, true
 }
 
-// HasCode returns a boolean if a field has been set.
-func (o *V202101beta1Region) HasCode() bool {
-	if o != nil && o.Code != nil {
+// HasId returns a boolean if a field has been set.
+func (o *V202101beta1Region) HasId() bool {
+	if o != nil && o.Id != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetCode gets a reference to the given string and assigns it to the Code field.
-func (o *V202101beta1Region) SetCode(v string) {
-	o.Code = &v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *V202101beta1Region) SetId(v string) {
+	o.Id = &v
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
@@ -103,8 +103,8 @@ func (o *V202101beta1Region) SetName(v string) {
 
 func (o V202101beta1Region) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Code != nil {
-		toSerialize["code"] = o.Code
+	if o.Id != nil {
+		toSerialize["id"] = o.Id
 	}
 	if o.Name != nil {
 		toSerialize["name"] = o.Name

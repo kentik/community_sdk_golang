@@ -16,10 +16,10 @@ import (
 
 // V202101beta1City struct for V202101beta1City
 type V202101beta1City struct {
-	Id   *string  `json:"id,omitempty"`
-	Name *string  `json:"name,omitempty"`
-	Lat  *float64 `json:"lat,omitempty"`
-	Long *float64 `json:"long,omitempty"`
+	Id        *string  `json:"id,omitempty"`
+	Name      *string  `json:"name,omitempty"`
+	Latitude  *float64 `json:"latitude,omitempty"`
+	Longitude *float64 `json:"longitude,omitempty"`
 }
 
 // NewV202101beta1City instantiates a new V202101beta1City object
@@ -103,68 +103,68 @@ func (o *V202101beta1City) SetName(v string) {
 	o.Name = &v
 }
 
-// GetLat returns the Lat field value if set, zero value otherwise.
-func (o *V202101beta1City) GetLat() float64 {
-	if o == nil || o.Lat == nil {
+// GetLatitude returns the Latitude field value if set, zero value otherwise.
+func (o *V202101beta1City) GetLatitude() float64 {
+	if o == nil || o.Latitude == nil {
 		var ret float64
 		return ret
 	}
-	return *o.Lat
+	return *o.Latitude
 }
 
-// GetLatOk returns a tuple with the Lat field value if set, nil otherwise
+// GetLatitudeOk returns a tuple with the Latitude field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1City) GetLatOk() (*float64, bool) {
-	if o == nil || o.Lat == nil {
+func (o *V202101beta1City) GetLatitudeOk() (*float64, bool) {
+	if o == nil || o.Latitude == nil {
 		return nil, false
 	}
-	return o.Lat, true
+	return o.Latitude, true
 }
 
-// HasLat returns a boolean if a field has been set.
-func (o *V202101beta1City) HasLat() bool {
-	if o != nil && o.Lat != nil {
+// HasLatitude returns a boolean if a field has been set.
+func (o *V202101beta1City) HasLatitude() bool {
+	if o != nil && o.Latitude != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetLat gets a reference to the given float64 and assigns it to the Lat field.
-func (o *V202101beta1City) SetLat(v float64) {
-	o.Lat = &v
+// SetLatitude gets a reference to the given float64 and assigns it to the Latitude field.
+func (o *V202101beta1City) SetLatitude(v float64) {
+	o.Latitude = &v
 }
 
-// GetLong returns the Long field value if set, zero value otherwise.
-func (o *V202101beta1City) GetLong() float64 {
-	if o == nil || o.Long == nil {
+// GetLongitude returns the Longitude field value if set, zero value otherwise.
+func (o *V202101beta1City) GetLongitude() float64 {
+	if o == nil || o.Longitude == nil {
 		var ret float64
 		return ret
 	}
-	return *o.Long
+	return *o.Longitude
 }
 
-// GetLongOk returns a tuple with the Long field value if set, nil otherwise
+// GetLongitudeOk returns a tuple with the Longitude field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1City) GetLongOk() (*float64, bool) {
-	if o == nil || o.Long == nil {
+func (o *V202101beta1City) GetLongitudeOk() (*float64, bool) {
+	if o == nil || o.Longitude == nil {
 		return nil, false
 	}
-	return o.Long, true
+	return o.Longitude, true
 }
 
-// HasLong returns a boolean if a field has been set.
-func (o *V202101beta1City) HasLong() bool {
-	if o != nil && o.Long != nil {
+// HasLongitude returns a boolean if a field has been set.
+func (o *V202101beta1City) HasLongitude() bool {
+	if o != nil && o.Longitude != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetLong gets a reference to the given float64 and assigns it to the Long field.
-func (o *V202101beta1City) SetLong(v float64) {
-	o.Long = &v
+// SetLongitude gets a reference to the given float64 and assigns it to the Longitude field.
+func (o *V202101beta1City) SetLongitude(v float64) {
+	o.Longitude = &v
 }
 
 func (o V202101beta1City) MarshalJSON() ([]byte, error) {
@@ -175,11 +175,11 @@ func (o V202101beta1City) MarshalJSON() ([]byte, error) {
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	if o.Lat != nil {
-		toSerialize["lat"] = o.Lat
+	if o.Latitude != nil {
+		toSerialize["latitude"] = o.Latitude
 	}
-	if o.Long != nil {
-		toSerialize["long"] = o.Long
+	if o.Longitude != nil {
+		toSerialize["longitude"] = o.Longitude
 	}
 	return json.Marshal(toSerialize)
 }

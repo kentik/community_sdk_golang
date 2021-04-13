@@ -6,8 +6,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | Pointer to **string** |  | [optional] 
 **Name** | Pointer to **string** |  | [optional] 
-**Lat** | Pointer to **float64** |  | [optional] 
-**Long** | Pointer to **float64** |  | [optional] 
+**Latitude** | Pointer to **float64** |  | [optional] 
+**Longitude** | Pointer to **float64** |  | [optional] 
 
 ## Methods
 
@@ -78,55 +78,55 @@ SetName sets Name field to given value.
 
 HasName returns a boolean if a field has been set.
 
-### GetLat
+### GetLatitude
 
-`func (o *V202101beta1City) GetLat() float64`
+`func (o *V202101beta1City) GetLatitude() float64`
 
-GetLat returns the Lat field if non-nil, zero value otherwise.
+GetLatitude returns the Latitude field if non-nil, zero value otherwise.
 
-### GetLatOk
+### GetLatitudeOk
 
-`func (o *V202101beta1City) GetLatOk() (*float64, bool)`
+`func (o *V202101beta1City) GetLatitudeOk() (*float64, bool)`
 
-GetLatOk returns a tuple with the Lat field if it's non-nil, zero value otherwise
+GetLatitudeOk returns a tuple with the Latitude field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetLat
+### SetLatitude
 
-`func (o *V202101beta1City) SetLat(v float64)`
+`func (o *V202101beta1City) SetLatitude(v float64)`
 
-SetLat sets Lat field to given value.
+SetLatitude sets Latitude field to given value.
 
-### HasLat
+### HasLatitude
 
-`func (o *V202101beta1City) HasLat() bool`
+`func (o *V202101beta1City) HasLatitude() bool`
 
-HasLat returns a boolean if a field has been set.
+HasLatitude returns a boolean if a field has been set.
 
-### GetLong
+### GetLongitude
 
-`func (o *V202101beta1City) GetLong() float64`
+`func (o *V202101beta1City) GetLongitude() float64`
 
-GetLong returns the Long field if non-nil, zero value otherwise.
+GetLongitude returns the Longitude field if non-nil, zero value otherwise.
 
-### GetLongOk
+### GetLongitudeOk
 
-`func (o *V202101beta1City) GetLongOk() (*float64, bool)`
+`func (o *V202101beta1City) GetLongitudeOk() (*float64, bool)`
 
-GetLongOk returns a tuple with the Long field if it's non-nil, zero value otherwise
+GetLongitudeOk returns a tuple with the Longitude field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetLong
+### SetLongitude
 
-`func (o *V202101beta1City) SetLong(v float64)`
+`func (o *V202101beta1City) SetLongitude(v float64)`
 
-SetLong sets Long field to given value.
+SetLongitude sets Longitude field to given value.
 
-### HasLong
+### HasLongitude
 
-`func (o *V202101beta1City) HasLong() bool`
+`func (o *V202101beta1City) HasLongitude() bool`
 
-HasLong returns a boolean if a field has been set.
+HasLongitude returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

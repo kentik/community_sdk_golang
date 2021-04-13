@@ -26,6 +26,7 @@ type V202101beta1GetHealthForTestsRequest struct {
 	AgentIds *[]string  `json:"agentIds,omitempty"`
 	// Optionally only look at a subset of tasks -- this lets you limit targets.
 	TaskIds *[]string `json:"taskIds,omitempty"`
+	Augment *bool     `json:"augment,omitempty"`
 }
 
 // NewV202101beta1GetHealthForTestsRequest instantiates a new V202101beta1GetHealthForTestsRequest object
@@ -205,6 +206,38 @@ func (o *V202101beta1GetHealthForTestsRequest) SetTaskIds(v []string) {
 	o.TaskIds = &v
 }
 
+// GetAugment returns the Augment field value if set, zero value otherwise.
+func (o *V202101beta1GetHealthForTestsRequest) GetAugment() bool {
+	if o == nil || o.Augment == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Augment
+}
+
+// GetAugmentOk returns a tuple with the Augment field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1GetHealthForTestsRequest) GetAugmentOk() (*bool, bool) {
+	if o == nil || o.Augment == nil {
+		return nil, false
+	}
+	return o.Augment, true
+}
+
+// HasAugment returns a boolean if a field has been set.
+func (o *V202101beta1GetHealthForTestsRequest) HasAugment() bool {
+	if o != nil && o.Augment != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetAugment gets a reference to the given bool and assigns it to the Augment field.
+func (o *V202101beta1GetHealthForTestsRequest) SetAugment(v bool) {
+	o.Augment = &v
+}
+
 func (o V202101beta1GetHealthForTestsRequest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Ids != nil {
@@ -221,6 +254,9 @@ func (o V202101beta1GetHealthForTestsRequest) MarshalJSON() ([]byte, error) {
 	}
 	if o.TaskIds != nil {
 		toSerialize["taskIds"] = o.TaskIds
+	}
+	if o.Augment != nil {
+		toSerialize["augment"] = o.Augment
 	}
 	return json.Marshal(toSerialize)
 }

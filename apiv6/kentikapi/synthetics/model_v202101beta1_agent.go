@@ -36,6 +36,7 @@ type V202101beta1Agent struct {
 	Region     *string                  `json:"region,omitempty"`
 	Country    *string                  `json:"country,omitempty"`
 	TestIds    *[]string                `json:"testIds,omitempty"`
+	LocalIp    *string                  `json:"localIp,omitempty"`
 }
 
 // NewV202101beta1Agent instantiates a new V202101beta1Agent object
@@ -671,6 +672,38 @@ func (o *V202101beta1Agent) SetTestIds(v []string) {
 	o.TestIds = &v
 }
 
+// GetLocalIp returns the LocalIp field value if set, zero value otherwise.
+func (o *V202101beta1Agent) GetLocalIp() string {
+	if o == nil || o.LocalIp == nil {
+		var ret string
+		return ret
+	}
+	return *o.LocalIp
+}
+
+// GetLocalIpOk returns a tuple with the LocalIp field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1Agent) GetLocalIpOk() (*string, bool) {
+	if o == nil || o.LocalIp == nil {
+		return nil, false
+	}
+	return o.LocalIp, true
+}
+
+// HasLocalIp returns a boolean if a field has been set.
+func (o *V202101beta1Agent) HasLocalIp() bool {
+	if o != nil && o.LocalIp != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetLocalIp gets a reference to the given string and assigns it to the LocalIp field.
+func (o *V202101beta1Agent) SetLocalIp(v string) {
+	o.LocalIp = &v
+}
+
 func (o V202101beta1Agent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Id != nil {
@@ -729,6 +762,9 @@ func (o V202101beta1Agent) MarshalJSON() ([]byte, error) {
 	}
 	if o.TestIds != nil {
 		toSerialize["testIds"] = o.TestIds
+	}
+	if o.LocalIp != nil {
+		toSerialize["localIp"] = o.LocalIp
 	}
 	return json.Marshal(toSerialize)
 }
