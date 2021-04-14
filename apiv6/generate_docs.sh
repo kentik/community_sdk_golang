@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Generate golang client sdk and markdown docs from OpenAPI 3.0.0 spec
+# Generate markdown docs from OpenAPI 3.0.0 spec
 
 
 function stage() {
@@ -19,24 +19,6 @@ function checkPrerequsites() {
         echo "You need to install docker to run the generator"
         exit 1
     fi
-
-    echo "Done"
-}
-
-function generate_golang_client_from_openapi3_spec() {
-    stage "Generating golang client from openapi spec"
-
-    spec_file="$1"
-    package="$2"
-    output_dir="$3"
-
-    docker run --rm  -v "$(pwd):/local" \
-        openapitools/openapi-generator-cli generate  \
-        -i "/local/$spec_file" \
-        -g go \
-        --additional-properties=enumClassPrefix=true \
-        --package-name "$package" \
-        -o "/local/$output_dir"
 
     echo "Done"
 }
@@ -71,24 +53,18 @@ checkPrerequsites
 
 # GENERATE CLOUDEXPORT
 cloudexport_package="cloudexport"
-cloudexport_spec="api_spec/openapi_3.0.0/cloud_export.openapi.yaml"
+cloudexport_spec="cloud_export.openapi.yaml"
 
-cloudexport_client_output_dir="kentikapi/cloudexport"
 cloudexport_docs_output_dir="docs/cloudexport"
 
-generate_golang_client_from_openapi3_spec "$cloudexport_spec" "$cloudexport_package" "$cloudexport_client_output_dir"
 generate_markdown_from_openapi3_spec "$cloudexport_spec" "$cloudexport_package" "$cloudexport_docs_output_dir"
-change_ownership_to_current_user "$cloudexport_client_output_dir"
 change_ownership_to_current_user "$cloudexport_docs_output_dir"
 
 # GENERATE SYNTHETICS
 synthetics_package="synthetics"
-synthetics_spec="api_spec/openapi_3.0.0/synthetics.openapi.yaml"
+synthetics_spec="synthetics.openapi.yaml"
 
-synthetics_client_output_dir="kentikapi/synthetics"
 synthetics_docs_output_dir="docs/synthetics"
 
-generate_golang_client_from_openapi3_spec "$synthetics_spec" "$synthetics_package" "$synthetics_client_output_dir"
 generate_markdown_from_openapi3_spec "$synthetics_spec" "$synthetics_package" "$synthetics_docs_output_dir"
-change_ownership_to_current_user "$synthetics_client_output_dir"
 change_ownership_to_current_user "$synthetics_docs_output_dir"

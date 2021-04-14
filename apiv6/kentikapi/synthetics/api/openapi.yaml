@@ -9,14 +9,13 @@ externalDocs:
   description: More about Kentik APIs
   url: https://docs.kentik.com/api
 servers:
-- url: http://localhost:8080
+- url: /
 security:
 - email: []
   token: []
 tags:
 - name: SyntheticsDataService
 - name: SyntheticsAdminService
-- name: CloudExportAdminService
 paths:
   /synthetics/v202101beta1/agents:
     get:
@@ -36,31 +35,6 @@ paths:
                 $ref: '#/components/schemas/rpcStatus'
           description: An unexpected error response.
       summary: List Agents.
-      tags:
-      - SyntheticsAdminService
-    post:
-      description: Create agent from request. Returns created agent.
-      operationId: AgentCreate
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/v202101beta1CreateAgentRequest'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/v202101beta1CreateAgentResponse'
-          description: A successful response.
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/rpcStatus'
-          description: An unexpected error response.
-      summary: Create Agent.
       tags:
       - SyntheticsAdminService
   /synthetics/v202101beta1/agents/{agent.id}:
@@ -92,7 +66,7 @@ paths:
       tags:
       - SyntheticsAdminService
     get:
-      description: Returns information about export specified with export ID.
+      description: Returns information about the agent specified with id.
       operationId: AgentGet
       parameters:
       - explode: false
@@ -290,7 +264,7 @@ paths:
     patch:
       description: Partially Updates the attributes of synthetics test specified with
         id and update_mask fields.
-      operationId: ExportPatch
+      operationId: TestPatch
       parameters:
       - explode: false
         in: path
@@ -299,6 +273,12 @@ paths:
         schema:
           type: string
         style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1PatchTestRequest'
+        required: true
       responses:
         "200":
           content:
@@ -625,10 +605,6 @@ components:
           type: string
         name:
           type: string
-      type: object
-    v202101beta1CreateAgentRequest:
-      type: object
-    v202101beta1CreateAgentResponse:
       type: object
     v202101beta1CreateTestRequest:
       properties:
@@ -3107,6 +3083,13 @@ components:
       properties:
         agent:
           $ref: '#/components/schemas/v202101beta1Agent'
+      type: object
+    v202101beta1PatchTestRequest:
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+        mask:
+          type: string
       type: object
     v202101beta1PatchTestResponse:
       example:

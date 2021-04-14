@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -49,6 +48,7 @@ docs/V202101beta1MeshMetrics.md
 docs/V202101beta1MeshResponse.md
 docs/V202101beta1PatchAgentRequest.md
 docs/V202101beta1PatchAgentResponse.md
+docs/V202101beta1PatchTestRequest.md
 docs/V202101beta1PatchTestResponse.md
 docs/V202101beta1PingTaskDefinition.md
 docs/V202101beta1Region.md
@@ -115,6 +115,7 @@ model_v202101beta1_mesh_metrics.go
 model_v202101beta1_mesh_response.go
 model_v202101beta1_patch_agent_request.go
 model_v202101beta1_patch_agent_response.go
+model_v202101beta1_patch_test_request.go
 model_v202101beta1_patch_test_response.go
 model_v202101beta1_ping_task_definition.go
 model_v202101beta1_region.go
