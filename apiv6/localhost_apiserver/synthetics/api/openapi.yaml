@@ -1,0 +1,4694 @@
+openapi: 3.0.0
+info:
+  contact:
+    name: Kentik API Engineering
+    url: https://github.com/kentik/api
+  title: Synthetics Monitoring API
+  version: 202101beta1
+externalDocs:
+  description: More about Kentik APIs
+  url: https://docs.kentik.com/api
+servers:
+- url: /
+security:
+- email: []
+  token: []
+tags:
+- name: SyntheticsDataService
+- name: SyntheticsAdminService
+paths:
+  /synthetics/v202101beta1/agents:
+    get:
+      description: Returns a list of agents.
+      operationId: AgentsList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1ListAgentsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List Agents.
+      tags:
+      - SyntheticsAdminService
+  /synthetics/v202101beta1/agents/{agent.id}:
+    delete:
+      description: Deletes the agent specified with id.
+      operationId: AgentDelete
+      parameters:
+      - explode: false
+        in: path
+        name: agent.id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1DeleteAgentResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete an agent.
+      tags:
+      - SyntheticsAdminService
+    get:
+      description: Returns information about the agent specified with id.
+      operationId: AgentGet
+      parameters:
+      - explode: false
+        in: path
+        name: agent.id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1GetAgentResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get information about an agent.
+      tags:
+      - SyntheticsAdminService
+    patch:
+      description: Partially Updates the attributes of agent specified with id and
+        update_mask fields.
+      operationId: AgentPatch
+      parameters:
+      - explode: false
+        in: path
+        name: agent.id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1PatchAgentRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1PatchAgentResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Patch an agent.
+      tags:
+      - SyntheticsAdminService
+  /synthetics/v202101beta1/health/tests:
+    post:
+      description: Get synthetics health test for login user. Also returns mesh data
+        on request.
+      operationId: GetHealthForTests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1GetHealthForTestsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1GetHealthForTestsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get health status for synthetics test.
+      tags:
+      - SyntheticsDataService
+  /synthetics/v202101beta1/tests:
+    get:
+      description: Returns a list of syntehtics tests.
+      operationId: TestsList
+      parameters:
+      - explode: true
+        in: query
+        name: preset
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1ListTestsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List Synthetics Tests.
+      tags:
+      - SyntheticsAdminService
+    post:
+      description: Create synthetics test from request. Returns created test.
+      operationId: TestCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1CreateTestRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1CreateTestResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create Synthetics Test.
+      tags:
+      - SyntheticsAdminService
+  /synthetics/v202101beta1/tests/{id}:
+    delete:
+      description: Deletes the synthetics test specified with id.
+      operationId: TestDelete
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1DeleteTestResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete an Synthetics Test.
+      tags:
+      - SyntheticsAdminService
+    get:
+      description: Returns information about synthetics test specified with test ID.
+      operationId: TestGet
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1GetTestResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get information about Synthetics Test.
+      tags:
+      - SyntheticsAdminService
+    patch:
+      description: Partially Updates the attributes of synthetics test specified with
+        id and update_mask fields.
+      operationId: TestPatch
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1PatchTestRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1PatchTestResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Patch a Synthetics Test.
+      tags:
+      - SyntheticsAdminService
+  /synthetics/v202101beta1/tests/{id}/results/trace:
+    post:
+      description: Get trace route data for the specific test id.
+      operationId: GetTraceForTest
+      parameters:
+      - description: Test id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1GetTraceForTestRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1GetTraceForTestResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get trace route data.
+      tags:
+      - SyntheticsDataService
+  /synthetics/v202101beta1/tests/{id}/status:
+    put:
+      description: Update the status of a test.
+      operationId: TestStatusUpdate
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v202101beta1SetTestStatusRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v202101beta1SetTestStatusResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update a test status.
+      tags:
+      - SyntheticsAdminService
+components:
+  schemas:
+    protobufAny:
+      properties:
+        typeUrl:
+          type: string
+        value:
+          format: byte
+          type: string
+      type: object
+    rpcStatus:
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    v202101beta1ASN:
+      example:
+        name: name
+        id: 0
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+      type: object
+    v202101beta1Agent:
+      example:
+        country: country
+        os: os
+        city: city
+        ip: ip
+        lastAuthed: 2000-01-23T04:56:07.000+00:00
+        type: type
+        version: version
+        long: 6.027456183070403
+        testIds:
+        - testIds
+        - testIds
+        name: name
+        alias: alias
+        siteId: siteId
+        challenge: challenge
+        localIp: localIp
+        id: id
+        region: region
+        asn: 1
+        lat: 0.8008281904610115
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/v202101beta1AgentStatus'
+        alias:
+          type: string
+        type:
+          type: string
+        os:
+          type: string
+        ip:
+          type: string
+        lat:
+          format: double
+          type: number
+        long:
+          format: double
+          type: number
+        lastAuthed:
+          format: date-time
+          type: string
+        family:
+          $ref: '#/components/schemas/v202101beta1IPFamily'
+        asn:
+          format: int64
+          type: integer
+        siteId:
+          type: string
+        version:
+          type: string
+        challenge:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        country:
+          type: string
+        testIds:
+          items:
+            type: string
+          type: array
+        localIp:
+          type: string
+      type: object
+    v202101beta1AgentHealth:
+      example:
+        overallHealth:
+          health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        agent:
+          country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+        health:
+        - rollingStdJitter: 6
+          overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          avgJitter: 6
+          srcIp: srcIp
+          latencyHealth: latencyHealth
+          data: data
+          avgLatency: 9
+          rollingAvgLatency: 6
+          taskType: taskType
+          packetLoss: 5
+          jitterHealth: jitterHealth
+          size: 1
+          avgWeightedLatency: 9
+          rollingAvgJitter: 3
+          time: 2000-01-23T04:56:07.000+00:00
+          dstIp: dstIp
+          rollingAvgWeightedLatency: 9
+          rollingStddevLatency: 8
+          packetLossHealth: packetLossHealth
+          status: 2
+        - rollingStdJitter: 6
+          overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          avgJitter: 6
+          srcIp: srcIp
+          latencyHealth: latencyHealth
+          data: data
+          avgLatency: 9
+          rollingAvgLatency: 6
+          taskType: taskType
+          packetLoss: 5
+          jitterHealth: jitterHealth
+          size: 1
+          avgWeightedLatency: 9
+          rollingAvgJitter: 3
+          time: 2000-01-23T04:56:07.000+00:00
+          dstIp: dstIp
+          rollingAvgWeightedLatency: 9
+          rollingStddevLatency: 8
+          packetLossHealth: packetLossHealth
+          status: 2
+      properties:
+        agent:
+          $ref: '#/components/schemas/v202101beta1Agent'
+        health:
+          items:
+            $ref: '#/components/schemas/v202101beta1HealthMoment'
+          type: array
+        overallHealth:
+          $ref: '#/components/schemas/v202101beta1Health'
+      type: object
+    v202101beta1AgentStatus:
+      default: AGENT_STATUS_UNSPECIFIED
+      enum:
+      - AGENT_STATUS_UNSPECIFIED
+      - AGENT_STATUS_OK
+      - AGENT_STATUS_WAIT
+      - AGENT_STATUS_DELETED
+      type: string
+    v202101beta1AgentTaskConfig:
+      example:
+        id: id
+        targets:
+        - targets
+        - targets
+      properties:
+        id:
+          format: uint64
+          type: string
+        targets:
+          items:
+            type: string
+          type: array
+      type: object
+    v202101beta1AgentTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1City:
+      example:
+        latitude: 6.027456183070403
+        name: name
+        id: id
+        longitude: 1.4658129805029452
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        latitude:
+          format: double
+          type: number
+        longitude:
+          format: double
+          type: number
+      type: object
+    v202101beta1Country:
+      example:
+        code: code
+        name: name
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+      type: object
+    v202101beta1CreateTestRequest:
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+      type: object
+    v202101beta1CreateTestResponse:
+      example:
+        test:
+          settings:
+            agent:
+              target: target
+            ping:
+              period: 7.4577446
+              count: 1.1730742
+              expiry: 4.9652185
+            reciprocal: true
+            rollupLevel: 6
+            hostname:
+              target: target
+            trace:
+              period: 5.025005
+              protocol: protocol
+              port: 9.36931
+              count: 9.965781
+              limit: 8.762042
+              expiry: 6.6835623
+            protocol: protocol
+            servers:
+            - servers
+            - servers
+            healthSettings:
+              httpLatencyCritical: 1.2315135
+              latencyCritical: 7.0614014
+              httpValidCodes:
+              - 1
+              - 1
+              packetLossWarning: 2.027123
+              jitterCritical: 4.145608
+              jitterWarning: 7.386282
+              httpLatencyWarning: 1.0246457
+              latencyWarning: 9.301444
+              dnsValidCodes:
+              - 6
+              - 6
+              packetLossCritical: 3.6160767
+            monitoringSettings:
+              activationGracePeriod: activationGracePeriod
+              activationTimeUnit: activationTimeUnit
+              activationTimeWindow: activationTimeWindow
+              activationTimes: activationTimes
+              notificationChannels:
+              - notificationChannels
+              - notificationChannels
+            limit: 2
+            targetValue: targetValue
+            tag:
+              target: target
+            expiry: 5
+            flow:
+              targetRefreshIntervalMillis: 0
+              maxTasks: 6
+              type: type
+              target: target
+            tasks:
+            - tasks
+            - tasks
+            agentIds:
+            - agentIds
+            - agentIds
+            period: 1
+            useLocalIp: true
+            ip:
+              targets:
+              - targets
+              - targets
+            dns:
+              target: target
+            count: 5
+            targetType: targetType
+            url:
+              target: target
+            site:
+              target: target
+            port: 9
+          lastUpdatedBy:
+            fullName: fullName
+            id: id
+            email: email
+          cdate: 2000-01-23T04:56:07.000+00:00
+          createdBy:
+            fullName: fullName
+            id: id
+            email: email
+          name: name
+          expiresOn: 2000-01-23T04:56:07.000+00:00
+          id: id
+          type: type
+          deviceId: deviceId
+          edate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+      type: object
+    v202101beta1DNS:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      type: object
+    v202101beta1DNSTaskDefinition:
+      example:
+        resolver: resolver
+        period: 1
+        port: 6
+        count: 1
+        expiry: 1
+        type: type
+        target: target
+      properties:
+        target:
+          type: string
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+        count:
+          format: int64
+          type: integer
+        port:
+          format: int64
+          type: integer
+        type:
+          type: string
+        resolver:
+          type: string
+      type: object
+    v202101beta1DeleteAgentResponse:
+      type: object
+    v202101beta1DeleteTestResponse:
+      type: object
+    v202101beta1DnsTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1FlowTest:
+      example:
+        targetRefreshIntervalMillis: 0
+        maxTasks: 6
+        type: type
+        target: target
+      properties:
+        target:
+          type: string
+        targetRefreshIntervalMillis:
+          format: int64
+          type: integer
+        maxTasks:
+          format: int64
+          type: integer
+        type:
+          type: string
+      type: object
+    v202101beta1Geo:
+      example:
+        country:
+          code: code
+          name: name
+        city:
+          latitude: 6.027456183070403
+          name: name
+          id: id
+          longitude: 1.4658129805029452
+        region:
+          name: name
+          id: id
+      properties:
+        country:
+          $ref: '#/components/schemas/v202101beta1Country'
+        region:
+          $ref: '#/components/schemas/v202101beta1Region'
+        city:
+          $ref: '#/components/schemas/v202101beta1City'
+      type: object
+    v202101beta1GetAgentResponse:
+      example:
+        agent:
+          country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+      properties:
+        agent:
+          $ref: '#/components/schemas/v202101beta1Agent'
+      type: object
+    v202101beta1GetHealthForTestsRequest:
+      properties:
+        ids:
+          description: List of ids of the tests to get health for.
+          items:
+            type: string
+          type: array
+        startTime:
+          description: Start of the time interval for this query.
+          format: date-time
+          type: string
+        endTime:
+          description: End of the time interval for this query.
+          format: date-time
+          type: string
+        agentIds:
+          items:
+            type: string
+          title: Optionally, only look at a subset of agents
+          type: array
+        taskIds:
+          description: Optionally only look at a subset of tasks -- this lets you
+            limit targets.
+          items:
+            type: string
+          type: array
+        augment:
+          type: boolean
+      type: object
+    v202101beta1GetHealthForTestsResponse:
+      example:
+        health:
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          healthTs:
+          - health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          - health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          agentTaskConfig:
+          - id: id
+            targets:
+            - targets
+            - targets
+          - id: id
+            targets:
+            - targets
+            - targets
+          testId: testId
+          tasks:
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            task:
+              knock:
+                period: 3
+                port: 7
+                count: 4
+                expiry: 2
+                target: target
+              shake:
+                period: 1
+                port: 7
+                expiry: 4
+                target: target
+              ping:
+                period: 0
+                count: 1
+                expiry: 6
+                target: target
+              dns:
+                resolver: resolver
+                period: 1
+                port: 6
+                count: 1
+                expiry: 1
+                type: type
+                target: target
+              http:
+                period: 7
+                expiry: 9
+                target: target
+              testId: testId
+              id: id
+              traceroute:
+                period: 5
+                limit: 2
+                expiry: 5
+                target: target
+              deviceId: deviceId
+              status: status
+            targetAgent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            agents:
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            task:
+              knock:
+                period: 3
+                port: 7
+                count: 4
+                expiry: 2
+                target: target
+              shake:
+                period: 1
+                port: 7
+                expiry: 4
+                target: target
+              ping:
+                period: 0
+                count: 1
+                expiry: 6
+                target: target
+              dns:
+                resolver: resolver
+                period: 1
+                port: 6
+                count: 1
+                expiry: 1
+                type: type
+                target: target
+              http:
+                period: 7
+                expiry: 9
+                target: target
+              testId: testId
+              id: id
+              traceroute:
+                period: 5
+                limit: 2
+                expiry: 5
+                target: target
+              deviceId: deviceId
+              status: status
+            targetAgent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            agents:
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+          mesh:
+          - columns:
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            ip: ip
+            name: name
+            localIp: localIp
+            alias: alias
+            id: id
+          - columns:
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            ip: ip
+            name: name
+            localIp: localIp
+            alias: alias
+            id: id
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          healthTs:
+          - health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          - health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          agentTaskConfig:
+          - id: id
+            targets:
+            - targets
+            - targets
+          - id: id
+            targets:
+            - targets
+            - targets
+          testId: testId
+          tasks:
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            task:
+              knock:
+                period: 3
+                port: 7
+                count: 4
+                expiry: 2
+                target: target
+              shake:
+                period: 1
+                port: 7
+                expiry: 4
+                target: target
+              ping:
+                period: 0
+                count: 1
+                expiry: 6
+                target: target
+              dns:
+                resolver: resolver
+                period: 1
+                port: 6
+                count: 1
+                expiry: 1
+                type: type
+                target: target
+              http:
+                period: 7
+                expiry: 9
+                target: target
+              testId: testId
+              id: id
+              traceroute:
+                period: 5
+                limit: 2
+                expiry: 5
+                target: target
+              deviceId: deviceId
+              status: status
+            targetAgent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            agents:
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            task:
+              knock:
+                period: 3
+                port: 7
+                count: 4
+                expiry: 2
+                target: target
+              shake:
+                period: 1
+                port: 7
+                expiry: 4
+                target: target
+              ping:
+                period: 0
+                count: 1
+                expiry: 6
+                target: target
+              dns:
+                resolver: resolver
+                period: 1
+                port: 6
+                count: 1
+                expiry: 1
+                type: type
+                target: target
+              http:
+                period: 7
+                expiry: 9
+                target: target
+              testId: testId
+              id: id
+              traceroute:
+                period: 5
+                limit: 2
+                expiry: 5
+                target: target
+              deviceId: deviceId
+              status: status
+            targetAgent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            agents:
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+            - overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              agent:
+                country: country
+                os: os
+                city: city
+                ip: ip
+                lastAuthed: 2000-01-23T04:56:07.000+00:00
+                type: type
+                version: version
+                long: 6.027456183070403
+                testIds:
+                - testIds
+                - testIds
+                name: name
+                alias: alias
+                siteId: siteId
+                challenge: challenge
+                localIp: localIp
+                id: id
+                region: region
+                asn: 1
+                lat: 0.8008281904610115
+              health:
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+              - rollingStdJitter: 6
+                overallHealth:
+                  health: health
+                  time: 2000-01-23T04:56:07.000+00:00
+                avgJitter: 6
+                srcIp: srcIp
+                latencyHealth: latencyHealth
+                data: data
+                avgLatency: 9
+                rollingAvgLatency: 6
+                taskType: taskType
+                packetLoss: 5
+                jitterHealth: jitterHealth
+                size: 1
+                avgWeightedLatency: 9
+                rollingAvgJitter: 3
+                time: 2000-01-23T04:56:07.000+00:00
+                dstIp: dstIp
+                rollingAvgWeightedLatency: 9
+                rollingStddevLatency: 8
+                packetLossHealth: packetLossHealth
+                status: 2
+          mesh:
+          - columns:
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            ip: ip
+            name: name
+            localIp: localIp
+            alias: alias
+            id: id
+          - columns:
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            - name: name
+              alias: alias
+              health:
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              - jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              id: id
+              metrics:
+                jitter:
+                  name: name
+                  health: health
+                  value: value
+                packetLoss:
+                  name: name
+                  health: health
+                  value: value
+                latency:
+                  name: name
+                  health: health
+                  value: value
+                time: 2000-01-23T04:56:07.000+00:00
+              target: target
+            ip: ip
+            name: name
+            localIp: localIp
+            alias: alias
+            id: id
+      properties:
+        health:
+          items:
+            $ref: '#/components/schemas/v202101beta1TestHealth'
+          type: array
+      type: object
+    v202101beta1GetTestResponse:
+      example:
+        test:
+          settings:
+            agent:
+              target: target
+            ping:
+              period: 7.4577446
+              count: 1.1730742
+              expiry: 4.9652185
+            reciprocal: true
+            rollupLevel: 6
+            hostname:
+              target: target
+            trace:
+              period: 5.025005
+              protocol: protocol
+              port: 9.36931
+              count: 9.965781
+              limit: 8.762042
+              expiry: 6.6835623
+            protocol: protocol
+            servers:
+            - servers
+            - servers
+            healthSettings:
+              httpLatencyCritical: 1.2315135
+              latencyCritical: 7.0614014
+              httpValidCodes:
+              - 1
+              - 1
+              packetLossWarning: 2.027123
+              jitterCritical: 4.145608
+              jitterWarning: 7.386282
+              httpLatencyWarning: 1.0246457
+              latencyWarning: 9.301444
+              dnsValidCodes:
+              - 6
+              - 6
+              packetLossCritical: 3.6160767
+            monitoringSettings:
+              activationGracePeriod: activationGracePeriod
+              activationTimeUnit: activationTimeUnit
+              activationTimeWindow: activationTimeWindow
+              activationTimes: activationTimes
+              notificationChannels:
+              - notificationChannels
+              - notificationChannels
+            limit: 2
+            targetValue: targetValue
+            tag:
+              target: target
+            expiry: 5
+            flow:
+              targetRefreshIntervalMillis: 0
+              maxTasks: 6
+              type: type
+              target: target
+            tasks:
+            - tasks
+            - tasks
+            agentIds:
+            - agentIds
+            - agentIds
+            period: 1
+            useLocalIp: true
+            ip:
+              targets:
+              - targets
+              - targets
+            dns:
+              target: target
+            count: 5
+            targetType: targetType
+            url:
+              target: target
+            site:
+              target: target
+            port: 9
+          lastUpdatedBy:
+            fullName: fullName
+            id: id
+            email: email
+          cdate: 2000-01-23T04:56:07.000+00:00
+          createdBy:
+            fullName: fullName
+            id: id
+            email: email
+          name: name
+          expiresOn: 2000-01-23T04:56:07.000+00:00
+          id: id
+          type: type
+          deviceId: deviceId
+          edate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+      type: object
+    v202101beta1GetTraceForTestRequest:
+      properties:
+        id:
+          title: Test id
+          type: string
+        startTime:
+          description: Start of the time interval for this query.
+          format: date-time
+          type: string
+        endTime:
+          description: End of the time interval for this query.
+          format: date-time
+          type: string
+        agentIds:
+          items:
+            type: string
+          title: Optionally, limit the query to these agent ids
+          type: array
+        targetIps:
+          items:
+            type: string
+          title: Optionally, limit the query to these destination IP addresses
+          type: array
+      type: object
+    v202101beta1GetTraceForTestResponse:
+      example:
+        traceRoutes:
+        - traces:
+          - hops:
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            ips:
+            - ips
+            - ips
+            target: target
+          - hops:
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            ips:
+            - ips
+            - ips
+            target: target
+          time: 2000-01-23T04:56:07.000+00:00
+        - traces:
+          - hops:
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            ips:
+            - ips
+            - ips
+            target: target
+          - hops:
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            - agent: true
+              agentId: agentId
+              latencies:
+              - latencies
+              - latencies
+              ip: ip
+              ttl: 5
+              timeout: true
+            ips:
+            - ips
+            - ips
+            target: target
+          time: 2000-01-23T04:56:07.000+00:00
+        ipInfo:
+        - geo:
+            country:
+              code: code
+              name: name
+            city:
+              latitude: 6.027456183070403
+              name: name
+              id: id
+              longitude: 1.4658129805029452
+            region:
+              name: name
+              id: id
+          ip: ip
+          dns:
+            name: name
+          asn:
+            name: name
+            id: 0
+        - geo:
+            country:
+              code: code
+              name: name
+            city:
+              latitude: 6.027456183070403
+              name: name
+              id: id
+              longitude: 1.4658129805029452
+            region:
+              name: name
+              id: id
+          ip: ip
+          dns:
+            name: name
+          asn:
+            name: name
+            id: 0
+      properties:
+        ipInfo:
+          items:
+            $ref: '#/components/schemas/v202101beta1IPInfo'
+          type: array
+        traceRoutes:
+          items:
+            $ref: '#/components/schemas/v202101beta1TracerouteResult'
+          type: array
+      type: object
+    v202101beta1HTTPTaskDefinition:
+      example:
+        period: 7
+        expiry: 9
+        target: target
+      properties:
+        target:
+          type: string
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1Health:
+      example:
+        health: health
+        time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        health:
+          type: string
+        time:
+          format: date-time
+          type: string
+      type: object
+    v202101beta1HealthMoment:
+      example:
+        rollingStdJitter: 6
+        overallHealth:
+          health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        avgJitter: 6
+        srcIp: srcIp
+        latencyHealth: latencyHealth
+        data: data
+        avgLatency: 9
+        rollingAvgLatency: 6
+        taskType: taskType
+        packetLoss: 5
+        jitterHealth: jitterHealth
+        size: 1
+        avgWeightedLatency: 9
+        rollingAvgJitter: 3
+        time: 2000-01-23T04:56:07.000+00:00
+        dstIp: dstIp
+        rollingAvgWeightedLatency: 9
+        rollingStddevLatency: 8
+        packetLossHealth: packetLossHealth
+        status: 2
+      properties:
+        time:
+          format: date-time
+          type: string
+        srcIp:
+          type: string
+        dstIp:
+          type: string
+        packetLoss:
+          format: int64
+          type: integer
+        avgLatency:
+          format: int64
+          type: integer
+        avgWeightedLatency:
+          format: int64
+          type: integer
+        rollingAvgLatency:
+          format: int64
+          type: integer
+        rollingStddevLatency:
+          format: int64
+          type: integer
+        rollingAvgWeightedLatency:
+          format: int64
+          type: integer
+        latencyHealth:
+          type: string
+        packetLossHealth:
+          type: string
+        overallHealth:
+          $ref: '#/components/schemas/v202101beta1Health'
+        avgJitter:
+          format: int64
+          title: fields returned from backend grpc service
+          type: integer
+        rollingAvgJitter:
+          format: int64
+          type: integer
+        rollingStdJitter:
+          format: int64
+          type: integer
+        jitterHealth:
+          type: string
+        data:
+          type: string
+        size:
+          format: int64
+          type: integer
+        status:
+          format: int64
+          type: integer
+        taskType:
+          type: string
+      type: object
+    v202101beta1HealthSettings:
+      example:
+        httpLatencyCritical: 1.2315135
+        latencyCritical: 7.0614014
+        httpValidCodes:
+        - 1
+        - 1
+        packetLossWarning: 2.027123
+        jitterCritical: 4.145608
+        jitterWarning: 7.386282
+        httpLatencyWarning: 1.0246457
+        latencyWarning: 9.301444
+        dnsValidCodes:
+        - 6
+        - 6
+        packetLossCritical: 3.6160767
+      properties:
+        latencyCritical:
+          format: float
+          type: number
+        latencyWarning:
+          format: float
+          type: number
+        packetLossCritical:
+          format: float
+          type: number
+        packetLossWarning:
+          format: float
+          type: number
+        jitterCritical:
+          format: float
+          type: number
+        jitterWarning:
+          format: float
+          type: number
+        httpLatencyCritical:
+          format: float
+          type: number
+        httpLatencyWarning:
+          format: float
+          type: number
+        httpValidCodes:
+          items:
+            format: int64
+            type: integer
+          type: array
+        dnsValidCodes:
+          items:
+            format: int64
+            type: integer
+          type: array
+      type: object
+    v202101beta1HostnameTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1IPFamily:
+      default: IP_FAMILY_UNSPECIFIED
+      enum:
+      - IP_FAMILY_UNSPECIFIED
+      - IP_FAMILY_V4
+      - IP_FAMILY_V6
+      - IP_FAMILY_DUAL
+      type: string
+    v202101beta1IPInfo:
+      example:
+        geo:
+          country:
+            code: code
+            name: name
+          city:
+            latitude: 6.027456183070403
+            name: name
+            id: id
+            longitude: 1.4658129805029452
+          region:
+            name: name
+            id: id
+        ip: ip
+        dns:
+          name: name
+        asn:
+          name: name
+          id: 0
+      properties:
+        ip:
+          type: string
+        asn:
+          $ref: '#/components/schemas/v202101beta1ASN'
+        geo:
+          $ref: '#/components/schemas/v202101beta1Geo'
+        dns:
+          $ref: '#/components/schemas/v202101beta1DNS'
+      type: object
+    v202101beta1IpTest:
+      example:
+        targets:
+        - targets
+        - targets
+      properties:
+        targets:
+          items:
+            type: string
+          type: array
+      type: object
+    v202101beta1KnockTaskDefinition:
+      example:
+        period: 3
+        port: 7
+        count: 4
+        expiry: 2
+        target: target
+      properties:
+        target:
+          type: string
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+        count:
+          format: int64
+          type: integer
+        port:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1ListAgentsResponse:
+      example:
+        invalidAgentsCount: 5
+        agents:
+        - country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+        - country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+      properties:
+        agents:
+          items:
+            $ref: '#/components/schemas/v202101beta1Agent'
+          type: array
+        invalidAgentsCount:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1ListTestsResponse:
+      example:
+        tests:
+        - settings:
+            agent:
+              target: target
+            ping:
+              period: 7.4577446
+              count: 1.1730742
+              expiry: 4.9652185
+            reciprocal: true
+            rollupLevel: 6
+            hostname:
+              target: target
+            trace:
+              period: 5.025005
+              protocol: protocol
+              port: 9.36931
+              count: 9.965781
+              limit: 8.762042
+              expiry: 6.6835623
+            protocol: protocol
+            servers:
+            - servers
+            - servers
+            healthSettings:
+              httpLatencyCritical: 1.2315135
+              latencyCritical: 7.0614014
+              httpValidCodes:
+              - 1
+              - 1
+              packetLossWarning: 2.027123
+              jitterCritical: 4.145608
+              jitterWarning: 7.386282
+              httpLatencyWarning: 1.0246457
+              latencyWarning: 9.301444
+              dnsValidCodes:
+              - 6
+              - 6
+              packetLossCritical: 3.6160767
+            monitoringSettings:
+              activationGracePeriod: activationGracePeriod
+              activationTimeUnit: activationTimeUnit
+              activationTimeWindow: activationTimeWindow
+              activationTimes: activationTimes
+              notificationChannels:
+              - notificationChannels
+              - notificationChannels
+            limit: 2
+            targetValue: targetValue
+            tag:
+              target: target
+            expiry: 5
+            flow:
+              targetRefreshIntervalMillis: 0
+              maxTasks: 6
+              type: type
+              target: target
+            tasks:
+            - tasks
+            - tasks
+            agentIds:
+            - agentIds
+            - agentIds
+            period: 1
+            useLocalIp: true
+            ip:
+              targets:
+              - targets
+              - targets
+            dns:
+              target: target
+            count: 5
+            targetType: targetType
+            url:
+              target: target
+            site:
+              target: target
+            port: 9
+          lastUpdatedBy:
+            fullName: fullName
+            id: id
+            email: email
+          cdate: 2000-01-23T04:56:07.000+00:00
+          createdBy:
+            fullName: fullName
+            id: id
+            email: email
+          name: name
+          expiresOn: 2000-01-23T04:56:07.000+00:00
+          id: id
+          type: type
+          deviceId: deviceId
+          edate: 2000-01-23T04:56:07.000+00:00
+        - settings:
+            agent:
+              target: target
+            ping:
+              period: 7.4577446
+              count: 1.1730742
+              expiry: 4.9652185
+            reciprocal: true
+            rollupLevel: 6
+            hostname:
+              target: target
+            trace:
+              period: 5.025005
+              protocol: protocol
+              port: 9.36931
+              count: 9.965781
+              limit: 8.762042
+              expiry: 6.6835623
+            protocol: protocol
+            servers:
+            - servers
+            - servers
+            healthSettings:
+              httpLatencyCritical: 1.2315135
+              latencyCritical: 7.0614014
+              httpValidCodes:
+              - 1
+              - 1
+              packetLossWarning: 2.027123
+              jitterCritical: 4.145608
+              jitterWarning: 7.386282
+              httpLatencyWarning: 1.0246457
+              latencyWarning: 9.301444
+              dnsValidCodes:
+              - 6
+              - 6
+              packetLossCritical: 3.6160767
+            monitoringSettings:
+              activationGracePeriod: activationGracePeriod
+              activationTimeUnit: activationTimeUnit
+              activationTimeWindow: activationTimeWindow
+              activationTimes: activationTimes
+              notificationChannels:
+              - notificationChannels
+              - notificationChannels
+            limit: 2
+            targetValue: targetValue
+            tag:
+              target: target
+            expiry: 5
+            flow:
+              targetRefreshIntervalMillis: 0
+              maxTasks: 6
+              type: type
+              target: target
+            tasks:
+            - tasks
+            - tasks
+            agentIds:
+            - agentIds
+            - agentIds
+            period: 1
+            useLocalIp: true
+            ip:
+              targets:
+              - targets
+              - targets
+            dns:
+              target: target
+            count: 5
+            targetType: targetType
+            url:
+              target: target
+            site:
+              target: target
+            port: 9
+          lastUpdatedBy:
+            fullName: fullName
+            id: id
+            email: email
+          cdate: 2000-01-23T04:56:07.000+00:00
+          createdBy:
+            fullName: fullName
+            id: id
+            email: email
+          name: name
+          expiresOn: 2000-01-23T04:56:07.000+00:00
+          id: id
+          type: type
+          deviceId: deviceId
+          edate: 2000-01-23T04:56:07.000+00:00
+        invalidTestsCount: 3
+      properties:
+        tests:
+          items:
+            $ref: '#/components/schemas/v202101beta1Test'
+          type: array
+        invalidTestsCount:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1MeshColumn:
+      example:
+        name: name
+        alias: alias
+        health:
+        - jitter:
+            name: name
+            health: health
+            value: value
+          packetLoss:
+            name: name
+            health: health
+            value: value
+          latency:
+            name: name
+            health: health
+            value: value
+          time: 2000-01-23T04:56:07.000+00:00
+        - jitter:
+            name: name
+            health: health
+            value: value
+          packetLoss:
+            name: name
+            health: health
+            value: value
+          latency:
+            name: name
+            health: health
+            value: value
+          time: 2000-01-23T04:56:07.000+00:00
+        id: id
+        metrics:
+          jitter:
+            name: name
+            health: health
+            value: value
+          packetLoss:
+            name: name
+            health: health
+            value: value
+          latency:
+            name: name
+            health: health
+            value: value
+          time: 2000-01-23T04:56:07.000+00:00
+        target: target
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        alias:
+          type: string
+        target:
+          type: string
+        metrics:
+          $ref: '#/components/schemas/v202101beta1MeshMetrics'
+        health:
+          items:
+            $ref: '#/components/schemas/v202101beta1MeshMetrics'
+          type: array
+      type: object
+    v202101beta1MeshMetric:
+      example:
+        name: name
+        health: health
+        value: value
+      properties:
+        name:
+          type: string
+        health:
+          type: string
+        value:
+          format: int64
+          type: string
+      type: object
+    v202101beta1MeshMetrics:
+      example:
+        jitter:
+          name: name
+          health: health
+          value: value
+        packetLoss:
+          name: name
+          health: health
+          value: value
+        latency:
+          name: name
+          health: health
+          value: value
+        time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        time:
+          format: date-time
+          type: string
+        latency:
+          $ref: '#/components/schemas/v202101beta1MeshMetric'
+        packetLoss:
+          $ref: '#/components/schemas/v202101beta1MeshMetric'
+        jitter:
+          $ref: '#/components/schemas/v202101beta1MeshMetric'
+      type: object
+    v202101beta1MeshResponse:
+      example:
+        columns:
+        - name: name
+          alias: alias
+          health:
+          - jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          - jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          id: id
+          metrics:
+            jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          target: target
+        - name: name
+          alias: alias
+          health:
+          - jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          - jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          id: id
+          metrics:
+            jitter:
+              name: name
+              health: health
+              value: value
+            packetLoss:
+              name: name
+              health: health
+              value: value
+            latency:
+              name: name
+              health: health
+              value: value
+            time: 2000-01-23T04:56:07.000+00:00
+          target: target
+        ip: ip
+        name: name
+        localIp: localIp
+        alias: alias
+        id: id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        localIp:
+          type: string
+        ip:
+          type: string
+        alias:
+          type: string
+        columns:
+          items:
+            $ref: '#/components/schemas/v202101beta1MeshColumn'
+          type: array
+      title: 'TODO: Mesh support'
+      type: object
+    v202101beta1PatchAgentRequest:
+      properties:
+        agent:
+          $ref: '#/components/schemas/v202101beta1Agent'
+        mask:
+          type: string
+      type: object
+    v202101beta1PatchAgentResponse:
+      example:
+        agent:
+          country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+      properties:
+        agent:
+          $ref: '#/components/schemas/v202101beta1Agent'
+      type: object
+    v202101beta1PatchTestRequest:
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+        mask:
+          type: string
+      type: object
+    v202101beta1PatchTestResponse:
+      example:
+        test:
+          settings:
+            agent:
+              target: target
+            ping:
+              period: 7.4577446
+              count: 1.1730742
+              expiry: 4.9652185
+            reciprocal: true
+            rollupLevel: 6
+            hostname:
+              target: target
+            trace:
+              period: 5.025005
+              protocol: protocol
+              port: 9.36931
+              count: 9.965781
+              limit: 8.762042
+              expiry: 6.6835623
+            protocol: protocol
+            servers:
+            - servers
+            - servers
+            healthSettings:
+              httpLatencyCritical: 1.2315135
+              latencyCritical: 7.0614014
+              httpValidCodes:
+              - 1
+              - 1
+              packetLossWarning: 2.027123
+              jitterCritical: 4.145608
+              jitterWarning: 7.386282
+              httpLatencyWarning: 1.0246457
+              latencyWarning: 9.301444
+              dnsValidCodes:
+              - 6
+              - 6
+              packetLossCritical: 3.6160767
+            monitoringSettings:
+              activationGracePeriod: activationGracePeriod
+              activationTimeUnit: activationTimeUnit
+              activationTimeWindow: activationTimeWindow
+              activationTimes: activationTimes
+              notificationChannels:
+              - notificationChannels
+              - notificationChannels
+            limit: 2
+            targetValue: targetValue
+            tag:
+              target: target
+            expiry: 5
+            flow:
+              targetRefreshIntervalMillis: 0
+              maxTasks: 6
+              type: type
+              target: target
+            tasks:
+            - tasks
+            - tasks
+            agentIds:
+            - agentIds
+            - agentIds
+            period: 1
+            useLocalIp: true
+            ip:
+              targets:
+              - targets
+              - targets
+            dns:
+              target: target
+            count: 5
+            targetType: targetType
+            url:
+              target: target
+            site:
+              target: target
+            port: 9
+          lastUpdatedBy:
+            fullName: fullName
+            id: id
+            email: email
+          cdate: 2000-01-23T04:56:07.000+00:00
+          createdBy:
+            fullName: fullName
+            id: id
+            email: email
+          name: name
+          expiresOn: 2000-01-23T04:56:07.000+00:00
+          id: id
+          type: type
+          deviceId: deviceId
+          edate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        test:
+          $ref: '#/components/schemas/v202101beta1Test'
+      type: object
+    v202101beta1PingTaskDefinition:
+      example:
+        period: 0
+        count: 1
+        expiry: 6
+        target: target
+      properties:
+        target:
+          type: string
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+        count:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1Region:
+      example:
+        name: name
+        id: id
+      properties:
+        id:
+          format: int64
+          type: string
+        name:
+          type: string
+      type: object
+    v202101beta1SetTestStatusRequest:
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/v202101beta1TestStatus'
+      type: object
+    v202101beta1SetTestStatusResponse:
+      type: object
+    v202101beta1ShakeTaskDefinition:
+      example:
+        period: 1
+        port: 7
+        expiry: 4
+        target: target
+      properties:
+        target:
+          type: string
+        port:
+          format: int64
+          type: integer
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1SiteTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1TagTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1Task:
+      example:
+        knock:
+          period: 3
+          port: 7
+          count: 4
+          expiry: 2
+          target: target
+        shake:
+          period: 1
+          port: 7
+          expiry: 4
+          target: target
+        ping:
+          period: 0
+          count: 1
+          expiry: 6
+          target: target
+        dns:
+          resolver: resolver
+          period: 1
+          port: 6
+          count: 1
+          expiry: 1
+          type: type
+          target: target
+        http:
+          period: 7
+          expiry: 9
+          target: target
+        testId: testId
+        id: id
+        traceroute:
+          period: 5
+          limit: 2
+          expiry: 5
+          target: target
+        deviceId: deviceId
+        status: status
+      properties:
+        id:
+          type: string
+        testId:
+          type: string
+        deviceId:
+          type: string
+        state:
+          $ref: '#/components/schemas/v202101beta1TaskState'
+        status:
+          type: string
+        family:
+          $ref: '#/components/schemas/v202101beta1IPFamily'
+        ping:
+          $ref: '#/components/schemas/v202101beta1PingTaskDefinition'
+        traceroute:
+          $ref: '#/components/schemas/v202101beta1TraceTaskDefinition'
+        http:
+          $ref: '#/components/schemas/v202101beta1HTTPTaskDefinition'
+        knock:
+          $ref: '#/components/schemas/v202101beta1KnockTaskDefinition'
+        dns:
+          $ref: '#/components/schemas/v202101beta1DNSTaskDefinition'
+        shake:
+          $ref: '#/components/schemas/v202101beta1ShakeTaskDefinition'
+      type: object
+    v202101beta1TaskHealth:
+      example:
+        overallHealth:
+          health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        task:
+          knock:
+            period: 3
+            port: 7
+            count: 4
+            expiry: 2
+            target: target
+          shake:
+            period: 1
+            port: 7
+            expiry: 4
+            target: target
+          ping:
+            period: 0
+            count: 1
+            expiry: 6
+            target: target
+          dns:
+            resolver: resolver
+            period: 1
+            port: 6
+            count: 1
+            expiry: 1
+            type: type
+            target: target
+          http:
+            period: 7
+            expiry: 9
+            target: target
+          testId: testId
+          id: id
+          traceroute:
+            period: 5
+            limit: 2
+            expiry: 5
+            target: target
+          deviceId: deviceId
+          status: status
+        targetAgent:
+          country: country
+          os: os
+          city: city
+          ip: ip
+          lastAuthed: 2000-01-23T04:56:07.000+00:00
+          type: type
+          version: version
+          long: 6.027456183070403
+          testIds:
+          - testIds
+          - testIds
+          name: name
+          alias: alias
+          siteId: siteId
+          challenge: challenge
+          localIp: localIp
+          id: id
+          region: region
+          asn: 1
+          lat: 0.8008281904610115
+        agents:
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          agent:
+            country: country
+            os: os
+            city: city
+            ip: ip
+            lastAuthed: 2000-01-23T04:56:07.000+00:00
+            type: type
+            version: version
+            long: 6.027456183070403
+            testIds:
+            - testIds
+            - testIds
+            name: name
+            alias: alias
+            siteId: siteId
+            challenge: challenge
+            localIp: localIp
+            id: id
+            region: region
+            asn: 1
+            lat: 0.8008281904610115
+          health:
+          - rollingStdJitter: 6
+            overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            avgJitter: 6
+            srcIp: srcIp
+            latencyHealth: latencyHealth
+            data: data
+            avgLatency: 9
+            rollingAvgLatency: 6
+            taskType: taskType
+            packetLoss: 5
+            jitterHealth: jitterHealth
+            size: 1
+            avgWeightedLatency: 9
+            rollingAvgJitter: 3
+            time: 2000-01-23T04:56:07.000+00:00
+            dstIp: dstIp
+            rollingAvgWeightedLatency: 9
+            rollingStddevLatency: 8
+            packetLossHealth: packetLossHealth
+            status: 2
+          - rollingStdJitter: 6
+            overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            avgJitter: 6
+            srcIp: srcIp
+            latencyHealth: latencyHealth
+            data: data
+            avgLatency: 9
+            rollingAvgLatency: 6
+            taskType: taskType
+            packetLoss: 5
+            jitterHealth: jitterHealth
+            size: 1
+            avgWeightedLatency: 9
+            rollingAvgJitter: 3
+            time: 2000-01-23T04:56:07.000+00:00
+            dstIp: dstIp
+            rollingAvgWeightedLatency: 9
+            rollingStddevLatency: 8
+            packetLossHealth: packetLossHealth
+            status: 2
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          agent:
+            country: country
+            os: os
+            city: city
+            ip: ip
+            lastAuthed: 2000-01-23T04:56:07.000+00:00
+            type: type
+            version: version
+            long: 6.027456183070403
+            testIds:
+            - testIds
+            - testIds
+            name: name
+            alias: alias
+            siteId: siteId
+            challenge: challenge
+            localIp: localIp
+            id: id
+            region: region
+            asn: 1
+            lat: 0.8008281904610115
+          health:
+          - rollingStdJitter: 6
+            overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            avgJitter: 6
+            srcIp: srcIp
+            latencyHealth: latencyHealth
+            data: data
+            avgLatency: 9
+            rollingAvgLatency: 6
+            taskType: taskType
+            packetLoss: 5
+            jitterHealth: jitterHealth
+            size: 1
+            avgWeightedLatency: 9
+            rollingAvgJitter: 3
+            time: 2000-01-23T04:56:07.000+00:00
+            dstIp: dstIp
+            rollingAvgWeightedLatency: 9
+            rollingStddevLatency: 8
+            packetLossHealth: packetLossHealth
+            status: 2
+          - rollingStdJitter: 6
+            overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            avgJitter: 6
+            srcIp: srcIp
+            latencyHealth: latencyHealth
+            data: data
+            avgLatency: 9
+            rollingAvgLatency: 6
+            taskType: taskType
+            packetLoss: 5
+            jitterHealth: jitterHealth
+            size: 1
+            avgWeightedLatency: 9
+            rollingAvgJitter: 3
+            time: 2000-01-23T04:56:07.000+00:00
+            dstIp: dstIp
+            rollingAvgWeightedLatency: 9
+            rollingStddevLatency: 8
+            packetLossHealth: packetLossHealth
+            status: 2
+      properties:
+        task:
+          $ref: '#/components/schemas/v202101beta1Task'
+        agents:
+          items:
+            $ref: '#/components/schemas/v202101beta1AgentHealth'
+          type: array
+        overallHealth:
+          $ref: '#/components/schemas/v202101beta1Health'
+        targetAgent:
+          $ref: '#/components/schemas/v202101beta1Agent'
+      type: object
+    v202101beta1TaskState:
+      default: TASK_STATE_UNSPECIFIED
+      enum:
+      - TASK_STATE_UNSPECIFIED
+      - TASK_STATE_CREATED
+      - TASK_STATE_UPDATED
+      - TASK_STATE_DELETED
+      type: string
+    v202101beta1Test:
+      example:
+        settings:
+          agent:
+            target: target
+          ping:
+            period: 7.4577446
+            count: 1.1730742
+            expiry: 4.9652185
+          reciprocal: true
+          rollupLevel: 6
+          hostname:
+            target: target
+          trace:
+            period: 5.025005
+            protocol: protocol
+            port: 9.36931
+            count: 9.965781
+            limit: 8.762042
+            expiry: 6.6835623
+          protocol: protocol
+          servers:
+          - servers
+          - servers
+          healthSettings:
+            httpLatencyCritical: 1.2315135
+            latencyCritical: 7.0614014
+            httpValidCodes:
+            - 1
+            - 1
+            packetLossWarning: 2.027123
+            jitterCritical: 4.145608
+            jitterWarning: 7.386282
+            httpLatencyWarning: 1.0246457
+            latencyWarning: 9.301444
+            dnsValidCodes:
+            - 6
+            - 6
+            packetLossCritical: 3.6160767
+          monitoringSettings:
+            activationGracePeriod: activationGracePeriod
+            activationTimeUnit: activationTimeUnit
+            activationTimeWindow: activationTimeWindow
+            activationTimes: activationTimes
+            notificationChannels:
+            - notificationChannels
+            - notificationChannels
+          limit: 2
+          targetValue: targetValue
+          tag:
+            target: target
+          expiry: 5
+          flow:
+            targetRefreshIntervalMillis: 0
+            maxTasks: 6
+            type: type
+            target: target
+          tasks:
+          - tasks
+          - tasks
+          agentIds:
+          - agentIds
+          - agentIds
+          period: 1
+          useLocalIp: true
+          ip:
+            targets:
+            - targets
+            - targets
+          dns:
+            target: target
+          count: 5
+          targetType: targetType
+          url:
+            target: target
+          site:
+            target: target
+          port: 9
+        lastUpdatedBy:
+          fullName: fullName
+          id: id
+          email: email
+        cdate: 2000-01-23T04:56:07.000+00:00
+        createdBy:
+          fullName: fullName
+          id: id
+          email: email
+        name: name
+        expiresOn: 2000-01-23T04:56:07.000+00:00
+        id: id
+        type: type
+        deviceId: deviceId
+        edate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        deviceId:
+          type: string
+        status:
+          $ref: '#/components/schemas/v202101beta1TestStatus'
+        settings:
+          $ref: '#/components/schemas/v202101beta1TestSettings'
+        expiresOn:
+          format: date-time
+          type: string
+        cdate:
+          format: date-time
+          type: string
+        edate:
+          format: date-time
+          type: string
+        createdBy:
+          $ref: '#/components/schemas/v202101beta1UserInfo'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/v202101beta1UserInfo'
+      type: object
+    v202101beta1TestHealth:
+      example:
+        overallHealth:
+          health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        healthTs:
+        - health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        - health: health
+          time: 2000-01-23T04:56:07.000+00:00
+        agentTaskConfig:
+        - id: id
+          targets:
+          - targets
+          - targets
+        - id: id
+          targets:
+          - targets
+          - targets
+        testId: testId
+        tasks:
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          task:
+            knock:
+              period: 3
+              port: 7
+              count: 4
+              expiry: 2
+              target: target
+            shake:
+              period: 1
+              port: 7
+              expiry: 4
+              target: target
+            ping:
+              period: 0
+              count: 1
+              expiry: 6
+              target: target
+            dns:
+              resolver: resolver
+              period: 1
+              port: 6
+              count: 1
+              expiry: 1
+              type: type
+              target: target
+            http:
+              period: 7
+              expiry: 9
+              target: target
+            testId: testId
+            id: id
+            traceroute:
+              period: 5
+              limit: 2
+              expiry: 5
+              target: target
+            deviceId: deviceId
+            status: status
+          targetAgent:
+            country: country
+            os: os
+            city: city
+            ip: ip
+            lastAuthed: 2000-01-23T04:56:07.000+00:00
+            type: type
+            version: version
+            long: 6.027456183070403
+            testIds:
+            - testIds
+            - testIds
+            name: name
+            alias: alias
+            siteId: siteId
+            challenge: challenge
+            localIp: localIp
+            id: id
+            region: region
+            asn: 1
+            lat: 0.8008281904610115
+          agents:
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            agent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            health:
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            agent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            health:
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+        - overallHealth:
+            health: health
+            time: 2000-01-23T04:56:07.000+00:00
+          task:
+            knock:
+              period: 3
+              port: 7
+              count: 4
+              expiry: 2
+              target: target
+            shake:
+              period: 1
+              port: 7
+              expiry: 4
+              target: target
+            ping:
+              period: 0
+              count: 1
+              expiry: 6
+              target: target
+            dns:
+              resolver: resolver
+              period: 1
+              port: 6
+              count: 1
+              expiry: 1
+              type: type
+              target: target
+            http:
+              period: 7
+              expiry: 9
+              target: target
+            testId: testId
+            id: id
+            traceroute:
+              period: 5
+              limit: 2
+              expiry: 5
+              target: target
+            deviceId: deviceId
+            status: status
+          targetAgent:
+            country: country
+            os: os
+            city: city
+            ip: ip
+            lastAuthed: 2000-01-23T04:56:07.000+00:00
+            type: type
+            version: version
+            long: 6.027456183070403
+            testIds:
+            - testIds
+            - testIds
+            name: name
+            alias: alias
+            siteId: siteId
+            challenge: challenge
+            localIp: localIp
+            id: id
+            region: region
+            asn: 1
+            lat: 0.8008281904610115
+          agents:
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            agent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            health:
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+          - overallHealth:
+              health: health
+              time: 2000-01-23T04:56:07.000+00:00
+            agent:
+              country: country
+              os: os
+              city: city
+              ip: ip
+              lastAuthed: 2000-01-23T04:56:07.000+00:00
+              type: type
+              version: version
+              long: 6.027456183070403
+              testIds:
+              - testIds
+              - testIds
+              name: name
+              alias: alias
+              siteId: siteId
+              challenge: challenge
+              localIp: localIp
+              id: id
+              region: region
+              asn: 1
+              lat: 0.8008281904610115
+            health:
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+            - rollingStdJitter: 6
+              overallHealth:
+                health: health
+                time: 2000-01-23T04:56:07.000+00:00
+              avgJitter: 6
+              srcIp: srcIp
+              latencyHealth: latencyHealth
+              data: data
+              avgLatency: 9
+              rollingAvgLatency: 6
+              taskType: taskType
+              packetLoss: 5
+              jitterHealth: jitterHealth
+              size: 1
+              avgWeightedLatency: 9
+              rollingAvgJitter: 3
+              time: 2000-01-23T04:56:07.000+00:00
+              dstIp: dstIp
+              rollingAvgWeightedLatency: 9
+              rollingStddevLatency: 8
+              packetLossHealth: packetLossHealth
+              status: 2
+        mesh:
+        - columns:
+          - name: name
+            alias: alias
+            health:
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            id: id
+            metrics:
+              jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            target: target
+          - name: name
+            alias: alias
+            health:
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            id: id
+            metrics:
+              jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            target: target
+          ip: ip
+          name: name
+          localIp: localIp
+          alias: alias
+          id: id
+        - columns:
+          - name: name
+            alias: alias
+            health:
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            id: id
+            metrics:
+              jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            target: target
+          - name: name
+            alias: alias
+            health:
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            - jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            id: id
+            metrics:
+              jitter:
+                name: name
+                health: health
+                value: value
+              packetLoss:
+                name: name
+                health: health
+                value: value
+              latency:
+                name: name
+                health: health
+                value: value
+              time: 2000-01-23T04:56:07.000+00:00
+            target: target
+          ip: ip
+          name: name
+          localIp: localIp
+          alias: alias
+          id: id
+      properties:
+        testId:
+          type: string
+        tasks:
+          items:
+            $ref: '#/components/schemas/v202101beta1TaskHealth'
+          type: array
+        overallHealth:
+          $ref: '#/components/schemas/v202101beta1Health'
+        healthTs:
+          items:
+            $ref: '#/components/schemas/v202101beta1Health'
+          type: array
+        agentTaskConfig:
+          items:
+            $ref: '#/components/schemas/v202101beta1AgentTaskConfig'
+          type: array
+        mesh:
+          items:
+            $ref: '#/components/schemas/v202101beta1MeshResponse'
+          type: array
+      type: object
+    v202101beta1TestMonitoringSettings:
+      example:
+        activationGracePeriod: activationGracePeriod
+        activationTimeUnit: activationTimeUnit
+        activationTimeWindow: activationTimeWindow
+        activationTimes: activationTimes
+        notificationChannels:
+        - notificationChannels
+        - notificationChannels
+      properties:
+        activationGracePeriod:
+          type: string
+        activationTimeUnit:
+          type: string
+        activationTimeWindow:
+          type: string
+        activationTimes:
+          type: string
+        notificationChannels:
+          items:
+            type: string
+          type: array
+      type: object
+    v202101beta1TestPingSettings:
+      example:
+        period: 7.4577446
+        count: 1.1730742
+        expiry: 4.9652185
+      properties:
+        period:
+          format: float
+          type: number
+        count:
+          format: float
+          type: number
+        expiry:
+          format: float
+          type: number
+      type: object
+    v202101beta1TestSettings:
+      example:
+        agent:
+          target: target
+        ping:
+          period: 7.4577446
+          count: 1.1730742
+          expiry: 4.9652185
+        reciprocal: true
+        rollupLevel: 6
+        hostname:
+          target: target
+        trace:
+          period: 5.025005
+          protocol: protocol
+          port: 9.36931
+          count: 9.965781
+          limit: 8.762042
+          expiry: 6.6835623
+        protocol: protocol
+        servers:
+        - servers
+        - servers
+        healthSettings:
+          httpLatencyCritical: 1.2315135
+          latencyCritical: 7.0614014
+          httpValidCodes:
+          - 1
+          - 1
+          packetLossWarning: 2.027123
+          jitterCritical: 4.145608
+          jitterWarning: 7.386282
+          httpLatencyWarning: 1.0246457
+          latencyWarning: 9.301444
+          dnsValidCodes:
+          - 6
+          - 6
+          packetLossCritical: 3.6160767
+        monitoringSettings:
+          activationGracePeriod: activationGracePeriod
+          activationTimeUnit: activationTimeUnit
+          activationTimeWindow: activationTimeWindow
+          activationTimes: activationTimes
+          notificationChannels:
+          - notificationChannels
+          - notificationChannels
+        limit: 2
+        targetValue: targetValue
+        tag:
+          target: target
+        expiry: 5
+        flow:
+          targetRefreshIntervalMillis: 0
+          maxTasks: 6
+          type: type
+          target: target
+        tasks:
+        - tasks
+        - tasks
+        agentIds:
+        - agentIds
+        - agentIds
+        period: 1
+        useLocalIp: true
+        ip:
+          targets:
+          - targets
+          - targets
+        dns:
+          target: target
+        count: 5
+        targetType: targetType
+        url:
+          target: target
+        site:
+          target: target
+        port: 9
+      properties:
+        hostname:
+          $ref: '#/components/schemas/v202101beta1HostnameTest'
+        ip:
+          $ref: '#/components/schemas/v202101beta1IpTest'
+        agent:
+          $ref: '#/components/schemas/v202101beta1AgentTest'
+        flow:
+          $ref: '#/components/schemas/v202101beta1FlowTest'
+        site:
+          $ref: '#/components/schemas/v202101beta1SiteTest'
+        tag:
+          $ref: '#/components/schemas/v202101beta1TagTest'
+        dns:
+          $ref: '#/components/schemas/v202101beta1DnsTest'
+        url:
+          $ref: '#/components/schemas/v202101beta1UrlTest'
+        agentIds:
+          items:
+            type: string
+          type: array
+        period:
+          format: int64
+          type: integer
+        count:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+        limit:
+          format: int64
+          type: integer
+        tasks:
+          items:
+            type: string
+          type: array
+        healthSettings:
+          $ref: '#/components/schemas/v202101beta1HealthSettings'
+        monitoringSettings:
+          $ref: '#/components/schemas/v202101beta1TestMonitoringSettings'
+        ping:
+          $ref: '#/components/schemas/v202101beta1TestPingSettings'
+        trace:
+          $ref: '#/components/schemas/v202101beta1TestTraceSettings'
+        port:
+          format: int64
+          type: integer
+        protocol:
+          type: string
+        family:
+          $ref: '#/components/schemas/v202101beta1IPFamily'
+        servers:
+          items:
+            type: string
+          type: array
+        targetType:
+          type: string
+        targetValue:
+          type: string
+        useLocalIp:
+          type: boolean
+        reciprocal:
+          type: boolean
+        rollupLevel:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1TestStatus:
+      default: TEST_STATUS_UNSPECIFIED
+      enum:
+      - TEST_STATUS_UNSPECIFIED
+      - TEST_STATUS_ACTIVE
+      - TEST_STATUS_PAUSED
+      - TEST_STATUS_DELETED
+      type: string
+    v202101beta1TestTraceSettings:
+      example:
+        period: 5.025005
+        protocol: protocol
+        port: 9.36931
+        count: 9.965781
+        limit: 8.762042
+        expiry: 6.6835623
+      properties:
+        period:
+          format: float
+          type: number
+        count:
+          format: float
+          type: number
+        protocol:
+          type: string
+        port:
+          format: float
+          type: number
+        expiry:
+          format: float
+          type: number
+        limit:
+          format: float
+          type: number
+      type: object
+    v202101beta1Trace:
+      example:
+        hops:
+        - agent: true
+          agentId: agentId
+          latencies:
+          - latencies
+          - latencies
+          ip: ip
+          ttl: 5
+          timeout: true
+        - agent: true
+          agentId: agentId
+          latencies:
+          - latencies
+          - latencies
+          ip: ip
+          ttl: 5
+          timeout: true
+        ips:
+        - ips
+        - ips
+        target: target
+      properties:
+        hops:
+          items:
+            $ref: '#/components/schemas/v202101beta1TraceHop'
+          type: array
+        target:
+          type: string
+        ips:
+          items:
+            type: string
+          type: array
+      type: object
+    v202101beta1TraceHop:
+      example:
+        agent: true
+        agentId: agentId
+        latencies:
+        - latencies
+        - latencies
+        ip: ip
+        ttl: 5
+        timeout: true
+      properties:
+        agent:
+          type: boolean
+        agentId:
+          type: string
+        ttl:
+          format: int32
+          type: integer
+        ip:
+          type: string
+        latencies:
+          items:
+            format: uint64
+            type: string
+          type: array
+        timeout:
+          type: boolean
+      type: object
+    v202101beta1TraceTaskDefinition:
+      example:
+        period: 5
+        limit: 2
+        expiry: 5
+        target: target
+      properties:
+        target:
+          type: string
+        period:
+          format: int64
+          type: integer
+        expiry:
+          format: int64
+          type: integer
+        limit:
+          format: int64
+          type: integer
+      type: object
+    v202101beta1TracerouteResult:
+      example:
+        traces:
+        - hops:
+          - agent: true
+            agentId: agentId
+            latencies:
+            - latencies
+            - latencies
+            ip: ip
+            ttl: 5
+            timeout: true
+          - agent: true
+            agentId: agentId
+            latencies:
+            - latencies
+            - latencies
+            ip: ip
+            ttl: 5
+            timeout: true
+          ips:
+          - ips
+          - ips
+          target: target
+        - hops:
+          - agent: true
+            agentId: agentId
+            latencies:
+            - latencies
+            - latencies
+            ip: ip
+            ttl: 5
+            timeout: true
+          - agent: true
+            agentId: agentId
+            latencies:
+            - latencies
+            - latencies
+            ip: ip
+            ttl: 5
+            timeout: true
+          ips:
+          - ips
+          - ips
+          target: target
+        time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        time:
+          format: date-time
+          type: string
+        traces:
+          items:
+            $ref: '#/components/schemas/v202101beta1Trace'
+          type: array
+      type: object
+    v202101beta1UrlTest:
+      example:
+        target: target
+      properties:
+        target:
+          type: string
+      type: object
+    v202101beta1UserInfo:
+      example:
+        fullName: fullName
+        id: id
+        email: email
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+      type: object
+  securitySchemes:
+    email:
+      in: header
+      name: X-CH-Auth-Email
+      type: apiKey
+    token:
+      in: header
+      name: X-CH-Auth-API-Token
+      type: apiKey
