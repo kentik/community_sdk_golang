@@ -23,7 +23,7 @@ function checkPrerequsites() {
 function run() {
     stage "Running localhost api server on :8080"
 
-    go run . -addr ":8080" -storage "CloudExportStorage.json"
+    go run . -addr ":8080" -cloudexport "CloudExportStorage.json" -synthetics "SyntheticsStorage.json"
 
     echo "Done"
 }

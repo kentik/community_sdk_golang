@@ -20,18 +20,12 @@ func runAdminServiceExamples() {
 	client := examples.NewClient()
 	var err error
 
-	// (16.04.2021 - API call for CREATE returns http 500)
 	if err = runCRUDTest(client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	if err = runListTests(client); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	if err = runSetTestStatus(client, "3337"); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -51,33 +45,46 @@ func runDataServiceExamples() {
 	client := examples.NewClient()
 	var err error
 
-	if err = runGetHealthForTests(client, []string{"3337"}); err != nil {
+	// NOTE: test of id 3336 must exist
+	if err = runGetHealthForTests(client, []string{"3336"}); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if err = runGetTraceForTest(client, "3337"); err != nil {
+	// NOTE: test of id 3336 must exist
+	if err = runGetTraceForTest(client, "3336"); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
 func runCRUDTest(client *kentikapi.Client) error {
-	// NOTE: CREATE doesn't work yet (16.04.2021)
-	// fmt.Println("### CREATE TEST")
-	// test := makeExampleTest()
-	// createReqPayload := *synthetics.NewV202101beta1CreateTestRequest()
-	// createReqPayload.SetTest(*test)
-	// createReq := client.SyntheticsAdminServiceApi.TestCreate(context.Background()).V202101beta1CreateTestRequest(createReqPayload)
-	// createResp, httpResp, err := createReq.Execute()
-	// if err != nil {
-	// 	return fmt.Errorf("%v %v", err, httpResp)
-	// }
-	// examples.PrettyPrint(createResp)
-	// fmt.Println()
-	// created := createResp.Test
+	fmt.Println("### CREATE TEST")
+	test := makeExampleTest()
+	createReqPayload := *synthetics.NewV202101beta1CreateTestRequest()
+	createReqPayload.SetTest(*test)
+	createReq := client.SyntheticsAdminServiceApi.TestCreate(context.Background()).V202101beta1CreateTestRequest(createReqPayload)
+	createResp, httpResp, err := createReq.Execute()
+	if err != nil {
+		return fmt.Errorf("%v %v", err, httpResp)
+	}
+	examples.PrettyPrint(createResp)
+	fmt.Println()
+	testID := *createResp.Test.Id
 
-	testID := "3337" // existing test id; temporary solution until CREATE works
+	fmt.Println("### SET TEST STATUS")
+	setStatusReqPayload := *synthetics.NewV202101beta1SetTestStatusRequest()
+	status := synthetics.V202101BETA1TESTSTATUS_PAUSED
+	setStatusReqPayload.Status = &status
+	setStatusReqPayload.Id = &testID
+	setStatusReq := client.SyntheticsAdminServiceApi.TestStatusUpdate(context.Background(), testID).V202101beta1SetTestStatusRequest(setStatusReqPayload)
+	statusResp, httpResp, err := setStatusReq.Execute()
+	if err != nil {
+		return fmt.Errorf("%v %v", err, httpResp)
+	}
+	fmt.Println("Success")
+	examples.PrettyPrint(statusResp)
+	fmt.Println()
 
 	fmt.Println("### GET TEST")
 	getReq := client.SyntheticsAdminServiceApi.TestGet(context.Background(), testID)
@@ -88,12 +95,12 @@ func runCRUDTest(client *kentikapi.Client) error {
 	examples.PrettyPrint(getResp)
 	fmt.Println()
 
-	test := getResp.Test
+	test = getResp.Test
 	test.Settings.TargetType = nil
 	test.Settings.TargetValue = nil
 
 	fmt.Println("### PATCH TEST")
-	test.SetName("[please don't delete me!]")
+	test.SetName("example-test-1 UPDATED")
 	patchReqPayload := *synthetics.NewV202101beta1PatchTestRequest()
 	patchReqPayload.SetTest(*test)
 	patchReqPayload.SetMask("test.name")
@@ -105,16 +112,15 @@ func runCRUDTest(client *kentikapi.Client) error {
 	examples.PrettyPrint(patchResp)
 	fmt.Println()
 
-	// NOTE: uncomment once CREATE works
-	// fmt.Println("### DELETE TEST")
-	// deleteReq := client.SyntheticsAdminServiceApi.TestDelete(context.Background(), *test.Id)
-	// deleteResp, httpResp, err := deleteReq.Execute()
-	// if err != nil {
-	// 	return fmt.Errorf("%v %v", err, httpResp)
-	// }
-	// fmt.Println("Success")
-	// examples.PrettyPrint(deleteResp)
-	// fmt.Println()
+	fmt.Println("### DELETE TEST")
+	deleteReq := client.SyntheticsAdminServiceApi.TestDelete(context.Background(), testID)
+	deleteResp, httpResp, err := deleteReq.Execute()
+	if err != nil {
+		return fmt.Errorf("%v %v", err, httpResp)
+	}
+	fmt.Println("Success")
+	examples.PrettyPrint(deleteResp)
+	fmt.Println()
 
 	return nil
 }
@@ -131,7 +137,9 @@ func runListTests(client *kentikapi.Client) error {
 	if getAllResp.Tests != nil {
 		tests := *getAllResp.Tests
 		fmt.Println("Num tests:", len(tests))
-		fmt.Println("Num invalid tests:", *getAllResp.InvalidTestsCount)
+		if getAllResp.InvalidTestsCount != nil {
+			fmt.Println("Num invalid tests:", *getAllResp.InvalidTestsCount)
+		}
 		examples.PrettyPrint(tests)
 	} else {
 		fmt.Println("[no tests received]")
@@ -141,39 +149,19 @@ func runListTests(client *kentikapi.Client) error {
 	return nil
 }
 
-func runSetTestStatus(client *kentikapi.Client, testID string) error {
-	fmt.Println("### SET TEST STATUS")
-
-	setStatusReqPayload := *synthetics.NewV202101beta1SetTestStatusRequest()
-	setStatusReqPayload.Id = &testID
-	status := synthetics.V202101BETA1TESTSTATUS_ACTIVE
-	setStatusReqPayload.Status = &status
-	setStatusReq := client.SyntheticsAdminServiceApi.TestStatusUpdate(context.Background(), testID).V202101beta1SetTestStatusRequest(setStatusReqPayload)
-
-	getResp, httpResp, err := setStatusReq.Execute()
-	if err != nil {
-		return fmt.Errorf("%v %v", err, httpResp)
-	}
-	fmt.Println("Success")
-	examples.PrettyPrint(getResp)
-	fmt.Println()
-
-	return nil
-}
-
 func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayload := *synthetics.NewV202101beta1GetHealthForTestsRequest()
+	healthPayload.SetStartTime(time.Now().Add(-time.Hour))
 	healthPayload.SetEndTime(time.Now())
-	healthPayload.SetStartTime(time.Now().Add(-time.Hour * 24))
 	healthPayload.SetIds(testIDs)
-
 	getHealthReq := client.SyntheticsDataServiceApi.GetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(healthPayload)
 	getHealthResp, httpResp, err := getHealthReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
+
 	if getHealthResp.Health != nil {
 		healthItems := *getHealthResp.Health
 		fmt.Println("Num health items:", len(healthItems))
@@ -191,9 +179,8 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 
 	tracePayload := *synthetics.NewV202101beta1GetTraceForTestRequest()
 	tracePayload.SetId(testID)
+	tracePayload.SetStartTime(time.Now().Add(-time.Hour))
 	tracePayload.SetEndTime(time.Now())
-	tracePayload.SetStartTime(time.Now().Add(-time.Hour * 1))
-
 	getTraceReq := client.SyntheticsDataServiceApi.GetTraceForTest(context.Background(), testID).V202101beta1GetTraceForTestRequest(tracePayload)
 	getTraceResp, httpResp, err := getTraceReq.Execute()
 	if err != nil {
@@ -221,9 +208,10 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	return nil
 }
 
-// NOTE: no CREATE method exists for agents in the API - they register themselves on their own
 func runCRUDAgent(client *kentikapi.Client) error {
-	agentID := "1717" // private, existing agent
+	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
+	// NOTE: agent of id 1717 must exist
+	agentID := "1717"
 
 	fmt.Println("### GET AGENT")
 	getReq := client.SyntheticsAdminServiceApi.AgentGet(context.Background(), agentID)
@@ -235,11 +223,11 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### PATCH AGENT")
-	agent := *synthetics.NewV202101beta1Agent()
+	agent := *getResp.Agent
 	if getResp.Agent.GetFamily() == synthetics.V202101BETA1IPFAMILY_V6 {
-		agent.SetFamily("IP_FAMILY_V4")
+		agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V4)
 	} else {
-		agent.SetFamily("IP_FAMILY_V6")
+		agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V6)
 	}
 	patchReqPayload := *synthetics.NewV202101beta1PatchAgentRequest()
 	patchReqPayload.SetAgent(agent)
@@ -274,9 +262,13 @@ func runListAgents(client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
+
 	if getAllResp.Agents != nil {
 		agents := *getAllResp.Agents
 		fmt.Println("Num agents:", len(agents))
+		if getAllResp.InvalidAgentsCount != nil {
+			fmt.Println("Num invalid agents:", *getAllResp.InvalidAgentsCount)
+		}
 		examples.PrettyPrint(agents)
 	} else {
 		fmt.Println("[no agents received]")
@@ -292,17 +284,17 @@ func makeExampleTest() *synthetics.V202101beta1Test {
 	ipSetting.SetTargets([]string{"127.0.0.1"})
 
 	ping := *synthetics.NewV202101beta1TestPingSettings()
-	ping.SetCount(3)
-	ping.SetExpiry(3000)
 	ping.SetPeriod(60)
+	ping.SetCount(5)
+	ping.SetExpiry(3000)
 
 	trace := *synthetics.NewV202101beta1TestTraceSettings()
+	trace.SetPeriod(60)
 	trace.SetCount(3)
+	trace.SetProtocol("udp")
+	trace.SetPort(33434)
 	trace.SetExpiry(22500)
 	trace.SetLimit(30)
-	trace.SetPeriod(60)
-	trace.SetPort(33434)
-	trace.SetProtocol("udp")
 
 	monitoring := *synthetics.NewV202101beta1TestMonitoringSettings()
 	monitoring.SetActivationGracePeriod("2")
@@ -312,16 +304,16 @@ func makeExampleTest() *synthetics.V202101beta1Test {
 	monitoring.SetNotificationChannels([]string{})
 
 	health := *synthetics.NewV202101beta1HealthSettings()
-	health.SetDnsValidCodes([]int64{5})
-	health.SetHttpLatencyCritical(500.0)
-	health.SetHttpLatencyWarning(300)
-	health.SetHttpValidCodes([]int64{5})
-	health.SetJitterCritical(100)
-	health.SetJitterWarning(50)
-	health.SetLatencyCritical(500)
-	health.SetLatencyWarning(300)
-	health.SetPacketLossCritical(50)
-	health.SetPacketLossWarning(30)
+	health.SetDnsValidCodes([]int64{})
+	health.SetHttpLatencyCritical(0)
+	health.SetHttpLatencyWarning(0)
+	health.SetHttpValidCodes([]int64{})
+	health.SetJitterCritical(0)
+	health.SetJitterWarning(0)
+	health.SetLatencyCritical(0)
+	health.SetLatencyWarning(0)
+	health.SetPacketLossCritical(0)
+	health.SetPacketLossWarning(0)
 
 	settings := *synthetics.NewV202101beta1TestSettingsWithDefaults()
 	settings.SetIp(ipSetting)
@@ -337,31 +329,26 @@ func makeExampleTest() *synthetics.V202101beta1Test {
 	settings.SetTrace(trace)
 	settings.SetPort(443)
 	settings.SetProtocol("icmp")
-	settings.SetFamily(synthetics.V202101BETA1IPFAMILY_V4)
-	settings.SetServers([]string{"https://fala.com"})
-	// settings.SetTargetType("")
-	// settings.SetTargetValue("")
+	settings.SetFamily(synthetics.V202101BETA1IPFAMILY_DUAL)
+	settings.SetServers([]string{})
 	settings.SetUseLocalIp(false)
 	settings.SetReciprocal(false)
 	settings.SetRollupLevel(1)
-	settings.SetRollupLevel(1)
 
 	user := *synthetics.NewV202101beta1UserInfo()
-	user.SetId("144319")
-	user.SetFullName("Mateusz Midor")
-	user.SetEmail("mateusz.midor@codilime.com")
+	user.SetId("144566")
+	user.SetFullName("John Doe")
+	user.SetEmail("john.doe@acme.com")
 
 	test := synthetics.NewV202101beta1Test()
-	test.SetName("exampletest1")
+	test.SetName("example-test-1")
 	test.SetType("ip-address")
 	test.SetDeviceId("1000")
 	test.SetStatus(synthetics.V202101BETA1TESTSTATUS_ACTIVE)
 	test.SetSettings(settings)
 	test.SetExpiresOn(time.Now().Add(time.Hour * 6))
 	test.SetCdate(time.Now())
-	// test.SetEdate(time.Now())
-	// test.SetCreatedBy(user)
-	// test.SetLastUpdatedBy(user)
+	test.SetCreatedBy(user)
 
 	return test
 }

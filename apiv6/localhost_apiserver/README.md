@@ -7,9 +7,3 @@ For testing the client without the need of interacting with live server (no vali
 ```bash
 ./run_server.sh
 ```
-
-## Try it out with swagger
-
-```bash
-./run_swagger.sh
-```

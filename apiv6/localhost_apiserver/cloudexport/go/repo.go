@@ -149,29 +149,29 @@ func stringPtr(s string) *string {
 
 func (r *CloudExportRepo) load() {
 	// r.lock should be already in locked state at this point
-	file, err := ioutil.ReadFile(r.fileName)
+	bytes, err := ioutil.ReadFile(r.fileName)
 	if err != nil {
 		log.Printf("CloudExportRepo storage %q not found. Starting with fresh one", r.fileName)
 		return // nothing to load is ok
 	}
 
-	err = json.Unmarshal([]byte(file), &r.items)
+	err = json.Unmarshal(bytes, &r.items)
 	if err != nil {
 		log.Printf("CloudExportRepo unmarshal from %q failed: %v", r.fileName, err)
 		panic(err) // loading invalid data is not ok
 	}
 
-	log.Printf("CloudExportRepo successfuly loaded from %q, num items: %d", r.fileName, len(r.items))
+	log.Printf("CloudExportRepo successfuly loaded from %q, num exports: %d", r.fileName, len(r.items))
 }
 
 func (r *CloudExportRepo) save() {
 	// r.lock should be already in locked state at this point
-	file, err := json.MarshalIndent(r.items, "", "  ")
+	bytes, err := json.MarshalIndent(r.items, "", "  ")
 	if err != nil {
 		panic(err)
 	}
 
-	err = ioutil.WriteFile(r.fileName, file, 0644)
+	err = ioutil.WriteFile(r.fileName, bytes, 0644)
 	if err != nil {
 		panic(err)
 	}

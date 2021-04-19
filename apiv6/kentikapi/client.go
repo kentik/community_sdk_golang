@@ -5,8 +5,8 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
-// APIURLUS specifies the US cloud export http server
-const APIURLUS = "https://cloudexports.api.kentik.com"
+const CLOUDEXPORT_API_URL = "https://cloudexports.api.kentik.com"
+const STYNTHETICS_API_URL = "https://synthetics.api.kentik.com"
 
 const authEmailKey = "X-CH-Auth-Email"
 const authAPITokenKey = "X-CH-Auth-API-Token"
@@ -23,8 +23,12 @@ type Client struct {
 
 // NewClient creates kentikapi client with provided config
 func NewClient(c Config) *Client {
-	if c.APIURL == "" {
-		c.APIURL = APIURLUS
+	if c.CloudExportAPIURL == "" {
+		c.CloudExportAPIURL = CLOUDEXPORT_API_URL
+	}
+
+	if c.SyntheticsAPIURL == "" {
+		c.SyntheticsAPIURL = STYNTHETICS_API_URL
 	}
 
 	cloudexportClient := cloudexport.NewAPIClient(makeCloudExportConfig(c))
@@ -45,7 +49,7 @@ func makeCloudExportConfig(c Config) *cloudexport.Configuration {
 	cfg.DefaultHeader[authAPITokenKey] = c.AuthToken
 
 	// setup target API server
-	cfg.Servers[0].URL = c.APIURL
+	cfg.Servers[0].URL = c.CloudExportAPIURL
 	cfg.Servers[0].Description = "Kentik CloudExport server"
 
 	return cfg
@@ -59,7 +63,7 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 	cfg.DefaultHeader[authAPITokenKey] = c.AuthToken
 
 	// setup target API server
-	cfg.Servers[0].URL = c.APIURL
+	cfg.Servers[0].URL = c.SyntheticsAPIURL
 	cfg.Servers[0].Description = "Kentik Synthetics server"
 
 	return cfg
@@ -67,7 +71,8 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 
 // Config holds configuration of the client.
 type Config struct {
-	APIURL    string // if blank, default api url will be used
-	AuthEmail string
-	AuthToken string
+	CloudExportAPIURL string // if blank, default api url will be used
+	SyntheticsAPIURL  string // if blank, default api url will be used
+	AuthEmail         string
+	AuthToken         string
 }
