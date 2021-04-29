@@ -14,7 +14,7 @@ import (
 	"log"
 	"net/http"
 
-	cloudexportstub "github.com/kentik/community_sdk_golang/apiv6/localhost_apiserver/go"
+	cloudexportstub "github.com/kentik/community_sdk_golang/apiv6/localhost_apiserver/cloudexport/go"
 )
 
 func main() {
