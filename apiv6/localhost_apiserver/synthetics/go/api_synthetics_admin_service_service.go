@@ -11,7 +11,7 @@ package syntheticsstub
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -19,149 +19,125 @@ import (
 // This service should implement the business logic for every endpoint for the SyntheticsAdminServiceApi API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsAdminServiceApiService struct {
+	repo *SyntheticsRepo
 }
 
 // NewSyntheticsAdminServiceApiService creates a default api service
-func NewSyntheticsAdminServiceApiService() SyntheticsAdminServiceApiServicer {
-	return &SyntheticsAdminServiceApiService{}
+func NewSyntheticsAdminServiceApiService(repo *SyntheticsRepo) SyntheticsAdminServiceApiServicer {
+	return &SyntheticsAdminServiceApiService{
+		repo: repo,
+	}
 }
 
 // AgentDelete - Delete an agent.
 func (s *SyntheticsAdminServiceApiService) AgentDelete(ctx context.Context, agentId string) (ImplResponse, error) {
-	// TODO - update AgentDelete with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, map[string]interface{}{}) or use other options such as http.Ok ...
-	//return Response(200, map[string]interface{}{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("AgentDelete method not implemented")
+	if err := s.repo.DeleteAgent(agentId); err != nil {
+		return errorResponse(http.StatusNotFound, "agent DELETE failed", err), nil
+	} else {
+		resp := map[string]interface{}{}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // AgentGet - Get information about an agent.
 func (s *SyntheticsAdminServiceApiService) AgentGet(ctx context.Context, agentId string) (ImplResponse, error) {
-	// TODO - update AgentGet with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1GetAgentResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1GetAgentResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("AgentGet method not implemented")
+	if agent := s.repo.GetAgent(agentId); agent == nil {
+		err := fmt.Errorf("no such agent %q", agentId)
+		return errorResponse(http.StatusNotFound, "agent GET failed", err), nil
+	} else {
+		resp := V202101beta1GetAgentResponse{Agent: *agent}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // AgentPatch - Patch an agent.
 func (s *SyntheticsAdminServiceApiService) AgentPatch(ctx context.Context, agentId string, v202101beta1PatchAgentRequest V202101beta1PatchAgentRequest) (ImplResponse, error) {
-	// TODO - update AgentPatch with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1PatchAgentResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1PatchAgentResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("AgentPatch method not implemented")
+	v202101beta1PatchAgentRequest.Agent.Id = agentId
+	if agent, err := s.repo.PatchAgent(v202101beta1PatchAgentRequest.Agent); err != nil {
+		return errorResponse(http.StatusBadRequest, "agent PATCH failed", err), nil
+	} else {
+		resp := V202101beta1PatchAgentResponse{Agent: *agent}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // AgentsList - List Agents.
 func (s *SyntheticsAdminServiceApiService) AgentsList(ctx context.Context) (ImplResponse, error) {
-	// TODO - update AgentsList with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1ListAgentsResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1ListAgentsResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("AgentsList method not implemented")
+	resp := V202101beta1ListAgentsResponse{
+		Agents:             s.repo.ListAgents(),
+		InvalidAgentsCount: 0,
+	}
+	return Response(http.StatusOK, &resp), nil
 }
 
 // TestCreate - Create Synthetics Test.
 func (s *SyntheticsAdminServiceApiService) TestCreate(ctx context.Context, v202101beta1CreateTestRequest V202101beta1CreateTestRequest) (ImplResponse, error) {
-	// TODO - update TestCreate with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1CreateTestResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1CreateTestResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestCreate method not implemented")
+	if test, err := s.repo.CreateTest(v202101beta1CreateTestRequest.Test); err != nil {
+		return errorResponse(http.StatusBadRequest, "test CREATE failed", err), nil
+	} else {
+		resp := V202101beta1CreateTestResponse{Test: *test}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // TestDelete - Delete an Synthetics Test.
 func (s *SyntheticsAdminServiceApiService) TestDelete(ctx context.Context, id string) (ImplResponse, error) {
-	// TODO - update TestDelete with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, map[string]interface{}{}) or use other options such as http.Ok ...
-	//return Response(200, map[string]interface{}{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestDelete method not implemented")
+	if err := s.repo.DeleteTest(id); err != nil {
+		return errorResponse(http.StatusNotFound, "test DELETE failed", err), nil
+	} else {
+		resp := map[string]interface{}{}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // TestGet - Get information about Synthetics Test.
 func (s *SyntheticsAdminServiceApiService) TestGet(ctx context.Context, id string) (ImplResponse, error) {
-	// TODO - update TestGet with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1GetTestResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1GetTestResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestGet method not implemented")
+	if test := s.repo.GetTest(id); test == nil {
+		err := fmt.Errorf("no such test %q", id)
+		return errorResponse(http.StatusNotFound, "test GET failed", err), nil
+	} else {
+		resp := V202101beta1GetTestResponse{Test: *test}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // TestPatch - Patch a Synthetics Test.
 func (s *SyntheticsAdminServiceApiService) TestPatch(ctx context.Context, id string, v202101beta1PatchTestRequest V202101beta1PatchTestRequest) (ImplResponse, error) {
-	// TODO - update TestPatch with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1PatchTestResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1PatchTestResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestPatch method not implemented")
+	v202101beta1PatchTestRequest.Test.Id = id
+	if test, err := s.repo.PatchTest(v202101beta1PatchTestRequest.Test); err != nil {
+		return errorResponse(http.StatusBadRequest, "test PATCH failed", err), nil
+	} else {
+		resp := V202101beta1PatchTestResponse{Test: *test}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // TestStatusUpdate - Update a test status.
 func (s *SyntheticsAdminServiceApiService) TestStatusUpdate(ctx context.Context, id string, v202101beta1SetTestStatusRequest V202101beta1SetTestStatusRequest) (ImplResponse, error) {
-	// TODO - update TestStatusUpdate with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, map[string]interface{}{}) or use other options such as http.Ok ...
-	//return Response(200, map[string]interface{}{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestStatusUpdate method not implemented")
+	if err := s.repo.UpdateTestStatus(id, v202101beta1SetTestStatusRequest.Status); err != nil {
+		return errorResponse(http.StatusNotFound, "test status update failed", err), nil
+	} else {
+		resp := map[string]interface{}{}
+		return Response(http.StatusOK, &resp), nil
+	}
 }
 
 // TestsList - List Synthetics Tests.
 func (s *SyntheticsAdminServiceApiService) TestsList(ctx context.Context, preset bool) (ImplResponse, error) {
-	// TODO - update TestsList with the required logic for this service method.
-	// Add api_synthetics_admin_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	resp := V202101beta1ListTestsResponse{
+		Tests:             s.repo.ListTests(),
+		InvalidTestsCount: 0,
+	}
+	return Response(http.StatusOK, &resp), nil
+}
 
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1ListTestsResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1ListTestsResponse{}), nil
+func errorResponse(httpCode int, message string, err error) ImplResponse {
+	const rpcCodeUnknown = 2 // translation httpCode -> rpcCode not relevant here
 
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("TestsList method not implemented")
+	rpcResponse := RpcStatus{
+		Code:    rpcCodeUnknown,
+		Message: fmt.Sprintf("%v: %v", message, err.Error()),
+		Details: []ProtobufAny{},
+	}
+	return Response(httpCode, rpcResponse)
 }

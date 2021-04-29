@@ -12,6 +12,7 @@ package syntheticsstub
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -251,7 +252,7 @@ func (c *SyntheticsAdminServiceApiController) TestStatusUpdate(w http.ResponseWr
 // TestsList - List Synthetics Tests.
 func (c *SyntheticsAdminServiceApiController) TestsList(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	preset := query.Get("preset")
+	preset, _ := strconv.ParseBool(query.Get("preset")) // if error -> preset = false
 	result, err := c.service.TestsList(r.Context(), preset)
 	//If an error occured, encode the error with the status code
 	if err != nil {

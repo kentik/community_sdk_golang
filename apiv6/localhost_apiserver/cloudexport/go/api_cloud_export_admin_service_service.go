@@ -42,6 +42,7 @@ func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceCreateCloudEx
 
 // CloudExportAdminServiceUpdateCloudExport -
 func (s *CloudExportAdminServiceApiService) CloudExportAdminServiceUpdateCloudExport(ctx context.Context, exportId string, v202101beta1UpdateCloudExportRequest V202101beta1UpdateCloudExportRequest) (ImplResponse, error) {
+	v202101beta1UpdateCloudExportRequest.Export.Id = exportId
 	if export, err := s.repo.Update(v202101beta1UpdateCloudExportRequest.Export); err != nil {
 		return errorResponse(http.StatusBadRequest, "cloud export UPDATE failed", err), nil
 	} else {

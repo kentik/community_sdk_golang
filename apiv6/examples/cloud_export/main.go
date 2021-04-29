@@ -47,11 +47,13 @@ func runCRUD(client *kentikapi.Client) error {
 	examples.PrettyPrint(createResp)
 	fmt.Println()
 
+	created := createResp.Export
+
 	fmt.Println("### UPDATE")
-	export.SetDescription("Updated description")
+	created.SetDescription("Updated description")
 	updateReqPayload := *cloudexport.NewV202101beta1UpdateCloudExportRequest()
-	updateReqPayload.Export = export
-	updateReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceUpdateCloudExport(context.Background(), *createResp.Export.Id).V202101beta1UpdateCloudExportRequest(updateReqPayload)
+	updateReqPayload.Export = created
+	updateReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceUpdateCloudExport(context.Background(), *created.Id).V202101beta1UpdateCloudExportRequest(updateReqPayload)
 	updateResp, httpResp, err := updateReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -60,7 +62,7 @@ func runCRUD(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### GET")
-	getReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(context.Background(), *createResp.Export.Id)
+	getReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(context.Background(), *created.Id)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -69,7 +71,7 @@ func runCRUD(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### DELETE")
-	deleteReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceDeleteCloudExport(context.Background(), *createResp.Export.Id)
+	deleteReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceDeleteCloudExport(context.Background(), *created.Id)
 	deleteResp, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)

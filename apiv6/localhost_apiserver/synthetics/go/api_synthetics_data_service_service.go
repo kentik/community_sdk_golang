@@ -11,7 +11,6 @@ package syntheticsstub
 
 import (
 	"context"
-	"errors"
 	"net/http"
 )
 
@@ -19,37 +18,29 @@ import (
 // This service should implement the business logic for every endpoint for the SyntheticsDataServiceApi API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsDataServiceApiService struct {
+	repo *SyntheticsRepo
 }
 
 // NewSyntheticsDataServiceApiService creates a default api service
-func NewSyntheticsDataServiceApiService() SyntheticsDataServiceApiServicer {
-	return &SyntheticsDataServiceApiService{}
+func NewSyntheticsDataServiceApiService(repo *SyntheticsRepo) SyntheticsDataServiceApiServicer {
+	return &SyntheticsDataServiceApiService{
+		repo: repo,
+	}
 }
 
 // GetHealthForTests - Get health status for synthetics test.
 func (s *SyntheticsDataServiceApiService) GetHealthForTests(ctx context.Context, v202101beta1GetHealthForTestsRequest V202101beta1GetHealthForTestsRequest) (ImplResponse, error) {
-	// TODO - update GetHealthForTests with the required logic for this service method.
-	// Add api_synthetics_data_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1GetHealthForTestsResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1GetHealthForTestsResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetHealthForTests method not implemented")
+	resp := V202101beta1GetHealthForTestsResponse{
+		Health: s.repo.GetHealthForTests(),
+	}
+	return Response(http.StatusOK, &resp), nil
 }
 
 // GetTraceForTest - Get trace route data.
 func (s *SyntheticsDataServiceApiService) GetTraceForTest(ctx context.Context, id string, v202101beta1GetTraceForTestRequest V202101beta1GetTraceForTestRequest) (ImplResponse, error) {
-	// TODO - update GetTraceForTest with the required logic for this service method.
-	// Add api_synthetics_data_service_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, V202101beta1GetTraceForTestResponse{}) or use other options such as http.Ok ...
-	//return Response(200, V202101beta1GetTraceForTestResponse{}), nil
-
-	//TODO: Uncomment the next line to return response Response(0, RpcStatus{}) or use other options such as http.Ok ...
-	//return Response(0, RpcStatus{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("GetTraceForTest method not implemented")
+	resp := V202101beta1GetTraceForTestResponse{
+		IpInfo:      s.repo.GetIpInfo(),
+		TraceRoutes: s.repo.GetTraceRoutes(),
+	}
+	return Response(http.StatusOK, &resp), nil
 }
