@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -12,9 +13,12 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
+var testID = flag.String("testid", "3541", "id of mesh test to display the result matrix for")
+
 func main() {
-	// NOTE: test 3541 must exist and must be a mesh test
-	mesh := getMeshTestResults("3541")
+    flag.Parse()
+	
+	mesh := getMeshTestResults(*testID)
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 		os.Exit(1)
@@ -94,5 +98,5 @@ func formatLatency(metrics *synthetics.V202101beta1MeshMetrics) string {
 		return "error"
 	}
 
-	return strconv.FormatInt(latencyMS/1000, 10) + "ms"
+	return strconv.FormatInt(latencyMS/1000, 10) + "ms" // latency is returned in thousands of milliseconds, so need to divide by 1000
 }
