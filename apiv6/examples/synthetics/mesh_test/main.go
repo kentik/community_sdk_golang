@@ -93,10 +93,10 @@ func makeTabWriter() *tabwriter.Writer {
 }
 
 func formatLatency(metrics *synthetics.V202101beta1MeshMetrics) string {
-	latencyMS, err := strconv.ParseInt(*metrics.GetLatency().Value, 10, 64)
+	latency, err := strconv.ParseInt(*metrics.GetLatency().Value, 10, 64)
 	if err != nil {
 		return "error"
 	}
 
-	return strconv.FormatInt(latencyMS/1000, 10) + "ms" // latency is returned in thousands of milliseconds, so need to divide by 1000
+	return strconv.FormatInt(latency/1000, 10) + "ms" // latency is returned in thousands of milliseconds, so need to divide by 1000
 }
