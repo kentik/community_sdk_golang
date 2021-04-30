@@ -16,8 +16,8 @@ import (
 var testID = flag.String("testid", "3541", "id of mesh test to display the result matrix for")
 
 func main() {
-    flag.Parse()
-	
+	flag.Parse()
+
 	mesh := getMeshTestResults(*testID)
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
