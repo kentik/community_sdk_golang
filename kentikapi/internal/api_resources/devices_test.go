@@ -590,14 +590,14 @@ func TestGetDevice(t *testing.T) {
 				}
 			}`,
 			expectedResult: &models.Device{
-				DeviceSampleRate:    1,
-				ID:              43,
-				DeviceName:      "testapi_dns_minimal_1",
-				DeviceType:      models.DeviceTypeRouter,
-				DeviceSubType:   models.DeviceSubtypeRouter,
-				CompanyID:       74333,
-				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
-				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				DeviceSampleRate: 1,
+				ID:               43,
+				DeviceName:       "testapi_dns_minimal_1",
+				DeviceType:       models.DeviceTypeRouter,
+				DeviceSubType:    models.DeviceSubtypeRouter,
+				CompanyID:        74333,
+				CreatedDate:      time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:      time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
 					DeviceTypes: []models.PlanDeviceType{},
 					Devices:     []models.PlanDevice{},
@@ -979,7 +979,7 @@ func TestGetDevice(t *testing.T) {
 				}
 			}`,
 			expectedResult: &models.Device{
-				DeviceSampleRate:    1,
+				DeviceSampleRate: 1,
 				DeviceBGPType: func() *models.DeviceBGPType {
 					v := models.DeviceBGPType("dbt_teapot")
 					return &v
@@ -1001,13 +1001,13 @@ func TestGetDevice(t *testing.T) {
 					v := models.CDNAttribute("cdna_teapot")
 					return &v
 				}(),
-				ID:              43,
-				DeviceName:      "testapi_dns_minimal_1",
-				DeviceType:      models.DeviceType("dt_teapot"),
-				DeviceSubType:   models.DeviceSubtype("ds_teapot"),
-				CompanyID:       74333,
-				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
-				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				ID:            43,
+				DeviceName:    "testapi_dns_minimal_1",
+				DeviceType:    models.DeviceType("dt_teapot"),
+				DeviceSubType: models.DeviceSubtype("ds_teapot"),
+				CompanyID:     74333,
+				CreatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
 					DeviceTypes: []models.PlanDeviceType{},
 					Devices:     []models.PlanDevice{},
@@ -1040,7 +1040,7 @@ func TestGetDevice(t *testing.T) {
 				}
 			}`,
 			expectedResult: &models.Device{
-				DeviceSampleRate:    1,
+				DeviceSampleRate: 1,
 				DeviceBGPType: func() *models.DeviceBGPType {
 					v := models.DeviceBGPType("")
 					return &v
@@ -1062,13 +1062,13 @@ func TestGetDevice(t *testing.T) {
 					v := models.CDNAttribute("")
 					return &v
 				}(),
-				ID:              43,
-				DeviceName:      "testapi_dns_minimal_1",
-				DeviceType:      models.DeviceType(""),
-				DeviceSubType:   models.DeviceSubtype(""),
-				CompanyID:       74333,
-				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
-				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				ID:            43,
+				DeviceName:    "testapi_dns_minimal_1",
+				DeviceType:    models.DeviceType(""),
+				DeviceSubType: models.DeviceSubtype(""),
+				CompanyID:     74333,
+				CreatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
+				UpdatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
 					DeviceTypes: []models.PlanDeviceType{},
 					Devices:     []models.PlanDevice{},
