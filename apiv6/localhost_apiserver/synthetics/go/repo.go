@@ -74,8 +74,6 @@ func (r *SyntheticsRepo) CreateTest(t V202101beta1Test) (*V202101beta1Test, erro
 	newTest := t
 	newTest.Id = r.allocateNewTestID()
 	newTest.Cdate = time.Now()
-	newTest.Settings.TargetType = ""
-	newTest.Settings.TargetValue = ""
 
 	r.tests = append(r.tests, newTest)
 	r.save()

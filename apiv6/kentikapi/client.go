@@ -52,6 +52,7 @@ func makeCloudExportConfig(c Config) *cloudexport.Configuration {
 	cfg.Servers[0].URL = c.CloudExportAPIURL
 	cfg.Servers[0].Description = "Kentik CloudExport server"
 
+	cfg.Debug = c.Debug
 	return cfg
 }
 
@@ -66,6 +67,7 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 	cfg.Servers[0].URL = c.SyntheticsAPIURL
 	cfg.Servers[0].Description = "Kentik Synthetics server"
 
+	cfg.Debug = c.Debug
 	return cfg
 }
 
@@ -75,4 +77,6 @@ type Config struct {
 	SyntheticsAPIURL  string // if blank, default api url will be used
 	AuthEmail         string
 	AuthToken         string
+	// Debug logs for requests and responses
+	Debug             bool
 }
