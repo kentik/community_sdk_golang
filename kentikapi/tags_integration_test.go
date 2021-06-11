@@ -185,9 +185,10 @@ func TestClient_GetTag(t *testing.T) {
 
 func TestClient_CreateTag(t *testing.T) {
 	tests := []struct {
-		name                string
-		tag                 models.Tag
-		expectedRequestBody interface{}
+		name string
+		tag  models.Tag
+		// expectedRequestBody is a map for the granularity of assertion diff
+		expectedRequestBody map[string]interface{}
 		responseCode        int
 		responseBody        string
 		expectedResult      *models.Tag
@@ -362,10 +363,11 @@ func TestClient_CreateTag(t *testing.T) {
 
 func TestClient_UpdateTag(t *testing.T) {
 	tests := []struct {
-		name                string
-		tag                 models.Tag
-		updateFields        func(*models.Tag) *models.Tag
-		expectedRequestBody interface{}
+		name         string
+		tag          models.Tag
+		updateFields func(*models.Tag) *models.Tag
+		// expectedRequestBody is a map for the granularity of assertion diff
+		expectedRequestBody map[string]interface{}
 		responseCode        int
 		responseBody        string
 		expectedResult      *models.Tag

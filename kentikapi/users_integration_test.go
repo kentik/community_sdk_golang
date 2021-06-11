@@ -287,9 +287,10 @@ func TestClient_GetUser(t *testing.T) {
 
 func TestClient_CreateUser(t *testing.T) {
 	tests := []struct {
-		name                string
-		user                models.User
-		expectedRequestBody interface{}
+		name string
+		user models.User
+		// expectedRequestBody is a map for the granularity of assertion diff
+		expectedRequestBody map[string]interface{}
 		responseCode        int
 		responseBody        string
 		expectedResult      *models.User
@@ -409,10 +410,11 @@ func TestClient_CreateUser(t *testing.T) {
 
 func TestClient_UpdateUser(t *testing.T) {
 	tests := []struct {
-		name                string
-		user                models.User
-		updateFields        func(*models.User) *models.User
-		expectedRequestBody interface{}
+		name         string
+		user         models.User
+		updateFields func(*models.User) *models.User
+		// expectedRequestBody is a map for the granularity of assertion diff
+		expectedRequestBody map[string]interface{}
 		responseCode        int
 		responseBody        string
 		expectedResult      *models.User
