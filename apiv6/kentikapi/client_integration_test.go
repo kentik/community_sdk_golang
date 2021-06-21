@@ -26,23 +26,24 @@ const (
 
 func TestClient_PatchAgent(t *testing.T) {
 	tests := []struct {
-		name     string
-		retryMax *int
-		request  synthetics.V202101beta1PatchAgentRequest
+		name             string
+		retryMax         *int
+		retryStatusCodes []int
+		retryMethods     []string
+		request          synthetics.V202101beta1PatchAgentRequest
 		// expectedRequestBody is map for the granularity of assertion diff
-		expectedRequestBody      map[string]interface{}
-		responses                []httpResponse
-		expectedResult           synthetics.V202101beta1PatchAgentResponse
-		expectedError            bool
-		disableHTTPResponseCheck bool
+		expectedRequestBody map[string]interface{}
+		responses           []httpResponse
+		expectedResult      synthetics.V202101beta1PatchAgentResponse
+		expectedError       bool
 	}{
 		{
-			name:                "empty request, status Bad Request received",
+			name:                "empty request, status 400 Bad Request received",
 			expectedRequestBody: map[string]interface{}{},
 			responses:           []httpResponse{newErrorHTTPResponse(http.StatusBadRequest)},
 			expectedError:       true,
 		}, {
-			name:                "status Bad Request received",
+			name:                "status 400 Bad Request received",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses:           []httpResponse{newErrorHTTPResponse(http.StatusBadRequest)},
@@ -57,7 +58,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			}},
 			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
 		}, {
-			name:                "retry till success when status Too Many Requests received",
+			name:                "retry till success when status 429 Too Many Requests received",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -71,7 +72,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			},
 			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
 		}, {
-			name:                "retry 4 times when status 429 or 5xx received (except 501)",
+			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 429",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -83,7 +84,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry 4 times when status 429 or 5xx received (except 501) and last status is 5xx",
+			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 504",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -94,10 +95,16 @@ func TestClient_PatchAgent(t *testing.T) {
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
 			},
 			expectedError: true,
-			// TODO(dfurman): modify the client to always return last HTTP response containing status code
-			disableHTTPResponseCheck: true,
 		}, {
-			name:                "do not retry when retries disabled and status Too Many Requests received",
+			name:                "do not retry when status 505 HTTP Version Not Supported received",
+			request:             newPatchAgentNameRequest(),
+			expectedRequestBody: newPatchAgentNameRequestBody(),
+			responses: []httpResponse{
+				newErrorHTTPResponse(http.StatusHTTPVersionNotSupported),
+			},
+			expectedError: true,
+		}, {
+			name:                "do not retry when retries disabled and status 429 Too Many Requests received",
 			retryMax:            intPtr(0),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
@@ -106,13 +113,47 @@ func TestClient_PatchAgent(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry specified number of times when status Too Many Requests received",
+			name:                "retry specified number of times when status 429 Too Many Requests received",
 			retryMax:            intPtr(2),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 				newErrorHTTPResponse(http.StatusTooManyRequests),
+				newErrorHTTPResponse(http.StatusTooManyRequests),
+			},
+			expectedError: true,
+		}, {
+			name:                "retry only on configured HTTP response status codes if given any",
+			retryStatusCodes:    []int{777, 888, 999},
+			request:             newPatchAgentNameRequest(),
+			expectedRequestBody: newPatchAgentNameRequestBody(),
+			responses: []httpResponse{
+				newErrorHTTPResponse(777),
+				newErrorHTTPResponse(888),
+				newErrorHTTPResponse(999),
+				newErrorHTTPResponse(http.StatusTooManyRequests),
+			},
+			expectedError: true,
+		}, {
+			name:                "retry only on configured HTTP request methods if given any - retry case",
+			retryMethods:        []string{http.MethodTrace, http.MethodPatch},
+			request:             newPatchAgentNameRequest(),
+			expectedRequestBody: newPatchAgentNameRequestBody(),
+			responses: []httpResponse{
+				newErrorHTTPResponse(http.StatusTooManyRequests),
+				{
+					statusCode: http.StatusOK,
+					body:       dummyAgentResponseBody,
+				},
+			},
+			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
+		}, {
+			name:                "retry only on configured HTTP request methods if given any - no retry case",
+			retryMethods:        []string{http.MethodTrace},
+			request:             newPatchAgentNameRequest(),
+			expectedRequestBody: newPatchAgentNameRequestBody(),
+			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 			},
 			expectedError: true,
@@ -126,13 +167,15 @@ func TestClient_PatchAgent(t *testing.T) {
 			defer s.Close()
 
 			c := kentikapi.NewClient(kentikapi.Config{
-				SyntheticsAPIURL: s.URL,
-				AuthEmail:        dummyAuthEmail,
-				AuthToken:        dummyAuthToken,
-				RetryMax:         tt.retryMax,
-				RetryWaitMin:     durationPtr(1 * time.Microsecond),
-				RetryWaitMax:     durationPtr(10 * time.Microsecond),
-				LogPayloads:      true,
+				SyntheticsAPIURL:     s.URL,
+				AuthEmail:            dummyAuthEmail,
+				AuthToken:            dummyAuthToken,
+				RetryMax:             tt.retryMax,
+				RetryWaitMin:         durationPtr(1 * time.Microsecond),
+				RetryWaitMax:         durationPtr(10 * time.Microsecond),
+				RetryableStatusCodes: tt.retryStatusCodes,
+				RetryableMethods:     tt.retryMethods,
+				LogPayloads:          true,
 			})
 
 			// act
@@ -149,7 +192,7 @@ func TestClient_PatchAgent(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, len(h.responses), len(h.requests))
+			assert.Equal(t, len(h.responses), len(h.requests), "invalid number of requests")
 			for _, r := range h.requests {
 				assert.Equal(t, http.MethodPatch, r.method)
 				assert.Equal(t, fmt.Sprintf("/synthetics/v202101beta1/agents/%v", testAgentID), r.url_.Path)
@@ -160,11 +203,10 @@ func TestClient_PatchAgent(t *testing.T) {
 
 			assert.Equal(t, tt.expectedResult, result)
 
-			if tt.disableHTTPResponseCheck {
-				return
-			}
 			if assert.NotNil(t, httpResp) {
-				assert.Equal(t, tt.responses[len(tt.responses)-1].statusCode, httpResp.StatusCode)
+				assert.Equal(t, tt.responses[len(tt.responses)-1].statusCode, httpResp.StatusCode,
+					"invalid HTTP response status code",
+				)
 			}
 		})
 	}
