@@ -2,11 +2,9 @@ package httputil
 
 import (
 	"context"
-	"crypto/x509"
+	"errors"
 	"net"
 	"net/http"
-	"net/url"
-	"regexp"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -19,8 +17,7 @@ import (
 // By default following retry policy is used:
 // - Retry on following HTTP status codes: [429, 500, 502, 503, 504],
 // - Retry on following HTTP request methods: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
-// - Retry on underlying http.Client.Do() error (except: too many redirects, invalid protocol scheme,
-//   TLS cert verification failure).
+// - Retry on underlying http.Client.Do() temporary errors.
 //
 // The client performs logging to os.Stderr.
 func NewRetryingClient(cfg ClientConfig) *http.Client {
@@ -93,22 +90,21 @@ func defaultHTTPClient() *http.Client {
 func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRetry {
 	statusCodesSet := makeIntSet(statusCodes)
 	methodsSet := makeStringSet(methods)
-	redirectsErrorRe := redirectsErrorRegexp()
-	schemeErrorRe := schemeErrorRegexp()
 
 	return func(ctx context.Context, resp *http.Response, err error) (bool, error) {
-		// do not retry on context.Canceled or context.DeadlineExceeded
 		if ctx.Err() != nil {
 			return false, ctx.Err()
 		}
 
-		if !isRequestRetrayable(resp.Request, methodsSet) {
-			return false, err
+		if err != nil {
+			if isErrorTemporary(err) {
+				return true, nil
+			}
+			return false, nil
 		}
 
-		if err != nil {
-			// TODO(dfurman): unit test that branch
-			return isErrorRecoverable(err, redirectsErrorRe, schemeErrorRe)
+		if !isRequestRetrayable(resp.Request, methodsSet) {
+			return false, nil
 		}
 
 		if _, ok := statusCodesSet[resp.StatusCode]; ok {
@@ -124,40 +120,17 @@ func isRequestRetrayable(r *http.Request, methodsSet map[string]struct{}) bool {
 	return ok
 }
 
-func isErrorRecoverable(err error, redirectsErrorRe, schemeErrorRe *regexp.Regexp) (bool, error) {
-	if v, ok := err.(*url.Error); ok {
-		// Don't retry if the error was due to too many redirects.
-		if redirectsErrorRe.MatchString(v.Error()) {
-			return false, v
-		}
-
-		// Don't retry if the error was due to an invalid protocol scheme.
-		if schemeErrorRe.MatchString(v.Error()) {
-			return false, v
-		}
-
-		// Don't retry if the error was due to TLS cert verification failure.
-		if _, ok = v.Err.(x509.UnknownAuthorityError); ok {
-			return false, v
+func isErrorTemporary(err error) bool {
+	var tErr interface {
+		Temporary() bool
+	}
+	if ok := errors.As(err, &tErr); ok {
+		if tErr.Temporary() {
+			return true
 		}
 	}
 
-	// The error is likely recoverable so retry.
-	return true, nil
-}
-
-// redirectsErrorRegexp returns a regular expression to match the error returned by net/http when the
-// configured number of redirects is exhausted. This error isn't typed
-// specifically so we resort to matching on the error string.
-func redirectsErrorRegexp() *regexp.Regexp {
-	return regexp.MustCompile(`stopped after \d+ redirects\z`)
-}
-
-// schemeErrorRegexp returns a regular expression to match the error returned by net/http when the
-// scheme specified in the URL is invalid. This error isn't typed
-// specifically so we resort to matching on the error string.
-func schemeErrorRegexp() *regexp.Regexp {
-	return regexp.MustCompile(`unsupported protocol scheme`)
+	return false
 }
 
 func makeIntSet(s []int) map[int]struct{} {
