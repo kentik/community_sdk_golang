@@ -167,15 +167,17 @@ func TestClient_PatchAgent(t *testing.T) {
 			defer s.Close()
 
 			c := kentikapi.NewClient(kentikapi.Config{
-				SyntheticsAPIURL:     s.URL,
-				AuthEmail:            dummyAuthEmail,
-				AuthToken:            dummyAuthToken,
-				RetryMax:             tt.retryMax,
-				RetryWaitMin:         durationPtr(1 * time.Microsecond),
-				RetryWaitMax:         durationPtr(10 * time.Microsecond),
-				RetryableStatusCodes: tt.retryStatusCodes,
-				RetryableMethods:     tt.retryMethods,
-				LogPayloads:          true,
+				SyntheticsAPIURL: s.URL,
+				AuthEmail:        dummyAuthEmail,
+				AuthToken:        dummyAuthToken,
+				RetryCfg: kentikapi.RetryConfig{
+					MaxAttempts:          tt.retryMax,
+					MinDelay:             durationPtr(1 * time.Microsecond),
+					MaxDelay:             durationPtr(10 * time.Microsecond),
+					RetryableStatusCodes: tt.retryStatusCodes,
+					RetryableMethods:     tt.retryMethods,
+				},
+				LogPayloads: true,
 			})
 
 			// act

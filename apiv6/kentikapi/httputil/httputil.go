@@ -25,16 +25,16 @@ func NewRetryingClient(cfg ClientConfig) *http.Client {
 
 	c := retryablehttp.NewClient()
 	c.HTTPClient = cfg.HTTPClient
-	if cfg.RetryMax != nil {
-		c.RetryMax = *cfg.RetryMax
+	if cfg.RetryCfg.MaxAttempts != nil {
+		c.RetryMax = *cfg.RetryCfg.MaxAttempts
 	}
-	if cfg.RetryWaitMin != nil {
-		c.RetryWaitMin = *cfg.RetryWaitMin
+	if cfg.RetryCfg.MinDelay != nil {
+		c.RetryWaitMin = *cfg.RetryCfg.MinDelay
 	}
-	if cfg.RetryWaitMax != nil {
-		c.RetryWaitMax = *cfg.RetryWaitMax
+	if cfg.RetryCfg.MaxDelay != nil {
+		c.RetryWaitMax = *cfg.RetryCfg.MaxDelay
 	}
-	c.CheckRetry = makeRetryPolicy(cfg.RetryableStatusCodes, cfg.RetryableMethods)
+	c.CheckRetry = makeRetryPolicy(cfg.RetryCfg.RetryableStatusCodes, cfg.RetryCfg.RetryableMethods)
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
 	return c.StandardClient()
@@ -42,12 +42,24 @@ func NewRetryingClient(cfg ClientConfig) *http.Client {
 
 // ClientConfig holds configuration for retrying client.
 type ClientConfig struct {
-	HTTPClient           *http.Client
-	RetryMax             *int
-	RetryWaitMin         *time.Duration
-	RetryWaitMax         *time.Duration
+	HTTPClient *http.Client
+	RetryCfg   RetryConfig
+}
+
+// RetryConfig groups Client's configuration related to request retry functionality.
+// See httputil.NewRetryingClient for retry policy description.
+type RetryConfig struct {
+	// MaxAttempts is a maximum number of request retry attempts. Set to 0 to disable retrying. Default: 4.
+	MaxAttempts *int
+	// MinDelay is a minimum delay before request retry. Default: 1 second.
+	MinDelay *time.Duration
+	// MaxDelay is a maximum delay before request retry. Default: 30 seconds.
+	MaxDelay *time.Duration
+	// RetryableStatusCodes are HTTP response status codes to retry on. Default: [429, 500, 502, 503, 504].
 	RetryableStatusCodes []int
-	RetryableMethods     []string
+	// RetryableMethods are HTTP request retry methods, which the retry strategy is enabled for.
+	// Default: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
+	RetryableMethods []string
 }
 
 func (cfg *ClientConfig) FillDefaults() {
@@ -55,12 +67,12 @@ func (cfg *ClientConfig) FillDefaults() {
 		cfg.HTTPClient = defaultHTTPClient()
 	}
 
-	if len(cfg.RetryableStatusCodes) == 0 {
-		cfg.RetryableStatusCodes = []int{429, 500, 502, 503, 504}
+	if len(cfg.RetryCfg.RetryableStatusCodes) == 0 {
+		cfg.RetryCfg.RetryableStatusCodes = []int{429, 500, 502, 503, 504}
 	}
 
-	if len(cfg.RetryableMethods) == 0 {
-		cfg.RetryableMethods = []string{
+	if len(cfg.RetryCfg.RetryableMethods) == 0 {
+		cfg.RetryCfg.RetryableMethods = []string{
 			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete,
 			http.MethodConnect, http.MethodOptions, http.MethodTrace,
 		}
@@ -103,7 +115,7 @@ func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRet
 			return false, nil
 		}
 
-		if !isRequestRetrayable(resp.Request, methodsSet) {
+		if !isRequestRetryable(resp.Request, methodsSet) {
 			return false, nil
 		}
 
@@ -115,7 +127,7 @@ func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRet
 	}
 }
 
-func isRequestRetrayable(r *http.Request, methodsSet map[string]struct{}) bool {
+func isRequestRetryable(r *http.Request, methodsSet map[string]struct{}) bool {
 	_, ok := methodsSet[r.Method]
 	return ok
 }

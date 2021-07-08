@@ -79,9 +79,11 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 				HTTPClient: &http.Client{
 					Transport: &st,
 				},
-				RetryMax:     intPtr(retryMax),
-				RetryWaitMin: durationPtr(1 * time.Microsecond),
-				RetryWaitMax: durationPtr(10 * time.Microsecond),
+				RetryCfg: RetryConfig{
+					MaxAttempts: intPtr(retryMax),
+					MinDelay:    durationPtr(1 * time.Microsecond),
+					MaxDelay:    durationPtr(10 * time.Microsecond),
+				},
 			})
 
 			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://dummy.url", nil)
