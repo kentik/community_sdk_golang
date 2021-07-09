@@ -181,7 +181,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			// act
 			result, httpResp, err := c.SyntheticsAdminServiceApi.
 				AgentPatch(context.Background(), testAgentID).
-				V202101beta1PatchAgentRequest(tt.request).
+				Body(tt.request).
 				Execute()
 
 			// assert

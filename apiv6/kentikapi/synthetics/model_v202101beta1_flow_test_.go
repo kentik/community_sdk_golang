@@ -20,6 +20,8 @@ type V202101beta1FlowTest struct {
 	TargetRefreshIntervalMillis *int64  `json:"targetRefreshIntervalMillis,omitempty"`
 	MaxTasks                    *int64  `json:"maxTasks,omitempty"`
 	Type                        *string `json:"type,omitempty"`
+	InetDirection               *string `json:"inetDirection,omitempty"`
+	Direction                   *string `json:"direction,omitempty"`
 }
 
 // NewV202101beta1FlowTest instantiates a new V202101beta1FlowTest object
@@ -167,6 +169,70 @@ func (o *V202101beta1FlowTest) SetType(v string) {
 	o.Type = &v
 }
 
+// GetInetDirection returns the InetDirection field value if set, zero value otherwise.
+func (o *V202101beta1FlowTest) GetInetDirection() string {
+	if o == nil || o.InetDirection == nil {
+		var ret string
+		return ret
+	}
+	return *o.InetDirection
+}
+
+// GetInetDirectionOk returns a tuple with the InetDirection field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1FlowTest) GetInetDirectionOk() (*string, bool) {
+	if o == nil || o.InetDirection == nil {
+		return nil, false
+	}
+	return o.InetDirection, true
+}
+
+// HasInetDirection returns a boolean if a field has been set.
+func (o *V202101beta1FlowTest) HasInetDirection() bool {
+	if o != nil && o.InetDirection != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetInetDirection gets a reference to the given string and assigns it to the InetDirection field.
+func (o *V202101beta1FlowTest) SetInetDirection(v string) {
+	o.InetDirection = &v
+}
+
+// GetDirection returns the Direction field value if set, zero value otherwise.
+func (o *V202101beta1FlowTest) GetDirection() string {
+	if o == nil || o.Direction == nil {
+		var ret string
+		return ret
+	}
+	return *o.Direction
+}
+
+// GetDirectionOk returns a tuple with the Direction field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1FlowTest) GetDirectionOk() (*string, bool) {
+	if o == nil || o.Direction == nil {
+		return nil, false
+	}
+	return o.Direction, true
+}
+
+// HasDirection returns a boolean if a field has been set.
+func (o *V202101beta1FlowTest) HasDirection() bool {
+	if o != nil && o.Direction != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDirection gets a reference to the given string and assigns it to the Direction field.
+func (o *V202101beta1FlowTest) SetDirection(v string) {
+	o.Direction = &v
+}
+
 func (o V202101beta1FlowTest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Target != nil {
@@ -180,6 +246,12 @@ func (o V202101beta1FlowTest) MarshalJSON() ([]byte, error) {
 	}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
+	}
+	if o.InetDirection != nil {
+		toSerialize["inetDirection"] = o.InetDirection
+	}
+	if o.Direction != nil {
+		toSerialize["direction"] = o.Direction
 	}
 	return json.Marshal(toSerialize)
 }

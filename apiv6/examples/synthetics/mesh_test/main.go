@@ -36,12 +36,16 @@ func getMeshTestResults(testID string) *[]synthetics.V202101beta1MeshResponse {
 	healthPayload.SetEndTime(time.Now())
 	healthPayload.SetIds([]string{testID})
 	healthPayload.SetAugment(true) // if not set, returned Mesh pointer will be empty
-	getHealthReq := client.SyntheticsDataServiceApi.GetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(healthPayload)
-	getHealthResp, httpResp, err := getHealthReq.Execute()
+
+	getHealthResp, httpResp, err := client.SyntheticsDataServiceApi.
+		GetHealthForTests(context.Background()).
+		Body(healthPayload).
+		Execute()
 	if err != nil {
 		fmt.Printf("%v %v", err, httpResp)
 		return nil
 	}
+
 	if getHealthResp.Health != nil {
 		healthItems := *getHealthResp.Health
 		fmt.Println("Num health items:", len(healthItems))

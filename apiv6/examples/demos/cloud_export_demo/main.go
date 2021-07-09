@@ -39,12 +39,14 @@ func createCloudExport(client *kentikapi.Client) string {
 	export.SetCloudProvider("gce")
 	export.SetName("demo_gce_export_3")
 	export.SetPlanId("11467")
-	export.SetType(cloudexport.KENTIK_MANAGED)
+	export.SetType(cloudexport.V202101BETA1CLOUDEXPORTTYPE_KENTIK_MANAGED)
 	createReqPayload := *cloudexport.NewV202101beta1CreateCloudExportRequest()
 	createReqPayload.Export = export
 
-	createReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceCreateCloudExport(context.Background()).V202101beta1CreateCloudExportRequest(createReqPayload)
-	createResp, _, err := createReq.Execute()
+	createResp, _, err := client.CloudExportAdminServiceApi.
+		ExportCreate(context.Background()).
+		Body(createReqPayload).
+		Execute()
 	demos.ExitOnError(err)
 
 	fmt.Printf("Successfuly created cloud export, ID = %s\n", *createResp.Export.Id)
@@ -54,8 +56,9 @@ func createCloudExport(client *kentikapi.Client) string {
 func getCloudExport(client *kentikapi.Client, id string) *cloudexport.V202101beta1CloudExport {
 	fmt.Printf("Retrieving cloud export of ID = %s\n", id)
 
-	getReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceGetCloudExport(context.Background(), id)
-	getResp, _, err := getReq.Execute()
+	getResp, _, err := client.CloudExportAdminServiceApi.
+		ExportGet(context.Background(), id).
+		Execute()
 	demos.ExitOnError(err)
 
 	demos.PrettyPrint(getResp)
@@ -67,8 +70,10 @@ func updateCloudExport(client *kentikapi.Client, export *cloudexport.V202101beta
 	updateReqPayload := *cloudexport.NewV202101beta1UpdateCloudExportRequest()
 	updateReqPayload.Export = export
 
-	updateReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceUpdateCloudExport(context.Background(), *export.Id).V202101beta1UpdateCloudExportRequest(updateReqPayload)
-	updateResp, _, err := updateReq.Execute()
+	updateResp, _, err := client.CloudExportAdminServiceApi.
+		ExportUpdate(context.Background(), *export.Id).
+		Body(updateReqPayload).
+		Execute()
 	demos.ExitOnError(err)
 
 	demos.PrettyPrint(updateResp)
@@ -76,8 +81,9 @@ func updateCloudExport(client *kentikapi.Client, export *cloudexport.V202101beta
 
 func deleteCloudExport(client *kentikapi.Client, id string) {
 	fmt.Printf("Deleting cloud export of ID = %s\n", id)
-	deleteReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceDeleteCloudExport(context.Background(), id)
-	deleteResp, _, err := deleteReq.Execute()
+	deleteResp, _, err := client.CloudExportAdminServiceApi.
+		ExportDelete(context.Background(), id).
+		Execute()
 	demos.ExitOnError(err)
 
 	demos.PrettyPrint(deleteResp)
@@ -85,9 +91,11 @@ func deleteCloudExport(client *kentikapi.Client, id string) {
 }
 
 func getAllCloudExports(client *kentikapi.Client) {
-	getAllReq := client.CloudExportAdminServiceApi.CloudExportAdminServiceListCloudExport(context.Background())
-	getAllResp, _, err := getAllReq.Execute()
+	getAllResp, _, err := client.CloudExportAdminServiceApi.
+		ExportList(context.Background()).
+		Execute()
 	demos.ExitOnError(err)
+
 	exports := *getAllResp.Exports
 	fmt.Println("Num exports:", len(exports))
 	demos.PrettyPrint(exports)

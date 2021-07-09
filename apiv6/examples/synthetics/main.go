@@ -63,11 +63,15 @@ func runCRUDTest(client *kentikapi.Client) error {
 	test := makeExampleTest()
 	createReqPayload := *synthetics.NewV202101beta1CreateTestRequest()
 	createReqPayload.SetTest(*test)
-	createReq := client.SyntheticsAdminServiceApi.TestCreate(context.Background()).V202101beta1CreateTestRequest(createReqPayload)
-	createResp, httpResp, err := createReq.Execute()
+
+	createResp, httpResp, err := client.SyntheticsAdminServiceApi.
+		TestCreate(context.Background()).
+		Body(createReqPayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
+
 	examples.PrettyPrint(createResp)
 	fmt.Println()
 	testID := *createResp.Test.Id
@@ -77,8 +81,11 @@ func runCRUDTest(client *kentikapi.Client) error {
 	status := synthetics.V202101BETA1TESTSTATUS_PAUSED
 	setStatusReqPayload.Status = &status
 	setStatusReqPayload.Id = &testID
-	setStatusReq := client.SyntheticsAdminServiceApi.TestStatusUpdate(context.Background(), testID).V202101beta1SetTestStatusRequest(setStatusReqPayload)
-	statusResp, httpResp, err := setStatusReq.Execute()
+
+	statusResp, httpResp, err := client.SyntheticsAdminServiceApi.
+		TestStatusUpdate(context.Background(), testID).
+		Body(setStatusReqPayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
@@ -104,8 +111,11 @@ func runCRUDTest(client *kentikapi.Client) error {
 	patchReqPayload := *synthetics.NewV202101beta1PatchTestRequest()
 	patchReqPayload.SetTest(*test)
 	patchReqPayload.SetMask("test.name")
-	patchReq := client.SyntheticsAdminServiceApi.TestPatch(context.Background(), *test.Id).V202101beta1PatchTestRequest(patchReqPayload)
-	patchResp, httpResp, err := patchReq.Execute()
+
+	patchResp, httpResp, err := client.SyntheticsAdminServiceApi.
+		TestPatch(context.Background(), *test.Id).
+		Body(patchReqPayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
@@ -156,8 +166,11 @@ func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
 	healthPayload.SetStartTime(time.Now().Add(-time.Hour))
 	healthPayload.SetEndTime(time.Now())
 	healthPayload.SetIds(testIDs)
-	getHealthReq := client.SyntheticsDataServiceApi.GetHealthForTests(context.Background()).V202101beta1GetHealthForTestsRequest(healthPayload)
-	getHealthResp, httpResp, err := getHealthReq.Execute()
+
+	getHealthResp, httpResp, err := client.SyntheticsDataServiceApi.
+		GetHealthForTests(context.Background()).
+		Body(healthPayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
@@ -181,8 +194,11 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	tracePayload.SetId(testID)
 	tracePayload.SetStartTime(time.Now().Add(-time.Hour))
 	tracePayload.SetEndTime(time.Now())
-	getTraceReq := client.SyntheticsDataServiceApi.GetTraceForTest(context.Background(), testID).V202101beta1GetTraceForTestRequest(tracePayload)
-	getTraceResp, httpResp, err := getTraceReq.Execute()
+
+	getTraceResp, httpResp, err := client.SyntheticsDataServiceApi.
+		GetTraceForTest(context.Background(), testID).
+		Body(tracePayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
@@ -232,8 +248,11 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	patchReqPayload := *synthetics.NewV202101beta1PatchAgentRequest()
 	patchReqPayload.SetAgent(agent)
 	patchReqPayload.SetMask("agent.family")
-	patchReq := client.SyntheticsAdminServiceApi.AgentPatch(context.Background(), agentID).V202101beta1PatchAgentRequest(patchReqPayload)
-	patchResp, httpResp, err := patchReq.Execute()
+
+	patchResp, httpResp, err := client.SyntheticsAdminServiceApi.
+		AgentPatch(context.Background(), agentID).
+		Body(patchReqPayload).
+		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
@@ -280,8 +299,8 @@ func runListAgents(client *kentikapi.Client) error {
 
 // prepare a Test for sending in CREATE request
 func makeExampleTest() *synthetics.V202101beta1Test {
-	ipSetting := *synthetics.NewV202101beta1IpTest()
-	ipSetting.SetTargets([]string{"127.0.0.1"})
+	hostname := synthetics.NewV202101beta1HostnameTest()
+	hostname.SetTarget("dummy-ht")
 
 	ping := *synthetics.NewV202101beta1TestPingSettings()
 	ping.SetPeriod(60)
@@ -316,7 +335,7 @@ func makeExampleTest() *synthetics.V202101beta1Test {
 	health.SetPacketLossWarning(0)
 
 	settings := *synthetics.NewV202101beta1TestSettingsWithDefaults()
-	settings.SetIp(ipSetting)
+	settings.SetHostname(*hostname)
 	settings.SetAgentIds([]string{"890"})
 	settings.SetPeriod(0)
 	settings.SetCount(0)
@@ -342,7 +361,7 @@ func makeExampleTest() *synthetics.V202101beta1Test {
 
 	test := synthetics.NewV202101beta1Test()
 	test.SetName("example-test-1")
-	test.SetType("ip-address")
+	test.SetType("hostname")
 	test.SetDeviceId("1000")
 	test.SetStatus(synthetics.V202101BETA1TESTSTATUS_ACTIVE)
 	test.SetSettings(settings)

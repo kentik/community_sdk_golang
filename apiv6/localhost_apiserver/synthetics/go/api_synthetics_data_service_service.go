@@ -14,7 +14,7 @@ import (
 	"net/http"
 )
 
-// SyntheticsDataServiceApiService is a service that implents the logic for the SyntheticsDataServiceApiServicer
+// SyntheticsDataServiceApiService is a service that implements the logic for the SyntheticsDataServiceApiServicer
 // This service should implement the business logic for every endpoint for the SyntheticsDataServiceApi API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsDataServiceApiService struct {
@@ -29,18 +29,16 @@ func NewSyntheticsDataServiceApiService(repo *SyntheticsRepo) SyntheticsDataServ
 }
 
 // GetHealthForTests - Get health status for synthetics test.
-func (s *SyntheticsDataServiceApiService) GetHealthForTests(ctx context.Context, v202101beta1GetHealthForTestsRequest V202101beta1GetHealthForTestsRequest) (ImplResponse, error) {
-	resp := V202101beta1GetHealthForTestsResponse{
+func (s *SyntheticsDataServiceApiService) GetHealthForTests(_ context.Context, body V202101beta1GetHealthForTestsRequest) (ImplResponse, error) {
+	return Response(http.StatusOK, &V202101beta1GetHealthForTestsResponse{
 		Health: s.repo.GetHealthForTests(),
-	}
-	return Response(http.StatusOK, &resp), nil
+	}), nil
 }
 
 // GetTraceForTest - Get trace route data.
-func (s *SyntheticsDataServiceApiService) GetTraceForTest(ctx context.Context, id string, v202101beta1GetTraceForTestRequest V202101beta1GetTraceForTestRequest) (ImplResponse, error) {
-	resp := V202101beta1GetTraceForTestResponse{
+func (s *SyntheticsDataServiceApiService) GetTraceForTest(_ context.Context, id string, body V202101beta1GetTraceForTestRequest) (ImplResponse, error) {
+	return Response(http.StatusOK, &V202101beta1GetTraceForTestResponse{
 		IpInfo:      s.repo.GetIpInfo(),
 		TraceRoutes: s.repo.GetTraceRoutes(),
-	}
-	return Response(http.StatusOK, &resp), nil
+	}), nil
 }

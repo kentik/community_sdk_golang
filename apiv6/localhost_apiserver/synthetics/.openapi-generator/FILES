@@ -4,9 +4,7 @@ api/openapi.yaml
 go.mod
 go/api.go
 go/api_synthetics_admin_service.go
-go/api_synthetics_admin_service_service.go
 go/api_synthetics_data_service.go
-go/api_synthetics_data_service_service.go
 go/helpers.go
 go/impl.go
 go/logger.go
@@ -33,10 +31,12 @@ go/model_v202101beta1_get_health_for_tests_response.go
 go/model_v202101beta1_get_test_response.go
 go/model_v202101beta1_get_trace_for_test_request.go
 go/model_v202101beta1_get_trace_for_test_response.go
+go/model_v202101beta1_grid_test_.go
 go/model_v202101beta1_health.go
 go/model_v202101beta1_health_moment.go
 go/model_v202101beta1_health_settings.go
 go/model_v202101beta1_hostname_test_.go
+go/model_v202101beta1_http_config.go
 go/model_v202101beta1_http_task_definition.go
 go/model_v202101beta1_ip_family.go
 go/model_v202101beta1_ip_info.go

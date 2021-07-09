@@ -12,7 +12,6 @@ package syntheticsstub
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -98,13 +97,14 @@ func (c *SyntheticsAdminServiceApiController) Routes() Routes {
 func (c *SyntheticsAdminServiceApiController) AgentDelete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	agentId := params["agent.id"]
+
 	result, err := c.service.AgentDelete(r.Context(), agentId)
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -113,13 +113,14 @@ func (c *SyntheticsAdminServiceApiController) AgentDelete(w http.ResponseWriter,
 func (c *SyntheticsAdminServiceApiController) AgentGet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	agentId := params["agent.id"]
+
 	result, err := c.service.AgentGet(r.Context(), agentId)
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -128,19 +129,19 @@ func (c *SyntheticsAdminServiceApiController) AgentGet(w http.ResponseWriter, r 
 func (c *SyntheticsAdminServiceApiController) AgentPatch(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	agentId := params["agent.id"]
-	v202101beta1PatchAgentRequest := &V202101beta1PatchAgentRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1PatchAgentRequest); err != nil {
+
+	body := &V202101beta1PatchAgentRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.AgentPatch(r.Context(), agentId, *v202101beta1PatchAgentRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.AgentPatch(r.Context(), agentId, *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -148,31 +149,30 @@ func (c *SyntheticsAdminServiceApiController) AgentPatch(w http.ResponseWriter, 
 // AgentsList - List Agents.
 func (c *SyntheticsAdminServiceApiController) AgentsList(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.AgentsList(r.Context())
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
 
 // TestCreate - Create Synthetics Test.
 func (c *SyntheticsAdminServiceApiController) TestCreate(w http.ResponseWriter, r *http.Request) {
-	v202101beta1CreateTestRequest := &V202101beta1CreateTestRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1CreateTestRequest); err != nil {
+	body := &V202101beta1CreateTestRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.TestCreate(r.Context(), *v202101beta1CreateTestRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.TestCreate(r.Context(), *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -181,13 +181,14 @@ func (c *SyntheticsAdminServiceApiController) TestCreate(w http.ResponseWriter, 
 func (c *SyntheticsAdminServiceApiController) TestDelete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
+
 	result, err := c.service.TestDelete(r.Context(), id)
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -196,13 +197,14 @@ func (c *SyntheticsAdminServiceApiController) TestDelete(w http.ResponseWriter, 
 func (c *SyntheticsAdminServiceApiController) TestGet(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
+
 	result, err := c.service.TestGet(r.Context(), id)
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -211,19 +213,19 @@ func (c *SyntheticsAdminServiceApiController) TestGet(w http.ResponseWriter, r *
 func (c *SyntheticsAdminServiceApiController) TestPatch(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
-	v202101beta1PatchTestRequest := &V202101beta1PatchTestRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1PatchTestRequest); err != nil {
+
+	body := &V202101beta1PatchTestRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.TestPatch(r.Context(), id, *v202101beta1PatchTestRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.TestPatch(r.Context(), id, *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -232,19 +234,19 @@ func (c *SyntheticsAdminServiceApiController) TestPatch(w http.ResponseWriter, r
 func (c *SyntheticsAdminServiceApiController) TestStatusUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
-	v202101beta1SetTestStatusRequest := &V202101beta1SetTestStatusRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1SetTestStatusRequest); err != nil {
+
+	body := &V202101beta1SetTestStatusRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.TestStatusUpdate(r.Context(), id, *v202101beta1SetTestStatusRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.TestStatusUpdate(r.Context(), id, *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -252,14 +254,18 @@ func (c *SyntheticsAdminServiceApiController) TestStatusUpdate(w http.ResponseWr
 // TestsList - List Synthetics Tests.
 func (c *SyntheticsAdminServiceApiController) TestsList(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	preset, _ := strconv.ParseBool(query.Get("preset")) // if error -> preset = false
+	preset, err := parseBoolParameter(query.Get("preset"))
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
 	result, err := c.service.TestsList(r.Context(), preset)
-	//If an error occured, encode the error with the status code
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }

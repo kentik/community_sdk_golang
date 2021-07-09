@@ -28,13 +28,13 @@ var (
 type SyntheticsDataServiceApiService service
 
 type ApiGetHealthForTestsRequest struct {
-	ctx                                  _context.Context
-	ApiService                           *SyntheticsDataServiceApiService
-	v202101beta1GetHealthForTestsRequest *V202101beta1GetHealthForTestsRequest
+	ctx        _context.Context
+	ApiService *SyntheticsDataServiceApiService
+	body       *V202101beta1GetHealthForTestsRequest
 }
 
-func (r ApiGetHealthForTestsRequest) V202101beta1GetHealthForTestsRequest(v202101beta1GetHealthForTestsRequest V202101beta1GetHealthForTestsRequest) ApiGetHealthForTestsRequest {
-	r.v202101beta1GetHealthForTestsRequest = &v202101beta1GetHealthForTestsRequest
+func (r ApiGetHealthForTestsRequest) Body(body V202101beta1GetHealthForTestsRequest) ApiGetHealthForTestsRequest {
+	r.body = &body
 	return r
 }
 
@@ -79,8 +79,8 @@ func (a *SyntheticsDataServiceApiService) GetHealthForTestsExecute(r ApiGetHealt
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1GetHealthForTestsRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1GetHealthForTestsRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -101,7 +101,7 @@ func (a *SyntheticsDataServiceApiService) GetHealthForTestsExecute(r ApiGetHealt
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1GetHealthForTestsRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -175,14 +175,14 @@ func (a *SyntheticsDataServiceApiService) GetHealthForTestsExecute(r ApiGetHealt
 }
 
 type ApiGetTraceForTestRequest struct {
-	ctx                                _context.Context
-	ApiService                         *SyntheticsDataServiceApiService
-	id                                 string
-	v202101beta1GetTraceForTestRequest *V202101beta1GetTraceForTestRequest
+	ctx        _context.Context
+	ApiService *SyntheticsDataServiceApiService
+	id         string
+	body       *V202101beta1GetTraceForTestRequest
 }
 
-func (r ApiGetTraceForTestRequest) V202101beta1GetTraceForTestRequest(v202101beta1GetTraceForTestRequest V202101beta1GetTraceForTestRequest) ApiGetTraceForTestRequest {
-	r.v202101beta1GetTraceForTestRequest = &v202101beta1GetTraceForTestRequest
+func (r ApiGetTraceForTestRequest) Body(body V202101beta1GetTraceForTestRequest) ApiGetTraceForTestRequest {
+	r.body = &body
 	return r
 }
 
@@ -230,8 +230,8 @@ func (a *SyntheticsDataServiceApiService) GetTraceForTestExecute(r ApiGetTraceFo
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1GetTraceForTestRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1GetTraceForTestRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -252,7 +252,7 @@ func (a *SyntheticsDataServiceApiService) GetTraceForTestExecute(r ApiGetTraceFo
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1GetTraceForTestRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

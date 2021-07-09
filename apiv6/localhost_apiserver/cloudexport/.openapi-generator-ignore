@@ -24,5 +24,6 @@
 
 
 # Manually modified files
-go/api_synthetics_admin_service_service.go
-go/api_synthetics_data_service_service.go
+go/api_cloud_export_admin_service_service.go
+# modified for following tests: https://github.com/kentik/terraform-provider-kentik-cloudexport/blob/23fe3fa17b5fe8519414f57d52658f99e8a43e87/internal/provider/resource_cloudexport_test.go
+go/model_v202101beta1_cloud_export.go

@@ -20,7 +20,7 @@ type V202101beta1HealthMoment struct {
 	Time                      *time.Time          `json:"time,omitempty"`
 	SrcIp                     *string             `json:"srcIp,omitempty"`
 	DstIp                     *string             `json:"dstIp,omitempty"`
-	PacketLoss                *int64              `json:"packetLoss,omitempty"`
+	PacketLoss                *float64            `json:"packetLoss,omitempty"`
 	AvgLatency                *int64              `json:"avgLatency,omitempty"`
 	AvgWeightedLatency        *int64              `json:"avgWeightedLatency,omitempty"`
 	RollingAvgLatency         *int64              `json:"rollingAvgLatency,omitempty"`
@@ -153,9 +153,9 @@ func (o *V202101beta1HealthMoment) SetDstIp(v string) {
 }
 
 // GetPacketLoss returns the PacketLoss field value if set, zero value otherwise.
-func (o *V202101beta1HealthMoment) GetPacketLoss() int64 {
+func (o *V202101beta1HealthMoment) GetPacketLoss() float64 {
 	if o == nil || o.PacketLoss == nil {
-		var ret int64
+		var ret float64
 		return ret
 	}
 	return *o.PacketLoss
@@ -163,7 +163,7 @@ func (o *V202101beta1HealthMoment) GetPacketLoss() int64 {
 
 // GetPacketLossOk returns a tuple with the PacketLoss field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V202101beta1HealthMoment) GetPacketLossOk() (*int64, bool) {
+func (o *V202101beta1HealthMoment) GetPacketLossOk() (*float64, bool) {
 	if o == nil || o.PacketLoss == nil {
 		return nil, false
 	}
@@ -179,8 +179,8 @@ func (o *V202101beta1HealthMoment) HasPacketLoss() bool {
 	return false
 }
 
-// SetPacketLoss gets a reference to the given int64 and assigns it to the PacketLoss field.
-func (o *V202101beta1HealthMoment) SetPacketLoss(v int64) {
+// SetPacketLoss gets a reference to the given float64 and assigns it to the PacketLoss field.
+func (o *V202101beta1HealthMoment) SetPacketLoss(v float64) {
 	o.PacketLoss = &v
 }
 

@@ -26,6 +26,13 @@ const (
 	V202101BETA1TASKSTATE_DELETED     V202101beta1TaskState = "TASK_STATE_DELETED"
 )
 
+var allowedV202101beta1TaskStateEnumValues = []V202101beta1TaskState{
+	"TASK_STATE_UNSPECIFIED",
+	"TASK_STATE_CREATED",
+	"TASK_STATE_UPDATED",
+	"TASK_STATE_DELETED",
+}
+
 func (v *V202101beta1TaskState) UnmarshalJSON(src []byte) error {
 	var value string
 	err := json.Unmarshal(src, &value)
@@ -33,7 +40,7 @@ func (v *V202101beta1TaskState) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumTypeValue := V202101beta1TaskState(value)
-	for _, existing := range []V202101beta1TaskState{"TASK_STATE_UNSPECIFIED", "TASK_STATE_CREATED", "TASK_STATE_UPDATED", "TASK_STATE_DELETED"} {
+	for _, existing := range allowedV202101beta1TaskStateEnumValues {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
@@ -41,6 +48,27 @@ func (v *V202101beta1TaskState) UnmarshalJSON(src []byte) error {
 	}
 
 	return fmt.Errorf("%+v is not a valid V202101beta1TaskState", value)
+}
+
+// NewV202101beta1TaskStateFromValue returns a pointer to a valid V202101beta1TaskState
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewV202101beta1TaskStateFromValue(v string) (*V202101beta1TaskState, error) {
+	ev := V202101beta1TaskState(v)
+	if ev.IsValid() {
+		return &ev, nil
+	} else {
+		return nil, fmt.Errorf("invalid value '%v' for V202101beta1TaskState: valid values are %v", v, allowedV202101beta1TaskStateEnumValues)
+	}
+}
+
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v V202101beta1TaskState) IsValid() bool {
+	for _, existing := range allowedV202101beta1TaskStateEnumValues {
+		if existing == v {
+			return true
+		}
+	}
+	return false
 }
 
 // Ptr returns reference to v202101beta1TaskState value
