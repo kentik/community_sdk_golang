@@ -21,7 +21,12 @@ function check_prerequisites() {
     stage "Checking prerequisites"
 
     if ! docker --version > /dev/null 2>&1; then
-        echo "You need to install Docker to run the generator"
+        echo "Please install Docker: https://docs.docker.com/get-docker/"
+        exit 1
+    fi
+
+    if ! curl --version > /dev/null 2>&1; then
+        echo "Please install curl: https://curl.se/"
         exit 1
     fi
 
@@ -29,8 +34,12 @@ function check_prerequisites() {
 }
 
 function download_openapi_spec() {
-    wget "$cloud_export_spec_url" --output-document "$cloud_export_spec_filename"
-    wget "$synthetics_spec_url" --output-document "$synthetics_spec_filename"
+    stage "Downloading OpenAPI specifications"
+
+    curl --location --retry 20 "$cloud_export_spec_url" --output "$cloud_export_spec_filename"
+    curl --location --retry 20 "$synthetics_spec_url" --output "$synthetics_spec_filename"
+
+    echo "Done"
 }
 
 function generate_cloud_export_server() {
