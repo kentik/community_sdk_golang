@@ -22,12 +22,12 @@ function check_prerequisites() {
 
     if ! docker --version > /dev/null 2>&1; then
         echo "Please install Docker: https://docs.docker.com/get-docker/"
-        exit 1
+        die
     fi
 
     if ! curl --version > /dev/null 2>&1; then
         echo "Please install curl: https://curl.se/"
-        exit 1
+        die
     fi
 
     echo "Done"
@@ -36,19 +36,19 @@ function check_prerequisites() {
 function download_openapi_spec() {
     stage "Downloading OpenAPI specifications"
 
-    curl --location --retry 20 "$cloud_export_spec_url" --output "$cloud_export_spec_filename"
-    curl --location --retry 20 "$synthetics_spec_url" --output "$synthetics_spec_filename"
+    curl --location --retry 20 "$cloud_export_spec_url" --output "$cloud_export_spec_filename" || die
+    curl --location --retry 20 "$synthetics_spec_url" --output "$synthetics_spec_filename" || die
 
     echo "Done"
 }
 
 function generate_cloud_export_client() {
-    cloudexport_package="cloudexport"
-    cloudexport_client_output_dir="kentikapi/cloudexport"
+    cloud_export_package="cloudexport"
+    cloud_export_client_output_dir="kentikapi/cloudexport"
 
-    generate_go_client_from_openapi_spec "$cloud_export_spec_filename" "$cloudexport_package" "$cloudexport_client_output_dir"
-    change_ownership_to_current_user "$cloudexport_client_output_dir"
-    cleanup_non_needed_files "$cloudexport_client_output_dir"
+    generate_go_client_from_openapi_spec "$cloud_export_spec_filename" "$cloud_export_package" "$cloud_export_client_output_dir"
+    change_ownership_to_current_user "$cloud_export_client_output_dir"
+    cleanup_non_needed_files "$cloud_export_client_output_dir"
 }
 
 function generate_synthetics_client() {
@@ -73,16 +73,16 @@ function generate_go_client_from_openapi_spec() {
         -g go \
         --additional-properties=enumClassPrefix=true \
         --package-name "$package" \
-        -o "/local/$output_dir"
+        -o "/local/$output_dir" || die
 
     echo "Done"
 }
 
 function change_ownership_to_current_user() {
+    stage "Changing ownership of $dir to $USER"
     dir="$1"
-    stage "Changing ownership of $dir to $USER:$USER"
 
-    sudo chown -R "$USER:$USER" "$dir" # by default the generated output is in user:group root:root
+    sudo chown -R "$USER" "$dir" || die # by default the generated output is in user:group root:root
 
     echo "Done"
 }
@@ -110,6 +110,11 @@ function stage() {
 
     echo
     echo -e "$BOLD_BLUE$msg$RESET"
+}
+
+function die() {
+    echo "Error. Exit 1"
+    exit 1
 }
 
 run
