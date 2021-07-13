@@ -42,12 +42,14 @@ func showRetryingOnMultipleCodes() error {
 
 	demos.Step("Create Kentik API v6 client")
 	c := kentikapi.NewClient(kentikapi.Config{
-		SyntheticsAPIURL:     s.URL,
-		RetryMax:             intPtr(42),
-		RetryWaitMin:         durationPtr(100 * time.Millisecond),
-		RetryWaitMax:         durationPtr(10 * time.Second),
-		RetryableStatusCodes: []int{http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable},
-		RetryableMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		SyntheticsAPIURL: s.URL,
+		RetryCfg: kentikapi.RetryConfig{
+			MaxAttempts:          intPtr(42),
+			MinDelay:             durationPtr(100 * time.Millisecond),
+			MaxDelay:             durationPtr(10 * time.Second),
+			RetryableStatusCodes: []int{http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable},
+			RetryableMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		},
 	})
 
 	demos.Step("List synthetic agents")

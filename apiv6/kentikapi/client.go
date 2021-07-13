@@ -1,8 +1,6 @@
 package kentikapi
 
 import (
-	"time"
-
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
@@ -26,7 +24,6 @@ type Client struct {
 }
 
 // Config holds configuration of the Client.
-// See httputil.NewRetryingClient for retry policy description.
 type Config struct {
 	// CloudExportAPIURL defaults to "https://cloudexports.api.kentik.com".
 	CloudExportAPIURL string
@@ -34,20 +31,12 @@ type Config struct {
 	SyntheticsAPIURL string
 	AuthEmail        string
 	AuthToken        string
-	// RetryMax is a maximum number of request retries. Set to 0 to disable retrying. Default: 4.
-	RetryMax *int
-	// RetryWaitMin is a minimum time to wait before request retry. Default: 1 second.
-	RetryWaitMin *time.Duration
-	// RetryWaitMax is a maximum time to wait before request retry. Default: 30 seconds.
-	RetryWaitMax *time.Duration
-	// RetryableStatusCodes are HTTP response status codes to retry on. Default: [429, 500, 502, 503, 504].
-	RetryableStatusCodes []int
-	// RetryableMethods are HTTP request retry methods, which the retry strategy is enabled for.
-	// Default: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
-	RetryableMethods []string
+	RetryCfg         RetryConfig
 	// LogPayloads enables logging of request and response payloads.
 	LogPayloads bool
 }
+
+type RetryConfig = httputil.RetryConfig
 
 // NewClient creates Kentik API client with provided Config.
 func NewClient(c Config) *Client {
@@ -103,10 +92,6 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 
 func makeRetryingClientConfig(c Config) httputil.ClientConfig {
 	return httputil.ClientConfig{
-		RetryMax:             c.RetryMax,
-		RetryWaitMin:         c.RetryWaitMin,
-		RetryWaitMax:         c.RetryWaitMax,
-		RetryableStatusCodes: c.RetryableStatusCodes,
-		RetryableMethods:     c.RetryableMethods,
+		RetryCfg: c.RetryCfg,
 	}
 }
