@@ -47,19 +47,18 @@ func (c *SyntheticsDataServiceApiController) Routes() Routes {
 
 // GetHealthForTests - Get health status for synthetics test.
 func (c *SyntheticsDataServiceApiController) GetHealthForTests(w http.ResponseWriter, r *http.Request) {
-	v202101beta1GetHealthForTestsRequest := &V202101beta1GetHealthForTestsRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1GetHealthForTestsRequest); err != nil {
+	body := &V202101beta1GetHealthForTestsRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.GetHealthForTests(r.Context(), *v202101beta1GetHealthForTestsRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.GetHealthForTests(r.Context(), *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }
@@ -68,19 +67,19 @@ func (c *SyntheticsDataServiceApiController) GetHealthForTests(w http.ResponseWr
 func (c *SyntheticsDataServiceApiController) GetTraceForTest(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
-	v202101beta1GetTraceForTestRequest := &V202101beta1GetTraceForTestRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&v202101beta1GetTraceForTestRequest); err != nil {
+
+	body := &V202101beta1GetTraceForTestRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	result, err := c.service.GetTraceForTest(r.Context(), id, *v202101beta1GetTraceForTestRequest)
-	//If an error occured, encode the error with the status code
+	result, err := c.service.GetTraceForTest(r.Context(), id, *body)
+	// If an error occurred, encode the error with the status code
 	if err != nil {
 		EncodeJSONResponse(err.Error(), &result.Code, w)
 		return
 	}
-	//If no error, encode the body and the result code
+	// If no error, encode the body and the result code
 	EncodeJSONResponse(result.Body, &result.Code, w)
 
 }

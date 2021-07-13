@@ -15,4 +15,6 @@ type V202101beta1TestPingSettings struct {
 	Count float32 `json:"count,omitempty"`
 
 	Expiry float32 `json:"expiry,omitempty"`
+
+	Delay float32 `json:"delay,omitempty"`
 }

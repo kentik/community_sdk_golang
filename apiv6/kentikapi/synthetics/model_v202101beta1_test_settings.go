@@ -24,6 +24,9 @@ type V202101beta1TestSettings struct {
 	Tag                *V202101beta1TagTest                `json:"tag,omitempty"`
 	Dns                *V202101beta1DnsTest                `json:"dns,omitempty"`
 	Url                *V202101beta1UrlTest                `json:"url,omitempty"`
+	NetworkGrid        *V202101beta1GridTest               `json:"networkGrid,omitempty"`
+	PageLoad           *V202101beta1UrlTest                `json:"pageLoad,omitempty"`
+	DnsGrid            *V202101beta1GridTest               `json:"dnsGrid,omitempty"`
 	AgentIds           *[]string                           `json:"agentIds,omitempty"`
 	Period             *int64                              `json:"period,omitempty"`
 	Count              *int64                              `json:"count,omitempty"`
@@ -43,6 +46,7 @@ type V202101beta1TestSettings struct {
 	UseLocalIp         *bool                               `json:"useLocalIp,omitempty"`
 	Reciprocal         *bool                               `json:"reciprocal,omitempty"`
 	RollupLevel        *int64                              `json:"rollupLevel,omitempty"`
+	Http               *V202101beta1HTTPConfig             `json:"http,omitempty"`
 }
 
 // NewV202101beta1TestSettings instantiates a new V202101beta1TestSettings object
@@ -320,6 +324,102 @@ func (o *V202101beta1TestSettings) HasUrl() bool {
 // SetUrl gets a reference to the given V202101beta1UrlTest and assigns it to the Url field.
 func (o *V202101beta1TestSettings) SetUrl(v V202101beta1UrlTest) {
 	o.Url = &v
+}
+
+// GetNetworkGrid returns the NetworkGrid field value if set, zero value otherwise.
+func (o *V202101beta1TestSettings) GetNetworkGrid() V202101beta1GridTest {
+	if o == nil || o.NetworkGrid == nil {
+		var ret V202101beta1GridTest
+		return ret
+	}
+	return *o.NetworkGrid
+}
+
+// GetNetworkGridOk returns a tuple with the NetworkGrid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestSettings) GetNetworkGridOk() (*V202101beta1GridTest, bool) {
+	if o == nil || o.NetworkGrid == nil {
+		return nil, false
+	}
+	return o.NetworkGrid, true
+}
+
+// HasNetworkGrid returns a boolean if a field has been set.
+func (o *V202101beta1TestSettings) HasNetworkGrid() bool {
+	if o != nil && o.NetworkGrid != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetNetworkGrid gets a reference to the given V202101beta1GridTest and assigns it to the NetworkGrid field.
+func (o *V202101beta1TestSettings) SetNetworkGrid(v V202101beta1GridTest) {
+	o.NetworkGrid = &v
+}
+
+// GetPageLoad returns the PageLoad field value if set, zero value otherwise.
+func (o *V202101beta1TestSettings) GetPageLoad() V202101beta1UrlTest {
+	if o == nil || o.PageLoad == nil {
+		var ret V202101beta1UrlTest
+		return ret
+	}
+	return *o.PageLoad
+}
+
+// GetPageLoadOk returns a tuple with the PageLoad field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestSettings) GetPageLoadOk() (*V202101beta1UrlTest, bool) {
+	if o == nil || o.PageLoad == nil {
+		return nil, false
+	}
+	return o.PageLoad, true
+}
+
+// HasPageLoad returns a boolean if a field has been set.
+func (o *V202101beta1TestSettings) HasPageLoad() bool {
+	if o != nil && o.PageLoad != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetPageLoad gets a reference to the given V202101beta1UrlTest and assigns it to the PageLoad field.
+func (o *V202101beta1TestSettings) SetPageLoad(v V202101beta1UrlTest) {
+	o.PageLoad = &v
+}
+
+// GetDnsGrid returns the DnsGrid field value if set, zero value otherwise.
+func (o *V202101beta1TestSettings) GetDnsGrid() V202101beta1GridTest {
+	if o == nil || o.DnsGrid == nil {
+		var ret V202101beta1GridTest
+		return ret
+	}
+	return *o.DnsGrid
+}
+
+// GetDnsGridOk returns a tuple with the DnsGrid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestSettings) GetDnsGridOk() (*V202101beta1GridTest, bool) {
+	if o == nil || o.DnsGrid == nil {
+		return nil, false
+	}
+	return o.DnsGrid, true
+}
+
+// HasDnsGrid returns a boolean if a field has been set.
+func (o *V202101beta1TestSettings) HasDnsGrid() bool {
+	if o != nil && o.DnsGrid != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDnsGrid gets a reference to the given V202101beta1GridTest and assigns it to the DnsGrid field.
+func (o *V202101beta1TestSettings) SetDnsGrid(v V202101beta1GridTest) {
+	o.DnsGrid = &v
 }
 
 // GetAgentIds returns the AgentIds field value if set, zero value otherwise.
@@ -930,6 +1030,38 @@ func (o *V202101beta1TestSettings) SetRollupLevel(v int64) {
 	o.RollupLevel = &v
 }
 
+// GetHttp returns the Http field value if set, zero value otherwise.
+func (o *V202101beta1TestSettings) GetHttp() V202101beta1HTTPConfig {
+	if o == nil || o.Http == nil {
+		var ret V202101beta1HTTPConfig
+		return ret
+	}
+	return *o.Http
+}
+
+// GetHttpOk returns a tuple with the Http field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestSettings) GetHttpOk() (*V202101beta1HTTPConfig, bool) {
+	if o == nil || o.Http == nil {
+		return nil, false
+	}
+	return o.Http, true
+}
+
+// HasHttp returns a boolean if a field has been set.
+func (o *V202101beta1TestSettings) HasHttp() bool {
+	if o != nil && o.Http != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetHttp gets a reference to the given V202101beta1HTTPConfig and assigns it to the Http field.
+func (o *V202101beta1TestSettings) SetHttp(v V202101beta1HTTPConfig) {
+	o.Http = &v
+}
+
 func (o V202101beta1TestSettings) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Hostname != nil {
@@ -955,6 +1087,15 @@ func (o V202101beta1TestSettings) MarshalJSON() ([]byte, error) {
 	}
 	if o.Url != nil {
 		toSerialize["url"] = o.Url
+	}
+	if o.NetworkGrid != nil {
+		toSerialize["networkGrid"] = o.NetworkGrid
+	}
+	if o.PageLoad != nil {
+		toSerialize["pageLoad"] = o.PageLoad
+	}
+	if o.DnsGrid != nil {
+		toSerialize["dnsGrid"] = o.DnsGrid
 	}
 	if o.AgentIds != nil {
 		toSerialize["agentIds"] = o.AgentIds
@@ -1012,6 +1153,9 @@ func (o V202101beta1TestSettings) MarshalJSON() ([]byte, error) {
 	}
 	if o.RollupLevel != nil {
 		toSerialize["rollupLevel"] = o.RollupLevel
+	}
+	if o.Http != nil {
+		toSerialize["http"] = o.Http
 	}
 	return json.Marshal(toSerialize)
 }

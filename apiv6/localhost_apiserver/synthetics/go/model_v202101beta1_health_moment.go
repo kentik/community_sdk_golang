@@ -20,7 +20,7 @@ type V202101beta1HealthMoment struct {
 
 	DstIp string `json:"dstIp,omitempty"`
 
-	PacketLoss int64 `json:"packetLoss,omitempty"`
+	PacketLoss float64 `json:"packetLoss,omitempty"`
 
 	AvgLatency int64 `json:"avgLatency,omitempty"`
 

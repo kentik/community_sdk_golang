@@ -26,6 +26,13 @@ const (
 	V202101BETA1IPFAMILY_DUAL        V202101beta1IPFamily = "IP_FAMILY_DUAL"
 )
 
+var allowedV202101beta1IPFamilyEnumValues = []V202101beta1IPFamily{
+	"IP_FAMILY_UNSPECIFIED",
+	"IP_FAMILY_V4",
+	"IP_FAMILY_V6",
+	"IP_FAMILY_DUAL",
+}
+
 func (v *V202101beta1IPFamily) UnmarshalJSON(src []byte) error {
 	var value string
 	err := json.Unmarshal(src, &value)
@@ -33,7 +40,7 @@ func (v *V202101beta1IPFamily) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumTypeValue := V202101beta1IPFamily(value)
-	for _, existing := range []V202101beta1IPFamily{"IP_FAMILY_UNSPECIFIED", "IP_FAMILY_V4", "IP_FAMILY_V6", "IP_FAMILY_DUAL"} {
+	for _, existing := range allowedV202101beta1IPFamilyEnumValues {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
@@ -41,6 +48,27 @@ func (v *V202101beta1IPFamily) UnmarshalJSON(src []byte) error {
 	}
 
 	return fmt.Errorf("%+v is not a valid V202101beta1IPFamily", value)
+}
+
+// NewV202101beta1IPFamilyFromValue returns a pointer to a valid V202101beta1IPFamily
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewV202101beta1IPFamilyFromValue(v string) (*V202101beta1IPFamily, error) {
+	ev := V202101beta1IPFamily(v)
+	if ev.IsValid() {
+		return &ev, nil
+	} else {
+		return nil, fmt.Errorf("invalid value '%v' for V202101beta1IPFamily: valid values are %v", v, allowedV202101beta1IPFamilyEnumValues)
+	}
+}
+
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v V202101beta1IPFamily) IsValid() bool {
+	for _, existing := range allowedV202101beta1IPFamilyEnumValues {
+		if existing == v {
+			return true
+		}
+	}
+	return false
 }
 
 // Ptr returns reference to v202101beta1IPFamily value

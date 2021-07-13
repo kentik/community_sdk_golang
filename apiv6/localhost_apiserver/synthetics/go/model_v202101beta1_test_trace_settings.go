@@ -21,4 +21,6 @@ type V202101beta1TestTraceSettings struct {
 	Expiry float32 `json:"expiry,omitempty"`
 
 	Limit float32 `json:"limit,omitempty"`
+
+	Delay float32 `json:"delay,omitempty"`
 }

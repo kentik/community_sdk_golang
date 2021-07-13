@@ -26,6 +26,12 @@ type V202101beta1TestSettings struct {
 
 	Url V202101beta1UrlTest `json:"url,omitempty"`
 
+	NetworkGrid V202101beta1GridTest `json:"networkGrid,omitempty"`
+
+	PageLoad V202101beta1UrlTest `json:"pageLoad,omitempty"`
+
+	DnsGrid V202101beta1GridTest `json:"dnsGrid,omitempty"`
+
 	AgentIds []string `json:"agentIds,omitempty"`
 
 	Period int64 `json:"period,omitempty"`
@@ -63,4 +69,6 @@ type V202101beta1TestSettings struct {
 	Reciprocal bool `json:"reciprocal,omitempty"`
 
 	RollupLevel int64 `json:"rollupLevel,omitempty"`
+
+	Http V202101beta1HttpConfig `json:"http,omitempty"`
 }

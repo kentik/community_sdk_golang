@@ -17,4 +17,8 @@ type V202101beta1FlowTest struct {
 	MaxTasks int64 `json:"maxTasks,omitempty"`
 
 	Type string `json:"type,omitempty"`
+
+	InetDirection string `json:"inetDirection,omitempty"`
+
+	Direction string `json:"direction,omitempty"`
 }

@@ -19,6 +19,7 @@ type V202101beta1TestPingSettings struct {
 	Period *float32 `json:"period,omitempty"`
 	Count  *float32 `json:"count,omitempty"`
 	Expiry *float32 `json:"expiry,omitempty"`
+	Delay  *float32 `json:"delay,omitempty"`
 }
 
 // NewV202101beta1TestPingSettings instantiates a new V202101beta1TestPingSettings object
@@ -134,6 +135,38 @@ func (o *V202101beta1TestPingSettings) SetExpiry(v float32) {
 	o.Expiry = &v
 }
 
+// GetDelay returns the Delay field value if set, zero value otherwise.
+func (o *V202101beta1TestPingSettings) GetDelay() float32 {
+	if o == nil || o.Delay == nil {
+		var ret float32
+		return ret
+	}
+	return *o.Delay
+}
+
+// GetDelayOk returns a tuple with the Delay field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V202101beta1TestPingSettings) GetDelayOk() (*float32, bool) {
+	if o == nil || o.Delay == nil {
+		return nil, false
+	}
+	return o.Delay, true
+}
+
+// HasDelay returns a boolean if a field has been set.
+func (o *V202101beta1TestPingSettings) HasDelay() bool {
+	if o != nil && o.Delay != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDelay gets a reference to the given float32 and assigns it to the Delay field.
+func (o *V202101beta1TestPingSettings) SetDelay(v float32) {
+	o.Delay = &v
+}
+
 func (o V202101beta1TestPingSettings) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Period != nil {
@@ -144,6 +177,9 @@ func (o V202101beta1TestPingSettings) MarshalJSON() ([]byte, error) {
 	}
 	if o.Expiry != nil {
 		toSerialize["expiry"] = o.Expiry
+	}
+	if o.Delay != nil {
+		toSerialize["delay"] = o.Delay
 	}
 	return json.Marshal(toSerialize)
 }

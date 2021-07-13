@@ -308,14 +308,14 @@ func (a *SyntheticsAdminServiceApiService) AgentGetExecute(r ApiAgentGetRequest)
 }
 
 type ApiAgentPatchRequest struct {
-	ctx                           _context.Context
-	ApiService                    *SyntheticsAdminServiceApiService
-	agentId                       string
-	v202101beta1PatchAgentRequest *V202101beta1PatchAgentRequest
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	agentId    string
+	body       *V202101beta1PatchAgentRequest
 }
 
-func (r ApiAgentPatchRequest) V202101beta1PatchAgentRequest(v202101beta1PatchAgentRequest V202101beta1PatchAgentRequest) ApiAgentPatchRequest {
-	r.v202101beta1PatchAgentRequest = &v202101beta1PatchAgentRequest
+func (r ApiAgentPatchRequest) Body(body V202101beta1PatchAgentRequest) ApiAgentPatchRequest {
+	r.body = &body
 	return r
 }
 
@@ -363,8 +363,8 @@ func (a *SyntheticsAdminServiceApiService) AgentPatchExecute(r ApiAgentPatchRequ
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1PatchAgentRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1PatchAgentRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -385,7 +385,7 @@ func (a *SyntheticsAdminServiceApiService) AgentPatchExecute(r ApiAgentPatchRequ
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1PatchAgentRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -595,13 +595,13 @@ func (a *SyntheticsAdminServiceApiService) AgentsListExecute(r ApiAgentsListRequ
 }
 
 type ApiTestCreateRequest struct {
-	ctx                           _context.Context
-	ApiService                    *SyntheticsAdminServiceApiService
-	v202101beta1CreateTestRequest *V202101beta1CreateTestRequest
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	body       *V202101beta1CreateTestRequest
 }
 
-func (r ApiTestCreateRequest) V202101beta1CreateTestRequest(v202101beta1CreateTestRequest V202101beta1CreateTestRequest) ApiTestCreateRequest {
-	r.v202101beta1CreateTestRequest = &v202101beta1CreateTestRequest
+func (r ApiTestCreateRequest) Body(body V202101beta1CreateTestRequest) ApiTestCreateRequest {
+	r.body = &body
 	return r
 }
 
@@ -646,8 +646,8 @@ func (a *SyntheticsAdminServiceApiService) TestCreateExecute(r ApiTestCreateRequ
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1CreateTestRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1CreateTestRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -668,7 +668,7 @@ func (a *SyntheticsAdminServiceApiService) TestCreateExecute(r ApiTestCreateRequ
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1CreateTestRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1022,14 +1022,14 @@ func (a *SyntheticsAdminServiceApiService) TestGetExecute(r ApiTestGetRequest) (
 }
 
 type ApiTestPatchRequest struct {
-	ctx                          _context.Context
-	ApiService                   *SyntheticsAdminServiceApiService
-	id                           string
-	v202101beta1PatchTestRequest *V202101beta1PatchTestRequest
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	id         string
+	body       *V202101beta1PatchTestRequest
 }
 
-func (r ApiTestPatchRequest) V202101beta1PatchTestRequest(v202101beta1PatchTestRequest V202101beta1PatchTestRequest) ApiTestPatchRequest {
-	r.v202101beta1PatchTestRequest = &v202101beta1PatchTestRequest
+func (r ApiTestPatchRequest) Body(body V202101beta1PatchTestRequest) ApiTestPatchRequest {
+	r.body = &body
 	return r
 }
 
@@ -1077,8 +1077,8 @@ func (a *SyntheticsAdminServiceApiService) TestPatchExecute(r ApiTestPatchReques
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1PatchTestRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1PatchTestRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1099,7 +1099,7 @@ func (a *SyntheticsAdminServiceApiService) TestPatchExecute(r ApiTestPatchReques
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1PatchTestRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1173,14 +1173,14 @@ func (a *SyntheticsAdminServiceApiService) TestPatchExecute(r ApiTestPatchReques
 }
 
 type ApiTestStatusUpdateRequest struct {
-	ctx                              _context.Context
-	ApiService                       *SyntheticsAdminServiceApiService
-	id                               string
-	v202101beta1SetTestStatusRequest *V202101beta1SetTestStatusRequest
+	ctx        _context.Context
+	ApiService *SyntheticsAdminServiceApiService
+	id         string
+	body       *V202101beta1SetTestStatusRequest
 }
 
-func (r ApiTestStatusUpdateRequest) V202101beta1SetTestStatusRequest(v202101beta1SetTestStatusRequest V202101beta1SetTestStatusRequest) ApiTestStatusUpdateRequest {
-	r.v202101beta1SetTestStatusRequest = &v202101beta1SetTestStatusRequest
+func (r ApiTestStatusUpdateRequest) Body(body V202101beta1SetTestStatusRequest) ApiTestStatusUpdateRequest {
+	r.body = &body
 	return r
 }
 
@@ -1228,8 +1228,8 @@ func (a *SyntheticsAdminServiceApiService) TestStatusUpdateExecute(r ApiTestStat
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.v202101beta1SetTestStatusRequest == nil {
-		return localVarReturnValue, nil, reportError("v202101beta1SetTestStatusRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1250,7 +1250,7 @@ func (a *SyntheticsAdminServiceApiService) TestStatusUpdateExecute(r ApiTestStat
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.v202101beta1SetTestStatusRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

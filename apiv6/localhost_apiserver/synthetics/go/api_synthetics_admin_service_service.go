@@ -15,7 +15,7 @@ import (
 	"net/http"
 )
 
-// SyntheticsAdminServiceApiService is a service that implents the logic for the SyntheticsAdminServiceApiServicer
+// SyntheticsAdminServiceApiService is a service that implements the logic for the SyntheticsAdminServiceApiServicer
 // This service should implement the business logic for every endpoint for the SyntheticsAdminServiceApi API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsAdminServiceApiService struct {
@@ -30,105 +30,112 @@ func NewSyntheticsAdminServiceApiService(repo *SyntheticsRepo) SyntheticsAdminSe
 }
 
 // AgentDelete - Delete an agent.
-func (s *SyntheticsAdminServiceApiService) AgentDelete(ctx context.Context, agentId string) (ImplResponse, error) {
+func (s *SyntheticsAdminServiceApiService) AgentDelete(_ context.Context, agentId string) (ImplResponse, error) {
 	if err := s.repo.DeleteAgent(agentId); err != nil {
 		return errorResponse(http.StatusNotFound, "agent DELETE failed", err), nil
-	} else {
-		resp := map[string]interface{}{}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &map[string]interface{}{}), nil
 }
 
 // AgentGet - Get information about an agent.
-func (s *SyntheticsAdminServiceApiService) AgentGet(ctx context.Context, agentId string) (ImplResponse, error) {
-	if agent := s.repo.GetAgent(agentId); agent == nil {
-		err := fmt.Errorf("no such agent %q", agentId)
-		return errorResponse(http.StatusNotFound, "agent GET failed", err), nil
-	} else {
-		resp := V202101beta1GetAgentResponse{Agent: *agent}
-		return Response(http.StatusOK, &resp), nil
+func (s *SyntheticsAdminServiceApiService) AgentGet(_ context.Context, agentId string) (ImplResponse, error) {
+	agent := s.repo.GetAgent(agentId)
+	if agent == nil {
+		return errorResponse(
+			http.StatusNotFound,
+			"agent GET failed",
+			fmt.Errorf("no such agent %q", agentId),
+		), nil
 	}
+
+	return Response(http.StatusOK, &V202101beta1GetAgentResponse{Agent: *agent}), nil
 }
 
 // AgentPatch - Patch an agent.
-func (s *SyntheticsAdminServiceApiService) AgentPatch(ctx context.Context, agentId string, v202101beta1PatchAgentRequest V202101beta1PatchAgentRequest) (ImplResponse, error) {
-	v202101beta1PatchAgentRequest.Agent.Id = agentId
-	if agent, err := s.repo.PatchAgent(v202101beta1PatchAgentRequest.Agent); err != nil {
+func (s *SyntheticsAdminServiceApiService) AgentPatch(_ context.Context, agentId string, body V202101beta1PatchAgentRequest) (ImplResponse, error) {
+	body.Agent.Id = agentId
+
+	agent, err := s.repo.PatchAgent(body.Agent)
+	if err != nil {
 		return errorResponse(http.StatusBadRequest, "agent PATCH failed", err), nil
-	} else {
-		resp := V202101beta1PatchAgentResponse{Agent: *agent}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &V202101beta1PatchAgentResponse{Agent: *agent}), nil
 }
 
 // AgentsList - List Agents.
-func (s *SyntheticsAdminServiceApiService) AgentsList(ctx context.Context) (ImplResponse, error) {
-	resp := V202101beta1ListAgentsResponse{
+func (s *SyntheticsAdminServiceApiService) AgentsList(_ context.Context) (ImplResponse, error) {
+	return Response(http.StatusOK, &V202101beta1ListAgentsResponse{
 		Agents:             s.repo.ListAgents(),
 		InvalidAgentsCount: 0,
-	}
-	return Response(http.StatusOK, &resp), nil
+	}), nil
 }
 
 // TestCreate - Create Synthetics Test.
-func (s *SyntheticsAdminServiceApiService) TestCreate(ctx context.Context, v202101beta1CreateTestRequest V202101beta1CreateTestRequest) (ImplResponse, error) {
-	if test, err := s.repo.CreateTest(v202101beta1CreateTestRequest.Test); err != nil {
+func (s *SyntheticsAdminServiceApiService) TestCreate(_ context.Context, body V202101beta1CreateTestRequest) (ImplResponse, error) {
+	test, err := s.repo.CreateTest(body.Test)
+	if err != nil {
 		return errorResponse(http.StatusBadRequest, "test CREATE failed", err), nil
-	} else {
-		resp := V202101beta1CreateTestResponse{Test: *test}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &V202101beta1CreateTestResponse{Test: *test}), nil
+
 }
 
 // TestDelete - Delete an Synthetics Test.
-func (s *SyntheticsAdminServiceApiService) TestDelete(ctx context.Context, id string) (ImplResponse, error) {
+func (s *SyntheticsAdminServiceApiService) TestDelete(_ context.Context, id string) (ImplResponse, error) {
 	if err := s.repo.DeleteTest(id); err != nil {
 		return errorResponse(http.StatusNotFound, "test DELETE failed", err), nil
-	} else {
-		resp := map[string]interface{}{}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &map[string]interface{}{}), nil
 }
 
 // TestGet - Get information about Synthetics Test.
-func (s *SyntheticsAdminServiceApiService) TestGet(ctx context.Context, id string) (ImplResponse, error) {
-	if test := s.repo.GetTest(id); test == nil {
-		err := fmt.Errorf("no such test %q", id)
-		return errorResponse(http.StatusNotFound, "test GET failed", err), nil
-	} else {
-		resp := V202101beta1GetTestResponse{Test: *test}
-		return Response(http.StatusOK, &resp), nil
+func (s *SyntheticsAdminServiceApiService) TestGet(_ context.Context, id string) (ImplResponse, error) {
+	test := s.repo.GetTest(id)
+	if test == nil {
+		return errorResponse(
+			http.StatusNotFound,
+			"test GET failed",
+			fmt.Errorf("no such test %q", id),
+		), nil
 	}
+
+	return Response(http.StatusOK, &V202101beta1GetTestResponse{Test: *test}), nil
 }
 
 // TestPatch - Patch a Synthetics Test.
-func (s *SyntheticsAdminServiceApiService) TestPatch(ctx context.Context, id string, v202101beta1PatchTestRequest V202101beta1PatchTestRequest) (ImplResponse, error) {
-	v202101beta1PatchTestRequest.Test.Id = id
-	if test, err := s.repo.PatchTest(v202101beta1PatchTestRequest.Test); err != nil {
+func (s *SyntheticsAdminServiceApiService) TestPatch(_ context.Context, id string, body V202101beta1PatchTestRequest) (ImplResponse, error) {
+	body.Test.Id = id
+
+	test, err := s.repo.PatchTest(body.Test)
+	if err != nil {
 		return errorResponse(http.StatusBadRequest, "test PATCH failed", err), nil
-	} else {
-		resp := V202101beta1PatchTestResponse{Test: *test}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &V202101beta1PatchTestResponse{Test: *test}), nil
 }
 
 // TestStatusUpdate - Update a test status.
-func (s *SyntheticsAdminServiceApiService) TestStatusUpdate(ctx context.Context, id string, v202101beta1SetTestStatusRequest V202101beta1SetTestStatusRequest) (ImplResponse, error) {
-	if err := s.repo.UpdateTestStatus(id, v202101beta1SetTestStatusRequest.Status); err != nil {
+func (s *SyntheticsAdminServiceApiService) TestStatusUpdate(_ context.Context, id string, body V202101beta1SetTestStatusRequest) (ImplResponse, error) {
+	if err := s.repo.UpdateTestStatus(id, body.Status); err != nil {
 		return errorResponse(http.StatusNotFound, "test status update failed", err), nil
-	} else {
-		resp := map[string]interface{}{}
-		return Response(http.StatusOK, &resp), nil
 	}
+
+	return Response(http.StatusOK, &map[string]interface{}{}), nil
 }
 
 // TestsList - List Synthetics Tests.
-func (s *SyntheticsAdminServiceApiService) TestsList(ctx context.Context, preset bool) (ImplResponse, error) {
-	resp := V202101beta1ListTestsResponse{
-		Tests:             s.repo.ListTests(),
-		InvalidTestsCount: 0,
-	}
-	return Response(http.StatusOK, &resp), nil
+func (s *SyntheticsAdminServiceApiService) TestsList(_ context.Context, preset bool) (ImplResponse, error) {
+	return Response(
+		http.StatusOK,
+		&V202101beta1ListTestsResponse{
+			Tests:             s.repo.ListTests(),
+			InvalidTestsCount: 0,
+		},
+	), nil
 }
 
 func errorResponse(httpCode int, message string, err error) ImplResponse {
