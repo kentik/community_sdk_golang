@@ -1,4 +1,10 @@
 cloud_export.openapi.json
 docs/cloudexport/
 docs/synthetics/
+kentikapi/cloudexport/api/
+kentikapi/cloudexport/docs/
+kentikapi/cloudexport/README.md
+kentikapi/synthetics/api/
+kentikapi/synthetics/docs/
+kentikapi/synthetics/README.md
 synthetics.openapi.json

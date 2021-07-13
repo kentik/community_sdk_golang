@@ -96,9 +96,6 @@ function cleanup_non_needed_files() {
     rm "$generated_content_dir/git_push.sh"
     rm "$generated_content_dir/go.mod"
     rm "$generated_content_dir/go.sum"
-    rm "$generated_content_dir/README.md"
-    rm -rf "$generated_content_dir/api"
-    rm -rf "$generated_content_dir/docs"
 
     echo "Done"
 }
