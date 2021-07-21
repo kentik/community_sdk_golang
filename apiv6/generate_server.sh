@@ -15,6 +15,7 @@ function run() {
     generate_cloud_export_server
     generate_synthetics_server
     go fmt ./...
+    git apply ./localhost_apiserver/patches/0001-Modify-localhost_apiserver-not-to-require-preset-in-.patch
 }
 
 function check_prerequisites() {
