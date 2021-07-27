@@ -11,6 +11,7 @@ package syntheticsstub
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 
@@ -256,9 +257,13 @@ func (c *SyntheticsAdminServiceApiController) TestsList(w http.ResponseWriter, r
 	query := r.URL.Query()
 	preset, err := parseBoolParameter(query.Get("preset"))
 	if err != nil {
-		w.WriteHeader(500)
-		return
+		// Modified manually not to return errors when no preset received
+		log.Printf(
+			"SyntheticsAdminServiceApiController: failed to parse 'preset' query parameter: %v",
+			err,
+		)
 	}
+
 	result, err := c.service.TestsList(r.Context(), preset)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
