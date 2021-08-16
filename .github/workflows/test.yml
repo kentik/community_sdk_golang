@@ -25,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Test
-        run: go test ./...
+        run: ./tools/test.sh
 
   super-linter:
     name: Run Super-Linter
