@@ -1,6 +1,9 @@
 run:
   build-tags:
     - examples
+  skip-dirs:
+    - apiv6/localhost_apiserver/cloudexport
+    - apiv6/localhost_apiserver/synthetics
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
