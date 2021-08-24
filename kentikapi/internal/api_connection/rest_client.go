@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"io/ioutil"
-	"net"
 	"net/http"
-	"time"
 )
 
 const (
@@ -18,33 +18,30 @@ const (
 
 type restClient struct {
 	config     RestClientConfig
-	httpClient *http.Client
+	httpClient *retryablehttp.Client
 }
 
 type RestClientConfig struct {
 	APIURL    string
 	AuthEmail string
 	AuthToken string
+	RetryCfg  utils.RetryConfig
 }
 
 func NewRestClient(c RestClientConfig) *restClient {
 	return &restClient{
 		config: c,
-		httpClient: &http.Client{
-			Transport: &http.Transport{
-				Proxy: http.ProxyFromEnvironment,
-				DialContext: (&net.Dialer{
-					Timeout:   30 * time.Second,
-					KeepAlive: 30 * time.Second,
-				}).DialContext,
-				ForceAttemptHTTP2:     true,
-				MaxIdleConns:          100,
-				IdleConnTimeout:       90 * time.Second,
-				TLSHandshakeTimeout:   10 * time.Second,
-				ExpectContinueTimeout: 1 * time.Second,
-			},
-		},
+		httpClient: makeRetryingClient(c),
 	}
+}
+
+func makeRetryingClient(c RestClientConfig) *retryablehttp.Client{
+	cfg := utils.ClientConfig{
+		HTTPClient: nil,
+		RetryCfg: c.RetryCfg,
+	}
+	retryingClient := utils.NewRetryingClient(cfg)
+	return retryingClient
 }
 
 // Get sends GET request to the API and returns raw response body.
@@ -161,7 +158,7 @@ func errorFromResponseStatus(r *http.Response, responseBody string) error {
 	return nil
 }
 
-func (c *restClient) newRequest(ctx context.Context, method string, path string, payload json.RawMessage) (*http.Request, error) {
+func (c *restClient) newRequest(ctx context.Context, method string, path string, payload json.RawMessage) (*retryablehttp.Request, error) {
 	request, err := http.NewRequestWithContext(ctx, method, c.makeFullURL(path), bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
@@ -171,7 +168,7 @@ func (c *restClient) newRequest(ctx context.Context, method string, path string,
 	request.Header.Set(authAPITokenKey, c.config.AuthToken)
 	request.Header.Set("Content-Type", "application/json")
 
-	return request, nil
+	return retryablehttp.FromRequest(request)
 }
 
 func (c *restClient) makeFullURL(path string) string {
