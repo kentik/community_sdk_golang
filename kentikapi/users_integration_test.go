@@ -606,16 +606,16 @@ func TestClient_DeleteUser(t *testing.T) {
 
 func TestClient_GetUser_Retry(t *testing.T) {
 	tests := []struct {
-		name           string
+		name             string
 		retryMax         *int
 		retryStatusCodes []int
 		retryMethods     []string
-		responses	   []httpResponse
-		expectedResult *models.User
-		expectedError  bool
+		responses        []httpResponse
+		expectedResult   *models.User
+		expectedError    bool
 	}{
 		{
-			name:          "retry until invalid response format",
+			name: "retry until invalid response format",
 			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusBadGateway),
@@ -624,10 +624,8 @@ func TestClient_GetUser_Retry(t *testing.T) {
 			expectedError: true,
 		},
 		{
-			name:
-			"status too many requests and then success",
-			responses:
-			[]httpResponse{
+			name: "status too many requests and then success",
+			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 				{
 					http.StatusOK,
@@ -713,22 +711,22 @@ func TestClient_GetUser_Retry(t *testing.T) {
 
 func TestClient_CreateUser_Retry(t *testing.T) {
 	tests := []struct {
-		name string
+		name             string
 		retryMax         *int
 		retryStatusCodes []int
 		retryMethods     []string
-		user models.User
+		user             models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
-		responses 			[]httpResponse
+		responses           []httpResponse
 		expectedResult      *models.User
 		expectedError       bool
 	}{
 		{
-			name:          "status bad request",
-			user:          models.User{},
+			name:                "status bad request",
+			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses:  []httpResponse{
+			responses: []httpResponse{
 				{http.StatusBadRequest,
 					`{"error":"Bad Request"}`},
 			},
@@ -737,37 +735,37 @@ func TestClient_CreateUser_Retry(t *testing.T) {
 			name:                "invalid response format",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses:       []httpResponse{
+			responses: []httpResponse{
 				{http.StatusCreated, "invalid JSON"},
 			},
-			expectedError:       true,
+			expectedError: true,
 		}, {
 			name:                "empty response",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses:       []httpResponse{
+			responses: []httpResponse{
 				{http.StatusCreated, "{}"},
 			},
-			expectedError:       true,
+			expectedError: true,
 		}, {
 			name:                "retry 4 times and when status 429, 500, 502, 503, 504 received and last status is 429",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses:      []httpResponse{
+			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusInternalServerError),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 			},
-			expectedError:       true,
+			expectedError: true,
 		},
 		{
 			name:                "retry 5 times and when status 429, 500, 502, 503, 504 received and last status is 429",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			retryMax: intPtr(5),
-			responses:      []httpResponse{
+			retryMax:            intPtr(5),
+			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusInternalServerError),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
@@ -775,7 +773,7 @@ func TestClient_CreateUser_Retry(t *testing.T) {
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 				newErrorHTTPResponse(http.StatusBadGateway),
 			},
-			expectedError:       true,
+			expectedError: true,
 		},
 		{
 			name: "retry till success when status 429 too many requests received",
@@ -882,7 +880,6 @@ func TestClient_CreateUser_Retry(t *testing.T) {
 		})
 	}
 }
-
 
 type spyHTTPHandler struct {
 	t testing.TB

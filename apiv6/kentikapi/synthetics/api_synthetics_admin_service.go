@@ -24,7 +24,7 @@ var (
 	_ _context.Context
 )
 
-// SyntheticsAdminServiceApiService SyntheticsAdminServiceApi service
+// SyntheticsAdminServiceApiService SyntheticsAdminServiceAPI service
 type SyntheticsAdminServiceApiService service
 
 type ApiAgentDeleteRequest struct {

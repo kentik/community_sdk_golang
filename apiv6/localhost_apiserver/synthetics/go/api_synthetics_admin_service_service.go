@@ -16,7 +16,7 @@ import (
 )
 
 // SyntheticsAdminServiceApiService is a service that implements the logic for the SyntheticsAdminServiceApiServicer
-// This service should implement the business logic for every endpoint for the SyntheticsAdminServiceApi API.
+// This service should implement the business logic for every endpoint for the SyntheticsAdminServiceAPI API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsAdminServiceApiService struct {
 	repo *SyntheticsRepo

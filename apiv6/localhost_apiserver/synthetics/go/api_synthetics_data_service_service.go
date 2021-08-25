@@ -15,7 +15,7 @@ import (
 )
 
 // SyntheticsDataServiceApiService is a service that implements the logic for the SyntheticsDataServiceApiServicer
-// This service should implement the business logic for every endpoint for the SyntheticsDataServiceApi API.
+// This service should implement the business logic for every endpoint for the SyntheticsDataServiceAPI API.
 // Include any external packages or services that will be required by this service.
 type SyntheticsDataServiceApiService struct {
 	repo *SyntheticsRepo

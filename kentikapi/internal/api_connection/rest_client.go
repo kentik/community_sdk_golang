@@ -30,15 +30,15 @@ type RestClientConfig struct {
 
 func NewRestClient(c RestClientConfig) *restClient {
 	return &restClient{
-		config: c,
+		config:     c,
 		httpClient: makeRetryingClient(c),
 	}
 }
 
-func makeRetryingClient(c RestClientConfig) *retryablehttp.Client{
+func makeRetryingClient(c RestClientConfig) *retryablehttp.Client {
 	cfg := utils.ClientConfig{
 		HTTPClient: nil,
-		RetryCfg: c.RetryCfg,
+		RetryCfg:   c.RetryCfg,
 	}
 	retryingClient := utils.NewRetryingClient(cfg)
 	return retryingClient

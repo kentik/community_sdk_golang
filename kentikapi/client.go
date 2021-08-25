@@ -1,9 +1,9 @@
 package kentikapi
 
 import (
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 )
 
 // Public constants.

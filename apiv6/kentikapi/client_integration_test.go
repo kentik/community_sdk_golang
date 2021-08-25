@@ -181,7 +181,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			})
 
 			// act
-			result, httpResp, err := c.SyntheticsAdminServiceApi.
+			result, httpResp, err := c.SyntheticsAdminServiceAPI.
 				AgentPatch(context.Background(), testAgentID).
 				Body(tt.request).
 				Execute()
