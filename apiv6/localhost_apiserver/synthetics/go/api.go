@@ -14,7 +14,7 @@ import (
 	"net/http"
 )
 
-// SyntheticsAdminServiceApiRouter defines the required methods for binding the api requests to a responses for the SyntheticsAdminServiceAPI
+// SyntheticsAdminServiceApiRouter defines the required methods for binding the api requests to a responses for the SyntheticsAdminServiceApi
 // The SyntheticsAdminServiceApiRouter implementation should parse necessary information from the http request,
 // pass the data to a SyntheticsAdminServiceApiServicer to perform the required actions, then write the service results to the http response.
 type SyntheticsAdminServiceApiRouter interface {
@@ -30,7 +30,7 @@ type SyntheticsAdminServiceApiRouter interface {
 	TestsList(http.ResponseWriter, *http.Request)
 }
 
-// SyntheticsDataServiceApiRouter defines the required methods for binding the api requests to a responses for the SyntheticsDataServiceAPI
+// SyntheticsDataServiceApiRouter defines the required methods for binding the api requests to a responses for the SyntheticsDataServiceApi
 // The SyntheticsDataServiceApiRouter implementation should parse necessary information from the http request,
 // pass the data to a SyntheticsDataServiceApiServicer to perform the required actions, then write the service results to the http response.
 type SyntheticsDataServiceApiRouter interface {
@@ -38,7 +38,7 @@ type SyntheticsDataServiceApiRouter interface {
 	GetTraceForTest(http.ResponseWriter, *http.Request)
 }
 
-// SyntheticsAdminServiceApiServicer defines the api actions for the SyntheticsAdminServiceAPI service
+// SyntheticsAdminServiceApiServicer defines the api actions for the SyntheticsAdminServiceApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
@@ -55,7 +55,7 @@ type SyntheticsAdminServiceApiServicer interface {
 	TestsList(context.Context, bool) (ImplResponse, error)
 }
 
-// SyntheticsDataServiceApiServicer defines the api actions for the SyntheticsDataServiceAPI service
+// SyntheticsDataServiceApiServicer defines the api actions for the SyntheticsDataServiceApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.

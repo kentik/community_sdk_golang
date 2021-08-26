@@ -37,7 +37,7 @@ func getMeshTestResults(testID string) *[]synthetics.V202101beta1MeshResponse {
 	healthPayload.SetIds([]string{testID})
 	healthPayload.SetAugment(true) // if not set, returned Mesh pointer will be empty
 
-	getHealthResp, httpResp, err := client.SyntheticsDataServiceAPI.
+	getHealthResp, httpResp, err := client.SyntheticsDataServiceApi.
 		GetHealthForTests(context.Background()).
 		Body(healthPayload).
 		Execute()

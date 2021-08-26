@@ -53,7 +53,7 @@ func showRetryingOnMultipleCodes() error {
 	})
 
 	demos.Step("List synthetic agents")
-	result, _, err := c.SyntheticsAdminServiceAPI.
+	result, _, err := c.SyntheticsAdminServiceApi.
 		AgentsList(context.Background()).
 		Execute()
 

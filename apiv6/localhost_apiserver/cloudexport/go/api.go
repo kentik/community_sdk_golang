@@ -14,7 +14,7 @@ import (
 	"net/http"
 )
 
-// CloudExportAdminServiceApiRouter defines the required methods for binding the api requests to a responses for the CloudExportAdminServiceAPI
+// CloudExportAdminServiceApiRouter defines the required methods for binding the api requests to a responses for the CloudExportAdminServiceApi
 // The CloudExportAdminServiceApiRouter implementation should parse necessary information from the http request,
 // pass the data to a CloudExportAdminServiceApiServicer to perform the required actions, then write the service results to the http response.
 type CloudExportAdminServiceApiRouter interface {
@@ -26,7 +26,7 @@ type CloudExportAdminServiceApiRouter interface {
 	ExportUpdate(http.ResponseWriter, *http.Request)
 }
 
-// CloudExportAdminServiceApiServicer defines the api actions for the CloudExportAdminServiceAPI service
+// CloudExportAdminServiceApiServicer defines the api actions for the CloudExportAdminServiceApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.

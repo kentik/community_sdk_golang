@@ -16,11 +16,11 @@ const (
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
 	// cloudexport
-	CloudExportAdminServiceAPI *cloudexport.CloudExportAdminServiceApiService
+	CloudExportAdminServiceApi *cloudexport.CloudExportAdminServiceApiService
 
 	// synthetics
-	SyntheticsAdminServiceAPI *synthetics.SyntheticsAdminServiceApiService
-	SyntheticsDataServiceAPI  *synthetics.SyntheticsDataServiceApiService
+	SyntheticsAdminServiceApi *synthetics.SyntheticsAdminServiceApiService
+	SyntheticsDataServiceApi  *synthetics.SyntheticsDataServiceApiService
 }
 
 // Config holds configuration of the Client.
@@ -52,9 +52,9 @@ func NewClient(c Config) *Client {
 	syntheticsClient := synthetics.NewAPIClient(makeSyntheticsConfig(c))
 
 	return &Client{
-		CloudExportAdminServiceAPI: cloudexportClient.CloudExportAdminServiceApi,
-		SyntheticsAdminServiceAPI:  syntheticsClient.SyntheticsAdminServiceApi,
-		SyntheticsDataServiceAPI:   syntheticsClient.SyntheticsDataServiceApi,
+		CloudExportAdminServiceApi: cloudexportClient.CloudExportAdminServiceApi,
+		SyntheticsAdminServiceApi:  syntheticsClient.SyntheticsAdminServiceApi,
+		SyntheticsDataServiceApi:   syntheticsClient.SyntheticsDataServiceApi,
 	}
 }
 
@@ -69,7 +69,7 @@ func makeCloudExportConfig(c Config) *cloudexport.Configuration {
 	cfg.Servers[0].URL = c.CloudExportAPIURL
 	cfg.Servers[0].Description = "Kentik CloudExport server"
 
-	cfg.HTTPClient = httputil.NewRetryingClient(makeRetryingClientConfig(c))
+	cfg.HTTPClient = httputil.NewRetryingStdClient(makeRetryingClientConfig(c))
 	cfg.Debug = c.LogPayloads
 	return cfg
 }
@@ -85,7 +85,7 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 	cfg.Servers[0].URL = c.SyntheticsAPIURL
 	cfg.Servers[0].Description = "Kentik Synthetics server"
 
-	cfg.HTTPClient = httputil.NewRetryingClient(makeRetryingClientConfig(c))
+	cfg.HTTPClient = httputil.NewRetryingStdClient(makeRetryingClientConfig(c))
 	cfg.Debug = c.LogPayloads
 	return cfg
 }

@@ -24,7 +24,7 @@ var (
 	_ _context.Context
 )
 
-// SyntheticsDataServiceApiService SyntheticsDataServiceAPI service
+// SyntheticsDataServiceApiService SyntheticsDataServiceApi service
 type SyntheticsDataServiceApiService service
 
 type ApiGetHealthForTestsRequest struct {

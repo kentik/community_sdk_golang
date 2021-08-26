@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,8 +29,10 @@ func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://invalid.url", nil)
 	require.NoError(t, err)
 
+	req2, err := retryablehttp.FromRequest(req)
+	require.NoError(t, err)
 	// act
-	resp, err := c.Do(req)
+	resp, err := c.Do(req2)
 
 	// assert
 	t.Logf("Got response: %v, err: %v", resp, err)
@@ -89,8 +93,10 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://dummy.url", nil)
 			require.NoError(t, err)
 
+			req2, err := retryablehttp.FromRequest(req)
+			require.NoError(t, err)
 			// act
-			resp, err := c.Do(req)
+			resp, err := c.Do(req2)
 
 			// assert
 			t.Logf("Got response: %v, err: %v", resp, err)

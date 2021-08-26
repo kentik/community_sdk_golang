@@ -20,7 +20,7 @@ import (
 // - Retry on underlying http.Client.Do() temporary errors.
 //
 // The client performs logging to os.Stderr.
-func NewRetryingClient(cfg ClientConfig) *http.Client {
+func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	cfg.FillDefaults()
 
 	c := retryablehttp.NewClient()
@@ -37,7 +37,11 @@ func NewRetryingClient(cfg ClientConfig) *http.Client {
 	c.CheckRetry = makeRetryPolicy(cfg.RetryCfg.RetryableStatusCodes, cfg.RetryCfg.RetryableMethods)
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
-	return c.StandardClient()
+	return c
+}
+
+func NewRetryingStdClient(cfg ClientConfig) *http.Client {
+	return NewRetryingClient(cfg).StandardClient()
 }
 
 // ClientConfig holds configuration for retrying client.

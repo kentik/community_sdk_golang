@@ -24,7 +24,7 @@ var (
 	_ _context.Context
 )
 
-// CloudExportAdminServiceApiService CloudExportAdminServiceAPI service
+// CloudExportAdminServiceApiService CloudExportAdminServiceApi service
 type CloudExportAdminServiceApiService service
 
 type ApiExportCreateRequest struct {

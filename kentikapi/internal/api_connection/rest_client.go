@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
+	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"io/ioutil"
 	"net/http"
 )
@@ -25,23 +25,18 @@ type RestClientConfig struct {
 	APIURL    string
 	AuthEmail string
 	AuthToken string
-	RetryCfg  utils.RetryConfig
+	RetryCfg  httputil.RetryConfig
 }
 
 func NewRestClient(c RestClientConfig) *restClient {
-	return &restClient{
-		config:     c,
-		httpClient: makeRetryingClient(c),
-	}
-}
-
-func makeRetryingClient(c RestClientConfig) *retryablehttp.Client {
-	cfg := utils.ClientConfig{
+	cfg := httputil.ClientConfig{
 		HTTPClient: nil,
 		RetryCfg:   c.RetryCfg,
 	}
-	retryingClient := utils.NewRetryingClient(cfg)
-	return retryingClient
+	return &restClient{
+		config:     c,
+		httpClient: httputil.NewRetryingClient(cfg),
+	}
 }
 
 // Get sends GET request to the API and returns raw response body.
