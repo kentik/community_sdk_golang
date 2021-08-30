@@ -1,6 +1,8 @@
 package kentikapi
 
 import (
+	"time"
+
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
@@ -38,6 +40,7 @@ type Config struct {
 	AuthEmail string
 	AuthToken string
 	RetryCfg  httputil.RetryConfig
+	Timeout   *time.Duration
 }
 
 // NewClient creates a new Kentik API client.
@@ -50,6 +53,7 @@ func NewClient(c Config) *Client {
 		AuthEmail: c.AuthEmail,
 		AuthToken: c.AuthToken,
 		RetryCfg:  c.RetryCfg,
+		Timeout:   c.Timeout,
 	})
 	return &Client{
 		Users:              resources.NewUsersAPI(rc),
