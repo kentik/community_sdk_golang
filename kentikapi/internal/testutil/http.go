@@ -54,7 +54,7 @@ func (h *SpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 type MultipleResponseSpyHTTPHandler struct {
 	t testing.TB
 	// Responses to return to the client
-	Responses []HttpResponse
+	responses []HttpResponse
 
 	// Requests spied by the handler
 	Requests []HttpRequest
@@ -63,7 +63,7 @@ type MultipleResponseSpyHTTPHandler struct {
 func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HttpResponse) *MultipleResponseSpyHTTPHandler {
 	return &MultipleResponseSpyHTTPHandler{
 		t:         t,
-		Responses: responses,
+		responses: responses,
 	}
 }
 
@@ -82,24 +82,24 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 	})
 
 	rw.Header().Set("Content-Type", "application/json")
-	response := h.Response()
+	response := h.response()
 	rw.WriteHeader(response.StatusCode)
 	_, err = rw.Write([]byte(response.Body))
 	assert.NoError(h.t, err)
 }
 
-func (h *MultipleResponseSpyHTTPHandler) Response() HttpResponse {
-	if len(h.Requests) > len(h.Responses) {
+func (h *MultipleResponseSpyHTTPHandler) response() HttpResponse {
+	if len(h.Requests) > len(h.responses) {
 		return HttpResponse{
 			StatusCode: http.StatusGone,
 			Body: fmt.Sprintf(
 				"spyHTTPHandler: unexpected request, requests count: %v, expected: %v",
-				len(h.Requests), len(h.Responses),
+				len(h.Requests), len(h.responses),
 			),
 		}
 	}
 
-	return h.Responses[len(h.Requests)-1]
+	return h.responses[len(h.Requests)-1]
 }
 
 type HttpRequest struct {

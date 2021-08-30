@@ -170,8 +170,10 @@ func TestClient_GetAllUsers(t *testing.T) {
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+
 			// act
 			result, err := c.Users.GetAll(context.Background())
+
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)
 			if tt.expectedError {
@@ -333,7 +335,7 @@ func TestClient_GetUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, len(h.Responses), len(h.Requests), "invalid number of requests")
+			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodGet, r.Method)
 				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.Url_.Path)
@@ -555,7 +557,7 @@ func TestClient_CreateUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, len(h.Responses), len(h.Requests), "invalid number of requests")
+			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, "/user", r.Url_.Path)
