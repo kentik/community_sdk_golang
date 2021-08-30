@@ -29,7 +29,7 @@ type Interface struct {
 	TopNextHopASNs              []TopNextHopASN
 }
 
-// NewInterface creates a new Interface with all necessary fields set
+// NewInterface creates a new Interface with all necessary fields set.
 func NewInterface(deviceID ID, snmpID ID, snmpSpeed int, interfaceDescription string) *Interface {
 	return &Interface{
 		DeviceID:             deviceID,
@@ -53,7 +53,7 @@ type VRFAttributes struct {
 	DeviceID  ID
 }
 
-// NewVRFAttributes creates new VRFAttributes with all necessary fields set
+// NewVRFAttributes creates new VRFAttributes with all necessary fields set.
 func NewVRFAttributes(name string, routeTarget string, routeDistinguisher string) *VRFAttributes {
 	return &VRFAttributes{
 		Name:               name,

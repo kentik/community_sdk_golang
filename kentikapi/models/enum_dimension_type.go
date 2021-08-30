@@ -79,12 +79,12 @@ func DimensionTypeString(s string) (DimensionType, error) {
 	return 0, fmt.Errorf("%s does not belong to DimensionType values", s)
 }
 
-// DimensionTypeValues returns all values of the enum
+// DimensionTypeValues returns all values of the enum.
 func DimensionTypeValues() []DimensionType {
 	return _DimensionTypeValues
 }
 
-// IsADimensionType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsADimensionType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i DimensionType) IsADimensionType() bool {
 	for _, v := range _DimensionTypeValues {
 		if i == v {

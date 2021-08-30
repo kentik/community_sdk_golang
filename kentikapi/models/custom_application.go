@@ -19,7 +19,7 @@ type CustomApplication struct {
 	UpdatedDate *time.Time
 }
 
-// NewCustomApplication crates a CustomApplication with all required fields set
+// NewCustomApplication crates a CustomApplication with all required fields set.
 func NewCustomApplication(name string) *CustomApplication {
 	return &CustomApplication{Name: name}
 }

@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck // Changing Api to API forces changes in generated files
 package kentikapi
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
+//nolint:gosec
 const (
 	authAPITokenKey   = "X-CH-Auth-API-Token"
 	authEmailKey      = "X-CH-Auth-Email"

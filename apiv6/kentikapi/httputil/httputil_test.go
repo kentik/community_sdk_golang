@@ -1,4 +1,4 @@
-package httputil
+package httputil_test
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-
+	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,15 +22,23 @@ import (
 // 4. retryingClient.retryableRoundTripper.retryableClient.httpClient.Do()
 // 5. retryingClient.retryableRoundTripper.retryableClient.httpClient.httpTransport.RoundTrip()
 
+//nolint:errcheck // https://github.com/kisielk/errcheck/issues/55
+// Closing a response you only read from cannot yield a meaningful error.
 func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
+	t.Parallel()
+
 	// arrange
-	c := NewRetryingClient(ClientConfig{})
+	c := httputil.NewRetryingClient(httputil.ClientConfig{})
 
 	req, err := retryablehttp.NewRequest(http.MethodGet, "https://invalid.url", nil)
 	require.NoError(t, err)
 
 	// act
 	resp, err := c.Do(req.WithContext(context.Background()))
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
 
 	// assert
 	t.Logf("Got response: %v, err: %v", resp, err)
@@ -40,7 +48,11 @@ func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
 	assert.Equal(t, "no such host", dnsErr.Err)
 }
 
+//nolint:errcheck // https://github.com/kisielk/errcheck/issues/55
+// Closing a response you only read from cannot yield a meaningful error.
 func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
+	t.Parallel()
+
 	const retryMax = 5
 
 	tests := []struct {
@@ -73,15 +85,17 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			// arrange
+			t.Parallel()
 
+			// arrange
 			st := spyTransport{transportError: tt.transportError}
-			c := NewRetryingClient(ClientConfig{
+			c := httputil.NewRetryingClient(httputil.ClientConfig{
 				HTTPClient: &http.Client{
 					Transport: &st,
 				},
-				RetryCfg: RetryConfig{
+				RetryCfg: httputil.RetryConfig{
 					MaxAttempts: intPtr(retryMax),
 					MinDelay:    durationPtr(1 * time.Microsecond),
 					MaxDelay:    durationPtr(10 * time.Microsecond),
@@ -93,6 +107,10 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 
 			// act
 			resp, err := c.Do(req.WithContext(context.Background()))
+			if err != nil {
+				return
+			}
+			defer resp.Body.Close()
 
 			// assert
 			t.Logf("Got response: %v, err: %v", resp, err)

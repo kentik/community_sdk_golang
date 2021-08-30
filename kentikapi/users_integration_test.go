@@ -1,3 +1,4 @@
+//nolint:dupl
 package kentikapi_test
 
 import (
@@ -9,13 +10,13 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
-
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint:gosec
 const (
 	authEmailKey    = "X-CH-Auth-Email"
 	authAPITokenKey = "X-CH-Auth-API-Token"
@@ -27,6 +28,8 @@ const (
 type object = map[string]interface{}
 
 func TestClient_GetAllUsers(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		responseCode   int
@@ -159,7 +162,10 @@ func TestClient_GetAllUsers(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -194,36 +200,38 @@ func TestClient_GetAllUsers(t *testing.T) {
 }
 
 func TestClient_GetUser(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
-		responses      []testutil.HttpResponse
+		responses      []testutil.HTTPResponse
 		expectedResult *models.User
 		expectedError  bool
 	}{
 		{
-			name:          "status bad request",
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusBadRequest, Body:`{"error":"Bad Request"}`},
+			name: "status bad request",
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			expectedError: true,
 		}, {
-			name:          "invalid response format",
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusOK, Body:"invalid JSON"},
+			name: "invalid response format",
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusOK, Body: "invalid JSON"},
 			},
 			expectedError: true,
 		}, {
-			name:          "empty response",
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusOK, Body:"{}"},
+			name: "empty response",
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusOK, Body: "{}"},
 			},
 			expectedError: true,
 		}, {
-			name:         "user returned",
-			responses: []testutil.HttpResponse{
+			name: "user returned",
+			responses: []testutil.HTTPResponse{
 				{
-					StatusCode:http.StatusOK,
-				 	Body:`{
+					StatusCode: http.StatusOK,
+					Body: `{
 						"user": {
 							"id": "145999",
 							"username": "testuser",
@@ -259,19 +267,19 @@ func TestClient_GetUser(t *testing.T) {
 			},
 		}, {
 			name: "retry on status 502 Bad Gateway until invalid response format received",
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				{StatusCode:http.StatusOK, Body:"invalid JSON"},
+				{StatusCode: http.StatusOK, Body: "invalid JSON"},
 			},
 			expectedError: true,
 		}, {
 			name: "retry till success when status 429 Too Many Requests received",
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 				{
-					StatusCode:http.StatusOK,
-					Body:`{
+					StatusCode: http.StatusOK,
+					Body: `{
 							"user": {
 								"id": "145999",
 								"username": "testuser",
@@ -308,7 +316,10 @@ func TestClient_GetUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			// arrange
 			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
@@ -338,7 +349,7 @@ func TestClient_GetUser(t *testing.T) {
 			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodGet, r.Method)
-				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.Url_.Path)
+				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
 				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
 				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
 			}
@@ -349,13 +360,15 @@ func TestClient_GetUser(t *testing.T) {
 }
 
 func TestClient_CreateUser(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		retryMax *int
 		user     models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
-		responses           []testutil.HttpResponse
+		responses           []testutil.HTTPResponse
 		expectedResult      *models.User
 		expectedError       bool
 	}{
@@ -379,10 +392,10 @@ func TestClient_CreateUser(t *testing.T) {
 					"email_product":  false,
 				},
 			},
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				{
-					StatusCode:http.StatusCreated,
-					Body:`{
+					StatusCode: http.StatusCreated,
+					Body: `{
 						"user": {
 							"id": "145999",
 							"username": "testuser",
@@ -420,31 +433,31 @@ func TestClient_CreateUser(t *testing.T) {
 			name:                "status bad request",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusBadRequest, Body:`{"error":"Bad Request"}`},
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			expectedError: true,
 		}, {
 			name:                "invalid response format",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusCreated, Body:"invalid JSON"},
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusCreated, Body: "invalid JSON"},
 			},
 			expectedError: true,
 		}, {
 			name:                "empty response",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HttpResponse{
-				{StatusCode:http.StatusCreated, Body:"{}"},
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusCreated, Body: "{}"},
 			},
 			expectedError: true,
 		}, {
 			name:                "retry 4 times and when status 429, 500, 502, 503, 504 received and last status is 429",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
@@ -457,7 +470,7 @@ func TestClient_CreateUser(t *testing.T) {
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
 			retryMax:            intPtr(5),
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
@@ -486,12 +499,12 @@ func TestClient_CreateUser(t *testing.T) {
 					"email_product":  false,
 				},
 			},
-			responses: []testutil.HttpResponse{
+			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 				{
-					StatusCode:http.StatusCreated,
-					Body:`{
+					StatusCode: http.StatusCreated,
+					Body: `{
 						"user": {
 							"id": "145999",
 							"username": "testuser",
@@ -528,7 +541,10 @@ func TestClient_CreateUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			// arrange
 			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
@@ -560,18 +576,19 @@ func TestClient_CreateUser(t *testing.T) {
 			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/user", r.Url_.Path)
+				assert.Equal(t, "/user", r.URL.Path)
 				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
 				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
 				assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, r.Body))
 			}
 			assert.Equal(t, tt.expectedResult, result)
-
 		})
 	}
 }
 
 func TestClient_UpdateUser(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		user         models.User
@@ -669,7 +686,10 @@ func TestClient_UpdateUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -706,6 +726,8 @@ func TestClient_UpdateUser(t *testing.T) {
 }
 
 func TestClient_DeleteUser(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name          string
 		responseCode  int
@@ -729,7 +751,10 @@ func TestClient_DeleteUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)

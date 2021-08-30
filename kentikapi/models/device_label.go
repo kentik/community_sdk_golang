@@ -16,7 +16,7 @@ type DeviceLabel struct {
 	UpdatedDate time.Time
 }
 
-// NewDeviceLabel creates a DeviceLabel with all necessary fields set
+// NewDeviceLabel creates a DeviceLabel with all necessary fields set.
 func NewDeviceLabel(name string, color string) *DeviceLabel {
 	return &DeviceLabel{
 		Name:  name,

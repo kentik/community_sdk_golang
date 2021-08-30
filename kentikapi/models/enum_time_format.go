@@ -32,12 +32,12 @@ func TimeFormatString(s string) (TimeFormat, error) {
 	return 0, fmt.Errorf("%s does not belong to TimeFormat values", s)
 }
 
-// TimeFormatValues returns all values of the enum
+// TimeFormatValues returns all values of the enum.
 func TimeFormatValues() []TimeFormat {
 	return _TimeFormatValues
 }
 
-// IsATimeFormat returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsATimeFormat returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i TimeFormat) IsATimeFormat() bool {
 	for _, v := range _TimeFormatValues {
 		if i == v {

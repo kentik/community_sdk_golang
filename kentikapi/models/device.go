@@ -4,15 +4,16 @@ import "time"
 
 type Device struct {
 	// read-write properties (can be updated in update call)
-	PlanID                *ID
-	SiteID                *ID
-	DeviceDescription     *string
-	DeviceSampleRate      int
-	SendingIPS            []string
-	DeviceSNMNPIP         *string
-	DeviceSNMPCommunity   *string
-	MinimizeSNMP          *bool
-	DeviceBGPType         *DeviceBGPType // Note: for DeviceBGPType = DeviceBGPTypeDevice, either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
+	PlanID              *ID
+	SiteID              *ID
+	DeviceDescription   *string
+	DeviceSampleRate    int
+	SendingIPS          []string
+	DeviceSNMNPIP       *string
+	DeviceSNMPCommunity *string
+	MinimizeSNMP        *bool
+	DeviceBGPType       *DeviceBGPType // Note: for DeviceBGPType = DeviceBGPTypeDevice,
+	// either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
 	DeviceBGPNeighborIP   *string
 	DeviceBGPNeighborIPv6 *string
 	DeviceBGPNeighborASN  *string
@@ -49,27 +50,27 @@ type Device struct {
 // Optional fields that can be always set include:
 // - DeviceDescription
 // - SiteID
-// - DeviceBGPFlowSpec
+// - DeviceBGPFlowSpec.
 func NewDeviceRouter(
 	// common required
-	DeviceName string,
-	DeviceSubType DeviceSubtype,
-	DeviceSampleRate int,
-	PlanID ID,
+	deviceName string,
+	deviceSubType DeviceSubtype,
+	deviceSampleRate int,
+	planID ID,
 	// router required
-	SendingIPS []string,
-	MinimizeSNMP bool,
+	sendingIPS []string,
+	minimizeSNMP bool,
 ) *Device {
 	bgpType := DeviceBGPTypeNone // default
 	return &Device{
 		DeviceType:       DeviceTypeRouter,
-		DeviceName:       DeviceName,
-		DeviceSubType:    DeviceSubType,
-		DeviceSampleRate: DeviceSampleRate,
-		PlanID:           &PlanID,
+		DeviceName:       deviceName,
+		DeviceSubType:    deviceSubType,
+		DeviceSampleRate: deviceSampleRate,
+		PlanID:           &planID,
 		DeviceBGPType:    &bgpType,
-		SendingIPS:       SendingIPS,
-		MinimizeSNMP:     &MinimizeSNMP,
+		SendingIPS:       sendingIPS,
+		MinimizeSNMP:     &minimizeSNMP,
 	}
 }
 
@@ -77,32 +78,32 @@ func NewDeviceRouter(
 // Optional fields that can be set include:
 // - DeviceDescription
 // - SiteID
-// - DeviceBGPFlowSpec
+// - DeviceBGPFlowSpec.
 func NewDeviceDNS(
 	// common required
-	DeviceName string,
-	DeviceSubType DeviceSubtype,
-	DeviceSampleRate int,
-	PlanID ID,
+	deviceName string,
+	deviceSubType DeviceSubtype,
+	deviceSampleRate int,
+	planID ID,
 	// dns required
-	CDNAttr CDNAttribute,
+	cdnAttr CDNAttribute,
 ) *Device {
 	bgpType := DeviceBGPTypeNone // default
 	return &Device{
 		DeviceType:       DeviceTypeHostNProbeDNSWWW,
-		DeviceName:       DeviceName,
-		DeviceSubType:    DeviceSubType,
-		DeviceSampleRate: DeviceSampleRate,
-		PlanID:           &PlanID,
+		DeviceName:       deviceName,
+		DeviceSubType:    deviceSubType,
+		DeviceSampleRate: deviceSampleRate,
+		PlanID:           &planID,
 		DeviceBGPType:    &bgpType,
-		CDNAttr:          &CDNAttr,
+		CDNAttr:          &cdnAttr,
 	}
 }
 
 // WithBGPTypeDevice is alternative to WithBGPTypeOtherDevice
 // Optional fields that can be set for BGPTypeDevice include:
 // - DeviceBGPPassword
-// Note: either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required for DeviceBGPTypeDevice
+// Note: either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required for DeviceBGPTypeDevice.
 func (d *Device) WithBGPTypeDevice(deviceBGPNeighborASN string) *Device {
 	bgpType := DeviceBGPTypeDevice
 	d.DeviceBGPType = &bgpType
@@ -110,7 +111,7 @@ func (d *Device) WithBGPTypeDevice(deviceBGPNeighborASN string) *Device {
 	return d
 }
 
-// WithBGPTypeOtherDevice is alternative to WithBGPTypeDevice
+// WithBGPTypeOtherDevice is alternative to WithBGPTypeDevice.
 func (d *Device) WithBGPTypeOtherDevice(useBGPDeviceID ID) *Device {
 	bgpType := DeviceBGPTypeOtherDevice
 	d.DeviceBGPType = &bgpType
@@ -149,7 +150,7 @@ func (c *SNMPv3Conf) WithPrivacy(protocol PrivacyProtocol, pass string) *SNMPv3C
 	return c
 }
 
-// DeviceSite embedded under Device differs from regular Site in that all fields are optional
+// DeviceSite embedded under Device differs from regular Site in that all fields are optional.
 type DeviceSite struct {
 	ID        *ID
 	CompanyID *ID
@@ -158,7 +159,7 @@ type DeviceSite struct {
 	SiteName  *string
 }
 
-// DevicePlan embedded under Device differs from regular Plan in that all fields are optional
+// DevicePlan embedded under Device differs from regular Plan in that all fields are optional.
 type DevicePlan struct {
 	ID            *ID
 	CompanyID     *ID
@@ -194,7 +195,7 @@ const (
 type DeviceSubtype string
 
 const (
-	// for DeviceType = DeviceTypeRouter
+	// for DeviceType = DeviceTypeRouter.
 	DeviceSubtypeRouter                 DeviceSubtype = "router"
 	DeviceSubtypeCiscoAsa               DeviceSubtype = "cisco_asa"
 	DeviceSubtypePaloalto               DeviceSubtype = "paloalto"
@@ -212,7 +213,7 @@ const (
 	DeviceSubtypeAdvancedSflow          DeviceSubtype = "advanced_sflow"
 	DeviceSubtypeA10Cgn                 DeviceSubtype = "a10_cgn"
 
-	// for DeviceType = DeviceTypeHostNProbeDNSWWW
+	// for DeviceType = DeviceTypeHostNProbeDNSWWW.
 	DeviceSubtypeKprobe      DeviceSubtype = "kprobe"
 	DeviceSubtypeNprobe      DeviceSubtype = "nprobe"
 	DeviceSubtypeAwsSubnet   DeviceSubtype = "aws_subnet"

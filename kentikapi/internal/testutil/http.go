@@ -54,13 +54,13 @@ func (h *SpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 type MultipleResponseSpyHTTPHandler struct {
 	t testing.TB
 	// Responses to return to the client
-	responses []HttpResponse
+	responses []HTTPResponse
 
 	// Requests spied by the handler
-	Requests []HttpRequest
+	Requests []HTTPRequest
 }
 
-func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HttpResponse) *MultipleResponseSpyHTTPHandler {
+func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse) *MultipleResponseSpyHTTPHandler {
 	return &MultipleResponseSpyHTTPHandler{
 		t:         t,
 		responses: responses,
@@ -74,9 +74,9 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 	err = r.Body.Close()
 	assert.NoError(h.t, err)
 
-	h.Requests = append(h.Requests, HttpRequest{
+	h.Requests = append(h.Requests, HTTPRequest{
 		Method: r.Method,
-		Url_:   r.URL,
+		URL:    r.URL,
 		Header: r.Header,
 		Body:   string(body),
 	})
@@ -88,9 +88,9 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 	assert.NoError(h.t, err)
 }
 
-func (h *MultipleResponseSpyHTTPHandler) response() HttpResponse {
+func (h *MultipleResponseSpyHTTPHandler) response() HTTPResponse {
 	if len(h.Requests) > len(h.responses) {
-		return HttpResponse{
+		return HTTPResponse{
 			StatusCode: http.StatusGone,
 			Body: fmt.Sprintf(
 				"spyHTTPHandler: unexpected request, requests count: %v, expected: %v",
@@ -102,20 +102,20 @@ func (h *MultipleResponseSpyHTTPHandler) response() HttpResponse {
 	return h.responses[len(h.Requests)-1]
 }
 
-type HttpRequest struct {
+type HTTPRequest struct {
 	Method string
-	Url_   *url.URL
+	URL    *url.URL
 	Header http.Header
 	Body   string
 }
 
-type HttpResponse struct {
+type HTTPResponse struct {
 	StatusCode int
 	Body       string
 }
 
-func NewErrorHTTPResponse(statusCode int) HttpResponse {
-	return HttpResponse{
+func NewErrorHTTPResponse(statusCode int) HTTPResponse {
+	return HTTPResponse{
 		StatusCode: statusCode,
 		Body:       fmt.Sprintf(`{"error":"%v"}`, http.StatusText(statusCode)),
 	}

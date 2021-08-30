@@ -9,6 +9,8 @@ import (
 )
 
 func TestConvertOrNoneReturnsValue(t *testing.T) {
+	t.Parallel()
+
 	// given
 	input := new(string)
 	*input = "42"
@@ -25,8 +27,10 @@ func TestConvertOrNoneReturnsValue(t *testing.T) {
 }
 
 func TestConvertOrNoneReturnsNil(t *testing.T) {
+	t.Parallel()
+
 	// given
-	var input *string = nil
+	var input *string
 	var output *int
 
 	// when
@@ -39,6 +43,8 @@ func TestConvertOrNoneReturnsNil(t *testing.T) {
 }
 
 func TestConvertOrNoneReturnsError(t *testing.T) {
+	t.Parallel()
+
 	// given
 	input := new(string)
 	*input = "0xFF"
@@ -53,6 +59,8 @@ func TestConvertOrNoneReturnsError(t *testing.T) {
 }
 
 func TestConvertListSuccess(t *testing.T) {
+	t.Parallel()
+
 	// given
 	input := [...]string{"-13", "22", "742"}
 	var output []int
@@ -69,6 +77,8 @@ func TestConvertListSuccess(t *testing.T) {
 }
 
 func TestConvertListError(t *testing.T) {
+	t.Parallel()
+
 	// given
 	input := []string{"42", "0xFF"}
 	var output []int

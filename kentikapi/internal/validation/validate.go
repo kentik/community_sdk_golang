@@ -8,24 +8,26 @@ import (
 
 type Direction string
 
-const DirectionRequest Direction = "request"
-const DirectionResponse Direction = "response"
+const (
+	DirectionRequest  Direction = "request"
+	DirectionResponse Direction = "response"
+)
 
 // CheckRequestRequiredFields checks if resource's required fields are not nil.
-// Eg. for method=post, it returns error if any of resource's fields marked as `request:"post"`` are set to nil
+// Eg. for method=post, it returns error if any of resource's fields marked as `request:"post"`` are set to nil.
 func CheckRequestRequiredFields(method string, resource interface{}) error {
 	lowercaseMethod := strings.ToLower(method)
 	return validateWrapper(lowercaseMethod, DirectionRequest, resource)
 }
 
 // CheckResponseRequiredFields checks if resource's required fields are not nil.
-// Eg. for method=get, it returns error if any of resource's fields marked as `response:"get"`` are set to nil
+// Eg. for method=get, it returns error if any of resource's fields marked as `response:"get"`` are set to nil.
 func CheckResponseRequiredFields(method string, resource interface{}) error {
 	lowercaseMethod := strings.ToLower(method)
 	return validateWrapper(lowercaseMethod, DirectionResponse, resource)
 }
 
-// validateWrapper returns error containing the list of required fields that happen to be nil
+// validateWrapper returns error containing the list of required fields that happen to be nil.
 func validateWrapper(method string, direction Direction, resource interface{}) error {
 	missing := validate(method, string(direction), getTypeName(resource), reflect.ValueOf(resource))
 	if len(missing) > 0 {
@@ -38,21 +40,21 @@ func getTypeName(i interface{}) string {
 	tResource := reflect.TypeOf(i)
 	if tResource.Kind() == reflect.Ptr {
 		return "*" + tResource.Elem().Name()
-	} else {
-		return tResource.Name()
 	}
+	return tResource.Name()
 }
 
+//nolint:exhaustive
 func validate(method string, direction string, path string, v reflect.Value) []string {
 	missing := make([]string, 0)
 
 	switch v.Kind() {
-
 	case reflect.Struct:
 		for i := 0; i < v.NumField(); i++ {
 			field := v.Field(i)
 			fieldPath := path + "." + v.Type().Field(i).Name
-			if (field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface || field.Kind() == reflect.Slice) && field.IsNil() {
+			if (field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface || field.Kind() == reflect.Slice) &&
+				field.IsNil() {
 				requiredForMethods := v.Type().Field(i).Tag.Get(direction)
 				if strings.Contains(requiredForMethods, method) {
 					missing = append(missing, fieldPath)
@@ -78,7 +80,6 @@ func validate(method string, direction string, path string, v reflect.Value) []s
 
 	default:
 		// primitive value has no field tags so nothing to validate
-
 	}
 	return missing
 }
