@@ -194,6 +194,97 @@ func TestClient_GetAllUsers(t *testing.T) {
 	}
 }
 
+func TestClient_GetUser_WithTimeout(t *testing.T) {
+	tests := []struct {
+		name           string
+		responses      []testutil.HTTPResponse
+		expectedResult *models.User
+		expectedError  bool
+		// timeout and expected requests are strictly connected. The server sleeps for 1 ms before each response.
+		timeout      *time.Duration
+		expectedReqs int
+	}{
+		{
+			name: "status bad request",
+			responses: []testutil.HTTPResponse{
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+			timeout:       durationPtr(15 * time.Millisecond),
+			expectedReqs:  1,
+		}, {
+			name: "timeout is longer than the wait for response with retries",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+			timeout:       durationPtr(35 * time.Millisecond),
+			expectedReqs:  3,
+		}, {
+			name: "timeout after 1 request",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+			timeout:       durationPtr(5 * time.Millisecond),
+			expectedReqs:  1,
+		}, {
+			name: "default timeout",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+			expectedReqs:  3,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			h := testutil.NewMultipleResponseSpyHTTPHandlerSleep(t, tt.responses)
+			s := httptest.NewServer(h)
+			defer s.Close()
+
+			c := kentikapi.NewClient(kentikapi.Config{
+				APIURL:    s.URL,
+				AuthEmail: dummyAuthEmail,
+				AuthToken: dummyAuthToken,
+				RetryCfg: httputil.RetryConfig{
+					MinDelay: durationPtr(1 * time.Microsecond),
+					MaxDelay: durationPtr(10 * time.Microsecond),
+				},
+				Timeout: tt.timeout,
+			})
+
+			// act
+			result, err := c.Users.Get(context.Background(), testUserID)
+
+			// assert
+			t.Logf("Got result: %v, err: %v", result, err)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tt.expectedReqs, len(h.Requests), "invalid number of requests")
+			for _, r := range h.Requests {
+				assert.Equal(t, http.MethodGet, r.Method)
+				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
+				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
+				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
+			}
+
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
+
 func TestClient_GetUser(t *testing.T) {
 	tests := []struct {
 		name           string

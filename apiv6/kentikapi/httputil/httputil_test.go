@@ -106,6 +106,10 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 	}
 }
 
+func durationPtr(duration time.Duration) *time.Duration {
+	return &duration
+}
+
 type spyTransport struct {
 	transportError error
 	requestsCount  int
@@ -117,9 +121,5 @@ func (t *spyTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 }
 
 func intPtr(v int) *int {
-	return &v
-}
-
-func durationPtr(v time.Duration) *time.Duration {
 	return &v
 }
