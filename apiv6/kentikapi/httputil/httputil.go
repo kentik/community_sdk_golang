@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 )
 
-// NewRetryingClient returns new http.Client with request retry strategy.
+// NewRetryingClient returns new retryablehttp.Client with request retry strategy.
 // Exponential backoff algorithm is used to calculate delay between retries.
 // Retry-After header of HTTP 429 response is respected while calculating the retry delay.
 //
@@ -20,7 +20,7 @@ import (
 // - Retry on underlying http.Client.Do() temporary errors.
 //
 // The client performs logging to os.Stderr.
-func NewRetryingClient(cfg ClientConfig) *http.Client {
+func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	cfg.FillDefaults()
 
 	c := retryablehttp.NewClient()
@@ -37,7 +37,13 @@ func NewRetryingClient(cfg ClientConfig) *http.Client {
 	c.CheckRetry = makeRetryPolicy(cfg.RetryCfg.RetryableStatusCodes, cfg.RetryCfg.RetryableMethods)
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
-	return c.StandardClient()
+	return c
+}
+
+// NewRetryingStdClient returns new http.Client with request retry strategy.
+// See NewRetryingClient for more information.
+func NewRetryingStdClient(cfg ClientConfig) *http.Client {
+	return NewRetryingClient(cfg).StandardClient()
 }
 
 // ClientConfig holds configuration for retrying client.

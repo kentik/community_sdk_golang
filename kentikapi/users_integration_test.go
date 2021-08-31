@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
@@ -193,47 +196,101 @@ func TestClient_GetAllUsers(t *testing.T) {
 func TestClient_GetUser(t *testing.T) {
 	tests := []struct {
 		name           string
-		responseCode   int
-		responseBody   string
+		responses      []testutil.HttpResponse
 		expectedResult *models.User
 		expectedError  bool
 	}{
 		{
 			name:          "status bad request",
-			responseCode:  http.StatusBadRequest,
-			responseBody:  `{"error":"Bad Request"}`,
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusBadRequest, Body:`{"error":"Bad Request"}`},
+			},
 			expectedError: true,
 		}, {
 			name:          "invalid response format",
-			responseCode:  http.StatusOK,
-			responseBody:  "invalid JSON",
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusOK, Body:"invalid JSON"},
+			},
 			expectedError: true,
 		}, {
 			name:          "empty response",
-			responseCode:  http.StatusOK,
-			responseBody:  "{}",
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusOK, Body:"{}"},
+			},
 			expectedError: true,
 		}, {
 			name:         "user returned",
-			responseCode: http.StatusOK,
-			responseBody: `{
-				"user": {
-					"id": "145999",
-					"username": "testuser",
-					"user_full_name": "Test User",
-					"user_email": "test@user.example",
-					"role": "Member",
-					"email_service": true,
-					"email_product": true,
-					"last_login": null,
-					"created_date": "2020-12-09T14:48:42.187Z",
-					"updated_date": "2020-12-09T14:48:43.243Z",
-					"company_id": "74333",
-					"user_api_token": "****************************a997",
-        			"filters": {},
-        			"saved_filters": []
-				}
-			}`,
+			responses: []testutil.HttpResponse{
+				{
+					StatusCode:http.StatusOK,
+				 	Body:`{
+						"user": {
+							"id": "145999",
+							"username": "testuser",
+							"user_full_name": "Test User",
+							"user_email": "test@user.example",
+							"role": "Member",
+							"email_service": true,
+							"email_product": true,
+							"last_login": null,
+							"created_date": "2020-12-09T14:48:42.187Z",
+							"updated_date": "2020-12-09T14:48:43.243Z",
+							"company_id": "74333",
+							"user_api_token": "****************************a997",
+							"filters": {},
+							"saved_filters": []
+						}
+					}`,
+				},
+			},
+			expectedResult: &models.User{
+				ID:           145999,
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: true,
+				LastLogin:    nil,
+				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
+				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
+				CompanyID:    74333,
+				UserAPIToken: testutil.StringPtr("****************************a997"),
+			},
+		}, {
+			name: "retry on status 502 Bad Gateway until invalid response format received",
+			responses: []testutil.HttpResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode:http.StatusOK, Body:"invalid JSON"},
+			},
+			expectedError: true,
+		}, {
+			name: "retry till success when status 429 Too Many Requests received",
+			responses: []testutil.HttpResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				{
+					StatusCode:http.StatusOK,
+					Body:`{
+							"user": {
+								"id": "145999",
+								"username": "testuser",
+								"user_full_name": "Test User",
+								"user_email": "test@user.example",
+								"role": "Member",
+								"email_service": true,
+								"email_product": true,
+								"last_login": null,
+								"created_date": "2020-12-09T14:48:42.187Z",
+								"updated_date": "2020-12-09T14:48:43.243Z",
+								"company_id": "74333",
+								"user_api_token": "****************************a997",
+								"filters": {},
+								"saved_filters": []
+							}
+						}`,
+				},
+			},
 			expectedResult: &models.User{
 				ID:           145999,
 				Username:     "testuser",
@@ -253,7 +310,7 @@ func TestClient_GetUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
 			defer s.Close()
 
@@ -261,6 +318,10 @@ func TestClient_GetUser(t *testing.T) {
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
+				RetryCfg: httputil.RetryConfig{
+					MinDelay: durationPtr(1 * time.Microsecond),
+					MaxDelay: durationPtr(10 * time.Microsecond),
+				},
 			})
 
 			// act
@@ -274,11 +335,13 @@ func TestClient_GetUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, 1, h.RequestsCount)
-			assert.Equal(t, http.MethodGet, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), h.LastURL.Path)
-			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
-			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
+			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			for _, r := range h.Requests {
+				assert.Equal(t, http.MethodGet, r.Method)
+				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.Url_.Path)
+				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
+				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
+			}
 
 			assert.Equal(t, tt.expectedResult, result)
 		})
@@ -287,37 +350,16 @@ func TestClient_GetUser(t *testing.T) {
 
 func TestClient_CreateUser(t *testing.T) {
 	tests := []struct {
-		name string
-		user models.User
+		name     string
+		retryMax *int
+		user     models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
-		responseCode        int
-		responseBody        string
+		responses           []testutil.HttpResponse
 		expectedResult      *models.User
 		expectedError       bool
 	}{
 		{
-			name:                "empty user given, status bad request received",
-			user:                models.User{},
-			expectedRequestBody: newEmptyUserRequestBody(),
-			responseCode:        http.StatusBadRequest,
-			responseBody:        `{"error":"Bad Request"}`,
-			expectedError:       true,
-		}, {
-			name:                "invalid response format",
-			user:                models.User{},
-			expectedRequestBody: newEmptyUserRequestBody(),
-			responseCode:        http.StatusCreated,
-			responseBody:        "invalid JSON",
-			expectedError:       true,
-		}, {
-			name:                "empty response",
-			user:                models.User{},
-			expectedRequestBody: newEmptyUserRequestBody(),
-			responseCode:        http.StatusCreated,
-			responseBody:        "{}",
-			expectedError:       true,
-		}, {
 			name: "user created",
 			user: *models.NewUser(models.UserRequiredFields{
 				Username:     "testuser",
@@ -337,25 +379,138 @@ func TestClient_CreateUser(t *testing.T) {
 					"email_product":  false,
 				},
 			},
-			responseCode: http.StatusCreated,
-			responseBody: `{
-				"user": {
-					"id": "145999",
-					"username": "testuser",
+			responses: []testutil.HttpResponse{
+				{
+					StatusCode:http.StatusCreated,
+					Body:`{
+						"user": {
+							"id": "145999",
+							"username": "testuser",
+							"user_full_name": "Test User",
+							"user_email": "test@user.example",
+							"role": "Member",
+							"email_service": "true",
+							"email_product": "false",
+							"last_login": null,
+							"created_date": "2020-12-09T14:48:42.187Z",
+							"updated_date": "2020-12-09T14:48:43.243Z",
+							"company_id": "74333",
+							"user_api_token": null,
+							"filters": {},
+							"saved_filters": []
+						}
+					}`,
+				},
+			},
+			expectedResult: &models.User{
+				ID:           145999,
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: false,
+				LastLogin:    nil,
+				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
+				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
+				CompanyID:    74333,
+				UserAPIToken: nil,
+			},
+		}, {
+			name:                "status bad request",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusBadRequest, Body:`{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+		}, {
+			name:                "invalid response format",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusCreated, Body:"invalid JSON"},
+			},
+			expectedError: true,
+		}, {
+			name:                "empty response",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responses: []testutil.HttpResponse{
+				{StatusCode:http.StatusCreated, Body:"{}"},
+			},
+			expectedError: true,
+		}, {
+			name:                "retry 4 times and when status 429, 500, 502, 503, 504 received and last status is 429",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responses: []testutil.HttpResponse{
+				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
+				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+			},
+			expectedError: true,
+		}, {
+			name:                "retry 5 times when status 429, 500, 502, 503, 504 received and last status is 502",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			retryMax:            intPtr(5),
+			responses: []testutil.HttpResponse{
+				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
+				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+			},
+			expectedError: true,
+		}, {
+			name: "retry till success when status 429 too many requests received",
+			user: *models.NewUser(models.UserRequiredFields{
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: false,
+			}),
+			expectedRequestBody: object{
+				"user": object{
+					"username":       "testuser",
 					"user_full_name": "Test User",
-					"user_email": "test@user.example",
-					"role": "Member",
-					"email_service": "true",
-					"email_product": "false",
-					"last_login": null,
-					"created_date": "2020-12-09T14:48:42.187Z",
-					"updated_date": "2020-12-09T14:48:43.243Z",
-					"company_id": "74333",
-					"user_api_token": null,
-					"filters": {},
-					"saved_filters": []
-				}
-			}`,
+					"user_email":     "test@user.example",
+					"role":           "Member",
+					"email_service":  true,
+					"email_product":  false,
+				},
+			},
+			responses: []testutil.HttpResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				{
+					StatusCode:http.StatusCreated,
+					Body:`{
+						"user": {
+							"id": "145999",
+							"username": "testuser",
+							"user_full_name": "Test User",
+							"user_email": "test@user.example",
+							"role": "Member",
+							"email_service": "true",
+							"email_product": "false",
+							"last_login": null,
+							"created_date": "2020-12-09T14:48:42.187Z",
+							"updated_date": "2020-12-09T14:48:43.243Z",
+							"company_id": "74333",
+							"user_api_token": null,
+							"filters": {},
+							"saved_filters": []
+						}
+					}`,
+				},
+			},
 			expectedResult: &models.User{
 				ID:           145999,
 				Username:     "testuser",
@@ -375,7 +530,7 @@ func TestClient_CreateUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
 			defer s.Close()
 
@@ -383,10 +538,16 @@ func TestClient_CreateUser(t *testing.T) {
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
+				RetryCfg: httputil.RetryConfig{
+					MaxAttempts: tt.retryMax,
+					MinDelay:    durationPtr(1 * time.Microsecond),
+					MaxDelay:    durationPtr(10 * time.Microsecond),
+				},
 			})
 
 			// act
-			result, err := c.Users.Create(context.Background(), tt.user)
+			result, err := c.Users.
+				Create(context.Background(), tt.user)
 
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)
@@ -396,14 +557,16 @@ func TestClient_CreateUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, 1, h.RequestsCount)
-			assert.Equal(t, http.MethodPost, h.LastMethod)
-			assert.Equal(t, "/user", h.LastURL.Path)
-			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
-			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
-			assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, h.LastRequestBody))
-
+			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			for _, r := range h.Requests {
+				assert.Equal(t, http.MethodPost, r.Method)
+				assert.Equal(t, "/user", r.Url_.Path)
+				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
+				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
+				assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, r.Body))
+			}
 			assert.Equal(t, tt.expectedResult, result)
+
 		})
 	}
 }
@@ -596,6 +759,14 @@ func TestClient_DeleteUser(t *testing.T) {
 			assert.Equal(t, "", h.LastRequestBody)
 		})
 	}
+}
+
+func durationPtr(v time.Duration) *time.Duration {
+	return &v
+}
+
+func intPtr(v int) *int {
+	return &v
 }
 
 func newEmptyUserRequestBody() map[string]interface{} {

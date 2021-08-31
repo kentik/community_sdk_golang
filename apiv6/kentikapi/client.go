@@ -69,7 +69,7 @@ func makeCloudExportConfig(c Config) *cloudexport.Configuration {
 	cfg.Servers[0].URL = c.CloudExportAPIURL
 	cfg.Servers[0].Description = "Kentik CloudExport server"
 
-	cfg.HTTPClient = httputil.NewRetryingClient(makeRetryingClientConfig(c))
+	cfg.HTTPClient = httputil.NewRetryingStdClient(makeRetryingClientConfig(c))
 	cfg.Debug = c.LogPayloads
 	return cfg
 }
@@ -85,7 +85,7 @@ func makeSyntheticsConfig(c Config) *synthetics.Configuration {
 	cfg.Servers[0].URL = c.SyntheticsAPIURL
 	cfg.Servers[0].Description = "Kentik Synthetics server"
 
-	cfg.HTTPClient = httputil.NewRetryingClient(makeRetryingClientConfig(c))
+	cfg.HTTPClient = httputil.NewRetryingStdClient(makeRetryingClientConfig(c))
 	cfg.Debug = c.LogPayloads
 	return cfg
 }
