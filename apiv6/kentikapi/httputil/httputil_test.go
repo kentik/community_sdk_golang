@@ -3,8 +3,10 @@ package httputil_test
 import (
 	"context"
 	"errors"
+	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
@@ -104,6 +106,43 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 			assert.Equal(t, "fake error", dnsErr.Err)
 		})
 	}
+}
+
+func TestRetryingClientRequestTimeout(t *testing.T) {
+	t.Parallel()
+
+	handlerFunc := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(10 * time.Second)
+		_, err := io.WriteString(w, "done")
+		if err != nil {
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+
+	c := NewRetryingClient(ClientConfig{
+		RetryCfg: RetryConfig{
+			MaxAttempts: intPtr(2),
+			MinDelay:    durationPtr(750 * time.Millisecond),
+			MaxDelay:    durationPtr(10000 * time.Millisecond),
+		},
+		Timeout: durationPtr(1 * time.Second),
+	})
+
+	backend := httptest.NewServer(handlerFunc)
+
+	testUrl := backend.URL
+	req, err := retryablehttp.NewRequest(http.MethodGet, testUrl, nil)
+	if err != nil {
+		t.Error("Request error", err)
+		return
+	}
+
+	resp, err := c.Do(req.WithContext(context.Background()))
+	assert.Error(t, err)
+	t.Logf("Got response: %v, err: %v", resp, err)
+
+	assert.True(t, isTimeoutError(err), "timeout error expected")
 }
 
 type spyTransport struct {

@@ -12,13 +12,12 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 )
 
-//nolint:gosec
 const (
 	authEmailKey    = "X-CH-Auth-Email"
 	authAPITokenKey = "X-CH-Auth-API-Token"
 )
 
-type RestClient struct {
+type restClient struct {
 	config     RestClientConfig
 	httpClient *retryablehttp.Client
 }
@@ -30,8 +29,8 @@ type RestClientConfig struct {
 	RetryCfg  httputil.RetryConfig
 }
 
-func NewRestClient(c RestClientConfig) *RestClient {
-	return &RestClient{
+func NewRestClient(c RestClientConfig) *restClient {
+	return &restClient{
 		config: c,
 		httpClient: httputil.
 			NewRetryingClient(
@@ -44,7 +43,7 @@ func NewRestClient(c RestClientConfig) *RestClient {
 }
 
 // Get sends GET request to the API and returns raw response body.
-func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
+func (c *restClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
 	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -70,9 +69,8 @@ func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.Ra
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// Post sends POST request to the API and returns raw response body.
-func (c *RestClient) Post(ctx context.Context,
-	path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+// Post sends POST request to the API and returns raw response body
+func (c *restClient) Post(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
 	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -97,9 +95,8 @@ func (c *RestClient) Post(ctx context.Context,
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// Put sends PUT request to the API and returns raw response body.
-func (c *RestClient) Put(ctx context.Context,
-	path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+// Put sends PUT request to the API and returns raw response body
+func (c *restClient) Put(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
 	request, err := c.newRequest(ctx, http.MethodPut, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -124,8 +121,8 @@ func (c *RestClient) Put(ctx context.Context,
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// Delete sends DELETE request to the API and returns raw response body.
-func (c *RestClient) Delete(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
+// Delete sends DELETE request to the API and returns raw response body
+func (c *restClient) Delete(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
 	request, err := c.newRequest(ctx, http.MethodDelete, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -159,8 +156,7 @@ func errorFromResponseStatus(r *http.Response, responseBody string) error {
 	return nil
 }
 
-func (c *RestClient) newRequest(ctx context.Context, method string,
-	path string, payload json.RawMessage) (*retryablehttp.Request, error) {
+func (c *restClient) newRequest(ctx context.Context, method string, path string, payload json.RawMessage) (*retryablehttp.Request, error) {
 	request, err := http.NewRequestWithContext(ctx, method, c.makeFullURL(path), bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
@@ -173,6 +169,6 @@ func (c *RestClient) newRequest(ctx context.Context, method string,
 	return retryablehttp.FromRequest(request)
 }
 
-func (c *RestClient) makeFullURL(path string) string {
+func (c *restClient) makeFullURL(path string) string {
 	return c.config.APIURL + path
 }
