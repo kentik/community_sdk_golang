@@ -3,9 +3,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -14,7 +14,7 @@ type QueryAPI struct {
 }
 
 // NewQueryAPI is constructor.
-func NewQueryAPI(transport connection.Transport) *QueryAPI {
+func NewQueryAPI(transport api_connection.Transport) *QueryAPI {
 	return &QueryAPI{
 		BaseAPI{Transport: transport},
 	}
@@ -22,10 +22,10 @@ func NewQueryAPI(transport connection.Transport) *QueryAPI {
 
 // SQL query.
 func (a *QueryAPI) SQL(ctx context.Context, sql string) (models.QuerySQLResult, error) {
-	payload := payloads.QuerySQLRequest{Query: sql}
+	payload := api_payloads.QuerySQLRequest{Query: sql}
 
-	var response payloads.QuerySQLResponse
-	if err := a.PostAndValidate(ctx, endpoints.QuerySQL(), payload, &response); err != nil {
+	var response api_payloads.QuerySQLResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.QuerySQL(), payload, &response); err != nil {
 		return models.QuerySQLResult{}, err
 	}
 
@@ -34,13 +34,13 @@ func (a *QueryAPI) SQL(ctx context.Context, sql string) (models.QuerySQLResult, 
 
 // Data query.
 func (a *QueryAPI) Data(ctx context.Context, query models.QueryObject) (models.QueryDataResult, error) {
-	payload, err := payloads.QueryObjectToPayload(query)
+	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {
 		return models.QueryDataResult{}, err
 	}
 
-	var response payloads.QueryDataResponse
-	if err := a.PostAndValidate(ctx, endpoints.QueryData(), payload, &response); err != nil {
+	var response api_payloads.QueryDataResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.QueryData(), payload, &response); err != nil {
 		return models.QueryDataResult{}, err
 	}
 
@@ -49,13 +49,13 @@ func (a *QueryAPI) Data(ctx context.Context, query models.QueryObject) (models.Q
 
 // Chart query.
 func (a *QueryAPI) Chart(ctx context.Context, query models.QueryObject) (models.QueryChartResult, error) {
-	payload, err := payloads.QueryObjectToPayload(query)
+	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {
 		return models.QueryChartResult{}, err
 	}
 
-	var response payloads.QueryChartResponse
-	if err := a.PostAndValidate(ctx, endpoints.QueryChart(), payload, &response); err != nil {
+	var response api_payloads.QueryChartResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.QueryChart(), payload, &response); err != nil {
 		return models.QueryChartResult{}, err
 	}
 
@@ -64,13 +64,13 @@ func (a *QueryAPI) Chart(ctx context.Context, query models.QueryObject) (models.
 
 // URL query.
 func (a *QueryAPI) URL(ctx context.Context, query models.QueryObject) (models.QueryURLResult, error) {
-	payload, err := payloads.QueryObjectToPayload(query)
+	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {
 		return models.QueryURLResult{}, err
 	}
 
-	var response payloads.QueryURLResponse
-	if err := a.PostAndValidate(ctx, endpoints.QueryURL(), payload, &response); err != nil {
+	var response api_payloads.QueryURLResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.QueryURL(), payload, &response); err != nil {
 		return models.QueryURLResult{}, err
 	}
 

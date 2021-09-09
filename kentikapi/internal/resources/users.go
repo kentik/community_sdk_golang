@@ -4,9 +4,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -16,14 +16,14 @@ type UsersAPI struct {
 }
 
 // NewUsersAPI creates new UsersAPI.
-func NewUsersAPI(transport connection.Transport) *UsersAPI {
+func NewUsersAPI(transport api_connection.Transport) *UsersAPI {
 	return &UsersAPI{BaseAPI{Transport: transport}}
 }
 
 // GetAll lists users.
 func (a *UsersAPI) GetAll(ctx context.Context) ([]models.User, error) {
-	var response payloads.GetAllUsersResponse
-	if err := a.GetAndValidate(ctx, endpoints.UsersPath, &response); err != nil {
+	var response api_payloads.GetAllUsersResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.UsersPath, &response); err != nil {
 		return nil, err
 	}
 
@@ -32,8 +32,8 @@ func (a *UsersAPI) GetAll(ctx context.Context) ([]models.User, error) {
 
 // Get retrieves user with given ID.
 func (a *UsersAPI) Get(ctx context.Context, id models.ID) (*models.User, error) {
-	var response payloads.GetUserResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetUserPath(id), &response); err != nil {
+	var response api_payloads.GetUserResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetUserPath(id), &response); err != nil {
 		return nil, err
 	}
 
@@ -42,11 +42,11 @@ func (a *UsersAPI) Get(ctx context.Context, id models.ID) (*models.User, error) 
 
 // Create creates new user.
 func (a *UsersAPI) Create(ctx context.Context, user models.User) (*models.User, error) {
-	var response payloads.CreateUserResponse
+	var response api_payloads.CreateUserResponse
 	err := a.PostAndValidate(
 		ctx,
-		endpoints.UserPath,
-		payloads.CreateUserRequest{User: payloads.UserToPayload(user)},
+		api_endpoints.UserPath,
+		api_payloads.CreateUserRequest{User: api_payloads.UserToPayload(user)},
 		&response,
 	)
 	if err != nil {
@@ -58,11 +58,11 @@ func (a *UsersAPI) Create(ctx context.Context, user models.User) (*models.User, 
 
 // Update updates the user.
 func (a *UsersAPI) Update(ctx context.Context, user models.User) (*models.User, error) {
-	var response payloads.UpdateUserResponse
+	var response api_payloads.UpdateUserResponse
 	err := a.UpdateAndValidate(
 		ctx,
-		endpoints.GetUserPath(user.ID),
-		payloads.UpdateUserRequest{User: payloads.UserToPayload(user)},
+		api_endpoints.GetUserPath(user.ID),
+		api_payloads.UpdateUserRequest{User: api_payloads.UserToPayload(user)},
 		&response,
 	)
 	if err != nil {
@@ -74,7 +74,7 @@ func (a *UsersAPI) Update(ctx context.Context, user models.User) (*models.User, 
 
 // Delete removes user with given ID.
 func (a *UsersAPI) Delete(ctx context.Context, id models.ID) error {
-	if err := a.DeleteAndValidate(ctx, endpoints.GetUserPath(id), nil); err != nil {
+	if err := a.DeleteAndValidate(ctx, api_endpoints.GetUserPath(id), nil); err != nil {
 		return err
 	}
 

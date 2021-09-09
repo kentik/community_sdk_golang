@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -31,7 +31,7 @@ func TestCreateCustomDimension(t *testing.T) {
 			"populators": []
 		}
 	}`
-	transport := &connection.StubTransport{ResponseBody: createResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimension := models.NewCustomDimension(
 		"c_testapi_dimension_1",
@@ -78,7 +78,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 			"populators": []
 		}
 	}`
-	transport := &connection.StubTransport{ResponseBody: updateResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(42)
 	dimension := models.CustomDimension{ID: dimensionID, DisplayName: "dimension_display_name2"}
@@ -322,7 +322,7 @@ func TestGetCustomDimension(t *testing.T) {
 			t.Parallel()
 
 			// arrange
-			transport := &connection.StubTransport{ResponseBody: tt.responseBody}
+			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
 			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 			dimensionID := 42
 
@@ -386,7 +386,7 @@ func TestGetAllCustomDimensions(t *testing.T) {
 			}
 		]
 	}`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
@@ -435,7 +435,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
@@ -488,7 +488,7 @@ func TestCreatePopulator(t *testing.T) {
 			"updated_date": "2020-12-15T07:55:23.0Z"
 		}
 	}`
-	transport := &connection.StubTransport{ResponseBody: createResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(24001)
 	populator := models.NewPopulator(
@@ -604,7 +604,7 @@ func TestUpdatePopulator(t *testing.T) {
         }
 	}`
 
-	transport := &connection.StubTransport{ResponseBody: updateResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(24001)
 	populatorID := models.ID(1510862280)
@@ -664,7 +664,7 @@ func TestDeletePopulator(t *testing.T) {
 
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act

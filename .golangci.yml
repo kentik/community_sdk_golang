@@ -11,6 +11,9 @@ issues:
   max-issues-per-linter: 0
   max-same-issues: 0
   exclude:
+    # TODO: These errors should be enabled
+    - don't use an underscore in package name
+    - should not use underscores in package names
     # EXC0002 golint: Annoying issue about not having a comment. The rare codebase has such comments
     - (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
     - (struct (of|with)|could be)

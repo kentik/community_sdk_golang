@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -15,17 +15,17 @@ type AlertingAPI struct {
 }
 
 // NewAlertingAPI is constructor.
-func NewAlertingAPI(transport connection.Transport) *AlertingAPI {
+func NewAlertingAPI(transport api_connection.Transport) *AlertingAPI {
 	return &AlertingAPI{
 		BaseAPI{Transport: transport},
 	}
 }
 
 func (a *AlertingAPI) CreateManualMitigation(ctx context.Context, mm models.ManualMitigation) error {
-	payload := payloads.ManualMitigationToPayload(mm)
-	var response payloads.CreateManualMitigationResponse
+	payload := api_payloads.ManualMitigationToPayload(mm)
+	var response api_payloads.CreateManualMitigationResponse
 
-	if err := a.PostAndValidate(ctx, endpoints.ManualMitigationPath, payload, &response); err != nil {
+	if err := a.PostAndValidate(ctx, api_endpoints.ManualMitigationPath, payload, &response); err != nil {
 		return err
 	}
 
@@ -37,9 +37,9 @@ func (a *AlertingAPI) CreateManualMitigation(ctx context.Context, mm models.Manu
 }
 
 func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, params models.AlertsQueryParams) ([]models.Alarm, error) {
-	var response payloads.GetActiveAlertsResponse
+	var response api_payloads.GetActiveAlertsResponse
 
-	path := endpoints.GetActiveAlertsPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
+	path := api_endpoints.GetActiveAlertsPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
 		params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)
 
 	if err := a.GetAndValidate(ctx, path, &response); err != nil {
@@ -51,8 +51,8 @@ func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, params models.AlertsQ
 
 func (a *AlertingAPI) GetAlertsHistory(ctx context.Context,
 	params models.AlertsQueryParams) ([]models.HistoricalAlert, error) {
-	var response payloads.GetHistoricalAlertsResponse
-	path := endpoints.GetAlertsHistoryPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
+	var response api_payloads.GetHistoricalAlertsResponse
+	path := api_endpoints.GetAlertsHistoryPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
 		params.SortOrder, params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)
 
 	if err := a.GetAndValidate(ctx, path, &response); err != nil {

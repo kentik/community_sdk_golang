@@ -3,9 +3,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -13,13 +13,13 @@ type SavedFiltersAPI struct {
 	BaseAPI
 }
 
-func NewSavedFiltersAPI(transport connection.Transport) *SavedFiltersAPI {
+func NewSavedFiltersAPI(transport api_connection.Transport) *SavedFiltersAPI {
 	return &SavedFiltersAPI{BaseAPI{Transport: transport}}
 }
 
 func (a *SavedFiltersAPI) GetAll(ctx context.Context) ([]models.SavedFilter, error) {
-	var response payloads.GetAllSavedFilterResponse
-	if err := a.GetAndValidate(ctx, endpoints.SavedFiltersPath, &response); err != nil {
+	var response api_payloads.GetAllSavedFilterResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.SavedFiltersPath, &response); err != nil {
 		return nil, err
 	}
 
@@ -27,8 +27,8 @@ func (a *SavedFiltersAPI) GetAll(ctx context.Context) ([]models.SavedFilter, err
 }
 
 func (a *SavedFiltersAPI) Get(ctx context.Context, filterID models.ID) (*models.SavedFilter, error) {
-	var response payloads.GetSavedFilterResponse
-	err := a.GetAndValidate(ctx, endpoints.GetSavedFilter(filterID), &response)
+	var response api_payloads.GetSavedFilterResponse
+	err := a.GetAndValidate(ctx, api_endpoints.GetSavedFilter(filterID), &response)
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +39,10 @@ func (a *SavedFiltersAPI) Get(ctx context.Context, filterID models.ID) (*models.
 }
 
 func (a *SavedFiltersAPI) Create(ctx context.Context, savedFilter models.SavedFilter) (*models.SavedFilter, error) {
-	payload := payloads.SavedFilterToCreatePayload(savedFilter)
+	payload := api_payloads.SavedFilterToCreatePayload(savedFilter)
 
-	var response payloads.CreateSavedFilterResponse
-	if err := a.PostAndValidate(ctx, endpoints.SavedFilterPath, payload, &response); err != nil {
+	var response api_payloads.CreateSavedFilterResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.SavedFilterPath, payload, &response); err != nil {
 		return nil, err
 	}
 
@@ -51,10 +51,10 @@ func (a *SavedFiltersAPI) Create(ctx context.Context, savedFilter models.SavedFi
 }
 
 func (a *SavedFiltersAPI) Update(ctx context.Context, savedFilter models.SavedFilter) (*models.SavedFilter, error) {
-	payload := payloads.SavedFilterToUpdatePayload(savedFilter)
+	payload := api_payloads.SavedFilterToUpdatePayload(savedFilter)
 
-	var response payloads.UpdateSavedFilterResponse
-	if err := a.UpdateAndValidate(ctx, endpoints.GetSavedFilter(savedFilter.ID), payload, &response); err != nil {
+	var response api_payloads.UpdateSavedFilterResponse
+	if err := a.UpdateAndValidate(ctx, api_endpoints.GetSavedFilter(savedFilter.ID), payload, &response); err != nil {
 		return nil, err
 	}
 
@@ -63,5 +63,5 @@ func (a *SavedFiltersAPI) Update(ctx context.Context, savedFilter models.SavedFi
 }
 
 func (a *SavedFiltersAPI) Detete(ctx context.Context, id models.ID) error {
-	return a.DeleteAndValidate(ctx, endpoints.GetSavedFilter(id), nil)
+	return a.DeleteAndValidate(ctx, api_endpoints.GetSavedFilter(id), nil)
 }

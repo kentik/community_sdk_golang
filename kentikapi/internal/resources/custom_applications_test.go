@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -46,7 +46,7 @@ func TestGetAll(t *testing.T) {
 			"edate": "2020-12-11T07:08:20.968Z"
 		}
 	]`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	// act
@@ -92,7 +92,7 @@ func TestCreateCustomApplication(t *testing.T) {
 		"user_id": "144319",
 		"company_id": "74333"
 	}`
-	transport := &connection.StubTransport{ResponseBody: createResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	app := models.NewCustomApplication("apitest-customapp-1")
@@ -150,7 +150,7 @@ func TestUpdateCustomApplication(t *testing.T) {
 		"cdate": "2020-12-11T07:07:20.968Z",
 		"edate": "2020-12-11T07:07:20.968Z"
 	}`
-	transport := &connection.StubTransport{ResponseBody: updateResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	appID := models.ID(207)
@@ -198,7 +198,7 @@ func TestDeleteCustomApplication(t *testing.T) {
 
 	// arrange
 	deleteResponsePayload := "" // deleting custom application responds with empty body
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	appliationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	// act

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestCrerateManualMitigation(t *testing.T) {
     }`
 	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":1234,"methodID":12345,"minutesBeforeAutoStop":"20"}`
 
-	transport := &connection.StubTransport{ResponseBody: createResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	alertingAPI := resources.NewAlertingAPI(transport)
 	mm := models.ManualMitigation{
 		IPCidr:                "192.168.0.0/24",
@@ -83,7 +83,7 @@ func TestGetActiveAlerts(t *testing.T) {
             "alert_key_lookup": "443"
         }
     ]`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	alertingAPI := resources.NewAlertingAPI(transport)
 
 	alarmEndStr := "0000-00-00 00:00:00"
@@ -180,7 +180,7 @@ func TestGetAlertsHistory(t *testing.T) {
             "alert_key_lookup": "443"
         }
     ]`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	alertingAPI := resources.NewAlertingAPI(transport)
 
 	dateStr := "2021-01-19 13:50:00"

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -15,7 +15,7 @@ type DeviceLabelsAPI struct {
 }
 
 // NewDeviceLabelsAPI is constructor.
-func NewDeviceLabelsAPI(transport connection.Transport) *DeviceLabelsAPI {
+func NewDeviceLabelsAPI(transport api_connection.Transport) *DeviceLabelsAPI {
 	return &DeviceLabelsAPI{
 		BaseAPI{Transport: transport},
 	}
@@ -23,8 +23,8 @@ func NewDeviceLabelsAPI(transport connection.Transport) *DeviceLabelsAPI {
 
 // GetAll labels.
 func (a *DeviceLabelsAPI) GetAll(ctx context.Context) ([]models.DeviceLabel, error) {
-	var response payloads.GetAllDeviceLabelsResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetAllLabels(), &response); err != nil {
+	var response api_payloads.GetAllDeviceLabelsResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetAllLabels(), &response); err != nil {
 		return []models.DeviceLabel{}, err
 	}
 
@@ -33,8 +33,8 @@ func (a *DeviceLabelsAPI) GetAll(ctx context.Context) ([]models.DeviceLabel, err
 
 // Get label with given ID.
 func (a *DeviceLabelsAPI) Get(ctx context.Context, id models.ID) (*models.DeviceLabel, error) {
-	var response payloads.GetDeviceLabelResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetLabel(id), &response); err != nil {
+	var response api_payloads.GetDeviceLabelResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetLabel(id), &response); err != nil {
 		return nil, err
 	}
 
@@ -44,11 +44,11 @@ func (a *DeviceLabelsAPI) Get(ctx context.Context, id models.ID) (*models.Device
 
 // Create new label.
 func (a *DeviceLabelsAPI) Create(ctx context.Context, label models.DeviceLabel) (*models.DeviceLabel, error) {
-	payload := payloads.DeviceLabelToPayload(label)
+	payload := api_payloads.DeviceLabelToPayload(label)
 
-	request := payloads.CreateDeviceLabelRequest(payload)
-	var response payloads.CreateDeviceLabelResponse
-	if err := a.PostAndValidate(ctx, endpoints.CreateLabel(), request, &response); err != nil {
+	request := api_payloads.CreateDeviceLabelRequest(payload)
+	var response api_payloads.CreateDeviceLabelResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.CreateLabel(), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -58,11 +58,11 @@ func (a *DeviceLabelsAPI) Create(ctx context.Context, label models.DeviceLabel) 
 
 // Update label.
 func (a *DeviceLabelsAPI) Update(ctx context.Context, label models.DeviceLabel) (*models.DeviceLabel, error) {
-	payload := payloads.DeviceLabelToPayload(label)
+	payload := api_payloads.DeviceLabelToPayload(label)
 
-	request := payloads.UpdateDeviceLabelRequest(payload)
-	var response payloads.UpdateDeviceLabelResponse
-	if err := a.UpdateAndValidate(ctx, endpoints.UpdateLabel(label.ID), request, &response); err != nil {
+	request := api_payloads.UpdateDeviceLabelRequest(payload)
+	var response api_payloads.UpdateDeviceLabelResponse
+	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateLabel(label.ID), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -72,8 +72,8 @@ func (a *DeviceLabelsAPI) Update(ctx context.Context, label models.DeviceLabel) 
 
 // Delete label.
 func (a *DeviceLabelsAPI) Delete(ctx context.Context, id models.ID) error {
-	var response payloads.DeleteDeviceLabelResponse
-	if err := a.DeleteAndValidate(ctx, endpoints.DeleteLabel(id), &response); err != nil {
+	var response api_payloads.DeleteDeviceLabelResponse
+	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteLabel(id), &response); err != nil {
 		return err
 	}
 

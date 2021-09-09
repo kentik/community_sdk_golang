@@ -3,9 +3,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -13,14 +13,14 @@ type MyKentikPortalAPI struct {
 	BaseAPI
 }
 
-func NewMyKentikPortalAPI(transport connection.Transport) *MyKentikPortalAPI {
+func NewMyKentikPortalAPI(transport api_connection.Transport) *MyKentikPortalAPI {
 	return &MyKentikPortalAPI{BaseAPI{Transport: transport}}
 }
 
 // GetAll lists all tenants.
 func (a *MyKentikPortalAPI) GetAll(ctx context.Context) ([]models.Tenant, error) {
-	var response payloads.GetAllTenantsResponse
-	if err := a.GetAndValidate(ctx, endpoints.TenantsPath, &response); err != nil {
+	var response api_payloads.GetAllTenantsResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.TenantsPath, &response); err != nil {
 		return []models.Tenant{}, err
 	}
 
@@ -29,8 +29,8 @@ func (a *MyKentikPortalAPI) GetAll(ctx context.Context) ([]models.Tenant, error)
 
 // Get Tenant Info.
 func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*models.Tenant, error) {
-	var response payloads.TenantPayload
-	if err := a.GetAndValidate(ctx, endpoints.GetTenantPath(tenantID), &response); err != nil {
+	var response api_payloads.TenantPayload
+	if err := a.GetAndValidate(ctx, api_endpoints.GetTenantPath(tenantID), &response); err != nil {
 		return nil, err
 	}
 	tenant, err := response.ToTenant()
@@ -39,13 +39,13 @@ func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*model
 
 func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context,
 	tenantID models.ID, userEmail string) (*models.TenantUser, error) {
-	request := payloads.CreateTenantUserRequest{
-		User: payloads.CreateTenantUserPayload{
+	request := api_payloads.CreateTenantUserRequest{
+		User: api_payloads.CreateTenantUserPayload{
 			Email: userEmail,
 		},
 	}
-	var response payloads.TenantUserPayload
-	if err := a.PostAndValidate(ctx, endpoints.CreateTenantUserPath(tenantID), request, &response); err != nil {
+	var response api_payloads.TenantUserPayload
+	if err := a.PostAndValidate(ctx, api_endpoints.CreateTenantUserPath(tenantID), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +54,7 @@ func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context,
 }
 
 func (a *MyKentikPortalAPI) DeleteTenantUser(ctx context.Context, tenantID models.ID, userID models.ID) error {
-	if err := a.DeleteAndValidate(ctx, endpoints.DeleteTenantUserPath(tenantID, userID), nil); err != nil {
+	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteTenantUserPath(tenantID, userID), nil); err != nil {
 		return err
 	}
 

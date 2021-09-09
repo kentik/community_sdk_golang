@@ -3,9 +3,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -14,7 +14,7 @@ type SitesAPI struct {
 }
 
 // NewSitesAPI is constructor.
-func NewSitesAPI(transport connection.Transport) *SitesAPI {
+func NewSitesAPI(transport api_connection.Transport) *SitesAPI {
 	return &SitesAPI{
 		BaseAPI{Transport: transport},
 	}
@@ -22,8 +22,8 @@ func NewSitesAPI(transport connection.Transport) *SitesAPI {
 
 // GetAll sites.
 func (a *SitesAPI) GetAll(ctx context.Context) ([]models.Site, error) {
-	var response payloads.GetAllSitesResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetAllSites(), &response); err != nil {
+	var response api_payloads.GetAllSitesResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetAllSites(), &response); err != nil {
 		return []models.Site{}, err
 	}
 
@@ -32,8 +32,8 @@ func (a *SitesAPI) GetAll(ctx context.Context) ([]models.Site, error) {
 
 // Get site with given ID.
 func (a *SitesAPI) Get(ctx context.Context, id models.ID) (*models.Site, error) {
-	var response payloads.GetSiteResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetSite(id), &response); err != nil {
+	var response api_payloads.GetSiteResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetSite(id), &response); err != nil {
 		return nil, err
 	}
 
@@ -43,14 +43,14 @@ func (a *SitesAPI) Get(ctx context.Context, id models.ID) (*models.Site, error) 
 
 // Create new site.
 func (a *SitesAPI) Create(ctx context.Context, site models.Site) (*models.Site, error) {
-	payload, err := payloads.SiteToPayload(site)
+	payload, err := api_payloads.SiteToPayload(site)
 	if err != nil {
 		return nil, err
 	}
 
-	request := payloads.CreateSiteRequest{Payload: payload}
-	var response payloads.CreateSiteResponse
-	if err = a.PostAndValidate(ctx, endpoints.CreateSite(), request, &response); err != nil {
+	request := api_payloads.CreateSiteRequest{Payload: payload}
+	var response api_payloads.CreateSiteResponse
+	if err = a.PostAndValidate(ctx, api_endpoints.CreateSite(), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -60,14 +60,14 @@ func (a *SitesAPI) Create(ctx context.Context, site models.Site) (*models.Site, 
 
 // Update site.
 func (a *SitesAPI) Update(ctx context.Context, site models.Site) (*models.Site, error) {
-	payload, err := payloads.SiteToPayload(site)
+	payload, err := api_payloads.SiteToPayload(site)
 	if err != nil {
 		return nil, err
 	}
 
-	request := payloads.UpdateSiteRequest{Payload: payload}
-	var response payloads.UpdateSiteResponse
-	if err = a.UpdateAndValidate(ctx, endpoints.UpdateSite(site.ID), request, &response); err != nil {
+	request := api_payloads.UpdateSiteRequest{Payload: payload}
+	var response api_payloads.UpdateSiteResponse
+	if err = a.UpdateAndValidate(ctx, api_endpoints.UpdateSite(site.ID), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -77,7 +77,7 @@ func (a *SitesAPI) Update(ctx context.Context, site models.Site) (*models.Site, 
 
 // Delete site.
 func (a *SitesAPI) Delete(ctx context.Context, id models.ID) error {
-	if err := a.DeleteAndValidate(ctx, endpoints.DeleteSite(id), nil); err != nil {
+	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteSite(id), nil); err != nil {
 		return err
 	}
 

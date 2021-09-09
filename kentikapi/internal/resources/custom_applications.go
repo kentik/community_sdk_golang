@@ -3,9 +3,9 @@ package resources
 import (
 	"context"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/endpoints"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -14,7 +14,7 @@ type CustomApplicationsAPI struct {
 }
 
 // NewCustomApplicationsAPI is constructor.
-func NewCustomApplicationsAPI(transport connection.Transport) *CustomApplicationsAPI {
+func NewCustomApplicationsAPI(transport api_connection.Transport) *CustomApplicationsAPI {
 	return &CustomApplicationsAPI{
 		BaseAPI{Transport: transport},
 	}
@@ -22,8 +22,8 @@ func NewCustomApplicationsAPI(transport connection.Transport) *CustomApplication
 
 // GetAll custom applications.
 func (a *CustomApplicationsAPI) GetAll(ctx context.Context) ([]models.CustomApplication, error) {
-	var response payloads.GetAllCustomApplicationsResponse
-	if err := a.GetAndValidate(ctx, endpoints.GetAllCustomApplications(), &response); err != nil {
+	var response api_payloads.GetAllCustomApplicationsResponse
+	if err := a.GetAndValidate(ctx, api_endpoints.GetAllCustomApplications(), &response); err != nil {
 		return []models.CustomApplication{}, err
 	}
 
@@ -33,10 +33,10 @@ func (a *CustomApplicationsAPI) GetAll(ctx context.Context) ([]models.CustomAppl
 // Create new custom application.
 func (a *CustomApplicationsAPI) Create(ctx context.Context,
 	customApplication models.CustomApplication) (*models.CustomApplication, error) {
-	payload := payloads.CustomApplicationToPayload(customApplication)
-	request := payloads.CreateCustomApplicationRequest(payload)
-	var response payloads.CreateCustomApplicationResponse
-	if err := a.PostAndValidate(ctx, endpoints.CreateCustomApplication(), request, &response); err != nil {
+	payload := api_payloads.CustomApplicationToPayload(customApplication)
+	request := api_payloads.CreateCustomApplicationRequest(payload)
+	var response api_payloads.CreateCustomApplicationResponse
+	if err := a.PostAndValidate(ctx, api_endpoints.CreateCustomApplication(), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -45,12 +45,13 @@ func (a *CustomApplicationsAPI) Create(ctx context.Context,
 }
 
 // Update custom application.
+//nolint:lll
 func (a *CustomApplicationsAPI) Update(ctx context.Context,
 	customApplication models.CustomApplication) (*models.CustomApplication, error) {
-	payload := payloads.CustomApplicationToPayload(customApplication)
-	request := payloads.UpdateCustomApplicationRequest(payload)
-	var response payloads.UpdateCustomApplicationResponse
-	if err := a.UpdateAndValidate(ctx, endpoints.UpdateCustomApplication(customApplication.ID), request, &response); err != nil {
+	payload := api_payloads.CustomApplicationToPayload(customApplication)
+	request := api_payloads.UpdateCustomApplicationRequest(payload)
+	var response api_payloads.UpdateCustomApplicationResponse
+	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateCustomApplication(customApplication.ID), request, &response); err != nil {
 		return nil, err
 	}
 
@@ -60,5 +61,5 @@ func (a *CustomApplicationsAPI) Update(ctx context.Context,
 
 // Delete custom application.
 func (a *CustomApplicationsAPI) Delete(ctx context.Context, id models.ID) error {
-	return a.DeleteAndValidate(ctx, endpoints.DeleteCustomApplication(id), nil)
+	return a.DeleteAndValidate(ctx, api_endpoints.DeleteCustomApplication(id), nil)
 }

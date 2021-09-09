@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/validation"
 )
 
 // BaseAPI provides marshall/unmarshall + validation functionality for all resource APIs.
 type BaseAPI struct {
-	Transport connection.Transport
+	Transport api_connection.Transport
 }
 
 // GetAndValidate retrieves json at "url", unmarshalls and validates against required fields defined in struct tags of "output"

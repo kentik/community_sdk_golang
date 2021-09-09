@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -49,7 +49,7 @@ func TestQuerySQL(t *testing.T) {
 			}
 		]
 	}`
-	transport := &connection.StubTransport{ResponseBody: queryResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
 	// act
@@ -127,7 +127,7 @@ func TestQueryData(t *testing.T) {
 			}
 		]
 	}`
-	transport := &connection.StubTransport{ResponseBody: queryResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
 	agg1 := models.Aggregate{
@@ -222,7 +222,7 @@ func TestQueryChart(t *testing.T) {
 	// arrange
 	data := "ImageDataEncodedBase64=="
 	queryResponsePayload := `{"dataUri": "data:image/png;base64,ImageDataEncodedBase64=="}`
-	transport := &connection.StubTransport{ResponseBody: queryResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
 	agg1 := models.Aggregate{
@@ -366,7 +366,7 @@ func TestQueryURL(t *testing.T) {
 	// arrange
 	unquotedResponse := "https://portal.kentik.com/portal/#Charts/shortUrl/e0d24b3cc8dfe41f9093668e531cbe96"
 	queryResponsePayload := `"` + unquotedResponse + `"` // actual response is url in quotation marks
-	transport := &connection.StubTransport{ResponseBody: queryResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
 	agg1 := models.Aggregate{Name: "avg_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeAverage}

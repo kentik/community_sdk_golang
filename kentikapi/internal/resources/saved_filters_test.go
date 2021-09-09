@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -126,7 +126,7 @@ func TestSavedFiltersList(t *testing.T) {
 		},
 	}
 
-	transport := &connection.StubTransport{ResponseBody: getAllresponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getAllresponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	savedFilters, err := savedFiltersAPI.GetAll(context.Background())
@@ -192,7 +192,7 @@ func TestGetSavedFilterInfo(t *testing.T) {
 		FilterLevel:       "company",
 	}
 
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	savedFilter, err := savedFiltersAPI.Get(context.Background(), 8275)
@@ -262,7 +262,7 @@ func TestCreateSavedFilter(t *testing.T) {
 		"\"filterGroups\":[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\"," +
 		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
-	transport := &connection.StubTransport{ResponseBody: postResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: postResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	newSavedFilter := models.SavedFilter{
@@ -325,7 +325,7 @@ func TestUpdateSavedFilter(t *testing.T) {
 		"\"filterGroups\":[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\"," +
 		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
-	transport := &connection.StubTransport{ResponseBody: updateResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	filterID := 8153
@@ -363,7 +363,7 @@ func TestDeleteSavedFilter(t *testing.T) {
 
 	deleteResponsePayload := ""
 
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	filterID := 8153

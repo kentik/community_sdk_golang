@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -30,7 +30,7 @@ func TestCreateDeviceLabel(t *testing.T) {
 		"created_date": "2018-05-16T20:21:10.406Z",
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
-	transport := &connection.StubTransport{ResponseBody: createResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	label := models.NewDeviceLabel("apitest-device_label-1", "#00FF00")
 
@@ -73,7 +73,7 @@ func TestUpdateDeviceLabel(t *testing.T) {
 		"created_date": "2018-05-16T20:21:10.406Z",
 		"updated_date": "2018-06-16T20:21:10.406Z"
 	}`
-	transport := &connection.StubTransport{ResponseBody: updateResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	label := models.DeviceLabel{Name: "apitest-device_label-one", Color: "#AA00FF"}
 	label.ID = models.ID(42)
@@ -124,7 +124,7 @@ func TestGetLabel(t *testing.T) {
 		"created_date": "2018-05-16T20:21:10.406Z",
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	labelID := models.ID(32)
 
@@ -194,7 +194,7 @@ func TestGetAllLabels(t *testing.T) {
             "updated_date": "2020-11-20T13:45:27.430Z"
         }
     ]`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 
 	// act
@@ -243,7 +243,7 @@ func TestDeleteDeviceLabel(t *testing.T) {
 	{
 		"success": true
 	}`
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 
 	// act

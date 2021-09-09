@@ -2,7 +2,7 @@ package kentikapi
 
 import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 )
 
@@ -45,7 +45,7 @@ func NewClient(c Config) *Client {
 	if c.APIURL == "" {
 		c.APIURL = APIURLUS
 	}
-	rc := connection.NewRestClient(connection.RestClientConfig{
+	rc := api_connection.NewRestClient(api_connection.RestClientConfig{
 		APIURL:    c.APIURL,
 		AuthEmail: c.AuthEmail,
 		AuthToken: c.AuthToken,

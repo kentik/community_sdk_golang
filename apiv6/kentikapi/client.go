@@ -34,7 +34,7 @@ type Config struct {
 	AuthEmail        string
 	AuthToken        string
 	RetryCfg         RetryConfig
-	// LogPayloads enables logging of request and response payloads.
+	// LogPayloads enables logging of request and response api_payloads.
 	LogPayloads bool
 }
 

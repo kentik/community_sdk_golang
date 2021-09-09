@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -85,7 +85,7 @@ func TestTenantsList(t *testing.T) {
 		},
 	}
 
-	transport := &connection.StubTransport{ResponseBody: getAllResponse}
+	transport := &api_connection.StubTransport{ResponseBody: getAllResponse}
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
@@ -153,7 +153,7 @@ func TestGetTenantInfo(t *testing.T) {
 		},
 	}
 
-	transport := &connection.StubTransport{ResponseBody: getTenantInfoResponse}
+	transport := &api_connection.StubTransport{ResponseBody: getTenantInfoResponse}
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
@@ -187,7 +187,7 @@ func TestTenantUserCreate(t *testing.T) {
 		CompanyID: 74333,
 	}
 
-	transport := &connection.StubTransport{ResponseBody: createTenantUserResponse}
+	transport := &api_connection.StubTransport{ResponseBody: createTenantUserResponse}
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
@@ -210,7 +210,7 @@ func TestTenantUserDelete(t *testing.T) {
 
 	// arrange
 	deleteResponsePayload := ""
-	transport := &connection.StubTransport{ResponseBody: deleteResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act

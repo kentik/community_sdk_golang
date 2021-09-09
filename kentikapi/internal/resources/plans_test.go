@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -67,7 +67,7 @@ func TestGetAllPlans(t *testing.T) {
 			}
 		]
 	}`
-	transport := &connection.StubTransport{ResponseBody: getResponsePayload}
+	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	plansAPI := resources.NewPlansAPI(transport)
 
 	// act
