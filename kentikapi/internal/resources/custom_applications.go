@@ -31,8 +31,8 @@ func (a *CustomApplicationsAPI) GetAll(ctx context.Context) ([]models.CustomAppl
 }
 
 // Create new custom application.
-func (a *CustomApplicationsAPI) Create(ctx context.Context,
-	customApplication models.CustomApplication) (*models.CustomApplication, error) {
+func (a *CustomApplicationsAPI) Create(ctx context.Context, customApplication models.CustomApplication,
+) (*models.CustomApplication, error) {
 	payload := api_payloads.CustomApplicationToPayload(customApplication)
 	request := api_payloads.CreateCustomApplicationRequest(payload)
 	var response api_payloads.CreateCustomApplicationResponse
@@ -45,13 +45,17 @@ func (a *CustomApplicationsAPI) Create(ctx context.Context,
 }
 
 // Update custom application.
-//nolint:lll
-func (a *CustomApplicationsAPI) Update(ctx context.Context,
-	customApplication models.CustomApplication) (*models.CustomApplication, error) {
+func (a *CustomApplicationsAPI) Update(ctx context.Context, customApplication models.CustomApplication,
+) (*models.CustomApplication, error) {
 	payload := api_payloads.CustomApplicationToPayload(customApplication)
 	request := api_payloads.UpdateCustomApplicationRequest(payload)
 	var response api_payloads.UpdateCustomApplicationResponse
-	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateCustomApplication(customApplication.ID), request, &response); err != nil {
+	if err := a.UpdateAndValidate(
+		ctx,
+		api_endpoints.UpdateCustomApplication(customApplication.ID),
+		request,
+		&response,
+	); err != nil {
 		return nil, err
 	}
 

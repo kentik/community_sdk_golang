@@ -12,8 +12,8 @@ type Device struct {
 	DeviceSNMNPIP       *string
 	DeviceSNMPCommunity *string
 	MinimizeSNMP        *bool
-	DeviceBGPType       *DeviceBGPType // Note: for DeviceBGPType = DeviceBGPTypeDevice,
-	// either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
+	// Note: for DeviceBGPType = DeviceBGPTypeDevice, either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
+	DeviceBGPType         *DeviceBGPType
 	DeviceBGPNeighborIP   *string
 	DeviceBGPNeighborIPv6 *string
 	DeviceBGPNeighborASN  *string

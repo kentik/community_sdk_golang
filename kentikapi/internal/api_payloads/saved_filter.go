@@ -77,7 +77,7 @@ func SavedFilterToPayload(sf models.SavedFilter) savedFilterPayload {
 		FilterLevel:       sf.FilterLevel,
 		CreatedDate:       &sf.CreatedDate,
 		UpdatedDate:       &sf.UpdatedDate,
-		Filters:           FiltersToPayload(sf.Filters),
+		Filters:           filtersToPayload(sf.Filters),
 	}
 }
 
@@ -114,8 +114,7 @@ func (p filtersPayload) ToFilters() (models.Filters, error) {
 	}, nil
 }
 
-//nolint:revive // FiltersToPayload could be unexported but filtersToPayload already exists
-func FiltersToPayload(f models.Filters) filtersPayload {
+func filtersToPayload(f models.Filters) filtersPayload {
 	var filterGroups []filterGroupsPayload
 	for _, fg := range f.FilterGroups {
 		filterGroups = append(filterGroups, filterGroupsToPayload(fg))

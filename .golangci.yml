@@ -23,6 +23,14 @@ issues:
         - gochecknoglobals
         - lll
         - gomnd
+    # tags.go and users.go are called by dupl in entirety. Nolints on package level are not recommended,
+    # so this is a workaround.
+    - path: kentikapi/internal/resources/tags.go
+      linters:
+        - dupl
+    - path: kentikapi/internal/resources/users.go
+      linters:
+        - dupl
 
 # Disabled linters:
 # - cyclop - duplicates functionality of gocyclo

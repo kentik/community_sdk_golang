@@ -1,4 +1,3 @@
-//nolint:dupl
 package kentikapi_test
 
 import (
@@ -159,6 +158,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 			}},
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -668,6 +668,7 @@ func TestClient_UpdateUser(t *testing.T) {
 			},
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange

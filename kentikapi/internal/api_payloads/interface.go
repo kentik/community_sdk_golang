@@ -46,17 +46,17 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 // InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI.
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	SNMPID    *models.ID  `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
-	SNMPSpeed IntAsString `json:"snmp_speed,omitempty"` // caveat, GET returns snmp_speed as string
-	// but POST and PUT as int
-	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
-	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
-	InterfaceIP          *string               `json:"interface_ip,omitempty"`
-	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
-	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"` // caveat, for non-set vrf GET returns vrf as null,
-	// but POST and PUT as empty object "{}"
-	VRFID *IntAsString `json:"vrf_id,omitempty"` // caveat, GET returns vrf_id as string
-	// but POST and PUT as int
+	SNMPID *models.ID `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
+	// caveat, GET returns snmp_speed as string but POST and PUT as int
+	SNMPSpeed            IntAsString `json:"snmp_speed,omitempty"`
+	InterfaceDescription *string     `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
+	SNMPAlias            *string     `json:"snmp_alias,omitempty"`
+	InterfaceIP          *string     `json:"interface_ip,omitempty"`
+	InterfaceIPNetmask   *string     `json:"interface_ip_netmask,omitempty"`
+	// caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
+	VRF *vrfAttributesPayload `json:"vrf,omitempty"`
+	// caveat, GET returns vrf_id as string but POST and PUT as int
+	VRFID        *IntAsString         `json:"vrf_id,omitempty"`
 	SecondaryIPs []secondaryIPPayload `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put

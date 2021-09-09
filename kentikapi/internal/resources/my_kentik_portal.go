@@ -37,8 +37,8 @@ func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*model
 	return &tenant, err
 }
 
-func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context,
-	tenantID models.ID, userEmail string) (*models.TenantUser, error) {
+func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context, tenantID models.ID, userEmail string,
+) (*models.TenantUser, error) {
 	request := api_payloads.CreateTenantUserRequest{
 		User: api_payloads.CreateTenantUserPayload{
 			Email: userEmail,

@@ -167,8 +167,8 @@ type queryPayload struct {
 	Dimension    []string             `json:"dimension,omitempty"`
 	FiltersObj   *filtersPayload      `json:"filters_obj,omitempty"`
 	SavedFilters []savedFilterPayload `json:"saved_filters,omitempty"`
-	MatrixBy     []string             `json:"matrixBy" request:"post"` // matrixBy is required in request even if empty.
-	// Otherwise Chart query hangs
+	// matrixBy is required in request even if empty. Otherwise Chart query hangs
+	MatrixBy        []string           `json:"matrixBy" request:"post"`
 	CIDR            *int               `json:"cidr,omitempty"`
 	CIDR6           *int               `json:"cidr6,omitempty"`
 	PPSThreshold    *int               `json:"pps_threshold,omitempty"`
@@ -220,7 +220,7 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	return queryPayload{
 		Metric:          q.Metric.String(),
 		Dimension:       dimensions,
-		FiltersObj:      filtersToPayload(q.FiltersObj),
+		FiltersObj:      filtersPointerToPayload(q.FiltersObj),
 		SavedFilters:    savedFiltersPayloads,
 		MatrixBy:        q.MatrixBy,
 		CIDR:            q.CIDR,
@@ -247,7 +247,7 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	}, nil
 }
 
-func filtersToPayload(f *models.Filters) *filtersPayload {
+func filtersPointerToPayload(f *models.Filters) *filtersPayload {
 	if f == nil {
 		return nil
 	}

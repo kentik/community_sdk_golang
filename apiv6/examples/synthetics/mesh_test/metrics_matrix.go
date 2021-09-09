@@ -4,7 +4,7 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
-// metricsMatrix holds "fromAgent" -> "toAgent" api_connection metrics
+// metricsMatrix holds "fromAgent" -> "toAgent" connection metrics
 type metricsMatrix struct {
 	agents []string
 	cells  map[string]map[string]*synthetics.V202101beta1MeshMetrics

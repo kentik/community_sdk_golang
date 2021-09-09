@@ -49,8 +49,8 @@ func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, params models.AlertsQ
 	return response.ToAlarms(), nil
 }
 
-func (a *AlertingAPI) GetAlertsHistory(ctx context.Context,
-	params models.AlertsQueryParams) ([]models.HistoricalAlert, error) {
+func (a *AlertingAPI) GetAlertsHistory(ctx context.Context, params models.AlertsQueryParams,
+) ([]models.HistoricalAlert, error) {
 	var response api_payloads.GetHistoricalAlertsResponse
 	path := api_endpoints.GetAlertsHistoryPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
 		params.SortOrder, params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)

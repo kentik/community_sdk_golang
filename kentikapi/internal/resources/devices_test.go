@@ -1,4 +1,3 @@
-//nolint:dupl
 package resources_test
 
 import (
@@ -555,6 +554,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Equal(models.DeviceSubtypePaloalto, device.DeviceSubType)
 }
 
+//nolint:dupl
 func TestGetDevice(t *testing.T) {
 	tests := []struct {
 		name           string

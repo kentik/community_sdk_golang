@@ -102,10 +102,12 @@ func (a *populatorsAPI) Update(ctx context.Context, populator models.Populator) 
 
 	request := api_payloads.UpdatePopulatorRequest{Payload: payload}
 	var response api_payloads.UpdatePopulatorResponse
-	if err := a.UpdateAndValidate(ctx,
+	if err := a.UpdateAndValidate(
+		ctx,
 		api_endpoints.UpdatePopulator(populator.DimensionID, populator.ID),
 		request,
-		&response); err != nil {
+		&response,
+	); err != nil {
 		return nil, err
 	}
 
