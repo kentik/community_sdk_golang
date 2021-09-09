@@ -17,8 +17,6 @@ import (
 )
 
 func TestCreateCustomDimension(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
 	{
@@ -64,8 +62,6 @@ func TestCreateCustomDimension(t *testing.T) {
 }
 
 func TestUpdateCustomDimension(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	updateResponsePayload := `
 	{
@@ -106,8 +102,6 @@ func TestUpdateCustomDimension(t *testing.T) {
 }
 
 func TestGetCustomDimension(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		transportError error
@@ -317,10 +311,7 @@ func TestGetCustomDimension(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
 			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
@@ -346,8 +337,6 @@ func TestGetCustomDimension(t *testing.T) {
 }
 
 func TestGetAllCustomDimensions(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
 	{
@@ -431,8 +420,6 @@ func TestGetAllCustomDimensions(t *testing.T) {
 }
 
 func TestDeleteCustomDimension(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
@@ -452,8 +439,6 @@ func TestDeleteCustomDimension(t *testing.T) {
 }
 
 func TestCreatePopulator(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
 	{
@@ -580,8 +565,6 @@ func TestCreatePopulator(t *testing.T) {
 }
 
 func TestUpdatePopulator(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	updateResponsePayload := `
 	{
@@ -660,8 +643,6 @@ func TestUpdatePopulator(t *testing.T) {
 }
 
 func TestDeletePopulator(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}

@@ -40,7 +40,7 @@ func runCRUD(client *kentikapi.Client) error {
 	createReqPayload := *cloudexport.NewV202101beta1CreateCloudExportRequest()
 	createReqPayload.Export = export
 
-	createResp, httpResp, err := client.CloudExportAdminServiceApi.
+	createResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportCreate(context.Background()).
 		Body(createReqPayload).
 		Execute()
@@ -57,7 +57,7 @@ func runCRUD(client *kentikapi.Client) error {
 	updateReqPayload := *cloudexport.NewV202101beta1UpdateCloudExportRequest()
 	updateReqPayload.Export = created
 
-	updateResp, httpResp, err := client.CloudExportAdminServiceApi.
+	updateResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportUpdate(context.Background(), *created.Id).
 		Body(updateReqPayload).
 		Execute()
@@ -68,7 +68,7 @@ func runCRUD(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### GET")
-	getResp, httpResp, err := client.CloudExportAdminServiceApi.
+	getResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportGet(context.Background(), *created.Id).
 		Execute()
 	if err != nil {
@@ -78,7 +78,7 @@ func runCRUD(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### DELETE")
-	deleteResp, httpResp, err := client.CloudExportAdminServiceApi.
+	deleteResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportDelete(context.Background(), *created.Id).
 		Execute()
 	if err != nil {
@@ -93,7 +93,7 @@ func runCRUD(client *kentikapi.Client) error {
 
 func runGetAll(client *kentikapi.Client) error {
 	fmt.Println("### GET ALL")
-	getAllResp, httpResp, err := client.CloudExportAdminServiceApi.
+	getAllResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportList(context.Background()).
 		Execute()
 	if err != nil {

@@ -25,10 +25,7 @@ const (
 	testAgentID     = "968"
 )
 
-//nolint:errcheck // Conflict with defer Close() (additional info: https://github.com/kisielk/errcheck/issues/55)
 func TestClient_PatchAgent(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name             string
 		retryMax         *int
@@ -164,10 +161,7 @@ func TestClient_PatchAgent(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := newSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
@@ -188,10 +182,11 @@ func TestClient_PatchAgent(t *testing.T) {
 			})
 
 			// act
-			result, httpResp, err := c.SyntheticsAdminServiceApi.
+			result, httpResp, err := c.SyntheticsAdminServiceAPI.
 				AgentPatch(context.Background(), testAgentID).
 				Body(tt.request).
 				Execute()
+			//nolint:errcheck // Additional info: https://github.com/kisielk/errcheck/issues/55
 			defer httpResp.Body.Close()
 
 			// assert

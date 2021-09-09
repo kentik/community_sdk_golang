@@ -12,8 +12,6 @@ import (
 )
 
 func TestQueryChartResponsePNGToQueryChartResult(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImagePNGEncodedBase64str"
 	decodedData := base64Decode(t, data)
@@ -29,8 +27,6 @@ func TestQueryChartResponsePNGToQueryChartResult(t *testing.T) {
 }
 
 func TestQueryChartResponseJPEGToQueryChartResult(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImageJPGEncodedBase64str"
 	decodedData := base64Decode(t, data)
@@ -46,8 +42,6 @@ func TestQueryChartResponseJPEGToQueryChartResult(t *testing.T) {
 }
 
 func TestQueryChartResponseSVGToQueryChartResult(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImageSVGEncodedBase64str"
 	decodedData := base64Decode(t, data)
@@ -63,8 +57,6 @@ func TestQueryChartResponseSVGToQueryChartResult(t *testing.T) {
 }
 
 func TestQueryChartResponsePDFToQueryChartResult(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ApplicationPDFEncodedBase64str=="
 	decodedData := base64Decode(t, data)
@@ -80,8 +72,6 @@ func TestQueryChartResponsePDFToQueryChartResult(t *testing.T) {
 }
 
 func TestUnknownFormatResultsInError(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImageBMPEncodedBase64str=="
 	response := api_payloads.QueryChartResponse{DataURI: "data:image/bmp;base64," + data}
@@ -94,8 +84,6 @@ func TestUnknownFormatResultsInError(t *testing.T) {
 }
 
 func TestUnknownEncodingResultsInError(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImagePNGEncodedBase32str=="
 	response := api_payloads.QueryChartResponse{DataURI: "data:image/png;base32," + data}
@@ -108,8 +96,6 @@ func TestUnknownEncodingResultsInError(t *testing.T) {
 }
 
 func TestFormatQueryTimeNonNil(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	datetime := time.Date(2001, 3, 9, 6, 45, 53, 111, time.UTC)
 
@@ -122,8 +108,6 @@ func TestFormatQueryTimeNonNil(t *testing.T) {
 }
 
 func TestFormatQueryTimeNil(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	var datetime *time.Time
 

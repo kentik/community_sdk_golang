@@ -12,8 +12,6 @@ import (
 )
 
 func TestSavedFiltersList(t *testing.T) {
-	t.Parallel()
-
 	getAllresponsePayload := `
 	[
 	    {
@@ -138,8 +136,6 @@ func TestSavedFiltersList(t *testing.T) {
 }
 
 func TestGetSavedFilterInfo(t *testing.T) {
-	t.Parallel()
-
 	getResponsePayload := `
 	{
 		"id": 8275,
@@ -204,8 +200,6 @@ func TestGetSavedFilterInfo(t *testing.T) {
 }
 
 func TestCreateSavedFilter(t *testing.T) {
-	t.Parallel()
-
 	postResponsePayload := `
 	{
         "filter_name":"test_filter1",
@@ -294,8 +288,6 @@ func TestCreateSavedFilter(t *testing.T) {
 }
 
 func TestUpdateSavedFilter(t *testing.T) {
-	t.Parallel()
-
 	updateResponsePayload := `
 	{
 		"id":8153,
@@ -359,8 +351,6 @@ func TestUpdateSavedFilter(t *testing.T) {
 }
 
 func TestDeleteSavedFilter(t *testing.T) {
-	t.Parallel()
-
 	deleteResponsePayload := ""
 
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}

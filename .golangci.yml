@@ -16,7 +16,6 @@ issues:
     - should not use underscores in package names
     # EXC0002 golint: Annoying issue about not having a comment. The rare codebase has such comments
     - (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
-    - (struct (of|with)|could be)
   exclude-use-default: false
   exclude-rules: # exclude linters impossible to exclude via //nolint
     - path: ^kentikapi/models/enum_ # these files are generated and shouldn't be edited with //nolint
@@ -28,20 +27,20 @@ issues:
 # Disabled linters:
 # - cyclop - duplicates functionality of gocyclo
 # - exhaustivestruct - breaks "Make the zero value useful" proverb, meant to be used only for special cases
-# - funlen - only test functions exceeds the line limit of 60 - too strict, these functions are easily readable
+# - funlen - not needed - gocyclo ensures that functions complexity is not too high
 # - godox - requires all TODOs to be removed - too strict
+# - golint - deprecated (since v1.41.0) due to: The repository of the linter has been archived by the owner
 # - gomoddirectives - does not allow "replace" directives - too strict
 # - goerr113 - following check is too strict: "do not define dynamic errors, use wrapped static errors instead",
 #              the check cannot be disabled
 # - interfacer - deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner
 # - maligned - deprecated (since v1.38.0) due to: The repository of the linter has been archived by the owner
 # - nlreturn - leads to using too many line breaks
-# - prealloc - from docs:
-    # XXX: we don't recommend using this linter before doing performance profiling.
-    # For most programs usage of prealloc will be a premature optimization.
+# - paralleltest - premature optimization
+# - prealloc - considered a premature optimization.
 # - scopelint - deprecated (since v1.39.0) due to: The repository of the linter has been deprecated by the owner
 # - thelper - enforcing t.Helper() everywhere is too strict
-# - wrapcheck - valuable linter which I think needs higher level knowledge on the project to be fixed
+# - wrapcheck - valuable linter, TODO: ignore false-positives (interfaces, internal imports) and adjust the code to comply
 # - wsl - leads to using too many line breaks
 linters:
   enable:
@@ -70,7 +69,6 @@ linters:
     - gofumpt
     - goheader
     - goimports
-    - revive
     - gomnd
     - gomodguard
     - goprintffuncname
@@ -88,7 +86,6 @@ linters:
     - nilerr
     - noctx
     - nolintlint
-    - paralleltest
     - predeclared
     - revive
     - rowserrcheck
@@ -107,8 +104,6 @@ linters:
     - whitespace
 
 linters-settings:
-  dupl:
-    tests: false
   errcheck:
     check-type-assertions: true
     check-blank: true
@@ -116,15 +111,14 @@ linters-settings:
     # Check whether fmt.Errorf uses the %w verb for formatting errors - too strict
     errorf: false
   gocyclo:
-    min-complexity: 11
-  golint:
-    min-confidence: 0
-  gosec:
-    tests: false
+    min-complexity: 10
   govet:
+    disable:
+      # Reordering struct fields may decrease readability
+      - fieldalignment
     enable-all: true
   lll:
-    # lines longer than 127 will be reported, 120 is default
+    # TODO: 120 (default) should be achieved to increase comfort of window split view
     line-length: 127
   nakedret:
     max-func-lines: 5

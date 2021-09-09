@@ -43,7 +43,7 @@ func createCloudExport(client *kentikapi.Client) string {
 	createReqPayload := *cloudexport.NewV202101beta1CreateCloudExportRequest()
 	createReqPayload.Export = export
 
-	createResp, _, err := client.CloudExportAdminServiceApi.
+	createResp, _, err := client.CloudExportAdminServiceAPI.
 		ExportCreate(context.Background()).
 		Body(createReqPayload).
 		Execute()
@@ -56,7 +56,7 @@ func createCloudExport(client *kentikapi.Client) string {
 func getCloudExport(client *kentikapi.Client, id string) *cloudexport.V202101beta1CloudExport {
 	fmt.Printf("Retrieving cloud export of ID = %s\n", id)
 
-	getResp, _, err := client.CloudExportAdminServiceApi.
+	getResp, _, err := client.CloudExportAdminServiceAPI.
 		ExportGet(context.Background(), id).
 		Execute()
 	demos.ExitOnError(err)
@@ -70,7 +70,7 @@ func updateCloudExport(client *kentikapi.Client, export *cloudexport.V202101beta
 	updateReqPayload := *cloudexport.NewV202101beta1UpdateCloudExportRequest()
 	updateReqPayload.Export = export
 
-	updateResp, _, err := client.CloudExportAdminServiceApi.
+	updateResp, _, err := client.CloudExportAdminServiceAPI.
 		ExportUpdate(context.Background(), *export.Id).
 		Body(updateReqPayload).
 		Execute()
@@ -81,7 +81,7 @@ func updateCloudExport(client *kentikapi.Client, export *cloudexport.V202101beta
 
 func deleteCloudExport(client *kentikapi.Client, id string) {
 	fmt.Printf("Deleting cloud export of ID = %s\n", id)
-	deleteResp, _, err := client.CloudExportAdminServiceApi.
+	deleteResp, _, err := client.CloudExportAdminServiceAPI.
 		ExportDelete(context.Background(), id).
 		Execute()
 	demos.ExitOnError(err)
@@ -91,7 +91,7 @@ func deleteCloudExport(client *kentikapi.Client, id string) {
 }
 
 func getAllCloudExports(client *kentikapi.Client) {
-	getAllResp, _, err := client.CloudExportAdminServiceApi.
+	getAllResp, _, err := client.CloudExportAdminServiceAPI.
 		ExportList(context.Background()).
 		Execute()
 	demos.ExitOnError(err)

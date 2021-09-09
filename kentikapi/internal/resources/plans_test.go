@@ -12,8 +12,6 @@ import (
 )
 
 func TestGetAllPlans(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
 	{

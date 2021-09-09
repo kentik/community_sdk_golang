@@ -14,8 +14,6 @@ import (
 )
 
 func TestTenantsList(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getAllResponse := `
 	[
@@ -102,8 +100,6 @@ func TestTenantsList(t *testing.T) {
 }
 
 func TestGetTenantInfo(t *testing.T) {
-	t.Parallel()
-
 	getTenantInfoResponse := `
 	{
 		"id": 577,
@@ -169,8 +165,6 @@ func TestGetTenantInfo(t *testing.T) {
 }
 
 func TestTenantUserCreate(t *testing.T) {
-	t.Parallel()
-
 	createTenantUserResponse := `
 	{
 		"id": "158564",
@@ -206,8 +200,6 @@ func TestTenantUserCreate(t *testing.T) {
 }
 
 func TestTenantUserDelete(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := ""
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}

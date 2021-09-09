@@ -13,8 +13,6 @@ import (
 )
 
 func TestGetSite(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
 	{
@@ -49,8 +47,6 @@ func TestGetSite(t *testing.T) {
 }
 
 func TestGetAllSites(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
 	{
@@ -117,8 +113,6 @@ func TestGetAllSites(t *testing.T) {
 }
 
 func TestCreateSite(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
 	{
@@ -159,8 +153,6 @@ func TestCreateSite(t *testing.T) {
 }
 
 func TestUpdateSite(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	updateResponsePayload := `
 	{
@@ -201,8 +193,6 @@ func TestUpdateSite(t *testing.T) {
 }
 
 func TestDeleteSite(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "" // deleting site responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}

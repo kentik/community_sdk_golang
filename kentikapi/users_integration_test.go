@@ -28,8 +28,6 @@ const (
 type object = map[string]interface{}
 
 func TestClient_GetAllUsers(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		responseCode   int
@@ -162,10 +160,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -200,8 +195,6 @@ func TestClient_GetAllUsers(t *testing.T) {
 }
 
 func TestClient_GetUser(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		responses      []testutil.HTTPResponse
@@ -316,10 +309,7 @@ func TestClient_GetUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
@@ -360,8 +350,6 @@ func TestClient_GetUser(t *testing.T) {
 }
 
 func TestClient_CreateUser(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		retryMax *int
@@ -541,10 +529,7 @@ func TestClient_CreateUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
 			s := httptest.NewServer(h)
@@ -587,8 +572,6 @@ func TestClient_CreateUser(t *testing.T) {
 }
 
 func TestClient_UpdateUser(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name         string
 		user         models.User
@@ -686,10 +669,7 @@ func TestClient_UpdateUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -726,8 +706,6 @@ func TestClient_UpdateUser(t *testing.T) {
 }
 
 func TestClient_DeleteUser(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		responseCode  int
@@ -751,10 +729,7 @@ func TestClient_DeleteUser(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)

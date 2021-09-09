@@ -15,8 +15,6 @@ import (
 )
 
 func TestQuerySQL(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	querySQL := `
 		SELECT i_start_time,
@@ -86,8 +84,6 @@ func TestQuerySQL(t *testing.T) {
 }
 
 func TestQueryData(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	queryResponsePayload := `
 	{
@@ -217,8 +213,6 @@ func TestQueryData(t *testing.T) {
 }
 
 func TestQueryChart(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	data := "ImageDataEncodedBase64=="
 	queryResponsePayload := `{"dataUri": "data:image/png;base64,ImageDataEncodedBase64=="}`
@@ -361,8 +355,6 @@ func TestQueryChart(t *testing.T) {
 }
 
 func TestQueryURL(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	unquotedResponse := "https://portal.kentik.com/portal/#Charts/shortUrl/e0d24b3cc8dfe41f9093668e531cbe96"
 	queryResponsePayload := `"` + unquotedResponse + `"` // actual response is url in quotation marks

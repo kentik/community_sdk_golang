@@ -15,8 +15,6 @@ import (
 )
 
 func TestGetAll(t *testing.T) {
-	t.Parallel()
-
 	getResponsePayload := `
 	[
 		{
@@ -78,8 +76,6 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestCreateCustomApplication(t *testing.T) {
-	t.Parallel()
-
 	createResponsePayload := `
 	{
 		"name": "apitest-customapp-1",
@@ -134,8 +130,6 @@ func TestCreateCustomApplication(t *testing.T) {
 }
 
 func TestUpdateCustomApplication(t *testing.T) {
-	t.Parallel()
-
 	updateResponsePayload := `
 	{
 		"id": 207,
@@ -194,8 +188,6 @@ func TestUpdateCustomApplication(t *testing.T) {
 }
 
 func TestDeleteCustomApplication(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "" // deleting custom application responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}

@@ -22,11 +22,7 @@ import (
 // 4. retryingClient.retryableRoundTripper.retryableClient.httpClient.Do()
 // 5. retryingClient.retryableRoundTripper.retryableClient.httpClient.httpTransport.RoundTrip()
 
-//nolint:errcheck // https://github.com/kisielk/errcheck/issues/55
-// Closing a response you only read from cannot yield a meaningful error.
 func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	c := httputil.NewRetryingClient(httputil.ClientConfig{})
 
@@ -34,11 +30,8 @@ func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
 	require.NoError(t, err)
 
 	// act
+	//nolint:bodyclose
 	resp, err := c.Do(req.WithContext(context.Background()))
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
 
 	// assert
 	t.Logf("Got response: %v, err: %v", resp, err)
@@ -48,11 +41,7 @@ func TestRetryingClient_Do_ReturnsHTTPTransportError(t *testing.T) {
 	assert.Equal(t, "no such host", dnsErr.Err)
 }
 
-//nolint:errcheck // https://github.com/kisielk/errcheck/issues/55
-// Closing a response you only read from cannot yield a meaningful error.
 func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
-	t.Parallel()
-
 	const retryMax = 5
 
 	tests := []struct {
@@ -85,10 +74,7 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			st := spyTransport{transportError: tt.transportError}
 			c := httputil.NewRetryingClient(httputil.ClientConfig{
@@ -106,11 +92,8 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
+			//nolint:bodyclose
 			resp, err := c.Do(req.WithContext(context.Background()))
-			if err != nil {
-				return
-			}
-			defer resp.Body.Close()
 
 			// assert
 			t.Logf("Got response: %v, err: %v", resp, err)

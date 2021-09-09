@@ -15,8 +15,6 @@ import (
 )
 
 func TestCreateDeviceLabel(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
 	{
@@ -59,8 +57,6 @@ func TestCreateDeviceLabel(t *testing.T) {
 }
 
 func TestUpdateDeviceLabel(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	updateResponsePayload := `
 	{
@@ -103,8 +99,6 @@ func TestUpdateDeviceLabel(t *testing.T) {
 }
 
 func TestGetLabel(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
 	{
@@ -155,8 +149,6 @@ func TestGetLabel(t *testing.T) {
 }
 
 func TestGetAllLabels(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     [
@@ -236,8 +228,6 @@ func TestGetAllLabels(t *testing.T) {
 }
 
 func TestDeleteDeviceLabel(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := `
 	{

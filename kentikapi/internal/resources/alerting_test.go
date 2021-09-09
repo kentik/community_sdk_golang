@@ -18,8 +18,6 @@ var (
 )
 
 func TestCrerateManualMitigation(t *testing.T) {
-	t.Parallel()
-
 	createResponsePayload := `
 	{
 		"response": {
@@ -44,8 +42,6 @@ func TestCrerateManualMitigation(t *testing.T) {
 }
 
 func TestGetActiveAlerts(t *testing.T) {
-	t.Parallel()
-
 	getResponsePayload := `
 	[
         {
@@ -143,8 +139,6 @@ func TestGetActiveAlerts(t *testing.T) {
 }
 
 func TestGetAlertsHistory(t *testing.T) {
-	t.Parallel()
-
 	getResponsePayload := `
 	[
         {

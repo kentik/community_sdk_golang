@@ -18,8 +18,6 @@ import (
 )
 
 func TestCreateDeviceRouter(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
     {
@@ -212,8 +210,6 @@ func TestCreateDeviceRouter(t *testing.T) {
 }
 
 func TestCreateDeviceDNS(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	createResponsePayload := `
     {
@@ -365,8 +361,6 @@ func TestCreateDeviceDNS(t *testing.T) {
 }
 
 func TestUpdatetDeviceRouter(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	updateResponsePayload := `
     {
@@ -562,8 +556,6 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 }
 
 func TestGetDevice(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		transportError error
@@ -1088,10 +1080,7 @@ func TestGetDevice(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
 			devicesAPI := resources.NewDevicesAPI(transport)
@@ -1117,8 +1106,6 @@ func TestGetDevice(t *testing.T) {
 }
 
 func TestGetAllDevices(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     {
@@ -1389,8 +1376,6 @@ func TestGetAllDevices(t *testing.T) {
 }
 
 func TestDeleteDevice(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
@@ -1410,8 +1395,6 @@ func TestDeleteDevice(t *testing.T) {
 }
 
 func TestApplyLabels(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	applyLabelsResponsePayload := `
     {
@@ -1488,8 +1471,6 @@ func TestApplyLabels(t *testing.T) {
 }
 
 func TestGetInterfaceMinimal(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     {
@@ -1557,8 +1538,6 @@ func TestGetInterfaceMinimal(t *testing.T) {
 }
 
 func TestGetInterfaceFull(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     {
@@ -1676,8 +1655,6 @@ func TestGetInterfaceFull(t *testing.T) {
 }
 
 func TestGetAllInterfaces(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     [
@@ -1867,8 +1844,6 @@ func TestGetAllInterfaces(t *testing.T) {
 }
 
 func TestCreateInterfaceMinimal(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     {
@@ -1924,8 +1899,6 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 }
 
 func TestCreateInterfaceFull(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	getResponsePayload := `
     {
@@ -2026,8 +1999,6 @@ func TestCreateInterfaceFull(t *testing.T) {
 }
 
 func TestDeleteInterface(t *testing.T) {
-	t.Parallel()
-
 	// arrange
 	deleteResponsePayload := "{}"
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
@@ -2048,8 +2019,6 @@ func TestDeleteInterface(t *testing.T) {
 }
 
 func TestUpdateInterfaceMinimal(t *testing.T) {
-	t.Parallel()
-
 	updateResponsePayload := `
     {
         "id": "43",
@@ -2127,8 +2096,6 @@ func TestUpdateInterfaceMinimal(t *testing.T) {
 }
 
 func TestUpdateInterfaceFull(t *testing.T) {
-	t.Parallel()
-
 	updateResponsePayload := `
     {
         "id": "43",

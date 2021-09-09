@@ -19,8 +19,6 @@ const (
 )
 
 func TestClient_GetAllTags(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		responseCode   int
@@ -85,10 +83,7 @@ func TestClient_GetAllTags(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -123,8 +118,6 @@ func TestClient_GetAllTags(t *testing.T) {
 }
 
 func TestClient_GetTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		responseCode   int
@@ -157,10 +150,7 @@ func TestClient_GetTag(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -195,8 +185,6 @@ func TestClient_GetTag(t *testing.T) {
 }
 
 func TestClient_CreateTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name string
 		tag  models.Tag
@@ -339,10 +327,7 @@ func TestClient_CreateTag(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -378,8 +363,6 @@ func TestClient_CreateTag(t *testing.T) {
 }
 
 func TestClient_UpdateTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name         string
 		tag          models.Tag
@@ -510,10 +493,7 @@ func TestClient_UpdateTag(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
@@ -550,8 +530,6 @@ func TestClient_UpdateTag(t *testing.T) {
 }
 
 func TestClient_DeleteTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		responseCode  int
@@ -575,10 +553,7 @@ func TestClient_DeleteTag(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			// arrange
 			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)

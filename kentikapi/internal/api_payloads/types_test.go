@@ -9,8 +9,6 @@ import (
 )
 
 func TestBoolAsString_UnmarshalJSON(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		input          string
 		expectedResult api_payloads.BoolAsStringOrInt
@@ -52,10 +50,7 @@ func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.input, func(t *testing.T) {
-			t.Parallel()
-
 			var result api_payloads.BoolAsStringOrInt
 			err := json.Unmarshal([]byte(tt.input), &result)
 
