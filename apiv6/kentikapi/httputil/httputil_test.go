@@ -109,8 +109,6 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 }
 
 func TestRetryingClientRequestTimeout(t *testing.T) {
-	t.Parallel()
-
 	handlerFunc := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(10 * time.Second)
 		_, err := io.WriteString(w, "done")
@@ -126,10 +124,12 @@ func TestRetryingClientRequestTimeout(t *testing.T) {
 			MinDelay:    durationPtr(750 * time.Millisecond),
 			MaxDelay:    durationPtr(10000 * time.Millisecond),
 		},
-		Timeout: durationPtr(1 * time.Second),
 	})
 
 	backend := httptest.NewServer(handlerFunc)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 
 	testUrl := backend.URL
 	req, err := retryablehttp.NewRequest(http.MethodGet, testUrl, nil)
@@ -138,7 +138,7 @@ func TestRetryingClientRequestTimeout(t *testing.T) {
 		return
 	}
 
-	resp, err := c.Do(req.WithContext(context.Background()))
+	resp, err := c.Do(req.WithContext(ctx))
 	assert.Error(t, err)
 	t.Logf("Got response: %v, err: %v", resp, err)
 
