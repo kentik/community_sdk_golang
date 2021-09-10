@@ -147,11 +147,10 @@ type queryArrayItemPayload struct {
 	IsOverlay   *bool        `json:"isOverlay,omitempty"`
 }
 
-//nolint:nilerr
 func queryArrayItemToPayload(i models.QueryArrayItem) (queryArrayItemPayload, error) {
 	query, err := queryToPayload(i.Query)
 	if err != nil {
-		return queryArrayItemPayload{}, nil
+		return queryArrayItemPayload{}, err
 	}
 
 	return queryArrayItemPayload{
