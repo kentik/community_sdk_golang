@@ -3,10 +3,8 @@ package httputil_test
 import (
 	"context"
 	"errors"
-	"io"
 	"net"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
@@ -108,43 +106,6 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 	}
 }
 
-func TestRetryingClientRequestTimeout(t *testing.T) {
-	handlerFunc := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(10 * time.Second)
-		_, err := io.WriteString(w, "done")
-		if err != nil {
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	})
-
-	c := NewRetryingClient(ClientConfig{
-		RetryCfg: RetryConfig{
-			MaxAttempts: intPtr(2),
-			MinDelay:    durationPtr(750 * time.Millisecond),
-			MaxDelay:    durationPtr(10000 * time.Millisecond),
-		},
-	})
-
-	backend := httptest.NewServer(handlerFunc)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	testUrl := backend.URL
-	req, err := retryablehttp.NewRequest(http.MethodGet, testUrl, nil)
-	if err != nil {
-		t.Error("Request error", err)
-		return
-	}
-
-	resp, err := c.Do(req.WithContext(ctx))
-	assert.Error(t, err)
-	t.Logf("Got response: %v, err: %v", resp, err)
-
-	assert.True(t, isTimeoutError(err), "timeout error expected")
-}
-
 type spyTransport struct {
 	transportError error
 	requestsCount  int
@@ -156,9 +117,5 @@ func (t *spyTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 }
 
 func intPtr(v int) *int {
-	return &v
-}
-
-func durationPtr(v time.Duration) *time.Duration {
 	return &v
 }

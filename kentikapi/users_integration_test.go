@@ -200,8 +200,8 @@ func TestClient_GetUser_WithTimeout(t *testing.T) {
 		responses      []testutil.HTTPResponse
 		expectedResult *models.User
 		expectedError  bool
-		// timeout and expected requests are strictly connected. The server sleeps for 1 second before each response.
-		timeout      time.Duration
+		// timeout and expected requests are strictly connected. The server sleeps for 1 ms before each response.
+		timeout      *time.Duration
 		expectedReqs int
 	}{
 		{
@@ -210,7 +210,7 @@ func TestClient_GetUser_WithTimeout(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			expectedError: true,
-			timeout:       1200 * time.Millisecond,
+			timeout:       durationPtr(15 * time.Millisecond),
 			expectedReqs:  1,
 		}, {
 			name: "timeout is longer than the wait for response with retries",
@@ -220,7 +220,7 @@ func TestClient_GetUser_WithTimeout(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			expectedError: true,
-			timeout:       3500 * time.Millisecond,
+			timeout:       durationPtr(35 * time.Millisecond),
 			expectedReqs:  3,
 		}, {
 			name: "timeout after 1 request",
@@ -230,8 +230,17 @@ func TestClient_GetUser_WithTimeout(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			expectedError: true,
-			timeout:       500 * time.Millisecond,
+			timeout:       durationPtr(5 * time.Millisecond),
 			expectedReqs:  1,
+		}, {
+			name: "default timeout",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			expectedError: true,
+			expectedReqs:  3,
 		},
 	}
 	for _, tt := range tests {
@@ -249,25 +258,11 @@ func TestClient_GetUser_WithTimeout(t *testing.T) {
 					MinDelay: durationPtr(1 * time.Microsecond),
 					MaxDelay: durationPtr(10 * time.Microsecond),
 				},
+				Timeout: tt.timeout,
 			})
 
-			// TODO:
-			// currently timeout is outside of clients configuration:
-			// 1. Create a wrapper method e.g. GetWithContext or c.RequestWithContext
-			//    which will take advantage of a context defined as a field of kentikapi.Client
-			// 2. Let user know he can use context with timeout and let him do it like this
-			// ctx, cancel := context.WithTimeout(context.Background(), tt.timeout)
-			// defer cancel()
-			// 	  It is also good because of easy cancellation of context.
-			// 3. An interesting solution I haven't thought of yet.
-			// 4. Another wrapper, but of the retryable http client. In case of c.Users.Get(ctx, testUserID)
-			//    the new wrapper would look like this c.Users.Get(testUserID) and inside it will call the actual client
-			//    but with defined context.
-			ctx, cancel := context.WithTimeout(context.Background(), tt.timeout)
-			defer cancel()
-
 			// act
-			result, err := c.Users.Get(ctx, testUserID)
+			result, err := c.Users.Get(context.Background(), testUserID)
 
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)

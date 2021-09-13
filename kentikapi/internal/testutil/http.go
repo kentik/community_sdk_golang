@@ -154,7 +154,7 @@ func (h *MultipleResponseSpyHTTPHandlerSleep) ServeHTTP(rw http.ResponseWriter, 
 
 	rw.Header().Set("Content-Type", "application/json")
 	response := h.response()
-	time.Sleep(1 * time.Second)
+	time.Sleep(10 * time.Millisecond)
 	rw.WriteHeader(response.StatusCode)
 	_, err = rw.Write([]byte(response.Body))
 	assert.NoError(h.t, err)

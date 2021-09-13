@@ -50,10 +50,6 @@ func NewRetryingStdClient(cfg ClientConfig) *http.Client {
 type ClientConfig struct {
 	HTTPClient *http.Client
 	RetryCfg   RetryConfig
-	// Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any
-	// redirects, and reading the response body. The timer remains running after Get, Head, Post, or Do return and will
-	// interrupt reading of the Response.Body. A Timeout of zero means no timeout.
-	Timeout *time.Duration
 }
 
 // RetryConfig groups Client's configuration related to request retry functionality.

@@ -20,6 +20,10 @@ const (
 type restClient struct {
 	config     RestClientConfig
 	httpClient *retryablehttp.Client
+	// Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any
+	// redirects, and reading the response body. The timer remains running after Get, Head, Post, or Do return and will
+	// interrupt reading of the Response.Body. A Timeout of zero means no timeout.
+	Timeout *time.Duration
 }
 
 type RestClientConfig struct {
@@ -30,6 +34,19 @@ type RestClientConfig struct {
 }
 
 func NewRestClient(c RestClientConfig) *restClient {
+	if c.Timeout != nil {
+		return &restClient{
+			config: c,
+			httpClient: httputil.
+				NewRetryingClient(
+					httputil.ClientConfig{
+						HTTPClient: nil,
+						RetryCfg:   c.RetryCfg,
+					},
+				),
+			Timeout: c.Timeout,
+		}
+	}
 	return &restClient{
 		config: c,
 		httpClient: httputil.
@@ -39,11 +56,19 @@ func NewRestClient(c RestClientConfig) *restClient {
 					RetryCfg:   c.RetryCfg,
 				},
 			),
+		Timeout: durationPtr(100 * time.Second),
 	}
+}
+
+func durationPtr(duration time.Duration) *time.Duration {
+	return &duration
 }
 
 // Get sends GET request to the API and returns raw response body.
 func (c *restClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
+	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	defer cancel()
+
 	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -71,6 +96,9 @@ func (c *restClient) Get(ctx context.Context, path string) (responseBody json.Ra
 
 // Post sends POST request to the API and returns raw response body
 func (c *restClient) Post(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	defer cancel()
+
 	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -97,6 +125,9 @@ func (c *restClient) Post(ctx context.Context, path string, payload json.RawMess
 
 // Put sends PUT request to the API and returns raw response body
 func (c *restClient) Put(ctx context.Context, path string, payload json.RawMessage) (responseBody json.RawMessage, err error) {
+	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	defer cancel()
+
 	request, err := c.newRequest(ctx, http.MethodPut, path, payload)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
@@ -123,6 +154,9 @@ func (c *restClient) Put(ctx context.Context, path string, payload json.RawMessa
 
 // Delete sends DELETE request to the API and returns raw response body
 func (c *restClient) Delete(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
+	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	defer cancel()
+
 	request, err := c.newRequest(ctx, http.MethodDelete, path, json.RawMessage{})
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
