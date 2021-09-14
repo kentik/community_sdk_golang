@@ -53,11 +53,12 @@ func (p *BoolAsStringOrInt) UnmarshalJSON(data []byte) (err error) {
 		*p = BoolAsStringOrInt(v)
 	case int, float32, float64:
 		asString := string(data)
-		if asString == "1" {
+		switch asString {
+		case "1":
 			*p = true
-		} else if asString == "0" {
+		case "0":
 			*p = false
-		} else {
+		default:
 			return fmt.Errorf("BoolAsStringOrInt.UnmarshalJSON: parse bool unexpected value %v", value)
 		}
 	default:

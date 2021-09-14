@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -30,8 +30,12 @@ func TestCreateCustomDimension(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
-	dimension := models.NewCustomDimension("c_testapi_dimension_1", "dimension_display_name", models.CustomDimensionTypeStr)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
+	dimension := models.NewCustomDimension(
+		"c_testapi_dimension_1",
+		"dimension_display_name",
+		models.CustomDimensionTypeStr,
+	)
 
 	// act
 	created, err := customDimensionsAPI.Create(context.Background(), *dimension)
@@ -71,7 +75,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(42)
 	dimension := models.CustomDimension{ID: dimensionID, DisplayName: "dimension_display_name2"}
 
@@ -310,7 +314,7 @@ func TestGetCustomDimension(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
-			customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 			dimensionID := 42
 
 			// act
@@ -372,7 +376,7 @@ func TestGetAllCustomDimensions(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
 	dimensions, err := customDimensionsAPI.GetAll(context.Background())
@@ -419,7 +423,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
 	dimensionID := models.ID(42)
@@ -470,9 +474,14 @@ func TestCreatePopulator(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(24001)
-	populator := models.NewPopulator(dimensionID, "testapi-dimension-value-1", "device1,128.0.0.100", models.PopulatorDirectionDst)
+	populator := models.NewPopulator(
+		dimensionID,
+		"testapi-dimension-value-1",
+		"device1,128.0.0.100",
+		models.PopulatorDirectionDst,
+	)
 	models.SetOptional(&populator.InterfaceName, "interface1,interface2")
 	models.SetOptional(&populator.Addr, "128.0.0.1/32,128.0.0.2/32")
 	models.SetOptional(&populator.Port, "1001,1002")
@@ -579,7 +588,7 @@ func TestUpdatePopulator(t *testing.T) {
 	}`
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID(24001)
 	populatorID := models.ID(1510862280)
 
@@ -637,7 +646,7 @@ func TestDeletePopulator(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	customDimensionsAPI := api_resources.NewCustomDimensionsAPI(transport)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
 	dimensionID := models.ID(42)

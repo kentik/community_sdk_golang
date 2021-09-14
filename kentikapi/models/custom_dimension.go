@@ -13,7 +13,7 @@ type CustomDimension struct {
 }
 
 // NewCustomDimension creates a CustomDimension with all necessary fields set
-// Note: name must begin with "c_" and be unique even among already deleted custom dimensions as names are retained for 1 year
+// Note: name must begin with "c_" and be unique even among already deleted custom dimensions as names are retained for 1 year.
 func NewCustomDimension(name, displayName string, dimensionType CustomDimensionType) *CustomDimension {
 	return &CustomDimension{
 		Name:        name,

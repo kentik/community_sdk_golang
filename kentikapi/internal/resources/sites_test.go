@@ -1,11 +1,11 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +25,7 @@ func TestGetSite(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	sitesAPI := api_resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport)
 	siteID := models.ID(42)
 
 	// act
@@ -75,7 +75,7 @@ func TestGetAllSites(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	sitesAPI := api_resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
 	sites, err := sitesAPI.GetAll(context.Background())
@@ -125,7 +125,7 @@ func TestCreateSite(t *testing.T) {
 		}     
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	sitesAPI := api_resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
 	site := models.NewSite("apitest-site-1")
@@ -165,7 +165,7 @@ func TestUpdateSite(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	sitesAPI := api_resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
 	siteID := models.ID(42)
@@ -196,7 +196,7 @@ func TestDeleteSite(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting site responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	sitesAPI := api_resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
 	siteID := models.ID(42)

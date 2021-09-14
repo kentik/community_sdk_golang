@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func (a *MyKentikPortalAPI) GetAll(ctx context.Context) ([]models.Tenant, error)
 	return response.ToTenants()
 }
 
-// Get Tenant Info
+// Get Tenant Info.
 func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*models.Tenant, error) {
 	var response api_payloads.TenantPayload
 	if err := a.GetAndValidate(ctx, api_endpoints.GetTenantPath(tenantID), &response); err != nil {
@@ -37,11 +37,13 @@ func (a *MyKentikPortalAPI) Get(ctx context.Context, tenantID models.ID) (*model
 	return &tenant, err
 }
 
-func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context, tenantID models.ID, userEmail string) (*models.TenantUser, error) {
+func (a *MyKentikPortalAPI) CreateTenantUser(ctx context.Context, tenantID models.ID, userEmail string,
+) (*models.TenantUser, error) {
 	request := api_payloads.CreateTenantUserRequest{
 		User: api_payloads.CreateTenantUserPayload{
 			Email: userEmail,
-		}}
+		},
+	}
 	var response api_payloads.TenantUserPayload
 	if err := a.PostAndValidate(ctx, api_endpoints.CreateTenantUserPath(tenantID), request, &response); err != nil {
 		return nil, err

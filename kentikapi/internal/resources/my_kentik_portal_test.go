@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ import (
 )
 
 func TestTenantsList(t *testing.T) {
-	//arrange
+	// arrange
 	getAllResponse := `
 	[
 		{
@@ -84,20 +84,19 @@ func TestTenantsList(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getAllResponse}
-	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
-	//act
+	// act
 	tenants, err := myKentikPortalAPI.GetAll(context.Background())
 
-	//assert
+	// assert
 
-	//TODO(lwolanin): validate the request path passed to transport
+	// TODO(lwolanin): validate the request path passed to transport
 
 	require.NoError(t, err)
 	assert.Zero(t, transport.RequestBody)
 
 	assert.Equal(t, expected, tenants)
-
 }
 
 func TestGetTenantInfo(t *testing.T) {
@@ -151,16 +150,16 @@ func TestGetTenantInfo(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getTenantInfoResponse}
-	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
-	//act
+	// act
 	tenant, err := myKentikPortalAPI.Get(context.Background(), 577)
 
 	// assert
 	require.NoError(t, err)
 	assert.Zero(t, transport.RequestBody)
 
-	//TODO(lwolanin): validate the request path passed to transport
+	// TODO(lwolanin): validate the request path passed to transport
 
 	assert.Equal(t, &expected, tenant)
 }
@@ -183,14 +182,14 @@ func TestTenantUserCreate(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: createTenantUserResponse}
-	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
-	//act
+	// act
 	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), 577, "test@test.test")
 
 	// assert
-	//TODO(lwolanin): Validate the request path passed to transport
-	//TODO(lwolanin): Verify that that there is no redundant data sent in request body
+	// TODO(lwolanin): Validate the request path passed to transport
+	// TODO(lwolanin): Verify that that there is no redundant data sent in request body
 
 	require.NoError(t, err)
 	payload := utils.NewJSONPayloadInspector(t, transport.RequestBody)
@@ -204,7 +203,7 @@ func TestTenantUserDelete(t *testing.T) {
 	// arrange
 	deleteResponsePayload := ""
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	myKentikPortalAPI := api_resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
 	tenantID := models.ID(478)
@@ -215,5 +214,5 @@ func TestTenantUserDelete(t *testing.T) {
 	require.NoError(t, err)
 	assert.Zero(t, transport.RequestBody)
 
-	//TODO(lwolanin): validate the request path passed to transport
+	// TODO(lwolanin): validate the request path passed to transport
 }

@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"

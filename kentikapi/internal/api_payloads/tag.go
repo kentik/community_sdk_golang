@@ -102,6 +102,7 @@ func (p tagPayload) ToTag() *models.Tag {
 }
 
 // TagToPayload prepares POST/PUT request payload: fill only the user-provided fields.
+//nolint:revive // tagPayLoad doesn't need to be exported
 func TagToPayload(u models.Tag) tagPayload {
 	return tagPayload{
 		FlowTag:       u.FlowTag,

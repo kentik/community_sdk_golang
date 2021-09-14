@@ -7,7 +7,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetAllCustomApplicationsResponse represents CustomApplicationsAPI GetAll JSON response
+// GetAllCustomApplicationsResponse represents CustomApplicationsAPI GetAll JSON response.
 type GetAllCustomApplicationsResponse []CustomApplicationPayload
 
 func (r GetAllCustomApplicationsResponse) ToCustomApplications() (result []models.CustomApplication, err error) {
@@ -15,20 +15,20 @@ func (r GetAllCustomApplicationsResponse) ToCustomApplications() (result []model
 	return result, err
 }
 
-// CreateCustomApplicationRequest represents CustomApplicationsAPI Create JSON request
+// CreateCustomApplicationRequest represents CustomApplicationsAPI Create JSON request.
 type CreateCustomApplicationRequest CustomApplicationPayload
 
-// CreateCustomApplicationResponse represents CustomApplicationsAPI Create JSON response
+// CreateCustomApplicationResponse represents CustomApplicationsAPI Create JSON response.
 type CreateCustomApplicationResponse CustomApplicationPayload
 
 func (r CreateCustomApplicationResponse) ToCustomApplication() (models.CustomApplication, error) {
 	return payloadToCustomApplication(CustomApplicationPayload(r))
 }
 
-// UpdateCustomApplicationRequest represents CustomApplicationsAPI Update JSON request
+// UpdateCustomApplicationRequest represents CustomApplicationsAPI Update JSON request.
 type UpdateCustomApplicationRequest = CreateCustomApplicationRequest
 
-// UpdateCustomApplicationResponse represents CustomApplicationsAPI Update JSON response
+// UpdateCustomApplicationResponse represents CustomApplicationsAPI Update JSON response.
 type UpdateCustomApplicationResponse = CreateCustomApplicationResponse
 
 type CustomApplicationPayload struct {
@@ -48,7 +48,7 @@ type CustomApplicationPayload struct {
 	UpdatedDate *time.Time `json:"edate,omitempty" response:"get,put"` // POST doesn't return edate
 }
 
-// payloadToCustomApplication transforms GET/POST/PUT response payload into CustomApplication
+// payloadToCustomApplication transforms GET/POST/PUT response payload into CustomApplication.
 func payloadToCustomApplication(p CustomApplicationPayload) (models.CustomApplication, error) {
 	return models.CustomApplication{
 		Name:        *p.Name,
@@ -65,7 +65,7 @@ func payloadToCustomApplication(p CustomApplicationPayload) (models.CustomApplic
 	}, nil
 }
 
-// CustomApplicationToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// CustomApplicationToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func CustomApplicationToPayload(ca models.CustomApplication) CustomApplicationPayload {
 	return CustomApplicationPayload{
 		Name:        &ca.Name,

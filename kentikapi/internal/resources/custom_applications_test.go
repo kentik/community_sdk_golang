@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -45,7 +45,7 @@ func TestGetAll(t *testing.T) {
 		}
 	]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	applicationsAPI := api_resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	// act
 	applications, err := applicationsAPI.GetAll(context.Background())
@@ -89,7 +89,7 @@ func TestCreateCustomApplication(t *testing.T) {
 		"company_id": "74333"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	applicationsAPI := api_resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	app := models.NewCustomApplication("apitest-customapp-1")
 	models.SetOptional(&app.Description, "Testing custom application api")
@@ -145,7 +145,7 @@ func TestUpdateCustomApplication(t *testing.T) {
 		"edate": "2020-12-11T07:07:20.968Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	applicationsAPI := api_resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	appID := models.ID(207)
 	app := models.CustomApplication{
@@ -191,7 +191,7 @@ func TestDeleteCustomApplication(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting custom application responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	appliationsAPI := api_resources.NewCustomApplicationsAPI(transport)
+	appliationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	// act
 	appID := models.ID(42)

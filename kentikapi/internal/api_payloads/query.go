@@ -10,12 +10,12 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// QuerySQLRequest represents QueryAPI SQL JSON request
+// QuerySQLRequest represents QueryAPI SQL JSON request.
 type QuerySQLRequest struct {
 	Query string `json:"query"`
 }
 
-// QuerySQLResponse represents QueryAPI SQL JSON response
+// QuerySQLResponse represents QueryAPI SQL JSON response.
 type QuerySQLResponse struct {
 	Rows []interface{} `json:"rows"` // contents depend on used sql query
 }
@@ -24,10 +24,10 @@ func (r QuerySQLResponse) ToQuerySQLResult() models.QuerySQLResult {
 	return models.QuerySQLResult{Rows: r.Rows}
 }
 
-// QueryObjectRequest represents QueryAPI Data/Chart/URL JSON request
+// QueryObjectRequest represents QueryAPI Data/Chart/URL JSON request.
 type QueryObjectRequest queryObjectPayload
 
-// QueryDataResponse represents QueryAPI Data JSON response
+// QueryDataResponse represents QueryAPI Data JSON response.
 type QueryDataResponse struct {
 	Results []interface{} `json:"results"` // contents depend on used query object
 }
@@ -36,7 +36,7 @@ func (r QueryDataResponse) ToQueryDataResult() models.QueryDataResult {
 	return models.QueryDataResult{Results: r.Results}
 }
 
-// QueryURLResponse represents QueryAPI URL JSON response
+// QueryURLResponse represents QueryAPI URL JSON response.
 type QueryURLResponse string
 
 func (r QueryURLResponse) ToQueryURLResult() models.QueryURLResult {
@@ -44,7 +44,7 @@ func (r QueryURLResponse) ToQueryURLResult() models.QueryURLResult {
 	return models.QueryURLResult{URL: unquotedURL}
 }
 
-// QueryChartResponse represents QueryAPI Chart JSON response
+// QueryChartResponse represents QueryAPI Chart JSON response.
 type QueryChartResponse struct {
 	DataURI string `json:"dataUri"` // like: "data:image/png;base64,iVBORw0KGgoAAAA..."
 }
@@ -121,6 +121,7 @@ type queryObjectPayload struct {
 	ImageType *string                 `json:"imageType,omitempty"`
 }
 
+//nolint:revive // queryObjectPayLoad doesn't need to be exported
 func QueryObjectToPayload(q models.QueryObject) (queryObjectPayload, error) {
 	var queries []queryArrayItemPayload
 	if err := utils.ConvertList(q.Queries, queryArrayItemToPayload, &queries); err != nil {
@@ -149,7 +150,7 @@ type queryArrayItemPayload struct {
 func queryArrayItemToPayload(i models.QueryArrayItem) (queryArrayItemPayload, error) {
 	query, err := queryToPayload(i.Query)
 	if err != nil {
-		return queryArrayItemPayload{}, nil
+		return queryArrayItemPayload{}, err
 	}
 
 	return queryArrayItemPayload{
@@ -161,32 +162,33 @@ func queryArrayItemToPayload(i models.QueryArrayItem) (queryArrayItemPayload, er
 }
 
 type queryPayload struct {
-	Metric          string               `json:"metric"`
-	Dimension       []string             `json:"dimension,omitempty"`
-	FiltersObj      *filtersPayload      `json:"filters_obj,omitempty"`
-	SavedFilters    []savedFilterPayload `json:"saved_filters,omitempty"`
-	MatrixBy        []string             `json:"matrixBy" request:"post"` // matrixBy is required in request even if empty. Otherwise Chart query hangs
-	CIDR            *int                 `json:"cidr,omitempty"`
-	CIDR6           *int                 `json:"cidr6,omitempty"`
-	PPSThreshold    *int                 `json:"pps_threshold,omitempty"`
-	TopX            int                  `json:"topx"`
-	Depth           int                  `json:"depth"`
-	FastData        string               `json:"fastData"`
-	TimeFormat      string               `json:"time_format"`
-	HostnameLookup  bool                 `json:"hostname_lookup"`
-	LookbackSeconds int                  `json:"lookback_seconds"`
-	StartingTime    *string              `json:"starting_time,omitempty"` // format YYYY-MM-DD HH:mm:00
-	EndingTime      *string              `json:"ending_time,omitempty"`   // format YYYY-MM-DD HH:mm:00
-	AllSelected     *bool                `json:"all_selected,omitempty"`
-	DeviceName      []string             `json:"device_name" request:"post"` // device_name is required in request even if empty
-	Descriptor      string               `json:"descriptor"`
-	Aggregates      []aggregatePayload   `json:"aggregates,omitempty"`
-	Outsort         *string              `json:"outsort,omitempty"`
-	QueryTitle      string               `json:"query_title"`
-	VizType         *string              `json:"viz_type,omitempty"`
-	ShowOverlay     *bool                `json:"show_overlay,omitempty"`
-	OverlayDay      *int                 `json:"overlay_day,omitempty"`
-	SyncAxes        *bool                `json:"sync_axes,omitempty"`
+	Metric       string               `json:"metric"`
+	Dimension    []string             `json:"dimension,omitempty"`
+	FiltersObj   *filtersPayload      `json:"filters_obj,omitempty"`
+	SavedFilters []savedFilterPayload `json:"saved_filters,omitempty"`
+	// matrixBy is required in request even if empty. Otherwise Chart query hangs
+	MatrixBy        []string           `json:"matrixBy" request:"post"`
+	CIDR            *int               `json:"cidr,omitempty"`
+	CIDR6           *int               `json:"cidr6,omitempty"`
+	PPSThreshold    *int               `json:"pps_threshold,omitempty"`
+	TopX            int                `json:"topx"`
+	Depth           int                `json:"depth"`
+	FastData        string             `json:"fastData"`
+	TimeFormat      string             `json:"time_format"`
+	HostnameLookup  bool               `json:"hostname_lookup"`
+	LookbackSeconds int                `json:"lookback_seconds"`
+	StartingTime    *string            `json:"starting_time,omitempty"` // format YYYY-MM-DD HH:mm:00
+	EndingTime      *string            `json:"ending_time,omitempty"`   // format YYYY-MM-DD HH:mm:00
+	AllSelected     *bool              `json:"all_selected,omitempty"`
+	DeviceName      []string           `json:"device_name" request:"post"` // device_name is required in request even if empty
+	Descriptor      string             `json:"descriptor"`
+	Aggregates      []aggregatePayload `json:"aggregates,omitempty"`
+	Outsort         *string            `json:"outsort,omitempty"`
+	QueryTitle      string             `json:"query_title"`
+	VizType         *string            `json:"viz_type,omitempty"`
+	ShowOverlay     *bool              `json:"show_overlay,omitempty"`
+	OverlayDay      *int               `json:"overlay_day,omitempty"`
+	SyncAxes        *bool              `json:"sync_axes,omitempty"`
 }
 
 func queryToPayload(q models.Query) (queryPayload, error) {
@@ -217,7 +219,7 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	return queryPayload{
 		Metric:          q.Metric.String(),
 		Dimension:       dimensions,
-		FiltersObj:      filtersToPayload(q.FiltersObj),
+		FiltersObj:      filtersPointerToPayload(q.FiltersObj),
 		SavedFilters:    savedFiltersPayloads,
 		MatrixBy:        q.MatrixBy,
 		CIDR:            q.CIDR,
@@ -244,7 +246,7 @@ func queryToPayload(q models.Query) (queryPayload, error) {
 	}, nil
 }
 
-func filtersToPayload(f *models.Filters) *filtersPayload {
+func filtersPointerToPayload(f *models.Filters) *filtersPayload {
 	if f == nil {
 		return nil
 	}
@@ -252,7 +254,7 @@ func filtersToPayload(f *models.Filters) *filtersPayload {
 	var filterGroupsPayloads []filterGroupsPayload
 
 	for _, i := range f.FilterGroups {
-		filterGroupsPayloads = append(filterGroupsPayloads, FilterGroupsToPayload(i))
+		filterGroupsPayloads = append(filterGroupsPayloads, filterGroupsToPayload(i))
 	}
 
 	return &filtersPayload{
@@ -288,6 +290,6 @@ func FormatQueryTime(t *time.Time) *string {
 		return nil
 	}
 	layout := "2006-01-02 15:04"
-	result := t.Format(layout) + ":00" //"YYYY-MM-DD HH:mm:00"
+	result := t.Format(layout) + ":00" // "YYYY-MM-DD HH:mm:00"
 	return &result
 }

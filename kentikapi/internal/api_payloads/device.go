@@ -7,20 +7,20 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// CreateDeviceRequest represents DevicesAPI Create JSON request
+// CreateDeviceRequest represents DevicesAPI Create JSON request.
 type CreateDeviceRequest struct {
 	Payload DevicePayload `json:"device"`
 }
 
-// UpdateDeviceRequest represents DevicesAPI Update JSON request
+// UpdateDeviceRequest represents DevicesAPI Update JSON request.
 type UpdateDeviceRequest CreateDeviceRequest
 
-// ApplyLabelsRequest represents DevicesAPI ApplyLabels JSON request
+// ApplyLabelsRequest represents DevicesAPI ApplyLabels JSON request.
 type ApplyLabelsRequest struct {
 	Labels []labelIDPayload `json:"labels,omitempty"`
 }
 
-// GetAllDevicesResponse represents DevicesAPI GetAll JSON response
+// GetAllDevicesResponse represents DevicesAPI GetAll JSON response.
 type GetAllDevicesResponse struct {
 	Payload []DevicePayload `json:"devices"`
 }
@@ -30,7 +30,7 @@ func (r GetAllDevicesResponse) ToDevices() (result []models.Device, err error) {
 	return result, err
 }
 
-// GetDeviceResponse represents DevicesAPI Get JSON response
+// GetDeviceResponse represents DevicesAPI Get JSON response.
 type GetDeviceResponse struct {
 	Payload DevicePayload `json:"device"`
 }
@@ -39,13 +39,13 @@ func (r GetDeviceResponse) ToDevice() (result models.Device, err error) {
 	return payloadToDevice(r.Payload)
 }
 
-// CreateDeviceResponse represents DevicesAPI Create JSON response
+// CreateDeviceResponse represents DevicesAPI Create JSON response.
 type CreateDeviceResponse = GetDeviceResponse
 
-// UpdateDeviceResponse represents DevicesAPI Update JSON response
+// UpdateDeviceResponse represents DevicesAPI Update JSON response.
 type UpdateDeviceResponse = GetDeviceResponse
 
-// ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI
+// ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI.
 type ApplyLabelsResponse struct {
 	ID         models.ID            `json:"id,string"`
 	DeviceName string               `json:"device_name"`
@@ -60,7 +60,7 @@ func (r *ApplyLabelsResponse) ToAppliedLabels() (models.AppliedLabels, error) {
 	return models.AppliedLabels{ID: r.ID, DeviceName: r.DeviceName, Labels: labels}, nil
 }
 
-// DevicePayload represents JSON Device payload as it is transmitted to and from KentikAPI
+// DevicePayload represents JSON Device payload as it is transmitted to and from KentikAPI.
 type DevicePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	PlanID                *models.ID         `json:"plan_id,omitempty" request:"post"`
@@ -102,7 +102,7 @@ type DevicePayload struct {
 	BGPPeerIP6      *string                `json:"bgpPeerIP6,omitempty"`
 }
 
-// payloadToDevice transforms GET/POST/PUT response payload into Device
+// payloadToDevice transforms GET/POST/PUT response payload into Device.
 func payloadToDevice(p DevicePayload) (models.Device, error) {
 	plan, err := payloadToDevicePlan(*p.Plan)
 	if err != nil {
@@ -174,7 +174,7 @@ func deviceBGPTypeFromStringPtr(s *string) *models.DeviceBGPType {
 	return &result
 }
 
-// DeviceToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// DeviceToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func DeviceToPayload(d models.Device) DevicePayload {
 	return DevicePayload{
 		DeviceName:            &d.DeviceName,
@@ -216,7 +216,7 @@ func deviceBGPTypeToStringPtr(t *models.DeviceBGPType) *string {
 	return &result
 }
 
-// allInterfacesPayload represents JSON Device.AllInterfaces payload as it is transmitted from KentikAPI
+// allInterfacesPayload represents JSON Device.AllInterfaces payload as it is transmitted from KentikAPI.
 type allInterfacesPayload struct {
 	DeviceID             models.ID `json:"device_id,string,omitempty"`
 	SNMPSpeed            float64   `json:"snmp_speed,string,omitempty"`
@@ -233,7 +233,7 @@ func payloadToAllInterfaces(p allInterfacesPayload) (models.AllInterfaces, error
 	}, nil
 }
 
-// snmpv3ConfPayload represents JSON Device.SNMPv3Conf payload as it is transmitted to and from KentikAPI
+// snmpv3ConfPayload represents JSON Device.SNMPv3Conf payload as it is transmitted to and from KentikAPI.
 type snmpv3ConfPayload struct {
 	UserName                 string  `json:"UserName,omitempty"`
 	AuthenticationProtocol   *string `json:"AuthenticationProtocol,omitempty"`
@@ -299,7 +299,7 @@ func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
 
 // deviceLabelPayload represents JSON Device.Label payload as it is transmitted from KentikAPI.
 // deviceLabelPayload embedded under Device differs from standalone LabelPayload in that it lacks devices list,
-// and differs in field names, eg. cdate vs created_date, edate vs updated_date
+// and differs in field names, eg. cdate vs created_date, edate vs updated_date.
 type deviceLabelPayload struct {
 	ID          models.ID  `json:"id"`
 	Color       string     `json:"color"`
@@ -367,6 +367,7 @@ type devicePlanPayload struct {
 	Devices       []planDevicePayload     `json:"devices"`
 }
 
+//nolint:dupl
 func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 	var deviceTypes []models.PlanDeviceType
 	err := utils.ConvertList(p.DeviceTypes, payloadToPlanDeviceType, &deviceTypes)
@@ -399,11 +400,12 @@ func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 	}, nil
 }
 
-// labelIDPayload represents JSON ApplyLabels.LabelID payload as it is transmitted to KentikAPI
+// labelIDPayload represents JSON ApplyLabels.LabelID payload as it is transmitted to KentikAPI.
 type labelIDPayload struct {
 	ID int `json:"id"`
 }
 
+//nolint:revive // labelIDPayLoad doesn't need to be exported
 func LabelIDsToPayload(ids []models.ID) []labelIDPayload {
 	result := make([]labelIDPayload, 0, len(ids))
 	for _, id := range ids {

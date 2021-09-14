@@ -12,7 +12,9 @@ const (
 	AlertsHistoryPath    = "/alerts-active/alerts-history"
 )
 
-func GetActiveAlertsPath(startTime *time.Time, endTime *time.Time, filterBy string, filterVal string, showMitigations bool, showAlarms bool, showMatches bool, learningMode bool) string {
+func GetActiveAlertsPath(startTime *time.Time, endTime *time.Time, filterBy string, filterVal string,
+	showMitigations bool, showAlarms bool, showMatches bool, learningMode bool,
+) string {
 	timeFormatStr := "2006-01-02T15:04:05"
 	v := url.Values{}
 	if startTime != nil {
@@ -36,7 +38,8 @@ func GetActiveAlertsPath(startTime *time.Time, endTime *time.Time, filterBy stri
 }
 
 func GetAlertsHistoryPath(startTime *time.Time, endTime *time.Time, filterBy string, filterVal string, sortOrder string,
-	showMitigations bool, showAlarms bool, showMatches bool, learningMode bool) string {
+	showMitigations bool, showAlarms bool, showMatches bool, learningMode bool,
+) string {
 	timeFormatStr := "2006-01-02T15:04:05"
 	v := url.Values{}
 	if startTime != nil {

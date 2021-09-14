@@ -7,7 +7,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetAllPlansResponse represents PlansAPI GetAll JSON response
+// GetAllPlansResponse represents PlansAPI GetAll JSON response.
 type GetAllPlansResponse struct {
 	Plans []PlanPayload `json:"plans"`
 }
@@ -17,7 +17,7 @@ func (r GetAllPlansResponse) ToPlans() (result []models.Plan, err error) {
 	return result, err
 }
 
-// PlanPayload represents JSON Plan payload as it is transmitted from KentikAPI
+// PlanPayload represents JSON Plan payload as it is transmitted from KentikAPI.
 type PlanPayload struct {
 	// following fields can appear in request: none, response: get
 	ID            models.ID               `json:"id"`
@@ -37,6 +37,7 @@ type PlanPayload struct {
 	Devices       []planDevicePayload     `json:"devices"`
 }
 
+//nolint:dupl
 func payloadToPlan(p PlanPayload) (models.Plan, error) {
 	var deviceTypes []models.PlanDeviceType
 	err := utils.ConvertList(p.DeviceTypes, payloadToPlanDeviceType, &deviceTypes)
@@ -69,7 +70,7 @@ func payloadToPlan(p PlanPayload) (models.Plan, error) {
 	}, nil
 }
 
-// planDeviceTypePayload represents JSON Plan.DeviceTypes payload as it is transmitted from KentikAPI
+// planDeviceTypePayload represents JSON Plan.DeviceTypes payload as it is transmitted from KentikAPI.
 type planDeviceTypePayload struct {
 	DeviceType string `json:"device_type"`
 }
@@ -78,7 +79,7 @@ func payloadToPlanDeviceType(p planDeviceTypePayload) (models.PlanDeviceType, er
 	return models.PlanDeviceType{DeviceType: p.DeviceType}, nil
 }
 
-// planDevicePayload represents JSON Plan.Devices payload as it is transmitted from KentikAPI
+// planDevicePayload represents JSON Plan.Devices payload as it is transmitted from KentikAPI.
 type planDevicePayload struct {
 	DeviceName string    `json:"device_name"`
 	DeviceType string    `json:"device_type"`

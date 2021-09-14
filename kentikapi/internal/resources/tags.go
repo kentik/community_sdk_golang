@@ -1,4 +1,5 @@
-package api_resources
+//nolint:dupl
+package resources
 
 import (
 	"context"

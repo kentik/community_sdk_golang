@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// StubTransport provides Transport interface with preconfigured ResponseBody
+// StubTransport provides Transport interface with preconfigured ResponseBody.
 type StubTransport struct {
 	ResponseBody string
 

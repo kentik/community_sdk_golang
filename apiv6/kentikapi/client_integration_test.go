@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint:gosec
 const (
 	authEmailKey    = "X-CH-Auth-Email"
 	authAPITokenKey = "X-CH-Auth-API-Token"
@@ -181,10 +182,12 @@ func TestClient_PatchAgent(t *testing.T) {
 			})
 
 			// act
-			result, httpResp, err := c.SyntheticsAdminServiceApi.
+			result, httpResp, err := c.SyntheticsAdminServiceAPI.
 				AgentPatch(context.Background(), testAgentID).
 				Body(tt.request).
 				Execute()
+			//nolint:errcheck // Additional info: https://github.com/kisielk/errcheck/issues/55
+			defer httpResp.Body.Close()
 
 			// assert
 			t.Logf("Got result: %v, httpResp: %v, err: %v", result, httpResp, err)
@@ -197,7 +200,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			assert.Equal(t, len(h.responses), len(h.requests), "invalid number of requests")
 			for _, r := range h.requests {
 				assert.Equal(t, http.MethodPatch, r.method)
-				assert.Equal(t, fmt.Sprintf("/synthetics/v202101beta1/agents/%v", testAgentID), r.url_.Path)
+				assert.Equal(t, fmt.Sprintf("/synthetics/v202101beta1/agents/%v", testAgentID), r.url.Path)
 				assert.Equal(t, dummyAuthEmail, r.header.Get(authEmailKey))
 				assert.Equal(t, dummyAuthToken, r.header.Get(authAPITokenKey))
 				assert.Equal(t, tt.expectedRequestBody, unmarshalJSONToIf(t, r.body))
@@ -225,26 +228,34 @@ func newDummyAgent() *synthetics.V202101beta1Agent {
 	status := synthetics.V202101BETA1AGENTSTATUS_WAIT
 	family := synthetics.V202101BETA1IPFAMILY_DUAL
 	agent := &synthetics.V202101beta1Agent{
-		Id:         stringPtr(testAgentID),
-		Name:       stringPtr("dummy-agent"),
-		Status:     &status,
-		Alias:      stringPtr("probe-4-ams-1"),
-		Type:       stringPtr("global"),
-		Os:         stringPtr("I use Manjaro BTW"),
-		Ip:         stringPtr("95.179.136.58"),
-		Lat:        float64Ptr(52.374031),
-		Long:       float64Ptr(4.88969),
-		LastAuthed: timePtr(time.Date(2020, time.July, 9, 21, 37, 00, 826*1000000, time.UTC)),
-		Family:     &family,
-		Asn:        int64Ptr(20473),
-		SiteId:     stringPtr("2137"),
-		Version:    stringPtr("0.0.2"),
-		Challenge:  stringPtr("dummy-challenge"),
-		City:       stringPtr("Amsterdam"),
-		Region:     stringPtr("Noord-Holland"),
-		Country:    stringPtr("Netherlands"),
-		TestIds:    &[]string{"13", "133", "1337"},
-		LocalIp:    stringPtr("10.10.10.10"),
+		Id:     stringPtr(testAgentID),
+		Name:   stringPtr("dummy-agent"),
+		Status: &status,
+		Alias:  stringPtr("probe-4-ams-1"),
+		Type:   stringPtr("global"),
+		Os:     stringPtr("I use Manjaro BTW"),
+		Ip:     stringPtr("95.179.136.58"),
+		Lat:    float64Ptr(52.374031),
+		Long:   float64Ptr(4.88969),
+		LastAuthed: timePtr(time.Date(2020,
+			time.July,
+			9,
+			21,
+			37,
+			0,
+			826*1000000,
+			time.UTC,
+		)),
+		Family:    &family,
+		Asn:       int64Ptr(20473),
+		SiteId:    stringPtr("2137"),
+		Version:   stringPtr("0.0.2"),
+		Challenge: stringPtr("dummy-challenge"),
+		City:      stringPtr("Amsterdam"),
+		Region:    stringPtr("Noord-Holland"),
+		Country:   stringPtr("Netherlands"),
+		TestIds:   &[]string{"13", "133", "1337"},
+		LocalIp:   stringPtr("10.10.10.10"),
 	}
 
 	return agent
@@ -336,7 +347,7 @@ func (h *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	h.requests = append(h.requests, httpRequest{
 		method: r.Method,
-		url_:   r.URL,
+		url:    r.URL,
 		header: r.Header,
 		body:   string(body),
 	})
@@ -364,7 +375,7 @@ func (h *spyHTTPHandler) response() httpResponse {
 
 type httpRequest struct {
 	method string
-	url_   *url.URL
+	url    *url.URL
 	header http.Header
 	body   string
 }

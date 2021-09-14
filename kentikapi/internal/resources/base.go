@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -9,13 +9,13 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/validation"
 )
 
-// BaseAPI provides marshall/unmarshall + validation functionality for all resource APIs
+// BaseAPI provides marshall/unmarshall + validation functionality for all resource APIs.
 type BaseAPI struct {
 	Transport api_connection.Transport
 }
 
 // GetAndValidate retrieves json at "url", unmarshalls and validates against required fields defined in struct tags of "output"
-// output must be pointer to object or nil
+// output must be pointer to object or nil.
 func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interface{}) error {
 	responseBody, err := b.Transport.Get(ctx, url)
 	if err != nil {
@@ -39,7 +39,7 @@ func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interfac
 
 // PostAndValidate validates input against required fields defined in struct tags of "input",
 // retrieves json at "url", unmarshalls and validates against required fields in "output"
-// output must be pointer to object or nil
+// output must be pointer to object or nil.
 func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interface{}, output interface{}) error {
 	if err := validation.CheckRequestRequiredFields("post", input); err != nil {
 		return err
@@ -72,7 +72,7 @@ func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interfac
 
 // UpdateAndValidate validates input against required fields defined in struct tags of "input",
 // retrieves json at "url", unmarshalls and validates against required fields in "output"
-// output must be pointer to object or nil
+// output must be pointer to object or nil.
 func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interface{}, output interface{}) error {
 	if err := validation.CheckRequestRequiredFields("put", input); err != nil {
 		return err
@@ -103,8 +103,9 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 	return nil
 }
 
-// DeleteAndValidate retrieves json at "url" unmarshalls and validates against required fields defined in struct tags of "output"
-// output must be pointer to object or nil
+// DeleteAndValidate retrieves json at "url" unmarshalls and validates
+// against required fields defined in struct tags of "output"
+// output must be pointer to object or nil.
 func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output interface{}) error {
 	responseBody, err := b.Transport.Delete(ctx, url)
 	if err != nil {

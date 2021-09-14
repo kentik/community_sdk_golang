@@ -26,7 +26,7 @@ func TestConvertOrNoneReturnsValue(t *testing.T) {
 
 func TestConvertOrNoneReturnsNil(t *testing.T) {
 	// given
-	var input *string = nil
+	var input *string
 	var output *int
 
 	// when

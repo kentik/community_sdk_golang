@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -14,7 +14,7 @@ type CustomDimensionsAPI struct {
 	Populators *populatorsAPI
 }
 
-// NewCustomDimensionsAPI is constructor
+// NewCustomDimensionsAPI is constructor.
 func NewCustomDimensionsAPI(transport api_connection.Transport) *CustomDimensionsAPI {
 	return &CustomDimensionsAPI{
 		BaseAPI{Transport: transport},
@@ -22,7 +22,7 @@ func NewCustomDimensionsAPI(transport api_connection.Transport) *CustomDimension
 	}
 }
 
-// GetAll custom dimensions
+// GetAll custom dimensions.
 func (a *CustomDimensionsAPI) GetAll(ctx context.Context) ([]models.CustomDimension, error) {
 	var response api_payloads.GetAllCustomDimensionsResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetAllCustomDimensions(), &response); err != nil {
@@ -32,7 +32,7 @@ func (a *CustomDimensionsAPI) GetAll(ctx context.Context) ([]models.CustomDimens
 	return response.ToCustomDimensions(), nil
 }
 
-// Get custom dimension with given ID
+// Get custom dimension with given ID.
 func (a *CustomDimensionsAPI) Get(ctx context.Context, id models.ID) (*models.CustomDimension, error) {
 	var response api_payloads.GetCustomDimensionResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetCustomDimension(id), &response); err != nil {
@@ -43,8 +43,9 @@ func (a *CustomDimensionsAPI) Get(ctx context.Context, id models.ID) (*models.Cu
 	return &result, nil
 }
 
-// Create new custom dimension
-func (a *CustomDimensionsAPI) Create(ctx context.Context, customDimension models.CustomDimension) (*models.CustomDimension, error) {
+// Create new custom dimension.
+func (a *CustomDimensionsAPI) Create(ctx context.Context,
+	customDimension models.CustomDimension) (*models.CustomDimension, error) {
 	payload := api_payloads.CustomDimensionToPayload(customDimension)
 
 	request := api_payloads.CreateCustomDimensionRequest(payload)
@@ -57,8 +58,9 @@ func (a *CustomDimensionsAPI) Create(ctx context.Context, customDimension models
 	return &result, nil
 }
 
-// Update custom dimension
-func (a *CustomDimensionsAPI) Update(ctx context.Context, customDimension models.CustomDimension) (*models.CustomDimension, error) {
+// Update custom dimension.
+func (a *CustomDimensionsAPI) Update(ctx context.Context,
+	customDimension models.CustomDimension) (*models.CustomDimension, error) {
 	payload := api_payloads.CustomDimensionToPayload(customDimension)
 
 	request := api_payloads.UpdateCustomDimensionRequest(payload)
@@ -71,7 +73,7 @@ func (a *CustomDimensionsAPI) Update(ctx context.Context, customDimension models
 	return &result, nil
 }
 
-// Delete custom dimension
+// Delete custom dimension.
 func (a *CustomDimensionsAPI) Delete(ctx context.Context, id models.ID) error {
 	return a.DeleteAndValidate(ctx, api_endpoints.DeleteCustomDimension(id), nil)
 }
@@ -80,7 +82,7 @@ type populatorsAPI struct {
 	BaseAPI
 }
 
-// Create new populator
+// Create new populator.
 func (a *populatorsAPI) Create(ctx context.Context, populator models.Populator) (*models.Populator, error) {
 	payload := api_payloads.PopulatorToPayload(populator)
 
@@ -94,13 +96,18 @@ func (a *populatorsAPI) Create(ctx context.Context, populator models.Populator) 
 	return &result, nil
 }
 
-// Update populator
+// Update populator.
 func (a *populatorsAPI) Update(ctx context.Context, populator models.Populator) (*models.Populator, error) {
 	payload := api_payloads.PopulatorToPayload(populator)
 
 	request := api_payloads.UpdatePopulatorRequest{Payload: payload}
 	var response api_payloads.UpdatePopulatorResponse
-	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdatePopulator(populator.DimensionID, populator.ID), request, &response); err != nil {
+	if err := a.UpdateAndValidate(
+		ctx,
+		api_endpoints.UpdatePopulator(populator.DimensionID, populator.ID),
+		request,
+		&response,
+	); err != nil {
 		return nil, err
 	}
 
@@ -108,7 +115,7 @@ func (a *populatorsAPI) Update(ctx context.Context, populator models.Populator) 
 	return &result, nil
 }
 
-// Delete populator
+// Delete populator.
 func (a *populatorsAPI) Delete(ctx context.Context, dimensionID, populatorID models.ID) error {
 	return a.DeleteAndValidate(ctx, api_endpoints.DeletePopulator(dimensionID, populatorID), nil)
 }

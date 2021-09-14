@@ -4,12 +4,12 @@ import (
 	"reflect"
 )
 
-// ConvertFunc signature like: func IntToString(source int) (string, error)
+// ConvertFunc signature like: func IntToString(source int) (string, error).
 type ConvertFunc interface{}
 
 // ConvertList transforms input list of items into output list using convertFunc.
 // "input" must be array or slice
-// "output" must be a pointer to slice; a new slice is allocated and returned under that pointer
+// "output" must be a pointer to slice; a new slice is allocated and returned under that pointer.
 func ConvertList(input interface{}, convertFunc ConvertFunc, output interface{}) error {
 	tInput := reflect.TypeOf(input)
 	if tInput.Kind() != reflect.Array && tInput.Kind() != reflect.Slice {
@@ -45,7 +45,7 @@ func ConvertList(input interface{}, convertFunc ConvertFunc, output interface{})
 // ConvertOrNone transforms input into output using convertFunc, unless input is nil -> then sets output to nil.
 // "input" must be a pointer eg *int
 // "output" must be a pointer to pointer eg **int
-// conversion result is stored under output, or nil is set if input is nil
+// conversion result is stored under output, or nil is set if input is nil.
 func ConvertOrNone(input interface{}, convertFunc ConvertFunc, output interface{}) error {
 	tInput := reflect.TypeOf(input)
 	if tInput.Kind() != reflect.Ptr {

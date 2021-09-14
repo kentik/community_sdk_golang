@@ -35,12 +35,12 @@ func ImageTypeString(s string) (ImageType, error) {
 	return 0, fmt.Errorf("%s does not belong to ImageType values", s)
 }
 
-// ImageTypeValues returns all values of the enum
+// ImageTypeValues returns all values of the enum.
 func ImageTypeValues() []ImageType {
 	return _ImageTypeValues
 }
 
-// IsAImageType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsAImageType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i ImageType) IsAImageType() bool {
 	for _, v := range _ImageTypeValues {
 		if i == v {

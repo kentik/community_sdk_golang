@@ -38,12 +38,12 @@ func ChartViewTypeString(s string) (ChartViewType, error) {
 	return 0, fmt.Errorf("%s does not belong to ChartViewType values", s)
 }
 
-// ChartViewTypeValues returns all values of the enum
+// ChartViewTypeValues returns all values of the enum.
 func ChartViewTypeValues() []ChartViewType {
 	return _ChartViewTypeValues
 }
 
-// IsAChartViewType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsAChartViewType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i ChartViewType) IsAChartViewType() bool {
 	for _, v := range _ChartViewTypeValues {
 		if i == v {

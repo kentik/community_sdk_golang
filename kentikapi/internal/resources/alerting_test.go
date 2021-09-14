@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -6,13 +6,16 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
 
-var time1 = time.Date(2020, time.January, 19, 13, 50, 0, 0, time.Local)
-var time2 = time.Date(2021, time.March, 19, 13, 50, 0, 0, time.Local)
+//nolint:gochecknoglobals
+var (
+	time1 = time.Date(2020, time.January, 19, 13, 50, 0, 0, time.Local)
+	time2 = time.Date(2021, time.March, 19, 13, 50, 0, 0, time.Local)
+)
 
 func TestCrerateManualMitigation(t *testing.T) {
 	createResponsePayload := `
@@ -24,7 +27,7 @@ func TestCrerateManualMitigation(t *testing.T) {
 	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":1234,"methodID":12345,"minutesBeforeAutoStop":"20"}`
 
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	alertingAPI := api_resources.NewAlertingAPI(transport)
+	alertingAPI := resources.NewAlertingAPI(transport)
 	mm := models.ManualMitigation{
 		IPCidr:                "192.168.0.0/24",
 		PlatformID:            1234,
@@ -77,7 +80,7 @@ func TestGetActiveAlerts(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	alertingAPI := api_resources.NewAlertingAPI(transport)
+	alertingAPI := resources.NewAlertingAPI(transport)
 
 	alarmEndStr := "0000-00-00 00:00:00"
 	expected := []models.Alarm{
@@ -127,7 +130,12 @@ func TestGetActiveAlerts(t *testing.T) {
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)
-	assert.Equal(t, "/alerts-active/alarms?endTime=2021-03-19T13%3A50%3A00&learningMode=0&showAlarms=1&showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00", transport.RequestPath)
+	assert.Equal(
+		t,
+		"/alerts-active/alarms?endTime=2021-03-19T13%3A50%3A00&learningMode=0&showAlarms=1&"+
+			"showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00",
+		transport.RequestPath,
+	)
 }
 
 func TestGetAlertsHistory(t *testing.T) {
@@ -167,7 +175,7 @@ func TestGetAlertsHistory(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	alertingAPI := api_resources.NewAlertingAPI(transport)
+	alertingAPI := resources.NewAlertingAPI(transport)
 
 	dateStr := "2021-01-19 13:50:00"
 	expected := []models.HistoricalAlert{
@@ -216,5 +224,9 @@ func TestGetAlertsHistory(t *testing.T) {
 
 	assert.Equal(t, expected, alerts)
 	assert.NoError(t, err)
-	assert.Equal(t, "/alerts-active/alerts-history?endTime=2021-03-19T13%3A50%3A00&learningMode=0&showAlarms=1&showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00", transport.RequestPath)
+	assert.Equal(
+		t, "/alerts-active/alerts-history?endTime=2021-03-19T13%3A50%3A00&learningMode=0&"+
+			"showAlarms=1&showMatches=0&showMitigations=1&startTime=2020-01-19T13%3A50%3A00",
+		transport.RequestPath,
+	)
 }

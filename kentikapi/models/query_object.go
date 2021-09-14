@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// QueryObject is the root object describing QueryAPI Data/Chart/URL query
+// QueryObject is the root object describing QueryAPI Data/Chart/URL query.
 type QueryObject struct {
 	Queries   []QueryArrayItem
 	ImageType *ImageType // used in QueryChart
@@ -57,7 +57,8 @@ type Query struct {
 	SyncAxes        *bool          // only used in QueryChart, QueryURL
 }
 
-// NewQuery creates a Query with all required fields set
+// NewQuery creates a Query with all required fields set.
+//nolint:gomnd
 func NewQuery(metric MetricType, dimension []DimensionType) *Query {
 	return &Query{
 		Metric:          metric,
@@ -82,7 +83,7 @@ type Aggregate struct {
 	Raw        *bool // required for chart queries
 }
 
-// NewAggregate creates an Aggregate with all required fields set
+// NewAggregate creates an Aggregate with all required fields set.
 func NewAggregate(name string, column string, fn AggregateFunctionType) Aggregate {
 	return Aggregate{
 		Name:       name,
@@ -230,6 +231,7 @@ type QueryChartResult struct {
 	ImageData []byte // raw chart image binary data that can be directly dumped into a file
 }
 
+//nolint:gosec,gomnd
 func (r QueryChartResult) SaveImageAs(filename string) error {
-	return ioutil.WriteFile(filename, r.ImageData, 0644)
+	return ioutil.WriteFile(filename, r.ImageData, 0o644)
 }

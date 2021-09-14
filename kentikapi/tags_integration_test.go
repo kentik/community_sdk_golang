@@ -81,6 +81,7 @@ func TestClient_GetAllTags(t *testing.T) {
 			},
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -361,6 +362,7 @@ func TestClient_CreateTag(t *testing.T) {
 	}
 }
 
+//nolint:dupl
 func TestClient_UpdateTag(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -491,6 +493,7 @@ func TestClient_UpdateTag(t *testing.T) {
 			},
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -614,6 +617,7 @@ const testTagOneResponseJSON = `{
 	"vlans": "4001,4002,4003"
 }`
 
+//nolint:dupl
 func newTestTagOne(t *testing.T) *models.Tag {
 	return &models.Tag{
 		FlowTag:       "APITEST-TAG-1",

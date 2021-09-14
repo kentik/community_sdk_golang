@@ -67,6 +67,7 @@ func (p savedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 	}, nil
 }
 
+//nolint:revive // savedFilterPayLoad doesn't need to be exported
 func SavedFilterToPayload(sf models.SavedFilter) savedFilterPayload {
 	return savedFilterPayload{
 		ID:                IntAsString(sf.ID),
@@ -76,7 +77,7 @@ func SavedFilterToPayload(sf models.SavedFilter) savedFilterPayload {
 		FilterLevel:       sf.FilterLevel,
 		CreatedDate:       &sf.CreatedDate,
 		UpdatedDate:       &sf.UpdatedDate,
-		Filters:           FiltersToPayload(sf.Filters),
+		Filters:           filtersToPayload(sf.Filters),
 	}
 }
 
@@ -113,10 +114,10 @@ func (p filtersPayload) ToFilters() (models.Filters, error) {
 	}, nil
 }
 
-func FiltersToPayload(f models.Filters) filtersPayload {
+func filtersToPayload(f models.Filters) filtersPayload {
 	var filterGroups []filterGroupsPayload
 	for _, fg := range f.FilterGroups {
-		filterGroups = append(filterGroups, FilterGroupsToPayload(fg))
+		filterGroups = append(filterGroups, filterGroupsToPayload(fg))
 	}
 
 	return filtersPayload{
@@ -152,10 +153,10 @@ func (p filterGroupsPayload) ToFilterGroups() (models.FilterGroups, error) {
 	}, nil
 }
 
-func FilterGroupsToPayload(fg models.FilterGroups) filterGroupsPayload {
+func filterGroupsToPayload(fg models.FilterGroups) filterGroupsPayload {
 	var filters []filterPayload
 	for _, f := range fg.Filters {
-		filters = append(filters, FilterToPayload(f))
+		filters = append(filters, filterToPayload(f))
 	}
 
 	return filterGroupsPayload{
@@ -184,7 +185,7 @@ func (p filterPayload) ToFilter() (models.Filter, error) {
 	}, nil
 }
 
-func FilterToPayload(f models.Filter) filterPayload {
+func filterToPayload(f models.Filter) filterPayload {
 	return filterPayload{
 		FilterField: f.FilterField,
 		ID:          f.ID,

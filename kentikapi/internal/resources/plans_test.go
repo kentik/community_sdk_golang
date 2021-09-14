@@ -1,11 +1,11 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -66,7 +66,7 @@ func TestGetAllPlans(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	plansAPI := api_resources.NewPlansAPI(transport)
+	plansAPI := resources.NewPlansAPI(transport)
 
 	// act
 	plans, err := plansAPI.GetAll(context.Background())

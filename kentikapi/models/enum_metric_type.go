@@ -50,12 +50,12 @@ func MetricTypeString(s string) (MetricType, error) {
 	return 0, fmt.Errorf("%s does not belong to MetricType values", s)
 }
 
-// MetricTypeValues returns all values of the enum
+// MetricTypeValues returns all values of the enum.
 func MetricTypeValues() []MetricType {
 	return _MetricTypeValues
 }
 
-// IsAMetricType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsAMetricType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i MetricType) IsAMetricType() bool {
 	for _, v := range _MetricTypeValues {
 		if i == v {

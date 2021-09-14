@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -14,14 +14,14 @@ type DeviceLabelsAPI struct {
 	BaseAPI
 }
 
-// NewDeviceLabelsAPIis constructor
+// NewDeviceLabelsAPI is constructor.
 func NewDeviceLabelsAPI(transport api_connection.Transport) *DeviceLabelsAPI {
 	return &DeviceLabelsAPI{
 		BaseAPI{Transport: transport},
 	}
 }
 
-// GetAll labels
+// GetAll labels.
 func (a *DeviceLabelsAPI) GetAll(ctx context.Context) ([]models.DeviceLabel, error) {
 	var response api_payloads.GetAllDeviceLabelsResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetAllLabels(), &response); err != nil {
@@ -31,7 +31,7 @@ func (a *DeviceLabelsAPI) GetAll(ctx context.Context) ([]models.DeviceLabel, err
 	return response.ToDeviceLabels()
 }
 
-// Get label with given ID
+// Get label with given ID.
 func (a *DeviceLabelsAPI) Get(ctx context.Context, id models.ID) (*models.DeviceLabel, error) {
 	var response api_payloads.GetDeviceLabelResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetLabel(id), &response); err != nil {
@@ -42,7 +42,7 @@ func (a *DeviceLabelsAPI) Get(ctx context.Context, id models.ID) (*models.Device
 	return &device, err
 }
 
-// Create new label
+// Create new label.
 func (a *DeviceLabelsAPI) Create(ctx context.Context, label models.DeviceLabel) (*models.DeviceLabel, error) {
 	payload := api_payloads.DeviceLabelToPayload(label)
 
@@ -56,7 +56,7 @@ func (a *DeviceLabelsAPI) Create(ctx context.Context, label models.DeviceLabel) 
 	return &result, err
 }
 
-// Update label
+// Update label.
 func (a *DeviceLabelsAPI) Update(ctx context.Context, label models.DeviceLabel) (*models.DeviceLabel, error) {
 	payload := api_payloads.DeviceLabelToPayload(label)
 
@@ -70,7 +70,7 @@ func (a *DeviceLabelsAPI) Update(ctx context.Context, label models.DeviceLabel) 
 	return &result, err
 }
 
-// Delete label
+// Delete label.
 func (a *DeviceLabelsAPI) Delete(ctx context.Context, id models.ID) error {
 	var response api_payloads.DeleteDeviceLabelResponse
 	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteLabel(id), &response); err != nil {

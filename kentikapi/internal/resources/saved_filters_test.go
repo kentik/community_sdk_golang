@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -125,7 +125,7 @@ func TestSavedFiltersList(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getAllresponsePayload}
-	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	savedFilters, err := savedFiltersAPI.GetAll(context.Background())
 
@@ -189,7 +189,7 @@ func TestGetSavedFilterInfo(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	savedFilter, err := savedFiltersAPI.Get(context.Background(), 8275)
 
@@ -250,12 +250,14 @@ func TestCreateSavedFilter(t *testing.T) {
 		ID:          8152,
 	}
 	// TODO(lwolanin): To test request payloads use JSONPayloadInspector like in most of tests
-	expectedRequestPayload := "{\"filter_name\":\"test_filter1\",\"filter_description\":\"This is test filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
-		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\",\"filterGroups\":[{\"connector\":\"All\",\"not\":false," +
-		"\"filters\":[{\"filterField\":\"dst_as\",\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
+	expectedRequestPayload := "{\"filter_name\":\"test_filter1\"," +
+		"\"filter_description\":\"This is test filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
+		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\"," +
+		"\"filterGroups\":[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\"," +
+		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: postResponsePayload}
-	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	newSavedFilter := models.SavedFilter{
 		FilterName:        "test_filter1",
@@ -309,12 +311,14 @@ func TestUpdateSavedFilter(t *testing.T) {
 		"edate":"2020-12-16T11:26:19.187Z",
 		"filter_level":"company"
 	}`
-	expectedRequestPayload := "{\"id\":8153,\"filter_name\":\"test_filter1\",\"filter_description\":\"Updated Saved Filter description\"," +
-		"\"cdate\":\"0001-01-01T00:00:00Z\",\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\",\"filterGroups\":" +
-		"[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\",\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
+	expectedRequestPayload := "{\"id\":8153,\"filter_name\":\"test_filter1\"," +
+		"\"filter_description\":\"Updated Saved Filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
+		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\"," +
+		"\"filterGroups\":[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\"," +
+		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	filterID := 8153
 	toUpdate := models.SavedFilter{
@@ -350,7 +354,7 @@ func TestDeleteSavedFilter(t *testing.T) {
 	deleteResponsePayload := ""
 
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	savedFiltersAPI := api_resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
 	filterID := 8153
 	err := savedFiltersAPI.Detete(context.Background(), filterID)

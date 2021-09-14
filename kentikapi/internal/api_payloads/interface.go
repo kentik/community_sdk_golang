@@ -10,7 +10,7 @@ import (
 
 // Note: InterfacesAPI belong under DevicesAPI but it is vast so it lives in a separate file
 
-// GetInterfaceResponse represents DevicesAPI.InterfacesAPI GetAll JSON response
+// GetAllInterfacesResponse represents DevicesAPI.InterfacesAPI GetAll JSON response.
 type GetAllInterfacesResponse []InterfacePayload
 
 func (r GetAllInterfacesResponse) ToInterfaces() (result []models.Interface, err error) {
@@ -18,7 +18,7 @@ func (r GetAllInterfacesResponse) ToInterfaces() (result []models.Interface, err
 	return result, err
 }
 
-// GetInterfaceResponse represents DevicesAPI.InterfacesAPI Get JSON response
+// GetInterfaceResponse represents DevicesAPI.InterfacesAPI Get JSON response.
 type GetInterfaceResponse struct {
 	Interface InterfacePayload `json:"interface"`
 }
@@ -27,34 +27,37 @@ func (r GetInterfaceResponse) ToInterface() (result models.Interface, err error)
 	return payloadToInterface(r.Interface)
 }
 
-// CreateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request
+// CreateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request.
 type CreateInterfaceRequest InterfacePayload
 
-// CreateInterfaceResponse represents DevicesAPI.InterfacesAPI Create JSON response
+// CreateInterfaceResponse represents DevicesAPI.InterfacesAPI Create JSON response.
 type CreateInterfaceResponse InterfacePayload
 
 func (r CreateInterfaceResponse) ToInterface() (result models.Interface, err error) {
 	return payloadToInterface(InterfacePayload(r))
 }
 
-// UpdateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request
+// UpdateInterfaceRequest represents DevicesAPI.InterfacesAPI Create JSON request.
 type UpdateInterfaceRequest InterfacePayload
 
-// UpdateInterfaceResponse represents DevicesAPI.InterfacesAPI Update JSON response
+// UpdateInterfaceResponse represents DevicesAPI.InterfacesAPI Update JSON response.
 type UpdateInterfaceResponse = CreateInterfaceResponse
 
-// InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI
+// InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI.
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	SNMPID               *models.ID            `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
-	SNMPSpeed            IntAsString           `json:"snmp_speed,omitempty"` // caveat, GET returns snmp_speed as string but POST and PUT as int
-	InterfaceDescription *string               `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
-	SNMPAlias            *string               `json:"snmp_alias,omitempty"`
-	InterfaceIP          *string               `json:"interface_ip,omitempty"`
-	InterfaceIPNetmask   *string               `json:"interface_ip_netmask,omitempty"`
-	VRF                  *vrfAttributesPayload `json:"vrf,omitempty"`    // caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
-	VRFID                *IntAsString          `json:"vrf_id,omitempty"` // caveat, GET returns vrf_id as string but POST and PUT as int
-	SecondaryIPs         []secondaryIPPayload  `json:"secondary_ips,omitempty"`
+	SNMPID *models.ID `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
+	// caveat, GET returns snmp_speed as string but POST and PUT as int
+	SNMPSpeed            IntAsString `json:"snmp_speed,omitempty"`
+	InterfaceDescription *string     `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
+	SNMPAlias            *string     `json:"snmp_alias,omitempty"`
+	InterfaceIP          *string     `json:"interface_ip,omitempty"`
+	InterfaceIPNetmask   *string     `json:"interface_ip_netmask,omitempty"`
+	// caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
+	VRF *vrfAttributesPayload `json:"vrf,omitempty"`
+	// caveat, GET returns vrf_id as string but POST and PUT as int
+	VRFID        *IntAsString         `json:"vrf_id,omitempty"`
+	SecondaryIPs []secondaryIPPayload `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
 	ID                          *models.ID             `json:"id,string,omitempty" response:"get,post,put"`
@@ -125,7 +128,7 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 	}, nil
 }
 
-// InterfaceToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// InterfaceToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 	var secondaryIPs []secondaryIPPayload
 	err := utils.ConvertList(i.SecondaryIPS, secondaryIPToPayload, &secondaryIPs)
@@ -147,7 +150,7 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 }
 
 // vrfAttributesPayload represents JSON Interface.VRFAttributes payload as it is transmitted to and from KentikAPI
-// Note: it is returned only in get response, for post and put responses empty object is returned but vrf_id is set
+// Note: it is returned only in get response, for post and put responses empty object is returned but vrf_id is set.
 type vrfAttributesPayload struct {
 	// following fields can appear in request: post/put, response: get
 	Name               string  `json:"name"`
@@ -181,7 +184,7 @@ func payloadToVRFAttributes(p *vrfAttributesPayload) *models.VRFAttributes {
 	}
 }
 
-// vrfAttributesToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// vrfAttributesToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func vrfAttributesToPayload(a *models.VRFAttributes) *vrfAttributesPayload {
 	if a == nil {
 		return nil
@@ -196,7 +199,7 @@ func vrfAttributesToPayload(a *models.VRFAttributes) *vrfAttributesPayload {
 	}
 }
 
-// secondaryIPPayload represents JSON Interface.SecondaryIPPayload payload as it is transmitted to and from KentikAPI
+// secondaryIPPayload represents JSON Interface.SecondaryIPPayload payload as it is transmitted to and from KentikAPI.
 type secondaryIPPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	Address string `json:"address"`
@@ -210,7 +213,7 @@ func payloadToSecondaryIP(p secondaryIPPayload) (models.SecondaryIP, error) {
 	}, nil
 }
 
-// secondaryIPToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// secondaryIPToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func secondaryIPToPayload(s models.SecondaryIP) (secondaryIPPayload, error) {
 	return secondaryIPPayload{
 		Address: s.Address,
@@ -218,7 +221,7 @@ func secondaryIPToPayload(s models.SecondaryIP) (secondaryIPPayload, error) {
 	}, nil
 }
 
-// topNextHopASNPayload represents JSON Interface.TopNextHopASNPayload payload as it is transmitted from KentikAPI
+// topNextHopASNPayload represents JSON Interface.TopNextHopASNPayload payload as it is transmitted from KentikAPI.
 type topNextHopASNPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	ASN     int `json:"ASN"`

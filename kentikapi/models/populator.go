@@ -36,7 +36,7 @@ type Populator struct {
 	UpdatedDate time.Time
 }
 
-// NewPopulator creates a Populator with all necessary fields set
+// NewPopulator creates a Populator with all necessary fields set.
 func NewPopulator(dimensionID ID, value, deviceName string, direction PopulatorDirection) *Populator {
 	return &Populator{
 		DimensionID: dimensionID,

@@ -6,6 +6,7 @@ import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
+//nolint:gosec
 const (
 	authAPITokenKey   = "X-CH-Auth-API-Token"
 	authEmailKey      = "X-CH-Auth-Email"
@@ -16,11 +17,11 @@ const (
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
 	// cloudexport
-	CloudExportAdminServiceApi *cloudexport.CloudExportAdminServiceApiService
+	CloudExportAdminServiceAPI *cloudexport.CloudExportAdminServiceApiService
 
 	// synthetics
-	SyntheticsAdminServiceApi *synthetics.SyntheticsAdminServiceApiService
-	SyntheticsDataServiceApi  *synthetics.SyntheticsDataServiceApiService
+	SyntheticsAdminServiceAPI *synthetics.SyntheticsAdminServiceApiService
+	SyntheticsDataServiceAPI  *synthetics.SyntheticsDataServiceApiService
 }
 
 // Config holds configuration of the Client.
@@ -52,9 +53,9 @@ func NewClient(c Config) *Client {
 	syntheticsClient := synthetics.NewAPIClient(makeSyntheticsConfig(c))
 
 	return &Client{
-		CloudExportAdminServiceApi: cloudexportClient.CloudExportAdminServiceApi,
-		SyntheticsAdminServiceApi:  syntheticsClient.SyntheticsAdminServiceApi,
-		SyntheticsDataServiceApi:   syntheticsClient.SyntheticsDataServiceApi,
+		CloudExportAdminServiceAPI: cloudexportClient.CloudExportAdminServiceApi,
+		SyntheticsAdminServiceAPI:  syntheticsClient.SyntheticsAdminServiceApi,
+		SyntheticsDataServiceAPI:   syntheticsClient.SyntheticsDataServiceApi,
 	}
 }
 

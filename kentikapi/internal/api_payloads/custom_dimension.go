@@ -4,7 +4,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetAllCustomDimensionsResponse represents CustomDimensionsAPI GetAll JSON response
+// GetAllCustomDimensionsResponse represents CustomDimensionsAPI GetAll JSON response.
 type GetAllCustomDimensionsResponse struct {
 	Payload []CustomDimensionPayload `json:"customDimensions"`
 }
@@ -17,7 +17,7 @@ func (r GetAllCustomDimensionsResponse) ToCustomDimensions() []models.CustomDime
 	return result
 }
 
-// GetCustomDimensionResponse represents CustomDimensionsAPI Get JSON response
+// GetCustomDimensionResponse represents CustomDimensionsAPI Get JSON response.
 type GetCustomDimensionResponse struct {
 	Payload CustomDimensionPayload `json:"customDimension"`
 }
@@ -26,19 +26,19 @@ func (r GetCustomDimensionResponse) ToCustomDimension() models.CustomDimension {
 	return payloadToCustomDimension(r.Payload)
 }
 
-// CreateCustomDimensionRequest represents CustomDimensionsAPI Create JSON request
+// CreateCustomDimensionRequest represents CustomDimensionsAPI Create JSON request.
 type CreateCustomDimensionRequest CustomDimensionPayload
 
-// CreateCustomDimensionResponse represents CustomDimensionsAPI Create JSON response
+// CreateCustomDimensionResponse represents CustomDimensionsAPI Create JSON response.
 type CreateCustomDimensionResponse = GetCustomDimensionResponse
 
-// UpdateCustomDimensionRequest represents CustomDimensionsAPI Update JSON request
+// UpdateCustomDimensionRequest represents CustomDimensionsAPI Update JSON request.
 type UpdateCustomDimensionRequest = CreateCustomDimensionRequest
 
-// UpdateCustomDimensionResponse represents CustomDimensionsAPI Update JSON response
+// UpdateCustomDimensionResponse represents CustomDimensionsAPI Update JSON response.
 type UpdateCustomDimensionResponse = GetCustomDimensionResponse
 
-// CustomDimensionPayload represents JSON CustomDimension payload as it is transmitted to and from KentikAPI
+// CustomDimensionPayload represents JSON CustomDimension payload as it is transmitted to and from KentikAPI.
 type CustomDimensionPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	DisplayName string `json:"display_name"` // display_name is always required
@@ -53,7 +53,7 @@ type CustomDimensionPayload struct {
 	CompanyID  *models.ID         `json:"company_id,string" response:"get,post,put"`
 }
 
-// payloadToCustomDimension transforms GET/POST/PUT response payload into CustomDimension
+// payloadToCustomDimension transforms GET/POST/PUT response payload into CustomDimension.
 func payloadToCustomDimension(p CustomDimensionPayload) models.CustomDimension {
 	return models.CustomDimension{
 		Name:        *p.Name,
@@ -65,7 +65,7 @@ func payloadToCustomDimension(p CustomDimensionPayload) models.CustomDimension {
 	}
 }
 
-// CustomDimensionToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// CustomDimensionToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func CustomDimensionToPayload(cd models.CustomDimension) CustomDimensionPayload {
 	cdType := string(cd.Type)
 	return CustomDimensionPayload{

@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -13,14 +13,14 @@ type QueryAPI struct {
 	BaseAPI
 }
 
-// NewQueryAPI is constructor
+// NewQueryAPI is constructor.
 func NewQueryAPI(transport api_connection.Transport) *QueryAPI {
 	return &QueryAPI{
 		BaseAPI{Transport: transport},
 	}
 }
 
-// SQL query
+// SQL query.
 func (a *QueryAPI) SQL(ctx context.Context, sql string) (models.QuerySQLResult, error) {
 	payload := api_payloads.QuerySQLRequest{Query: sql}
 
@@ -32,7 +32,7 @@ func (a *QueryAPI) SQL(ctx context.Context, sql string) (models.QuerySQLResult, 
 	return response.ToQuerySQLResult(), nil
 }
 
-// Data query
+// Data query.
 func (a *QueryAPI) Data(ctx context.Context, query models.QueryObject) (models.QueryDataResult, error) {
 	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {
@@ -47,7 +47,7 @@ func (a *QueryAPI) Data(ctx context.Context, query models.QueryObject) (models.Q
 	return response.ToQueryDataResult(), nil
 }
 
-// Chart query
+// Chart query.
 func (a *QueryAPI) Chart(ctx context.Context, query models.QueryObject) (models.QueryChartResult, error) {
 	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {
@@ -62,7 +62,7 @@ func (a *QueryAPI) Chart(ctx context.Context, query models.QueryObject) (models.
 	return response.ToQueryChartResult()
 }
 
-// URL query
+// URL query.
 func (a *QueryAPI) URL(ctx context.Context, query models.QueryObject) (models.QueryURLResult, error) {
 	payload, err := api_payloads.QueryObjectToPayload(query)
 	if err != nil {

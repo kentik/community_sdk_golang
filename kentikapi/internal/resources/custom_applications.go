@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -13,14 +13,14 @@ type CustomApplicationsAPI struct {
 	BaseAPI
 }
 
-// NewCustomApplicationsAPI is constructor
+// NewCustomApplicationsAPI is constructor.
 func NewCustomApplicationsAPI(transport api_connection.Transport) *CustomApplicationsAPI {
 	return &CustomApplicationsAPI{
 		BaseAPI{Transport: transport},
 	}
 }
 
-// GetAll custom applications
+// GetAll custom applications.
 func (a *CustomApplicationsAPI) GetAll(ctx context.Context) ([]models.CustomApplication, error) {
 	var response api_payloads.GetAllCustomApplicationsResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetAllCustomApplications(), &response); err != nil {
@@ -30,8 +30,9 @@ func (a *CustomApplicationsAPI) GetAll(ctx context.Context) ([]models.CustomAppl
 	return response.ToCustomApplications()
 }
 
-// Create new custom application
-func (a *CustomApplicationsAPI) Create(ctx context.Context, customApplication models.CustomApplication) (*models.CustomApplication, error) {
+// Create new custom application.
+func (a *CustomApplicationsAPI) Create(ctx context.Context, customApplication models.CustomApplication,
+) (*models.CustomApplication, error) {
 	payload := api_payloads.CustomApplicationToPayload(customApplication)
 	request := api_payloads.CreateCustomApplicationRequest(payload)
 	var response api_payloads.CreateCustomApplicationResponse
@@ -43,12 +44,18 @@ func (a *CustomApplicationsAPI) Create(ctx context.Context, customApplication mo
 	return &result, err
 }
 
-// Update custom application
-func (a *CustomApplicationsAPI) Update(ctx context.Context, customApplication models.CustomApplication) (*models.CustomApplication, error) {
+// Update custom application.
+func (a *CustomApplicationsAPI) Update(ctx context.Context, customApplication models.CustomApplication,
+) (*models.CustomApplication, error) {
 	payload := api_payloads.CustomApplicationToPayload(customApplication)
 	request := api_payloads.UpdateCustomApplicationRequest(payload)
 	var response api_payloads.UpdateCustomApplicationResponse
-	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateCustomApplication(customApplication.ID), request, &response); err != nil {
+	if err := a.UpdateAndValidate(
+		ctx,
+		api_endpoints.UpdateCustomApplication(customApplication.ID),
+		request,
+		&response,
+	); err != nil {
 		return nil, err
 	}
 
@@ -56,7 +63,7 @@ func (a *CustomApplicationsAPI) Update(ctx context.Context, customApplication mo
 	return &result, err
 }
 
-// Delete custom application
+// Delete custom application.
 func (a *CustomApplicationsAPI) Delete(ctx context.Context, id models.ID) error {
 	return a.DeleteAndValidate(ctx, api_endpoints.DeleteCustomApplication(id), nil)
 }

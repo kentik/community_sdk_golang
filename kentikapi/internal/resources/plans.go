@@ -1,4 +1,4 @@
-package api_resources
+package resources
 
 import (
 	"context"
@@ -13,14 +13,14 @@ type PlansAPI struct {
 	BaseAPI
 }
 
-// NewPlansAPI is constructor
+// NewPlansAPI is constructor.
 func NewPlansAPI(transport api_connection.Transport) *PlansAPI {
 	return &PlansAPI{
 		BaseAPI{Transport: transport},
 	}
 }
 
-// GetAll plans
+// GetAll plans.
 func (a *PlansAPI) GetAll(ctx context.Context) ([]models.Plan, error) {
 	var response api_payloads.GetAllPlansResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetAllPlans(), &response); err != nil {

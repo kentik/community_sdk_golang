@@ -5,7 +5,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetSiteResponse represents SitesAPI Get JSON response
+// GetSiteResponse represents SitesAPI Get JSON response.
 type GetSiteResponse struct {
 	Payload SitePayload `json:"site"`
 }
@@ -14,7 +14,7 @@ func (r GetSiteResponse) ToSite() (result models.Site, err error) {
 	return payloadToSite(r.Payload)
 }
 
-// GetAllSitesResponse represents SitesAPI GetAll JSON response
+// GetAllSitesResponse represents SitesAPI GetAll JSON response.
 type GetAllSitesResponse struct {
 	Payload []SitePayload `json:"sites"`
 }
@@ -24,21 +24,21 @@ func (r GetAllSitesResponse) ToSites() (result []models.Site, err error) {
 	return result, err
 }
 
-// CreateSiteRequest represents SitesAPI Create JSON request
+// CreateSiteRequest represents SitesAPI Create JSON request.
 type CreateSiteRequest struct {
 	Payload SitePayload `json:"site"`
 }
 
-// CreateSiteResponse represents SitesAPI Create JSON Response
+// CreateSiteResponse represents SitesAPI Create JSON Response.
 type CreateSiteResponse = GetSiteResponse
 
-// UpdateSiteRequest represents SitesAPI Update JSON request
+// UpdateSiteRequest represents SitesAPI Update JSON request.
 type UpdateSiteRequest = CreateSiteRequest
 
-// UpdateSiteResponse represents SitesAPI Update JSON response
+// UpdateSiteResponse represents SitesAPI Update JSON response.
 type UpdateSiteResponse = CreateSiteResponse
 
-// SitePayload represents JSON Plan payload as it is transmitted to and from KentikAPI
+// SitePayload represents JSON Plan payload as it is transmitted to and from KentikAPI.
 type SitePayload struct {
 	ID        IntAsString `json:"id"`        // caveat, POST and GET return id as int but PUT as string
 	SiteName  string      `json:"site_name"` // site_name is required always, also in PUT

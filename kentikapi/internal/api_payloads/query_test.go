@@ -109,7 +109,7 @@ func TestFormatQueryTimeNonNil(t *testing.T) {
 
 func TestFormatQueryTimeNil(t *testing.T) {
 	// arrange
-	var datetime *time.Time = nil
+	var datetime *time.Time
 
 	// act
 	queryTime := api_payloads.FormatQueryTime(datetime)

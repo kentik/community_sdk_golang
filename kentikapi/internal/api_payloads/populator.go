@@ -6,12 +6,12 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// CreatePopulatorRequest represents CustomDimensionsAPI.Populators Create JSON request
+// CreatePopulatorRequest represents CustomDimensionsAPI.Populators Create JSON request.
 type CreatePopulatorRequest struct {
 	Payload PopulatorPayload `json:"populator"`
 }
 
-// CreatePopulatorResponse represents CustomDimensionsAPI.Populators Create JSON response
+// CreatePopulatorResponse represents CustomDimensionsAPI.Populators Create JSON response.
 type CreatePopulatorResponse struct {
 	Payload PopulatorPayload `json:"populator"`
 }
@@ -20,13 +20,13 @@ func (r CreatePopulatorResponse) ToPopulator() models.Populator {
 	return payloadToPopulator(r.Payload)
 }
 
-// UpdatePopulatorRequest represents CustomDimensionsAPI.Populators Update JSON request
+// UpdatePopulatorRequest represents CustomDimensionsAPI.Populators Update JSON request.
 type UpdatePopulatorRequest = CreatePopulatorRequest
 
-// UpdatePopulatorResponse represents CustomDimensionsAPI.Populators Update JSON response
+// UpdatePopulatorResponse represents CustomDimensionsAPI.Populators Update JSON response.
 type UpdatePopulatorResponse = CreatePopulatorResponse
 
-// PopulatorPayload represents JSON Populator payload as it is transmitted to and from KentikAPI
+// PopulatorPayload represents JSON Populator payload as it is transmitted to and from KentikAPI.
 type PopulatorPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	Direction     string  `json:"direction"`   // direction is always required
@@ -69,7 +69,7 @@ func payloadToPopulators(p []PopulatorPayload) []models.Populator {
 	return result
 }
 
-// payloadToPopulator transforms GET/POST/PUT response payload into Populator
+// payloadToPopulator transforms GET/POST/PUT response payload into Populator.
 func payloadToPopulator(p PopulatorPayload) models.Populator {
 	return models.Populator{
 		Direction:     models.PopulatorDirection(p.Direction),
@@ -103,7 +103,7 @@ func payloadToPopulator(p PopulatorPayload) models.Populator {
 	}
 }
 
-// PopulatorToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// PopulatorToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func PopulatorToPayload(p models.Populator) PopulatorPayload {
 	return PopulatorPayload{
 		Direction:     string(p.Direction),

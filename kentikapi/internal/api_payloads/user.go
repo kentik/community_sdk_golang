@@ -72,6 +72,7 @@ func (p userPayload) ToUser() *models.User {
 }
 
 // UserToPayload prepares POST/PUT request payload: fill only the user-provided fields.
+//nolint:revive // userPayLoad doesn't need to be exported
 func UserToPayload(u models.User) userPayload {
 	return userPayload{
 		Username:     u.Username,

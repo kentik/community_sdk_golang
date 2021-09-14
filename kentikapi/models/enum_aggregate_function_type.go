@@ -43,12 +43,12 @@ func AggregateFunctionTypeString(s string) (AggregateFunctionType, error) {
 	return 0, fmt.Errorf("%s does not belong to AggregateFunctionType values", s)
 }
 
-// AggregateFunctionTypeValues returns all values of the enum
+// AggregateFunctionTypeValues returns all values of the enum.
 func AggregateFunctionTypeValues() []AggregateFunctionType {
 	return _AggregateFunctionTypeValues
 }
 
-// IsAAggregateFunctionType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsAAggregateFunctionType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i AggregateFunctionType) IsAAggregateFunctionType() bool {
 	for _, v := range _AggregateFunctionTypeValues {
 		if i == v {

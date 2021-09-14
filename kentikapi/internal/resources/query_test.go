@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -48,7 +48,7 @@ func TestQuerySQL(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := api_resources.NewQueryAPI(transport)
+	queryAPI := resources.NewQueryAPI(transport)
 
 	// act
 	result, err := queryAPI.SQL(context.TODO(), querySQL)
@@ -124,11 +124,19 @@ func TestQueryData(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := api_resources.NewQueryAPI(transport)
+	queryAPI := resources.NewQueryAPI(transport)
 
-	agg1 := models.Aggregate{Name: "avg_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeAverage}
+	agg1 := models.Aggregate{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	}
 	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.Aggregate{Name: "p95th_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypePercentile}
+	agg2 := models.Aggregate{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	}
 	models.SetOptional(&agg2.Rank, 95)
 	agg3 := models.Aggregate{Name: "max_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeMax}
 	query := models.NewQuery(
@@ -138,8 +146,14 @@ func TestQueryData(t *testing.T) {
 	query.Depth = 75
 	query.HostnameLookup = true
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
-	models.SetOptional(&query.StartingTime, time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
-	models.SetOptional(&query.EndingTime, time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
+	models.SetOptional(
+		&query.StartingTime,
+		time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC),
+	)
+	models.SetOptional(
+		&query.EndingTime,
+		time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC),
+	)
 	models.SetOptional(&query.CIDR, 32)
 	models.SetOptional(&query.CIDR6, 128)
 	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
@@ -203,13 +217,25 @@ func TestQueryChart(t *testing.T) {
 	data := "ImageDataEncodedBase64=="
 	queryResponsePayload := `{"dataUri": "data:image/png;base64,ImageDataEncodedBase64=="}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := api_resources.NewQueryAPI(transport)
+	queryAPI := resources.NewQueryAPI(transport)
 
-	agg1 := models.Aggregate{Name: "avg_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeAverage}
+	agg1 := models.Aggregate{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	}
 	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.Aggregate{Name: "p95th_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypePercentile}
+	agg2 := models.Aggregate{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	}
 	models.SetOptional(&agg2.Rank, 95)
-	agg3 := models.Aggregate{Name: "max_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeMax}
+	agg3 := models.Aggregate{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	}
 
 	query := models.NewQuery(
 		models.MetricTypeBytes,
@@ -217,7 +243,10 @@ func TestQueryChart(t *testing.T) {
 	)
 	// filter_ = Filter(filterField="dst_as", operator="=", filterValue="") // SavedFilters is dependency here
 	// filter_group = FilterGroups(connector="All", not_=False, filters=[filter_]) // SavedFilters is dependency here
-	filters := models.Filters{Connector: "", FilterGroups: nil} // filterGroups=[filter_group]) // SavedFilters is dependency here
+	filters := models.Filters{
+		Connector:    "",
+		FilterGroups: nil,
+	} // filterGroups=[filter_group]) SavedFilters is dependency here
 	query.FiltersObj = &filters
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
 	query.LookbackSeconds = 0
@@ -230,8 +259,14 @@ func TestQueryChart(t *testing.T) {
 	query.DeviceName = []string{"dev1", "dev2"}
 	query.MatrixBy = []string{models.DimensionTypeSrcGeoCity.String(), models.DimensionTypeDstGeoCity.String()}
 	query.Descriptor = "descriptor"
-	models.SetOptional(&query.StartingTime, time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
-	models.SetOptional(&query.EndingTime, time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
+	models.SetOptional(
+		&query.StartingTime,
+		time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC),
+	)
+	models.SetOptional(
+		&query.EndingTime,
+		time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC),
+	)
 	models.SetOptional(&query.CIDR, 32)
 	models.SetOptional(&query.CIDR6, 128)
 	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
@@ -324,7 +359,7 @@ func TestQueryURL(t *testing.T) {
 	unquotedResponse := "https://portal.kentik.com/portal/#Charts/shortUrl/e0d24b3cc8dfe41f9093668e531cbe96"
 	queryResponsePayload := `"` + unquotedResponse + `"` // actual response is url in quotation marks
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := api_resources.NewQueryAPI(transport)
+	queryAPI := resources.NewQueryAPI(transport)
 
 	agg1 := models.Aggregate{Name: "avg_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeAverage}
 	models.SetOptional(&agg1.Raw, true)

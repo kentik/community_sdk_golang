@@ -1,45 +1,46 @@
-package api_payloads
+package api_payloads_test
 
 import (
 	"encoding/json"
 	"testing"
 
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 	tests := []struct {
 		input          string
-		expectedResult BoolAsStringOrInt
+		expectedResult api_payloads.BoolAsStringOrInt
 		expectedError  bool
 	}{
 		{
 			input:          `true`,
-			expectedResult: BoolAsStringOrInt(true),
+			expectedResult: api_payloads.BoolAsStringOrInt(true),
 		}, {
 			input:          `false`,
-			expectedResult: BoolAsStringOrInt(false),
+			expectedResult: api_payloads.BoolAsStringOrInt(false),
 		}, {
 			input:          `"true"`,
-			expectedResult: BoolAsStringOrInt(true),
+			expectedResult: api_payloads.BoolAsStringOrInt(true),
 		}, {
 			input:          `"True"`,
-			expectedResult: BoolAsStringOrInt(true),
+			expectedResult: api_payloads.BoolAsStringOrInt(true),
 		}, {
 			input:          `"false"`,
-			expectedResult: BoolAsStringOrInt(false),
+			expectedResult: api_payloads.BoolAsStringOrInt(false),
 		}, {
 			input:          `"False"`,
-			expectedResult: BoolAsStringOrInt(false),
+			expectedResult: api_payloads.BoolAsStringOrInt(false),
 		}, {
 			input:         `"invalid-string"`,
 			expectedError: true,
 		}, {
 			input:          `1`,
-			expectedResult: BoolAsStringOrInt(true),
+			expectedResult: api_payloads.BoolAsStringOrInt(true),
 		}, {
 			input:          `0`,
-			expectedResult: BoolAsStringOrInt(false),
+			expectedResult: api_payloads.BoolAsStringOrInt(false),
 		}, {
 			input:         `1.0`,
 			expectedError: true,
@@ -50,7 +51,7 @@ func TestBoolAsString_UnmarshalJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			var result BoolAsStringOrInt
+			var result api_payloads.BoolAsStringOrInt
 			err := json.Unmarshal([]byte(tt.input), &result)
 
 			if tt.expectedError {

@@ -7,7 +7,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// GetAllDeviceLabelsResponse represents DeviceLabelsAPI GetAll JSON response
+// GetAllDeviceLabelsResponse represents DeviceLabelsAPI GetAll JSON response.
 type GetAllDeviceLabelsResponse []DeviceLabelPayload
 
 func (r GetAllDeviceLabelsResponse) ToDeviceLabels() (result []models.DeviceLabel, err error) {
@@ -15,31 +15,31 @@ func (r GetAllDeviceLabelsResponse) ToDeviceLabels() (result []models.DeviceLabe
 	return result, err
 }
 
-// GetDeviceLabelResponse represents DeviceLabelsAPI Get JSON response
+// GetDeviceLabelResponse represents DeviceLabelsAPI Get JSON response.
 type GetDeviceLabelResponse DeviceLabelPayload
 
 func (r GetDeviceLabelResponse) ToDeviceLabel() (models.DeviceLabel, error) {
 	return PayloadToDeviceLabel(DeviceLabelPayload(r))
 }
 
-// CreateDeviceLabelRequest represents DeviceLabelsAPI Create JSON request
+// CreateDeviceLabelRequest represents DeviceLabelsAPI Create JSON request.
 type CreateDeviceLabelRequest DeviceLabelPayload
 
-// CreateDeviceLabelResponse represents DeviceLabelsAPI Create JSON response
+// CreateDeviceLabelResponse represents DeviceLabelsAPI Create JSON response.
 type CreateDeviceLabelResponse = GetDeviceLabelResponse
 
-// UpdateDeviceLabelRequest represents DeviceLabelsAPI Update JSON request
+// UpdateDeviceLabelRequest represents DeviceLabelsAPI Update JSON request.
 type UpdateDeviceLabelRequest DeviceLabelPayload
 
-// UpdateDeviceLabelResponse represents DeviceLabelsAPI Update JSON response
+// UpdateDeviceLabelResponse represents DeviceLabelsAPI Update JSON response.
 type UpdateDeviceLabelResponse = GetDeviceLabelResponse
 
-// DeleteDeviceLabelResponse represents DeviceLabelsAPI Delete JSON response. Yes delete returns an object
+// DeleteDeviceLabelResponse represents DeviceLabelsAPI Delete JSON response. Yes delete returns an object.
 type DeleteDeviceLabelResponse struct {
 	Success bool `json:"success"`
 }
 
-// DeviceLabelPayload represents JSON DeviceLabel payload as it is transmitted from KentikAPI
+// DeviceLabelPayload represents JSON DeviceLabel payload as it is transmitted from KentikAPI.
 type DeviceLabelPayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
 	Name  string  `json:"name"` // name is always required
@@ -55,14 +55,15 @@ type DeviceLabelPayload struct {
 }
 
 type deviceItemPayload struct {
-	// following fields can appear in request: none, response: get, put. Not in post as newly created label is not assigned to any device
+	// following fields can appear in request: none, response: get, put.
+	// Not in post as newly created label is not assigned to any device
 	ID            models.ID `json:"id,string"`
 	DeviceName    string    `json:"device_name"`
 	DeviceSubtype string    `json:"device_subtype"`
 	DeviceType    *string   `json:"device_type"` // device_type is not always returned
 }
 
-// PayloadToDeviceLabel transforms GET/POST/PUT response payload into DeviceLabel
+// PayloadToDeviceLabel transforms GET/POST/PUT response payload into DeviceLabel.
 func PayloadToDeviceLabel(p DeviceLabelPayload) (models.DeviceLabel, error) {
 	var devices []models.DeviceItem
 	err := utils.ConvertList(p.Devices, payloadToDeviceItem, &devices)
@@ -91,7 +92,7 @@ func payloadToDeviceItem(p deviceItemPayload) (models.DeviceItem, error) {
 	}, nil
 }
 
-// DeviceLabelToPayload prepares POST/PUT request payload: fill only the user-provided fields
+// DeviceLabelToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func DeviceLabelToPayload(l models.DeviceLabel) DeviceLabelPayload {
 	return DeviceLabelPayload{
 		Name:  l.Name,

@@ -33,12 +33,12 @@ func FastDataTypeString(s string) (FastDataType, error) {
 	return 0, fmt.Errorf("%s does not belong to FastDataType values", s)
 }
 
-// FastDataTypeValues returns all values of the enum
+// FastDataTypeValues returns all values of the enum.
 func FastDataTypeValues() []FastDataType {
 	return _FastDataTypeValues
 }
 
-// IsAFastDataType returns "true" if the value is listed in the enum definition. "false" otherwise
+// IsAFastDataType returns "true" if the value is listed in the enum definition. "false" otherwise.
 func (i FastDataType) IsAFastDataType() bool {
 	for _, v := range _FastDataTypeValues {
 		if i == v {

@@ -3,7 +3,7 @@ package kentikapi
 import (
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 )
 
 // Public constants.
@@ -14,19 +14,19 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	Users              *api_resources.UsersAPI
-	Devices            *api_resources.DevicesAPI
-	DeviceLabels       *api_resources.DeviceLabelsAPI
-	Sites              *api_resources.SitesAPI
-	Tags               *api_resources.TagsAPI
-	SavedFilters       *api_resources.SavedFiltersAPI
-	CustomDimensions   *api_resources.CustomDimensionsAPI
-	CustomApplications *api_resources.CustomApplicationsAPI
-	Query              *api_resources.QueryAPI
-	MyKentikPortal     *api_resources.MyKentikPortalAPI
-	Plans              *api_resources.PlansAPI
+	Users              *resources.UsersAPI
+	Devices            *resources.DevicesAPI
+	DeviceLabels       *resources.DeviceLabelsAPI
+	Sites              *resources.SitesAPI
+	Tags               *resources.TagsAPI
+	SavedFilters       *resources.SavedFiltersAPI
+	CustomDimensions   *resources.CustomDimensionsAPI
+	CustomApplications *resources.CustomApplicationsAPI
+	Query              *resources.QueryAPI
+	MyKentikPortal     *resources.MyKentikPortalAPI
+	Plans              *resources.PlansAPI
 	// Batch
-	Alerting *api_resources.AlertingAPI
+	Alerting *resources.AlertingAPI
 
 	config Config
 }
@@ -52,19 +52,19 @@ func NewClient(c Config) *Client {
 		RetryCfg:  c.RetryCfg,
 	})
 	return &Client{
-		Users:              api_resources.NewUsersAPI(rc),
-		Devices:            api_resources.NewDevicesAPI(rc),
-		DeviceLabels:       api_resources.NewDeviceLabelsAPI(rc),
-		Sites:              api_resources.NewSitesAPI(rc),
-		Tags:               api_resources.NewTagsAPI(rc),
-		SavedFilters:       api_resources.NewSavedFiltersAPI(rc),
-		CustomDimensions:   api_resources.NewCustomDimensionsAPI(rc),
-		CustomApplications: api_resources.NewCustomApplicationsAPI(rc),
-		Query:              api_resources.NewQueryAPI(rc),
-		MyKentikPortal:     api_resources.NewMyKentikPortalAPI(rc),
-		Plans:              api_resources.NewPlansAPI(rc),
+		Users:              resources.NewUsersAPI(rc),
+		Devices:            resources.NewDevicesAPI(rc),
+		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
+		Sites:              resources.NewSitesAPI(rc),
+		Tags:               resources.NewTagsAPI(rc),
+		SavedFilters:       resources.NewSavedFiltersAPI(rc),
+		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
+		CustomApplications: resources.NewCustomApplicationsAPI(rc),
+		Query:              resources.NewQueryAPI(rc),
+		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc),
+		Plans:              resources.NewPlansAPI(rc),
 		// Batch
-		Alerting: api_resources.NewAlertingAPI(rc),
+		Alerting: resources.NewAlertingAPI(rc),
 		config:   c,
 	}
 }

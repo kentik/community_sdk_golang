@@ -1,4 +1,4 @@
-package api_resources_test
+package resources_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +29,7 @@ func TestCreateDeviceLabel(t *testing.T) {
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	labelsAPI := api_resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	label := models.NewDeviceLabel("apitest-device_label-1", "#00FF00")
 
 	// act
@@ -70,7 +70,7 @@ func TestUpdateDeviceLabel(t *testing.T) {
 		"updated_date": "2018-06-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	labelsAPI := api_resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	label := models.DeviceLabel{Name: "apitest-device_label-one", Color: "#AA00FF"}
 	label.ID = models.ID(42)
 
@@ -119,7 +119,7 @@ func TestGetLabel(t *testing.T) {
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	labelsAPI := api_resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	labelID := models.ID(32)
 
 	// act
@@ -187,7 +187,7 @@ func TestGetAllLabels(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	labelsAPI := api_resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 
 	// act
 	labels, err := labelsAPI.GetAll(context.Background())
@@ -234,7 +234,7 @@ func TestDeleteDeviceLabel(t *testing.T) {
 		"success": true
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	labelsAPI := api_resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 
 	// act
 	labelID := models.ID(42)

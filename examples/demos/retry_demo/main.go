@@ -46,8 +46,8 @@ func showRetryingOnMultipleCodes() error {
 		APIURL: s.URL,
 		RetryCfg: httputil.RetryConfig{
 			MaxAttempts:          intPtr(42),
-			MinDelay:             durationPtr(100 * time.Millisecond),
-			MaxDelay:             durationPtr(10 * time.Second),
+			MinDelay:             durationPtr(1 * time.Second),
+			MaxDelay:             durationPtr(2 * time.Second),
 			RetryableStatusCodes: []int{http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable},
 			RetryableMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		},
@@ -61,10 +61,6 @@ func showRetryingOnMultipleCodes() error {
 
 	return err
 }
-
-const (
-	retryAfterHeaderValue = "2"
-)
 
 type spyHTTPHandler struct {
 	// responses to return to the client
@@ -102,7 +98,7 @@ func (h *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	})
 
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Header().Set("Retry-After", retryAfterHeaderValue)
+	rw.Header().Set("Retry-After", "1")
 	response := h.response()
 	writeResponse(rw, response.statusCode, response.body)
 }
