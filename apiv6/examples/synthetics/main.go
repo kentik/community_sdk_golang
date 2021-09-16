@@ -20,22 +20,25 @@ func runAdminServiceExamples() {
 	client := examples.NewClient()
 	var err error
 
-	if err = runCRUDTest(client); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	if err = runCRUDTest(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if err = runListTests(client); err != nil {
+	if err = runListTests(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if err = runCRUDAgent(client); err != nil {
+	if err = runCRUDAgent(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if err = runListAgents(client); err != nil {
+	if err = runListAgents(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -45,27 +48,30 @@ func runDataServiceExamples() {
 	client := examples.NewClient()
 	var err error
 
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
 	// NOTE: test of id 3336 must exist
-	if err = runGetHealthForTests(client, []string{"3336"}); err != nil {
+	if err = runGetHealthForTests(ctx, client, []string{"3336"}); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// NOTE: test of id 3336 must exist
-	if err = runGetTraceForTest(client, "3336"); err != nil {
+	if err = runGetTraceForTest(ctx, client, "3336"); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func runCRUDTest(client *kentikapi.Client) error {
+func runCRUDTest(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### CREATE TEST")
 	test := makeExampleTest()
 	createReqPayload := *synthetics.NewV202101beta1CreateTestRequest()
 	createReqPayload.SetTest(*test)
 
 	createResp, httpResp, err := client.SyntheticsAdminServiceAPI.
-		TestCreate(context.Background()).
+		TestCreate(ctx).
 		Body(createReqPayload).
 		Execute()
 	if err != nil {
@@ -83,7 +89,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	setStatusReqPayload.Id = &testID
 
 	statusResp, httpResp, err := client.SyntheticsAdminServiceAPI.
-		TestStatusUpdate(context.Background(), testID).
+		TestStatusUpdate(ctx, testID).
 		Body(setStatusReqPayload).
 		Execute()
 	if err != nil {
@@ -94,7 +100,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### GET TEST")
-	getReq := client.SyntheticsAdminServiceAPI.TestGet(context.Background(), testID)
+	getReq := client.SyntheticsAdminServiceAPI.TestGet(ctx, testID)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -113,7 +119,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	patchReqPayload.SetMask("test.name")
 
 	patchResp, httpResp, err := client.SyntheticsAdminServiceAPI.
-		TestPatch(context.Background(), *test.Id).
+		TestPatch(ctx, *test.Id).
 		Body(patchReqPayload).
 		Execute()
 	if err != nil {
@@ -123,7 +129,7 @@ func runCRUDTest(client *kentikapi.Client) error {
 	fmt.Println()
 
 	fmt.Println("### DELETE TEST")
-	deleteReq := client.SyntheticsAdminServiceAPI.TestDelete(context.Background(), testID)
+	deleteReq := client.SyntheticsAdminServiceAPI.TestDelete(ctx, testID)
 	deleteResp, httpResp, err := deleteReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -135,10 +141,10 @@ func runCRUDTest(client *kentikapi.Client) error {
 	return nil
 }
 
-func runListTests(client *kentikapi.Client) error {
+func runListTests(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### LIST TESTS")
 
-	getAllReq := client.SyntheticsAdminServiceAPI.TestsList(context.Background())
+	getAllReq := client.SyntheticsAdminServiceAPI.TestsList(ctx)
 	getAllResp, httpResp, err := getAllReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -159,7 +165,7 @@ func runListTests(client *kentikapi.Client) error {
 	return nil
 }
 
-func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
+func runGetHealthForTests(ctx context.Context, client *kentikapi.Client, testIDs []string) error {
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayload := *synthetics.NewV202101beta1GetHealthForTestsRequest()
@@ -168,7 +174,7 @@ func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
 	healthPayload.SetIds(testIDs)
 
 	getHealthResp, httpResp, err := client.SyntheticsDataServiceAPI.
-		GetHealthForTests(context.Background()).
+		GetHealthForTests(ctx).
 		Body(healthPayload).
 		Execute()
 	if err != nil {
@@ -187,7 +193,7 @@ func runGetHealthForTests(client *kentikapi.Client, testIDs []string) error {
 	return nil
 }
 
-func runGetTraceForTest(client *kentikapi.Client, testID string) error {
+func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET TRACE FOR TEST")
 
 	tracePayload := *synthetics.NewV202101beta1GetTraceForTestRequest()
@@ -196,7 +202,7 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	tracePayload.SetEndTime(time.Now())
 
 	getTraceResp, httpResp, err := client.SyntheticsDataServiceAPI.
-		GetTraceForTest(context.Background(), testID).
+		GetTraceForTest(ctx, testID).
 		Body(tracePayload).
 		Execute()
 	if err != nil {
@@ -224,13 +230,13 @@ func runGetTraceForTest(client *kentikapi.Client, testID string) error {
 	return nil
 }
 
-func runCRUDAgent(client *kentikapi.Client) error {
+func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
 	// NOTE: agent of id 1717 must exist
 	agentID := "1717"
 
 	fmt.Println("### GET AGENT")
-	getReq := client.SyntheticsAdminServiceAPI.AgentGet(context.Background(), agentID)
+	getReq := client.SyntheticsAdminServiceAPI.AgentGet(ctx, agentID)
 	getResp, httpResp, err := getReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -273,10 +279,10 @@ func runCRUDAgent(client *kentikapi.Client) error {
 	return nil
 }
 
-func runListAgents(client *kentikapi.Client) error {
+func runListAgents(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### LIST AGENTS")
 
-	getAllReq := client.SyntheticsAdminServiceAPI.AgentsList(context.Background())
+	getAllReq := client.SyntheticsAdminServiceAPI.AgentsList(ctx)
 	getAllResp, httpResp, err := getAllReq.Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
