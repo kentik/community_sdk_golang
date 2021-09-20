@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
@@ -104,6 +105,48 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 			assert.Equal(t, "fake error", dnsErr.Err)
 		})
 	}
+}
+
+func TestRetryAfter(t *testing.T) {
+	var (
+		header     string
+		httpErrors = []int{
+			http.StatusBadGateway,
+			http.StatusTooManyRequests,
+			http.StatusTooManyRequests,
+			http.StatusBadRequest,
+		}
+		retryAfterValue = 3 * time.Second
+	)
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		header = time.Now().Add(retryAfterValue).Format(time.RFC1123)
+		w.Header().Set("Retry-After", header)
+		http.Error(w, "", httpErrors[0])
+		httpErrors = httpErrors[1:]
+	}))
+	defer ts.Close()
+
+	c := httputil.NewRetryingClient(httputil.ClientConfig{
+		RetryCfg: httputil.RetryConfig{
+			MaxAttempts: intPtr(5),
+			MinDelay:    durationPtr(1 * time.Second),
+			MaxDelay:    durationPtr(10 * time.Second),
+		},
+	})
+
+	req, err := retryablehttp.NewRequest(http.MethodGet, ts.URL, nil)
+	require.NoError(t, err)
+
+	// act
+	//nolint:bodyclose
+	resp, err := c.Do(req.WithContext(context.Background()))
+
+	// assert
+	t.Logf("Got response: %v, err: %v", resp, err)
+
+	assert.Equal(t, resp.StatusCode, 400)
+	assert.Equal(t, resp.Header["Retry-After"][0], time.Now().Add(retryAfterValue).Format(time.RFC1123))
 }
 
 type spyTransport struct {
