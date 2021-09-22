@@ -1,4 +1,5 @@
 # community_sdk_golang
+[![Go Reference](https://pkg.go.dev/badge/github.com/kentik/community_sdk_golang.svg)](https://pkg.go.dev/github.com/kentik/community_sdk_golang)
 
 This repository is the Kentik Go SDK for the community.
 
