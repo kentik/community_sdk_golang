@@ -1,4 +1,5 @@
 // NOTE: modified by hand to reflect actual API enumerators
+
 package models
 
 import (
