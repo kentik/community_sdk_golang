@@ -4,7 +4,7 @@ This module implements Go client for Kentik API v6.
 
 ## Usage
 
-To configure timeout for API client use context.WithTimeout() and pass it to the request function.
+To configure timeout for a client call use _context.WithTimeout()_ and pass it to the request function.
 [Example use.](./examples/cloud_export/main.go)
 
 ## Development
