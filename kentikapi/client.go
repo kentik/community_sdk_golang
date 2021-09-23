@@ -40,7 +40,9 @@ type Config struct {
 	AuthEmail string
 	AuthToken string
 	RetryCfg  httputil.RetryConfig
-	Timeout   *time.Duration
+	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
+	// A Timeout of zero means no timeout. Default: 100 seconds.
+	Timeout *time.Duration
 }
 
 // NewClient creates a new Kentik API client.

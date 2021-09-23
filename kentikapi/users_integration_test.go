@@ -2,10 +2,10 @@ package kentikapi_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
@@ -195,114 +195,17 @@ func TestClient_GetAllUsers(t *testing.T) {
 	}
 }
 
-func TestClient_GetUser_WithTimeout(t *testing.T) {
+func TestClient_GetUser(t *testing.T) {
 	tests := []struct {
-		name            string
-		responses       []testutil.HTTPResponse
+		name                string
+		responses           []testutil.HTTPResponse
+		serverHandlingDelay time.Duration
+		// timeout and expected requests are strictly connected. The server sleeps for 10 ms before each response.
+		timeout         *time.Duration
+		expectedReqs    *int
 		expectedResult  *models.User
 		expectedError   bool
 		expectedTimeout bool
-		// timeout and expected requests are strictly connected. The server sleeps for 1 ms before each response.
-		timeout      *time.Duration
-		expectedReqs int
-	}{
-		{
-			name: "default timeout",
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
-			},
-			expectedError:   true,
-			expectedTimeout: false,
-			expectedReqs:    3,
-		}, {
-			name: "status bad request",
-			responses: []testutil.HTTPResponse{
-				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
-			},
-			expectedError:   true,
-			expectedTimeout: false,
-			timeout:         durationPtr(1 * time.Second),
-			expectedReqs:    1,
-		}, {
-			name: "timeout is longer than the wait for response with retries",
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
-			},
-			expectedError:   true,
-			expectedTimeout: false,
-			timeout:         durationPtr(10 * time.Second),
-			expectedReqs:    3,
-		}, {
-			name: "timeout after 1 request",
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
-			},
-			expectedError:   true,
-			expectedTimeout: true,
-			timeout:         durationPtr(5 * time.Millisecond),
-			expectedReqs:    1,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// arrange
-			h := testutil.NewMultipleResponseSpyHTTPHandlerSleep(t, tt.responses)
-			s := httptest.NewServer(h)
-			defer s.Close()
-
-			c := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-				RetryCfg: httputil.RetryConfig{
-					MinDelay: durationPtr(1 * time.Microsecond),
-					MaxDelay: durationPtr(10 * time.Microsecond),
-				},
-				Timeout: tt.timeout,
-			})
-
-			// act
-			result, err := c.Users.Get(context.Background(), testUserID)
-
-			// assert
-			t.Logf("Got result: %v, err: %v", result, err)
-			if tt.expectedError {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-
-			if tt.expectedTimeout {
-				assert.True(t, strings.Contains(err.Error(), "context deadline exceeded"))
-			} else {
-				assert.False(t, strings.Contains(err.Error(), "context deadline exceeded"))
-			}
-
-			assert.Equal(t, tt.expectedReqs, len(h.Requests), "invalid number of requests")
-			for _, r := range h.Requests {
-				assert.Equal(t, http.MethodGet, r.Method)
-				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
-				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
-				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
-			}
-
-			assert.Equal(t, tt.expectedResult, result)
-		})
-	}
-}
-
-func TestClient_GetUser(t *testing.T) {
-	tests := []struct {
-		name           string
-		responses      []testutil.HTTPResponse
-		expectedResult *models.User
-		expectedError  bool
 	}{
 		{
 			name: "status bad request",
@@ -409,12 +312,47 @@ func TestClient_GetUser(t *testing.T) {
 				CompanyID:    74333,
 				UserAPIToken: testutil.StringPtr("****************************a997"),
 			},
+		}, {
+			name: "default timeout is longer than 30 ms",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			expectedReqs:        intPtr(3),
+			expectedError:       true,
+			expectedTimeout:     false,
+		}, {
+			name: "timeout is longer than the wait for response with retries",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			timeout:             durationPtr(10 * time.Second),
+			expectedReqs:        intPtr(3),
+			expectedError:       true,
+			expectedTimeout:     false,
+		}, {
+			name: "timeout during first request",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			timeout:             durationPtr(5 * time.Millisecond),
+			expectedReqs:        intPtr(1),
+			expectedError:       true,
+			expectedTimeout:     true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses, tt.serverHandlingDelay)
 			s := httptest.NewServer(h)
 			defer s.Close()
 
@@ -426,6 +364,7 @@ func TestClient_GetUser(t *testing.T) {
 					MinDelay: durationPtr(1 * time.Microsecond),
 					MaxDelay: durationPtr(10 * time.Microsecond),
 				},
+				Timeout: tt.timeout,
 			})
 
 			// act
@@ -439,7 +378,18 @@ func TestClient_GetUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			if tt.expectedTimeout {
+				assert.True(t, errors.Is(err, context.DeadlineExceeded))
+			} else {
+				assert.False(t, errors.Is(err, context.DeadlineExceeded))
+			}
+
+			if tt.expectedReqs != nil {
+				assert.Equal(t, *tt.expectedReqs, len(h.Requests), "invalid number of requests")
+			} else {
+				assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			}
+
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodGet, r.Method)
 				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
@@ -634,7 +584,7 @@ func TestClient_CreateUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses)
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses, 0)
 			s := httptest.NewServer(h)
 			defer s.Close()
 

@@ -23,10 +23,6 @@ const (
 type RestClient struct {
 	config     RestClientConfig
 	httpClient *retryablehttp.Client
-	// Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any
-	// redirects, and reading the response body. The timer remains running after Get, Head, Post, or Do return and will
-	// interrupt reading of the Response.Body. A Timeout of zero means no timeout.
-	Timeout *time.Duration
 }
 
 type RestClientConfig struct {
@@ -38,18 +34,8 @@ type RestClientConfig struct {
 }
 
 func NewRestClient(c RestClientConfig) *RestClient {
-	if c.Timeout != nil {
-		return &RestClient{
-			config: c,
-			httpClient: httputil.
-				NewRetryingClient(
-					httputil.ClientConfig{
-						HTTPClient: nil,
-						RetryCfg:   c.RetryCfg,
-					},
-				),
-			Timeout: c.Timeout,
-		}
+	if c.Timeout == nil {
+		c.Timeout = durationPtr(defaultTimeout)
 	}
 	return &RestClient{
 		config: c,
@@ -60,18 +46,17 @@ func NewRestClient(c RestClientConfig) *RestClient {
 					RetryCfg:   c.RetryCfg,
 				},
 			),
-		Timeout: durationPtr(defaultTimeout),
 	}
 }
 
-func durationPtr(duration time.Duration) *time.Duration {
-	return &duration
+func durationPtr(v time.Duration) *time.Duration {
+	return &v
 }
 
 // Get sends GET request to the API and returns raw response body.
 //nolint:dupl
 func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
-	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()
 
 	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
@@ -81,7 +66,7 @@ func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.Ra
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %v", err)
+		return nil, fmt.Errorf("do request: %w", err)
 	}
 
 	defer func() {
@@ -103,7 +88,7 @@ func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.Ra
 //nolint:dupl
 func (c *RestClient) Post(ctx context.Context, path string, payload json.RawMessage,
 ) (responseBody json.RawMessage, err error) {
-	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()
 
 	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
@@ -113,7 +98,7 @@ func (c *RestClient) Post(ctx context.Context, path string, payload json.RawMess
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %v", err)
+		return nil, fmt.Errorf("do request: %w", err)
 	}
 	defer func() {
 		cErr := response.Body.Close()
@@ -134,7 +119,7 @@ func (c *RestClient) Post(ctx context.Context, path string, payload json.RawMess
 //nolint:dupl
 func (c *RestClient) Put(ctx context.Context, path string, payload json.RawMessage,
 ) (responseBody json.RawMessage, err error) {
-	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()
 
 	request, err := c.newRequest(ctx, http.MethodPut, path, payload)
@@ -144,7 +129,7 @@ func (c *RestClient) Put(ctx context.Context, path string, payload json.RawMessa
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %v", err)
+		return nil, fmt.Errorf("do request: %w", err)
 	}
 	defer func() {
 		cErr := response.Body.Close()
@@ -161,10 +146,10 @@ func (c *RestClient) Put(ctx context.Context, path string, payload json.RawMessa
 	return body, errorFromResponseStatus(response, string(body))
 }
 
-// Delete sends DELETE request to the API and returns raw response body
+// Delete sends DELETE request to the API and returns raw response body.
 //nolint:dupl
 func (c *RestClient) Delete(ctx context.Context, path string) (responseBody json.RawMessage, err error) {
-	ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()
 
 	request, err := c.newRequest(ctx, http.MethodDelete, path, json.RawMessage{})
@@ -174,7 +159,7 @@ func (c *RestClient) Delete(ctx context.Context, path string) (responseBody json
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %v", err)
+		return nil, fmt.Errorf("do request: %w", err)
 	}
 
 	defer func() {

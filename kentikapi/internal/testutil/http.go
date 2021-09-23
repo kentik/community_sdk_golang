@@ -11,10 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	serverSleepTime = 10 * time.Millisecond
-)
-
 type SpyHTTPHandler struct {
 	t testing.TB
 	// Response to return to the client
@@ -63,12 +59,17 @@ type MultipleResponseSpyHTTPHandler struct {
 
 	// Requests spied by the handler
 	Requests []HTTPRequest
+
+	// handlingDelay delays the response for of SpyHTTPHandler
+	handlingDelay time.Duration
 }
 
-func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse) *MultipleResponseSpyHTTPHandler {
+func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse, handlingDelay time.Duration,
+) *MultipleResponseSpyHTTPHandler {
 	return &MultipleResponseSpyHTTPHandler{
-		t:         t,
-		responses: responses,
+		t:             t,
+		responses:     responses,
+		handlingDelay: handlingDelay,
 	}
 }
 
@@ -88,6 +89,7 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 
 	rw.Header().Set("Content-Type", "application/json")
 	response := h.response()
+	time.Sleep(h.handlingDelay)
 	rw.WriteHeader(response.StatusCode)
 	_, err = rw.Write([]byte(response.Body))
 	assert.NoError(h.t, err)
@@ -124,56 +126,4 @@ func NewErrorHTTPResponse(statusCode int) HTTPResponse {
 		StatusCode: statusCode,
 		Body:       fmt.Sprintf(`{"error":"%v"}`, http.StatusText(statusCode)),
 	}
-}
-
-type MultipleResponseSpyHTTPHandlerSleep struct {
-	t testing.TB
-	// Responses to return to the client
-	responses []HTTPResponse
-
-	// Requests spied by the handler
-	Requests []HTTPRequest
-}
-
-func NewMultipleResponseSpyHTTPHandlerSleep(t testing.TB, responses []HTTPResponse) *MultipleResponseSpyHTTPHandlerSleep {
-	return &MultipleResponseSpyHTTPHandlerSleep{
-		t:         t,
-		responses: responses,
-	}
-}
-
-func (h *MultipleResponseSpyHTTPHandlerSleep) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	assert.NoError(h.t, err)
-
-	err = r.Body.Close()
-	assert.NoError(h.t, err)
-
-	h.Requests = append(h.Requests, HTTPRequest{
-		Method: r.Method,
-		URL:    r.URL,
-		Header: r.Header,
-		Body:   string(body),
-	})
-
-	rw.Header().Set("Content-Type", "application/json")
-	response := h.response()
-	time.Sleep(serverSleepTime)
-	rw.WriteHeader(response.StatusCode)
-	_, err = rw.Write([]byte(response.Body))
-	assert.NoError(h.t, err)
-}
-
-func (h *MultipleResponseSpyHTTPHandlerSleep) response() HTTPResponse {
-	if len(h.Requests) > len(h.responses) {
-		return HTTPResponse{
-			StatusCode: http.StatusGone,
-			Body: fmt.Sprintf(
-				"spyHTTPHandler: unexpected request, requests count: %v, expected: %v",
-				len(h.Requests), len(h.responses),
-			),
-		}
-	}
-
-	return h.responses[len(h.Requests)-1]
 }
