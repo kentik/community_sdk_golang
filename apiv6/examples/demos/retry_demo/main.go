@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/apiv6/examples/demos"
@@ -30,6 +31,7 @@ func showRetryingOnMultipleCodes() error {
 		newErrorHTTPResponse(http.StatusBadGateway),
 		newErrorHTTPResponse(http.StatusServiceUnavailable),
 		newErrorHTTPResponse(http.StatusServiceUnavailable),
+		newErrorHTTPResponse(http.StatusBadGateway),
 		newErrorHTTPResponse(http.StatusTooManyRequests),
 		newErrorHTTPResponse(http.StatusTooManyRequests),
 		{
@@ -64,7 +66,7 @@ func showRetryingOnMultipleCodes() error {
 }
 
 const (
-	retryAfterHeaderValue = "2"
+	retryAfterHeaderValue = "3"
 )
 
 type spyHTTPHandler struct {
@@ -102,8 +104,11 @@ func (h *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		body:   string(body),
 	})
 
+	retryAfterValue, _ := strconv.Atoi(retryAfterHeaderValue)
+	retryAfterDate := time.Now().Add(time.Duration(retryAfterValue) * time.Second)
+
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Header().Set("Retry-After", retryAfterHeaderValue)
+	rw.Header().Set("Retry-After", retryAfterDate.Format(time.RFC1123))
 	response := h.response()
 	writeResponse(rw, response.statusCode, response.body)
 }

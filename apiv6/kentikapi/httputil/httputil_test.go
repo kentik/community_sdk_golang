@@ -107,20 +107,16 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 	}
 }
 
-func TestRetryAfter(t *testing.T) {
-	var (
-		header     string
-		httpErrors = []int{
-			http.StatusBadGateway,
-			http.StatusTooManyRequests,
-			http.StatusTooManyRequests,
-			http.StatusBadRequest,
-		}
-		retryAfterValue = 3 * time.Second
-	)
+func TestNewRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
+	const retryAfterValue = 1 * time.Second
+	httpErrors := []int{
+		http.StatusTooManyRequests,
+		http.StatusServiceUnavailable,
+		http.StatusOK,
+	}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		header = time.Now().Add(retryAfterValue).Format(time.RFC1123)
+		header := time.Now().Add(retryAfterValue).Format(time.RFC1123)
 		w.Header().Set("Retry-After", header)
 		http.Error(w, "", httpErrors[0])
 		httpErrors = httpErrors[1:]
@@ -130,7 +126,7 @@ func TestRetryAfter(t *testing.T) {
 	c := httputil.NewRetryingClient(httputil.ClientConfig{
 		RetryCfg: httputil.RetryConfig{
 			MaxAttempts: intPtr(5),
-			MinDelay:    durationPtr(1 * time.Second),
+			MinDelay:    durationPtr(10 * time.Second),
 			MaxDelay:    durationPtr(10 * time.Second),
 		},
 	})
@@ -139,14 +135,17 @@ func TestRetryAfter(t *testing.T) {
 	require.NoError(t, err)
 
 	// act
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
 	//nolint:bodyclose
-	resp, err := c.Do(req.WithContext(context.Background()))
+	resp, err := c.Do(req.WithContext(ctx))
 
 	// assert
 	t.Logf("Got response: %v, err: %v", resp, err)
 
-	assert.Equal(t, resp.StatusCode, 400)
-	assert.Equal(t, resp.Header["Retry-After"][0], time.Now().Add(retryAfterValue).Format(time.RFC1123))
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
 }
 
 type spyTransport struct {
