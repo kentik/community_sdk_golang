@@ -60,7 +60,7 @@ type MultipleResponseSpyHTTPHandler struct {
 	// Requests spied by the handler
 	Requests []HTTPRequest
 
-	// handlingDelay delays the response for of SpyHTTPHandler
+	// handlingDelay specifies the delay applied while handling the request
 	handlingDelay time.Duration
 }
 
@@ -87,9 +87,10 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 		Body:   string(body),
 	})
 
+	time.Sleep(h.handlingDelay)
+
 	rw.Header().Set("Content-Type", "application/json")
 	response := h.response()
-	time.Sleep(h.handlingDelay)
 	rw.WriteHeader(response.StatusCode)
 	_, err = rw.Write([]byte(response.Body))
 	assert.NoError(h.t, err)

@@ -200,12 +200,10 @@ func TestClient_GetUser(t *testing.T) {
 		name                string
 		responses           []testutil.HTTPResponse
 		serverHandlingDelay time.Duration
-		// timeout and expected requests are strictly connected. The server sleeps for 10 ms before each response.
-		timeout         *time.Duration
-		expectedReqs    *int
-		expectedResult  *models.User
-		expectedError   bool
-		expectedTimeout bool
+		timeout             *time.Duration
+		expectedResult      *models.User
+		expectedError       bool
+		expectedTimeout     bool
 	}{
 		{
 			name: "status bad request",
@@ -320,7 +318,6 @@ func TestClient_GetUser(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
-			expectedReqs:        intPtr(3),
 			expectedError:       true,
 			expectedTimeout:     false,
 		}, {
@@ -332,7 +329,6 @@ func TestClient_GetUser(t *testing.T) {
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
 			timeout:             durationPtr(10 * time.Second),
-			expectedReqs:        intPtr(3),
 			expectedError:       true,
 			expectedTimeout:     false,
 		}, {
@@ -344,7 +340,6 @@ func TestClient_GetUser(t *testing.T) {
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
 			timeout:             durationPtr(5 * time.Millisecond),
-			expectedReqs:        intPtr(1),
 			expectedError:       true,
 			expectedTimeout:     true,
 		},
@@ -384,9 +379,7 @@ func TestClient_GetUser(t *testing.T) {
 				assert.False(t, errors.Is(err, context.DeadlineExceeded))
 			}
 
-			if tt.expectedReqs != nil {
-				assert.Equal(t, *tt.expectedReqs, len(h.Requests), "invalid number of requests")
-			} else {
+			if !tt.expectedTimeout {
 				assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			}
 
