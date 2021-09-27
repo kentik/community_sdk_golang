@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -355,7 +354,7 @@ func TestClient_GetUser(t *testing.T) {
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
-				RetryCfg: httputil.RetryConfig{
+				RetryCfg: kentikapi.RetryConfig{
 					MinDelay: durationPtr(1 * time.Microsecond),
 					MaxDelay: durationPtr(10 * time.Microsecond),
 				},
@@ -585,7 +584,7 @@ func TestClient_CreateUser(t *testing.T) {
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
-				RetryCfg: httputil.RetryConfig{
+				RetryCfg: kentikapi.RetryConfig{
 					MaxAttempts: tt.retryMax,
 					MinDelay:    durationPtr(1 * time.Microsecond),
 					MaxDelay:    durationPtr(10 * time.Microsecond),

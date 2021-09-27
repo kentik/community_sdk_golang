@@ -6,7 +6,7 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 // PrettyPrint prints an object recursively in an indented way

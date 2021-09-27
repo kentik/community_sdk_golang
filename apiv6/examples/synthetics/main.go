@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/kentik/community_sdk_golang/apiv6/examples"
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {

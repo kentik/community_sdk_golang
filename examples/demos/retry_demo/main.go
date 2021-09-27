@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -44,7 +43,7 @@ func showRetryingOnMultipleCodes() error {
 	demos.Step("Create Kentik API v5 client")
 	c := kentikapi.NewClient(kentikapi.Config{
 		APIURL: s.URL,
-		RetryCfg: httputil.RetryConfig{
+		RetryCfg: kentikapi.RetryConfig{
 			MaxAttempts:          intPtr(42),
 			MinDelay:             durationPtr(1 * time.Second),
 			MaxDelay:             durationPtr(2 * time.Second),
