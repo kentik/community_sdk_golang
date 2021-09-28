@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -58,12 +59,17 @@ type MultipleResponseSpyHTTPHandler struct {
 
 	// Requests spied by the handler
 	Requests []HTTPRequest
+
+	// handlingDelay specifies the delay applied while handling the request
+	handlingDelay time.Duration
 }
 
-func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse) *MultipleResponseSpyHTTPHandler {
+func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse, handlingDelay time.Duration,
+) *MultipleResponseSpyHTTPHandler {
 	return &MultipleResponseSpyHTTPHandler{
-		t:         t,
-		responses: responses,
+		t:             t,
+		responses:     responses,
+		handlingDelay: handlingDelay,
 	}
 }
 
@@ -80,6 +86,8 @@ func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *ht
 		Header: r.Header,
 		Body:   string(body),
 	})
+
+	time.Sleep(h.handlingDelay)
 
 	rw.Header().Set("Content-Type", "application/json")
 	response := h.response()
