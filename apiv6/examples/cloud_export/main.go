@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/kentik/community_sdk_golang/apiv6/examples"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
@@ -14,18 +15,21 @@ func main() {
 	client := examples.NewClient()
 	var err error
 
-	if err = runCRUD(client); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	if err = runCRUD(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if err = runGetAll(client); err != nil {
+	if err = runGetAll(ctx, client); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func runCRUD(client *kentikapi.Client) error {
+func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 	export := cloudexport.NewV202101beta1CloudExport()
 
 	fmt.Println("### CREATE")
@@ -41,7 +45,7 @@ func runCRUD(client *kentikapi.Client) error {
 	createReqPayload.Export = export
 
 	createResp, httpResp, err := client.CloudExportAdminServiceAPI.
-		ExportCreate(context.Background()).
+		ExportCreate(ctx).
 		Body(createReqPayload).
 		Execute()
 	if err != nil {
@@ -58,7 +62,7 @@ func runCRUD(client *kentikapi.Client) error {
 	updateReqPayload.Export = created
 
 	updateResp, httpResp, err := client.CloudExportAdminServiceAPI.
-		ExportUpdate(context.Background(), *created.Id).
+		ExportUpdate(ctx, *created.Id).
 		Body(updateReqPayload).
 		Execute()
 	if err != nil {
@@ -69,7 +73,7 @@ func runCRUD(client *kentikapi.Client) error {
 
 	fmt.Println("### GET")
 	getResp, httpResp, err := client.CloudExportAdminServiceAPI.
-		ExportGet(context.Background(), *created.Id).
+		ExportGet(ctx, *created.Id).
 		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -79,7 +83,7 @@ func runCRUD(client *kentikapi.Client) error {
 
 	fmt.Println("### DELETE")
 	deleteResp, httpResp, err := client.CloudExportAdminServiceAPI.
-		ExportDelete(context.Background(), *created.Id).
+		ExportDelete(ctx, *created.Id).
 		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
@@ -91,10 +95,10 @@ func runCRUD(client *kentikapi.Client) error {
 	return nil
 }
 
-func runGetAll(client *kentikapi.Client) error {
+func runGetAll(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### GET ALL")
 	getAllResp, httpResp, err := client.CloudExportAdminServiceAPI.
-		ExportList(context.Background()).
+		ExportList(ctx).
 		Execute()
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
