@@ -107,7 +107,7 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 	}
 }
 
-func TestNewRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
+func TestRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
 	const retryAfterValue = 1 * time.Second
 	httpErrors := []int{
 		http.StatusTooManyRequests,
@@ -145,7 +145,7 @@ func TestNewRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
 	t.Logf("Got response: %v, err: %v", resp, err)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
 type spyTransport struct {
