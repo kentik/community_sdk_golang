@@ -26,13 +26,16 @@ func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 
 // NewClient creates kentikapi client with credentials read from env variables
 func NewClient() *kentikapi.Client {
-	var err error
 	email, token, err := ReadCredentialsFromEnv()
 	PanicOnError(err)
 
 	client := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
 		AuthToken: token,
+
+		// examples can also be run against localhost_apiserver by specifying the server url:
+		// SyntheticsAPIURL:  "http://localhost:8080",
+		// CloudExportAPIURL: "http://localhost:8080",
 	})
 	return client
 }

@@ -10,19 +10,18 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 )
 
-// Public constants.
 //nolint:gosec
 const (
-	authAPITokenKey   = "X-CH-Auth-API-Token"
-	authEmailKey      = "X-CH-Auth-Email"
-	cloudExportAPIURL = "https://cloudexports.api.kentik.com"
-	syntheticsAPIURL  = "https://synthetics.api.kentik.com"
+	authAPITokenKey = "X-CH-Auth-API-Token"
+	authEmailKey    = "X-CH-Auth-Email"
 )
 
 // Kentik API URLs.
 const (
-	APIURLUS = "https://api.kentik.com/api/v5"
-	APIURLEU = "https://api.kentik.eu/api/v5"
+	APIURLUS          = "https://api.kentik.com/api/v5"
+	APIURLEU          = "https://api.kentik.eu/api/v5"
+	cloudExportAPIURL = "https://cloudexports.api.kentik.com"
+	syntheticsAPIURL  = "https://synthetics.api.kentik.com"
 )
 
 // Client is the root object for manipulating all the Kentik API resources.

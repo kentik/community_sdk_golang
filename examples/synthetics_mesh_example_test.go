@@ -1,35 +1,43 @@
-package main
+//+build examples
+
+package examples
 
 import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"strconv"
+	"testing"
 	"text/tabwriter"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/examples"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 )
 
 var testID = flag.String("testid", "3541", "id of mesh test to display the result matrix for")
 
-func main() {
-	flag.Parse()
-
-	mesh := getMeshTestResults(*testID)
-	if mesh == nil {
-		fmt.Println("Empty mesh test result received")
-		os.Exit(1)
-	}
-
-	metricsMatrix := newMetricsMatrix(*mesh)
-	printMetricsMatrix(metricsMatrix)
+func TestGetMeshTestResultsExample(t *testing.T) {
+	assert.NoError(t, runGetMeshTestResults())
 }
 
-func getMeshTestResults(testID string) *[]synthetics.V202101beta1MeshResponse {
-	client := examples.NewClient()
+func runGetMeshTestResults() error {
+	flag.Parse()
+
+	mesh, err := getMeshTestResults(*testID)
+	if mesh == nil{
+		fmt.Println("Empty mesh test result received")
+	} else {
+		metricsMatrix := newMetricsMatrix(*mesh)
+		printMetricsMatrix(metricsMatrix)
+	}
+
+	return err
+}
+
+func getMeshTestResults(testID string) (*[]synthetics.V202101beta1MeshResponse, error) {
+	client := NewClient()
 
 	healthPayload := *synthetics.NewV202101beta1GetHealthForTestsRequest()
 	healthPayload.SetStartTime(time.Now().Add(-time.Minute * 5))
@@ -43,20 +51,20 @@ func getMeshTestResults(testID string) *[]synthetics.V202101beta1MeshResponse {
 		Execute()
 	if err != nil {
 		fmt.Printf("%v %v", err, httpResp)
-		return nil
+		return nil, err
 	}
 
 	if getHealthResp.Health != nil {
 		healthItems := *getHealthResp.Health
 		fmt.Println("Num health items:", len(healthItems))
 		if len(healthItems) > 0 {
-			return healthItems[0].Mesh
+			return healthItems[0].Mesh, nil
 		} else {
-			return nil
+			return nil, nil
 		}
 	} else {
 		fmt.Println("[no health items received]")
-		return nil
+		return nil, nil
 	}
 }
 
@@ -103,4 +111,42 @@ func formatLatency(metrics *synthetics.V202101beta1MeshMetrics) string {
 	}
 
 	return strconv.FormatInt(latency/1000, 10) + "ms" // latency is returned in thousands of milliseconds, so need to divide by 1000
+}
+
+// metricsMatrix holds "fromAgent" -> "toAgent" connection metrics
+type metricsMatrix struct {
+	agents []string
+	cells  map[string]map[string]*synthetics.V202101beta1MeshMetrics
+}
+
+func newMetricsMatrix(mesh []synthetics.V202101beta1MeshResponse) metricsMatrix {
+	// fill agents
+	agents := []string{}
+	for _, agent := range mesh {
+		agents = append(agents, agent.GetAlias())
+	}
+
+	// fill matrix cells
+	cells := make(map[string]map[string]*synthetics.V202101beta1MeshMetrics)
+	for _, fromAgent := range mesh {
+		cells[fromAgent.GetAlias()] = make(map[string]*synthetics.V202101beta1MeshMetrics)
+		for _, toAgent := range *fromAgent.Columns {
+			cells[fromAgent.GetAlias()][toAgent.GetAlias()] = toAgent.Metrics
+		}
+	}
+	return metricsMatrix{agents: agents, cells: cells}
+}
+
+func (m metricsMatrix) getMetric(fromAgent string, toAgent string) (*synthetics.V202101beta1MeshMetrics, bool) {
+	toAgents, ok := m.cells[fromAgent]
+	if !ok {
+		return nil, false
+	}
+
+	metric, ok := toAgents[toAgent]
+	if !ok {
+		return nil, false
+	}
+
+	return metric, true
 }

@@ -1,35 +1,28 @@
-package main
+//+build examples
+
+package examples
 
 import (
 	"context"
 	"fmt"
-	"os"
+	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/examples"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
-	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/stretchr/testify/assert"
 )
 
-func main() {
-	client := examples.NewClient()
+func TestCloudExportAPIExample(t *testing.T) {
+	assert.NoError(t, runCRUDCloudExport())
+	assert.NoError(t, runGetAllCloudExports())
+}
+
+func runCRUDCloudExport() error {
+	client := NewClient()
 	var err error
 
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
-
-	if err = runCRUD(ctx, client); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	if err = runGetAll(ctx, client); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 	export := cloudexport.NewV202101beta1CloudExport()
 
 	fmt.Println("### CREATE")
@@ -51,7 +44,7 @@ func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	examples.PrettyPrint(createResp)
+	PrettyPrint(createResp)
 	fmt.Println()
 
 	created := createResp.Export
@@ -68,7 +61,7 @@ func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	examples.PrettyPrint(updateResp)
+	PrettyPrint(updateResp)
 	fmt.Println()
 
 	fmt.Println("### GET")
@@ -78,7 +71,7 @@ func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 	if err != nil {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
-	examples.PrettyPrint(getResp)
+	PrettyPrint(getResp)
 	fmt.Println()
 
 	fmt.Println("### DELETE")
@@ -89,13 +82,19 @@ func runCRUD(ctx context.Context, client *kentikapi.Client) error {
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
 	fmt.Println("Success")
-	examples.PrettyPrint(deleteResp)
+	PrettyPrint(deleteResp)
 	fmt.Println()
 
 	return nil
 }
 
-func runGetAll(ctx context.Context, client *kentikapi.Client) error {
+func runGetAllCloudExports() error {
+	client := NewClient()
+	var err error
+
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
 	fmt.Println("### GET ALL")
 	getAllResp, httpResp, err := client.CloudExportAdminServiceAPI.
 		ExportList(ctx).
@@ -105,7 +104,7 @@ func runGetAll(ctx context.Context, client *kentikapi.Client) error {
 	}
 	exports := *getAllResp.Exports
 	fmt.Println("Num exports:", len(exports))
-	examples.PrettyPrint(exports)
+	PrettyPrint(exports)
 	fmt.Println()
 
 	return nil
