@@ -50,11 +50,10 @@ The OpenAPI Generator is used for code generation: <https://openapi-generator.te
 Generated code is checked-in to the repository, so that the user can _go get_ the library.
 
 Additional development steps for API v6:
-- Access apiv6 directory: cd apiv6
 - Generate the client: `./generate_client.sh`
 - Generate the stub server: `./generate_server.sh`
 - Generate documentation: `./generate_docs.sh`
 
-Note that due to the design of OpenAPI generator, some generated files of the stub server need to be filled manually. They are listed in following files:
-- [./apiv6/localhost_apiserver/cloudexport/.openapi-generator-ignore](./apiv6/localhost_apiserver/cloudexport/.openapi-generator-ignore)
-- [./apiv6/localhost_apiserver/synthetics/.openapi-generator-ignore](./apiv6/localhost_apiserver/synthetics/.openapi-generator-ignore)
+Note that the generated code scaffolding needs to be complemented with actual logic implementation. Here are the lists of generated files of the fake server that need to be filled manually:
+- [./kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore](kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore)
+- [./kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore](kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore)

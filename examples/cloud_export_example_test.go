@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
 	"github.com/stretchr/testify/assert"
 )
 

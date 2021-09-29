@@ -40,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_GO: false # Go linting is broken for now, see: https://github.com/github/super-linter/issues/143
           VALIDATE_JSCPD: false # TODO(dfurman): consider configuring this linter
-          FILTER_REGEX_EXCLUDE: "apiv6/localhost_apiserver/cloudexport|apiv6/localhost_apiserver/synthetics|apiv6/kentikapi/cloudexport|apiv6/kentikapi/synthetics" # skip generated and 3rd party content
+          FILTER_REGEX_EXCLUDE: "fakeapiserver/cloudexport|fakeapiserver/synthetics|kentikapi/cloudexport|kentikapi/synthetics" # skip generated and 3rd party content
 
   golangci-lint:
     name: Run golangci-lint

@@ -807,14 +807,6 @@ func TestClient_DeleteUser(t *testing.T) {
 	}
 }
 
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
-}
-
-func intPtr(v int) *int {
-	return &v
-}
-
 func newEmptyUserRequestBody() map[string]interface{} {
 	return object{
 		"user": object{

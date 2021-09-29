@@ -33,7 +33,7 @@ func NewClient() *kentikapi.Client {
 		AuthEmail: email,
 		AuthToken: token,
 
-		// examples can also be run against localhost_apiserver by specifying the server url:
+		// examples can also be run against fakeapiserver by specifying the server url:
 		// SyntheticsAPIURL:  "http://localhost:8080",
 		// CloudExportAPIURL: "http://localhost:8080",
 	})

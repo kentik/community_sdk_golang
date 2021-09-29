@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 )
 
 //nolint:gosec
