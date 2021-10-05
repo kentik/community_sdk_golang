@@ -12,9 +12,11 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-var ExitOnError = examples.PanicOnError
-var PrettyPrint = examples.PrettyPrint
-var NewClient = examples.NewClient
+var (
+	ExitOnError = examples.PanicOnError
+	PrettyPrint = examples.PrettyPrint
+	NewClient   = examples.NewClient
+)
 
 // untypedData allows trawersing untyped structures made of maps and slices
 type untypedData struct {

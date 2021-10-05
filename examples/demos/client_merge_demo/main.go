@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kentik/community_sdk_golang/examples/demos"
-	"github.com/kentik/community_sdk_golang/kentikapi"
 	"log"
 	"os"
+
+	"github.com/kentik/community_sdk_golang/examples/demos"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {
@@ -29,10 +30,13 @@ func showClientMerge() error {
 
 	demos.Step("Create Kentik API client")
 
-	c := kentikapi.NewClient(kentikapi.Config{
+	c, err := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
 		AuthToken: token,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	demos.Step("List users using API v5")
 	result, err := c.Users.GetAll(context.Background())

@@ -18,8 +18,10 @@ func TestCustomApplicationsAPIExample(t *testing.T) {
 }
 
 func runCRUDCustomApplications() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE")
 	app := models.NewCustomApplication("apitest-customapp-1")
@@ -58,7 +60,10 @@ func runCRUDCustomApplications() error {
 }
 
 func runGetAllCustomApplications() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	applications, err := client.CustomApplications.GetAll(context.Background())

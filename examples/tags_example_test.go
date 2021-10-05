@@ -23,7 +23,10 @@ func TestDemonstrateTagsGetAll(t *testing.T) {
 
 func demonstrateTagsCRUD() error {
 	ctx := context.Background()
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### client.Tags.Create")
 	t := models.NewTag("APITEST-TAG-1")
@@ -87,7 +90,10 @@ func demonstrateTagsCRUD() error {
 
 func demonstrateTagsGetAll() error {
 	ctx := context.Background()
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### client.Tags.GetAll")
 	tags, err := client.Tags.GetAll(ctx)

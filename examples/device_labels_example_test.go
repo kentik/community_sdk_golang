@@ -17,7 +17,10 @@ func TestDeviceLabelsAPIExample(t *testing.T) {
 }
 
 func runGetAllDeviceLabels() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	labels, err := client.DeviceLabels.GetAll(context.Background())
@@ -31,8 +34,10 @@ func runGetAllDeviceLabels() error {
 }
 
 func runCRUDDeviceLabels() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE")
 	label := models.NewDeviceLabel("apitest-device_label-1", "#00FF00")

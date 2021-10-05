@@ -17,7 +17,11 @@ func TestAlertingAPIExample(t *testing.T) {
 }
 
 func runCreateManualMitigation() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
+
 	time1 := time.Date(2020, time.January, 1, 12, 0, 0, 0, time.Local)
 	time2 := time.Date(2021, time.March, 8, 15, 30, 0, 0, time.Local)
 

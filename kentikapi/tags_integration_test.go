@@ -89,11 +89,12 @@ func TestClient_GetAllTags(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Tags.GetAll(context.Background())
@@ -156,11 +157,12 @@ func TestClient_GetTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Tags.Get(context.Background(), testTagID)
@@ -333,11 +335,12 @@ func TestClient_CreateTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Tags.Create(context.Background(), tt.tag)
@@ -501,11 +504,12 @@ func TestClient_UpdateTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			tag := tt.updateFields(&tt.tag)
@@ -561,14 +565,15 @@ func TestClient_DeleteTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
-			err := c.Tags.Delete(context.Background(), testTagID)
+			err = c.Tags.Delete(context.Background(), testTagID)
 
 			// assert
 			if tt.expectedError {

@@ -18,7 +18,10 @@ func TestSavedFiltersAPIExample(t *testing.T) {
 }
 
 func runGetAllSavedFilters() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	savedFilters, err := client.SavedFilters.GetAll(context.Background())
@@ -32,7 +35,10 @@ func runGetAllSavedFilters() error {
 }
 
 func runCRUDSavedFilters() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE")
 	newSavedFilter := models.SavedFilter{

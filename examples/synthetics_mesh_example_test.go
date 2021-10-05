@@ -6,12 +6,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strconv"
 	"testing"
 	"text/tabwriter"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
@@ -37,7 +38,10 @@ func runGetMeshTestResults() error {
 }
 
 func getMeshTestResults(testID string) (*[]synthetics.V202101beta1MeshResponse, error) {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return nil, err
+	}
 
 	healthPayload := *synthetics.NewV202101beta1GetHealthForTestsRequest()
 	healthPayload.SetStartTime(time.Now().Add(-time.Minute * 5))

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
@@ -13,7 +14,10 @@ import (
 const deviceID = models.ID(80603) // crated-before demo router
 
 func main() {
-	client := demos.NewClient()
+	client, err := demos.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Interfaces
 	demos.Step("Create an interface")

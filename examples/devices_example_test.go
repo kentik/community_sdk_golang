@@ -20,7 +20,10 @@ func TestDevicesAPIExample(t *testing.T) {
 }
 
 func runGetAllDevices() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	devices, err := client.Devices.GetAll(context.Background())
@@ -34,8 +37,10 @@ func runGetAllDevices() error {
 }
 
 func runCRUDRouter() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE ROUTER")
 	snmpv3conf := models.NewSNMPv3Conf("John")
@@ -132,8 +137,10 @@ func runCRUDRouter() error {
 }
 
 func runCRUDDNS() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE DNS")
 	device := models.NewDeviceDNS(
@@ -199,7 +206,10 @@ func runCRUDDNS() error {
 }
 
 func runGetAllInterfaces() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL INTERFACES")
 	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), models.ID(80166))

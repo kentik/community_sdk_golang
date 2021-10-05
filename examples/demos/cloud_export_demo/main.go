@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
 
@@ -11,7 +12,10 @@ import (
 )
 
 func main() {
-	client := demos.NewClient()
+	client, err := demos.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	demos.Step("Create a cloud export")
 	exportId := createCloudExport(client)

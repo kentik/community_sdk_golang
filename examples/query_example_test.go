@@ -23,7 +23,10 @@ func TestQueryAPIExample(t *testing.T) {
 }
 
 func runQuerySQL() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### QUERY SQL")
 	// Return kpps and kBps over the last 10 minutes,
@@ -51,7 +54,10 @@ func runQuerySQL() error {
 }
 
 func runQueryData() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### QUERY Data")
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
@@ -90,7 +96,10 @@ func runQueryData() error {
 }
 
 func runQueryChart() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### QUERY Chart")
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
@@ -145,7 +154,10 @@ func runQueryChart() error {
 }
 
 func runQueryURL() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### QUERY URL")
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)

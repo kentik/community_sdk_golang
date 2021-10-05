@@ -17,8 +17,10 @@ func TestSitesAPIExample(t *testing.T) {
 }
 
 func runCRUD() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE")
 	site := models.NewSite("apitest-site-1")
@@ -60,7 +62,10 @@ func runCRUD() error {
 }
 
 func runGetAll() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	sites, err := client.Sites.GetAll(context.Background())
