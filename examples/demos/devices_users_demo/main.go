@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
@@ -10,7 +11,10 @@ import (
 )
 
 func main() {
-	client := demos.NewClient()
+	client, err := demos.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	demos.Step("Create a device")
 	id := createDevice(client)

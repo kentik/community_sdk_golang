@@ -22,7 +22,10 @@ func TestCustomDimensionsAPIExample(t *testing.T) {
 }
 
 func runGetAllCustomDimensions() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	dimensions, err := client.CustomDimensions.GetAll(context.Background())
@@ -36,8 +39,10 @@ func runGetAllCustomDimensions() error {
 }
 
 func runCRUDCustomDimensions() error {
-	var err error
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### CREATE DIMENSION")
 	name := "c_testapi_dim_" + randID() // random id as even deleted names are held for 1 year and must be unique

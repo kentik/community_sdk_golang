@@ -24,7 +24,10 @@ func TestDemonstrateUsersGetAll(t *testing.T) {
 
 func demonstrateUsersCRUD() error {
 	ctx := context.Background()
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### client.Users.Create")
 	user, err := client.Users.Create(ctx, *models.NewUser(models.UserRequiredFields{
@@ -73,7 +76,10 @@ func demonstrateUsersCRUD() error {
 
 func demonstrateUsersGetAll() error {
 	ctx := context.Background()
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### client.Users.GetAll")
 	users, err := client.Users.GetAll(ctx)

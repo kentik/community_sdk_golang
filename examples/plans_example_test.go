@@ -16,7 +16,10 @@ func TestPlansAPIExample(t *testing.T) {
 }
 
 func runGetAllPlans() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	plans, err := client.Plans.GetAll(context.Background())

@@ -19,7 +19,10 @@ func TestMyKentikPortalAPIExample(t *testing.T) {
 }
 
 func runCRUDExample() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 	var tenant_id models.ID = 577
 
 	fmt.Println("### GET")
@@ -47,7 +50,10 @@ func runCRUDExample() error {
 }
 
 func getAllTenants() error {
-	client := NewClient()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET ALL")
 	tenants, err := client.MyKentikPortal.GetAll(context.Background())

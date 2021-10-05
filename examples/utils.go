@@ -25,11 +25,11 @@ func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 }
 
 // NewClient creates kentikapi client with credentials read from env variables
-func NewClient() *kentikapi.Client {
+func NewClient() (*kentikapi.Client, error) {
 	email, token, err := ReadCredentialsFromEnv()
 	PanicOnError(err)
 
-	client := kentikapi.NewClient(kentikapi.Config{
+	client, err := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
 		AuthToken: token,
 
@@ -37,7 +37,10 @@ func NewClient() *kentikapi.Client {
 		// SyntheticsAPIURL:  "http://localhost:8080",
 		// CloudExportAPIURL: "http://localhost:8080",
 	})
-	return client
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }
 
 // PanicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements

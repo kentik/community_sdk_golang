@@ -30,10 +30,13 @@ func showClientMerge() error {
 
 	demos.Step("Create Kentik API client")
 
-	c := kentikapi.NewClient(kentikapi.Config{
+	c, err := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
 		AuthToken: token,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	demos.Step("List users using API v5")
 	result, err := c.Users.GetAll(context.Background())
