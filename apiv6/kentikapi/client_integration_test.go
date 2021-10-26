@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi"
 	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/stretchr/testify/assert"
 )
 
