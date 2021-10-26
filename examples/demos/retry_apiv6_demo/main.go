@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/examples/demos"
+	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 

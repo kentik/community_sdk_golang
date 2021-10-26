@@ -28,8 +28,8 @@ export KTAPI_AUTH_TOKEN=<your kentik api credentials token>
 go test -tags examples -count 1 -v ./examples/users_example_test.go
 ```
 
-To configure timeout for a client call use _context.WithTimeout()_ and pass it to the request function.
-[Example use.](./apiv6/examples/cloud_export/main.go)
+To configure timeout for a client call for cloud export or synthetics use _context.WithTimeout()_ and pass it to the request function.
+[Example use.](examples/cloud_export_example_test.go)
 
 ## Development
 
