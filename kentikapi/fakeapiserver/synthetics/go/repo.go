@@ -14,23 +14,23 @@ const itemNotFound = -1
 
 // SyntheticsRepo is local storage for Synthetics data
 type SyntheticsRepo struct {
-	fileName    string
-	lock        sync.RWMutex
-	tests       []V202101beta1Test
-	agents      []V202101beta1Agent
-	health      []V202101beta1TestHealth
-	lookups     []V202101beta1TracerouteLookup
-	traceRoutes []V202101beta1TracerouteResult
+	fileName        string
+	lock            sync.RWMutex
+	tests           []V202101beta1Test
+	agents          []V202101beta1Agent
+	health          []V202101beta1TestHealth
+	lookups         []V202101beta1TracerouteLookup
+	traceRoutes     []V202101beta1TracerouteResult
 	traceRoutesInfo []V202101beta1TracerouteInfo
 }
 
 // syntheticsStorage is internally used for marshall/unmarshall the data as JSON
 type syntheticsStorage struct {
-	Tests       []V202101beta1Test
-	Agents      []V202101beta1Agent
-	Health      []V202101beta1TestHealth
-	Lookups     []V202101beta1TracerouteLookup
-	TraceRoutes []V202101beta1TracerouteResult
+	Tests           []V202101beta1Test
+	Agents          []V202101beta1Agent
+	Health          []V202101beta1TestHealth
+	Lookups         []V202101beta1TracerouteLookup
+	TraceRoutes     []V202101beta1TracerouteResult
 	TraceRoutesInfo []V202101beta1TracerouteInfo
 }
 
@@ -179,10 +179,9 @@ func (r *SyntheticsRepo) GetHealthForTests() []V202101beta1TestHealth {
 	return copyItems
 }
 
+// TODO: Implement logic behind GetLookups and GetTraceRoutesInfo
 func (r *SyntheticsRepo) GetLookups(t V202101beta1GetTraceForTestRequest) V202101beta1TracerouteLookup {
-	// no lock needed as this collection is read-only
-	index, _ := strconv.Atoi(t.Id)
-	return r.lookups[index]
+	return V202101beta1TracerouteLookup{}
 }
 
 // NOTE: in live server GetTraceRoutes comes with set of filters; here we just return same result everytime for simplicity
@@ -194,10 +193,7 @@ func (r *SyntheticsRepo) GetTraceRoutes() []V202101beta1TracerouteResult {
 }
 
 func (r *SyntheticsRepo) GetTraceRoutesInfo(t V202101beta1GetTraceForTestRequest) V202101beta1TracerouteInfo {
-	// no lock needed as this collection is read-only
-	// no lock needed as this collection is read-only
-	index, _ := strconv.Atoi(t.Id)
-	return r.traceRoutesInfo[index]
+	return V202101beta1TracerouteInfo{}
 }
 
 func (r *SyntheticsRepo) findTestByID(id string) int {
@@ -258,12 +254,12 @@ func (r *SyntheticsRepo) load() {
 	r.traceRoutes = storage.TraceRoutes
 	r.traceRoutesInfo = storage.TraceRoutesInfo
 
-	log.Printf("SyntheticsRepo successfuly loaded from %q, " +
-		"num tests: %d, " +
-		"num agents: %d, " +
-		"num health: %d, " +
-		"num lookups: %d, " +
-		"num traceRoutes: %d, " +
+	log.Printf("SyntheticsRepo successfuly loaded from %q, "+
+		"num tests: %d, "+
+		"num agents: %d, "+
+		"num health: %d, "+
+		"num lookups: %d, "+
+		"num traceRoutes: %d, "+
 		"num traceRoutesInfo: %d",
 		r.fileName,
 		len(r.tests),
@@ -277,11 +273,11 @@ func (r *SyntheticsRepo) load() {
 func (r *SyntheticsRepo) save() {
 	// r.lock should be already in locked state at this point
 	storage := syntheticsStorage{
-		Tests:       r.tests,
-		Agents:      r.agents,
-		Health:      r.health,
-		Lookups:     r.lookups,
-		TraceRoutes: r.traceRoutes,
+		Tests:           r.tests,
+		Agents:          r.agents,
+		Health:          r.health,
+		Lookups:         r.lookups,
+		TraceRoutes:     r.traceRoutes,
 		TraceRoutesInfo: r.traceRoutesInfo,
 	}
 
@@ -295,4 +291,3 @@ func (r *SyntheticsRepo) save() {
 		panic(err)
 	}
 }
-

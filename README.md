@@ -37,6 +37,15 @@ Anybody who wants to contribute to development is welcome to provide pull reques
 
 Run tests: `go test ./...`
 
+Generate code for Synthetics and Cloud Export:
+- Generate the client: `./generate_client.sh`
+- Generate the fake server: `./generate_server.sh`
+- Generate documentation: `./generate_docs.sh`
+
+Note that the generated code scaffolding needs to be complemented with actual logic implementation. Here are the lists of generated files of the fake server that need to be filled manually:
+- [./kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore](kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore)
+- [./kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore](kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore)
+
 Run all tests, including usage examples: `go test -tags examples ./...`
 
 Install linters runner: [golangci-lint local installation](https://golangci-lint.run/usage/install/#local-installation)  
@@ -48,12 +57,3 @@ Subset of the code is generated from API specification available at:
 
 The OpenAPI Generator is used for code generation: <https://openapi-generator.tech/>.
 Generated code is checked-in to the repository, so that the user can _go get_ the library.
-
-Additional development steps for API v6:
-- Generate the client: `./generate_client.sh`
-- Generate the stub server: `./generate_server.sh`
-- Generate documentation: `./generate_docs.sh`
-
-Note that the generated code scaffolding needs to be complemented with actual logic implementation. Here are the lists of generated files of the fake server that need to be filled manually:
-- [./kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore](kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore)
-- [./kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore](kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore)
