@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
+
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )

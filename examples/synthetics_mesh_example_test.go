@@ -13,7 +13,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
 var testID = flag.String("testid", "3541", "id of mesh test to display the result matrix for")
@@ -26,7 +26,7 @@ func runGetMeshTestResults() error {
 	flag.Parse()
 
 	mesh, err := getMeshTestResults(*testID)
-	if mesh == nil{
+	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 	} else {
 		metricsMatrix := newMetricsMatrix(*mesh)

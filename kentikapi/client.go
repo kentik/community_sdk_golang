@@ -3,11 +3,11 @@ package kentikapi
 import (
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/cloudexport"
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/httputil"
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
 //nolint:gosec

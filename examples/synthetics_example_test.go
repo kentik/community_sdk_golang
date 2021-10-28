@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kentik/community_sdk_golang/apiv6/kentikapi/synthetics"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
 func TestSyntheticsAPIExample(t *testing.T) {
@@ -115,8 +115,6 @@ func runCRUDTest(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println()
 
 	test = getResp.Test
-	test.Settings.TargetType = nil
-	test.Settings.TargetValue = nil
 
 	fmt.Println("### PATCH TEST")
 	test.SetName("example-test-1 UPDATED")
@@ -215,12 +213,12 @@ func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID st
 		return fmt.Errorf("%v %v", err, httpResp)
 	}
 
-	if getTraceResp.IpInfo != nil {
-		ipItems := *getTraceResp.IpInfo
-		fmt.Println("Num ip items:", len(ipItems))
-		PrettyPrint(ipItems)
+	if getTraceResp.Lookups != nil {
+		lookups := *getTraceResp.Lookups
+		fmt.Println("Agents id by ip:")
+		PrettyPrint(lookups)
 	} else {
-		fmt.Println("[no ip items received]")
+		fmt.Println("[no agents received]")
 	}
 
 	if getTraceResp.TraceRoutes != nil {
@@ -229,6 +227,14 @@ func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID st
 		PrettyPrint(results)
 	} else {
 		fmt.Println("[no trace routes received]")
+	}
+
+	if getTraceResp.TraceRoutesInfo != nil {
+		results := *getTraceResp.TraceRoutesInfo
+		fmt.Println("Trace routes info:")
+		PrettyPrint(results)
+	} else {
+		fmt.Println("[no trace routes info received]")
 	}
 
 	fmt.Println()
