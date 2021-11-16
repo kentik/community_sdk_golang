@@ -25,16 +25,12 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 
 	c := retryablehttp.NewClient()
 	c.HTTPClient = cfg.HTTPClient
-	if cfg.RetryCfg.MaxAttempts != nil {
-		c.RetryMax = *cfg.RetryCfg.MaxAttempts
-	}
-	if cfg.RetryCfg.MinDelay != nil {
-		c.RetryWaitMin = *cfg.RetryCfg.MinDelay
-	}
-	if cfg.RetryCfg.MaxDelay != nil {
-		c.RetryWaitMax = *cfg.RetryCfg.MaxDelay
-	}
-	c.CheckRetry = makeRetryPolicy(cfg.RetryCfg.RetryableStatusCodes, cfg.RetryCfg.RetryableMethods)
+
+	c.RetryMax = *cfg.RetryCfg.MaxAttempts
+	c.RetryWaitMin = *cfg.RetryCfg.MinDelay
+	c.RetryWaitMax = *cfg.RetryCfg.MaxDelay
+
+	c.CheckRetry = makeRetryPolicy()
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
 	return c
@@ -61,27 +57,11 @@ type RetryConfig struct {
 	MinDelay *time.Duration
 	// MaxDelay is a maximum delay before request retry. Default: 30 seconds.
 	MaxDelay *time.Duration
-	// RetryableStatusCodes are HTTP response status codes to retry on. Default: [429, 500, 502, 503, 504].
-	RetryableStatusCodes []int
-	// RetryableMethods are HTTP request retry methods, which the retry strategy is enabled for.
-	// Default: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
-	RetryableMethods []string
 }
 
 func (cfg *ClientConfig) FillDefaults() {
 	if cfg.HTTPClient == nil {
 		cfg.HTTPClient = defaultHTTPClient()
-	}
-
-	if len(cfg.RetryCfg.RetryableStatusCodes) == 0 {
-		cfg.RetryCfg.RetryableStatusCodes = []int{429, 500, 502, 503, 504}
-	}
-
-	if len(cfg.RetryCfg.RetryableMethods) == 0 {
-		cfg.RetryCfg.RetryableMethods = []string{
-			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete,
-			http.MethodConnect, http.MethodOptions, http.MethodTrace,
-		}
 	}
 }
 
@@ -106,9 +86,12 @@ func defaultHTTPClient() *http.Client {
 // makeRetryPolicy creates customized retry policy.
 // Its implementation is based on retryablehttp.ErrorPropagatedRetryPolicy.
 // Retry policy function returns true if the request should be retried.
-func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRetry {
-	statusCodesSet := makeIntSet(statusCodes)
-	methodsSet := makeStringSet(methods)
+func makeRetryPolicy() retryablehttp.CheckRetry {
+	statusCodesSet := makeIntSet([]int{429, 500, 502, 503, 504})
+	methodsSet := makeStringSet([]string{
+		http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete,
+		http.MethodConnect, http.MethodOptions, http.MethodTrace,
+	})
 
 	return func(ctx context.Context, resp *http.Response, err error) (bool, error) {
 		if ctx.Err() != nil {

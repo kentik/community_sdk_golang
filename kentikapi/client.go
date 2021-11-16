@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	grpccloudesxport "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	grpcsynthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
@@ -14,14 +16,19 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 )
 
 //nolint:gosec
 const (
-	authAPITokenKey = "X-CH-Auth-API-Token"
-	authEmailKey    = "X-CH-Auth-Email"
+	authAPITokenKey    = "X-CH-Auth-API-Token"
+	authEmailKey       = "X-CH-Auth-Email"
+	defaultTimeout     = 100 * time.Second
+	defaultMaxAttempts = 4
+	defaultMinDelay    = 1 * time.Second
+	defaultMaxDelay    = 30 * time.Second
 )
 
 // Kentik API URLs.
@@ -100,25 +107,7 @@ type RetryConfig = httputil.RetryConfig
 
 // NewClient creates a new Kentik API client.
 func NewClient(c Config) (*Client, error) {
-	if c.APIURL == "" {
-		c.APIURL = APIURLUS
-	}
-
-	if c.CloudExportAPIURL == "" {
-		c.CloudExportAPIURL = cloudExportAPIURL
-	}
-
-	if c.SyntheticsAPIURL == "" {
-		c.SyntheticsAPIURL = syntheticsAPIURL
-	}
-
-	if c.CloudExportGRPCHostPort == "" {
-		c.CloudExportGRPCHostPort = cloudExportGRPCHostPort
-	}
-
-	if c.SyntheticsGRPCHostPort == "" {
-		c.SyntheticsGRPCHostPort = syntheticsGRPCHostPort
-	}
+	c.FillDefaults()
 
 	cloudexportClient := cloudexport.NewAPIClient(makeCloudExportConfig(c))
 	syntheticsClient := synthetics.NewAPIClient(makeSyntheticsConfig(c))
@@ -160,6 +149,44 @@ func NewClient(c Config) (*Client, error) {
 		CloudExportAdmin:           grpccloudesxport.NewCloudExportAdminServiceClient(cloudExportConnection),
 		config:                     c,
 	}, nil
+}
+
+func (c *Config) FillDefaults() {
+	if c.APIURL == "" {
+		c.APIURL = APIURLUS
+	}
+
+	if c.CloudExportAPIURL == "" {
+		c.CloudExportAPIURL = cloudExportAPIURL
+	}
+
+	if c.SyntheticsAPIURL == "" {
+		c.SyntheticsAPIURL = syntheticsAPIURL
+	}
+
+	if c.CloudExportGRPCHostPort == "" {
+		c.CloudExportGRPCHostPort = cloudExportGRPCHostPort
+	}
+
+	if c.SyntheticsGRPCHostPort == "" {
+		c.SyntheticsGRPCHostPort = syntheticsGRPCHostPort
+	}
+
+	if c.Timeout == nil {
+		c.Timeout = durationPtr(defaultTimeout)
+	}
+
+	if c.RetryCfg.MaxAttempts == nil {
+		c.RetryCfg.MaxAttempts = intPtr(defaultMaxAttempts)
+	}
+
+	if c.RetryCfg.MinDelay == nil {
+		c.RetryCfg.MinDelay = durationPtr(defaultMinDelay)
+	}
+
+	if c.RetryCfg.MaxDelay == nil {
+		c.RetryCfg.MaxDelay = durationPtr(defaultMaxDelay)
+	}
 }
 
 func makeCloudExportConfig(c Config) *cloudexport.Configuration {
@@ -204,7 +231,12 @@ func (c Config) makeConnForGRPC(hostPort string) (grpc.ClientConnInterface, erro
 	return grpc.Dial(
 		hostPort,
 		c.makeTLSOption(),
-		grpc.WithUnaryInterceptor(c.makeAuthInterceptor()),
+		grpc.WithUnaryInterceptor(
+			grpc_middleware.ChainUnaryClient(
+				c.makeAuthInterceptor(),
+				c.makeRetryInterceptor(),
+			),
+		),
 	)
 }
 
@@ -227,4 +259,24 @@ func (c Config) makeAuthInterceptor() grpc.UnaryClientInterceptor {
 		))
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
+}
+
+func (c Config) makeRetryInterceptor() grpc.UnaryClientInterceptor {
+	opts := []grpc_retry.CallOption{
+		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(*c.RetryCfg.MinDelay)),
+		grpc_retry.WithCodes(codes.Unavailable),
+		// TODO: ensure c.RetryCfg.MaxAttempts is positive or research other options (mpalczynski)
+		// grpc_retry.WithMax specifies the number of total requests sent and not retries
+		grpc_retry.WithMax(uint(*c.RetryCfg.MaxAttempts + 1)),
+	}
+
+	return grpc_retry.UnaryClientInterceptor(opts...)
+}
+
+func durationPtr(v time.Duration) *time.Duration {
+	return &v
+}
+
+func intPtr(v int) *int {
+	return &v
 }

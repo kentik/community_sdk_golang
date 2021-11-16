@@ -47,8 +47,6 @@ func showRetryingOnMultipleCodes() error {
 			MaxAttempts:          intPtr(42),
 			MinDelay:             durationPtr(1 * time.Second),
 			MaxDelay:             durationPtr(2 * time.Second),
-			RetryableStatusCodes: []int{http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable},
-			RetryableMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		},
 	})
 	if err != nil {
