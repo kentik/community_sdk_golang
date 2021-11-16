@@ -10,6 +10,12 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 )
 
+const (
+	defaultMaxAttempts = 4
+	defaultMinDelay    = 1 * time.Second
+	defaultMaxDelay    = 30 * time.Second
+)
+
 // NewRetryingClient returns new retryablehttp.Client with request retry strategy.
 // Exponential backoff algorithm is used to calculate delay between retries.
 // Retry-After header of HTTP 429 response is respected while calculating the retry delay.
@@ -26,7 +32,7 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	c := retryablehttp.NewClient()
 	c.HTTPClient = cfg.HTTPClient
 	if cfg.RetryCfg.MaxAttempts != nil {
-		c.RetryMax = *cfg.RetryCfg.MaxAttempts
+		c.RetryMax = int(*cfg.RetryCfg.MaxAttempts)
 	}
 	if cfg.RetryCfg.MinDelay != nil {
 		c.RetryWaitMin = *cfg.RetryCfg.MinDelay
@@ -34,7 +40,7 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	if cfg.RetryCfg.MaxDelay != nil {
 		c.RetryWaitMax = *cfg.RetryCfg.MaxDelay
 	}
-	c.CheckRetry = makeRetryPolicy(cfg.RetryCfg.RetryableStatusCodes, cfg.RetryCfg.RetryableMethods)
+	c.CheckRetry = makeRetryPolicy()
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
 	return c
@@ -56,32 +62,31 @@ type ClientConfig struct {
 // See httputil.NewRetryingClient for retry policy description.
 type RetryConfig struct {
 	// MaxAttempts is a maximum number of request retry attempts. Set to 0 to disable retrying. Default: 4.
-	MaxAttempts *int
+	MaxAttempts *uint
 	// MinDelay is a minimum delay before request retry. Default: 1 second.
 	MinDelay *time.Duration
 	// MaxDelay is a maximum delay before request retry. Default: 30 seconds.
 	MaxDelay *time.Duration
-	// RetryableStatusCodes are HTTP response status codes to retry on. Default: [429, 500, 502, 503, 504].
-	RetryableStatusCodes []int
-	// RetryableMethods are HTTP request retry methods, which the retry strategy is enabled for.
-	// Default: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
-	RetryableMethods []string
 }
 
 func (cfg *ClientConfig) FillDefaults() {
+	cfg.RetryCfg.FillDefaults()
 	if cfg.HTTPClient == nil {
 		cfg.HTTPClient = defaultHTTPClient()
 	}
+}
 
-	if len(cfg.RetryCfg.RetryableStatusCodes) == 0 {
-		cfg.RetryCfg.RetryableStatusCodes = []int{429, 500, 502, 503, 504}
+func (c *RetryConfig) FillDefaults() {
+	if c.MaxAttempts == nil {
+		c.MaxAttempts = uintPtr(defaultMaxAttempts)
 	}
 
-	if len(cfg.RetryCfg.RetryableMethods) == 0 {
-		cfg.RetryCfg.RetryableMethods = []string{
-			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete,
-			http.MethodConnect, http.MethodOptions, http.MethodTrace,
-		}
+	if c.MinDelay == nil {
+		c.MinDelay = durationPtr(defaultMinDelay)
+	}
+
+	if c.MaxDelay == nil {
+		c.MaxDelay = durationPtr(defaultMaxDelay)
 	}
 }
 
@@ -106,9 +111,8 @@ func defaultHTTPClient() *http.Client {
 // makeRetryPolicy creates customized retry policy.
 // Its implementation is based on retryablehttp.ErrorPropagatedRetryPolicy.
 // Retry policy function returns true if the request should be retried.
-func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRetry {
-	statusCodesSet := makeIntSet(statusCodes)
-	methodsSet := makeStringSet(methods)
+func makeRetryPolicy() retryablehttp.CheckRetry {
+	statusCodesSet := makeIntSet([]int{429, 502, 503, 504})
 
 	return func(ctx context.Context, resp *http.Response, err error) (bool, error) {
 		if ctx.Err() != nil {
@@ -122,21 +126,12 @@ func makeRetryPolicy(statusCodes []int, methods []string) retryablehttp.CheckRet
 			return false, nil
 		}
 
-		if !isRequestRetryable(resp.Request, methodsSet) {
-			return false, nil
-		}
-
 		if _, ok := statusCodesSet[resp.StatusCode]; ok {
 			return true, nil
 		}
 
 		return false, nil
 	}
-}
-
-func isRequestRetryable(r *http.Request, methodsSet map[string]struct{}) bool {
-	_, ok := methodsSet[r.Method]
-	return ok
 }
 
 func isErrorTemporary(err error) bool {
@@ -160,10 +155,10 @@ func makeIntSet(s []int) map[int]struct{} {
 	return result
 }
 
-func makeStringSet(s []string) map[string]struct{} {
-	result := make(map[string]struct{})
-	for _, sc := range s {
-		result[sc] = struct{}{}
-	}
-	return result
+func durationPtr(v time.Duration) *time.Duration {
+	return &v
+}
+
+func uintPtr(v uint) *uint {
+	return &v
 }

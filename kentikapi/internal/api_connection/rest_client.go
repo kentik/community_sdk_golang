@@ -17,7 +17,6 @@ import (
 const (
 	authEmailKey    = "X-CH-Auth-Email"
 	authAPITokenKey = "X-CH-Auth-API-Token"
-	defaultTimeout  = 100 * time.Second
 )
 
 type RestClient struct {
@@ -34,9 +33,6 @@ type RestClientConfig struct {
 }
 
 func NewRestClient(c RestClientConfig) *RestClient {
-	if c.Timeout == nil {
-		c.Timeout = durationPtr(defaultTimeout)
-	}
 	return &RestClient{
 		config: c,
 		httpClient: httputil.
@@ -47,10 +43,6 @@ func NewRestClient(c RestClientConfig) *RestClient {
 				},
 			),
 	}
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
 }
 
 // Get sends GET request to the API and returns raw response body.
