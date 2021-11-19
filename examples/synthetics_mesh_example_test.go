@@ -1,4 +1,5 @@
-//+build examples
+//go:build examples
+// +build examples
 
 package examples
 
@@ -6,12 +7,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strconv"
 	"testing"
 	"text/tabwriter"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )

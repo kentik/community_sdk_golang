@@ -69,7 +69,6 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 		count := v.Len()
 		if count == 0 {
 			prettyPrintIndented("[no items]\n", level)
-
 		} else {
 			for i := 0; i < count; i++ {
 				prettyPrintIndented("[%d]\n", level, i)
@@ -95,7 +94,6 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	default:
 		prettyPrintIndented("%v\n", level, v)
 	}
-
 }
 
 func prettyPrintIndented(format string, level int, args ...interface{}) {
