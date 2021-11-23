@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kentik/community_sdk_golang/examples/demos"
-	"github.com/kentik/community_sdk_golang/kentikapi"
 	"log"
 	"os"
+
+	"github.com/kentik/community_sdk_golang/examples/demos"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {
