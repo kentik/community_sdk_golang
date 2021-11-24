@@ -11,7 +11,7 @@ import (
 )
 
 // prerequisite: deviceID must be ID of already existing device
-const deviceID = models.ID(80603) // crated-before demo router
+const deviceID = models.ID(80603) // created-before demo router
 
 func main() {
 	client, err := demos.NewClient()

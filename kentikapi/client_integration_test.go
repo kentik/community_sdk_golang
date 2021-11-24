@@ -31,7 +31,7 @@ const (
 func TestClient_PatchAgentHTTP(t *testing.T) {
 	tests := []struct {
 		name     string
-		retryMax *int
+		retryMax *uint
 		request  httpSynthetics.V202101beta1PatchAgentRequest
 		// expectedRequestBody is map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
@@ -74,11 +74,11 @@ func TestClient_PatchAgentHTTP(t *testing.T) {
 			},
 			expectedResult: httpSynthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
 		}, {
-			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 429",
+			name:                "retry 4 times when status 429, 502, 503 or 504 received and last status is 429",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
-				newErrorHTTPResponse(http.StatusInternalServerError),
+				newErrorHTTPResponse(http.StatusTooManyRequests),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
@@ -86,14 +86,14 @@ func TestClient_PatchAgentHTTP(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 504",
+			name:                "retry 4 times when status 429, 502, 503 or 504 received and last status is 504",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
-				newErrorHTTPResponse(http.StatusInternalServerError),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
+				newErrorHTTPResponse(http.StatusGatewayTimeout),
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
 			},
 			expectedError: true,
@@ -107,7 +107,7 @@ func TestClient_PatchAgentHTTP(t *testing.T) {
 			expectedError: true,
 		}, {
 			name:                "do not retry when retries disabled and status 429 Too Many Requests received",
-			retryMax:            intPtr(0),
+			retryMax:            uintPtr(0),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -116,7 +116,7 @@ func TestClient_PatchAgentHTTP(t *testing.T) {
 			expectedError: true,
 		}, {
 			name:                "retry specified number of times when status 429 Too Many Requests received",
-			retryMax:            intPtr(2),
+			retryMax:            uintPtr(2),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -369,7 +369,7 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func intPtr(v int) *int {
+func uintPtr(v uint) *uint {
 	return &v
 }
 
@@ -392,7 +392,7 @@ func durationPtr(v time.Duration) *time.Duration {
 func TestClient_GetAgent(t *testing.T) {
 	tests := []struct {
 		name              string
-		retryMax          *int
+		retryMax          *uint
 		request           *syntheticspb.GetAgentRequest
 		expectedRequestID string
 		responses         []gRPCResponse
@@ -446,10 +446,8 @@ func TestClient_GetAgent(t *testing.T) {
 					&syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
 				},
 			},
-			expectedResult:    &syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
-			expectedErrorCode: codes.OK,
-			expectedErrorMsg:  "",
-			expectedError:     false,
+			expectedResult: &syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
+			expectedError:  false,
 		}, {
 			name:    "retry 4 times when code Unavailable received and last code is Unavailable",
 			request: &syntheticspb.GetAgentRequest{},
@@ -490,7 +488,7 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:     "do not retry when retries disabled and code Unavailable received",
-			retryMax: intPtr(0),
+			retryMax: uintPtr(0),
 			request:  &syntheticspb.GetAgentRequest{},
 			responses: []gRPCResponse{
 				newErrorGRPCResponse(codes.Unavailable),
@@ -501,7 +499,7 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:     "retry specified number of times when code Unavailable received",
-			retryMax: intPtr(2),
+			retryMax: uintPtr(2),
 			request:  &syntheticspb.GetAgentRequest{},
 			responses: []gRPCResponse{
 				newErrorGRPCResponse(codes.Unavailable),
@@ -529,7 +527,7 @@ func TestClient_GetAgent(t *testing.T) {
 				DisableTLS:             true,
 				RetryCfg: kentikapi.RetryConfig{
 					MaxAttempts: tt.retryMax,
-					MinDelay:    durationPtr(10 * time.Millisecond),
+					MinDelay:    durationPtr(10 * time.Microsecond),
 				},
 			})
 			require.NoError(t, err)

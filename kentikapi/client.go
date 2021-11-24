@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
+	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	grpccloudesxport "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	grpcsynthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
@@ -23,12 +23,9 @@ import (
 
 //nolint:gosec
 const (
-	authAPITokenKey    = "X-CH-Auth-API-Token"
-	authEmailKey       = "X-CH-Auth-Email"
-	defaultTimeout     = 100 * time.Second
-	defaultMaxAttempts = 4
-	defaultMinDelay    = 1 * time.Second
-	defaultMaxDelay    = 30 * time.Second
+	authAPITokenKey = "X-CH-Auth-API-Token"
+	authEmailKey    = "X-CH-Auth-Email"
+	defaultTimeout  = 100 * time.Second
 )
 
 // Kentik API URLs.
@@ -176,17 +173,7 @@ func (c *Config) FillDefaults() {
 		c.Timeout = durationPtr(defaultTimeout)
 	}
 
-	if c.RetryCfg.MaxAttempts == nil {
-		c.RetryCfg.MaxAttempts = intPtr(defaultMaxAttempts)
-	}
-
-	if c.RetryCfg.MinDelay == nil {
-		c.RetryCfg.MinDelay = durationPtr(defaultMinDelay)
-	}
-
-	if c.RetryCfg.MaxDelay == nil {
-		c.RetryCfg.MaxDelay = durationPtr(defaultMaxDelay)
-	}
+	c.RetryCfg.FillDefaults()
 }
 
 func makeCloudExportConfig(c Config) *cloudexport.Configuration {
@@ -232,7 +219,7 @@ func (c Config) makeConnForGRPC(hostPort string) (grpc.ClientConnInterface, erro
 		hostPort,
 		c.makeTLSOption(),
 		grpc.WithUnaryInterceptor(
-			grpc_middleware.ChainUnaryClient(
+			grpcmiddleware.ChainUnaryClient(
 				c.makeAuthInterceptor(),
 				c.makeRetryInterceptor(),
 			),
@@ -262,21 +249,14 @@ func (c Config) makeAuthInterceptor() grpc.UnaryClientInterceptor {
 }
 
 func (c Config) makeRetryInterceptor() grpc.UnaryClientInterceptor {
-	opts := []grpc_retry.CallOption{
-		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(*c.RetryCfg.MinDelay)),
-		grpc_retry.WithCodes(codes.Unavailable),
-		// TODO: ensure c.RetryCfg.MaxAttempts is positive or research other options (mpalczynski)
-		// grpc_retry.WithMax specifies the number of total requests sent and not retries
-		grpc_retry.WithMax(uint(*c.RetryCfg.MaxAttempts + 1)),
-	}
-
-	return grpc_retry.UnaryClientInterceptor(opts...)
+	return grpcretry.UnaryClientInterceptor(
+		grpcretry.WithBackoff(grpcretry.BackoffExponential(*c.RetryCfg.MinDelay)),
+		grpcretry.WithCodes(codes.Unavailable),
+		// grpcretry.WithMax specifies the number of total requests sent and not retries
+		grpcretry.WithMax(*c.RetryCfg.MaxAttempts+1),
+	)
 }
 
 func durationPtr(v time.Duration) *time.Duration {
-	return &v
-}
-
-func intPtr(v int) *int {
 	return &v
 }

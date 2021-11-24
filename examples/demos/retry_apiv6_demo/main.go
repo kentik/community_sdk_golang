@@ -46,7 +46,7 @@ func showRetryingOnMultipleCodes() error {
 	c, err := kentikapi.NewClient(kentikapi.Config{
 		SyntheticsAPIURL: s.URL,
 		RetryCfg: kentikapi.RetryConfig{
-			MaxAttempts:          intPtr(42),
+			MaxAttempts:          uintPtr(42),
 			MinDelay:             durationPtr(100 * time.Millisecond),
 			MaxDelay:             durationPtr(10 * time.Second),
 		},
@@ -184,7 +184,7 @@ const dummyAgentsResponseBody string = `{
 	}]
 }`
 
-func intPtr(v int) *int {
+func uintPtr(v uint) *uint {
 	return &v
 }
 
