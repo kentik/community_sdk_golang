@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -558,7 +559,7 @@ func TestClient_GetAgent(t *testing.T) {
 				assert.Equal(t, tt.expectedRequestID, r.GetId())
 			}
 
-			assert.Equal(t, tt.expectedResult.GetAgent().String(), response.GetAgent().String())
+			assert.True(t, proto.Equal(tt.expectedResult.GetAgent(), response.GetAgent()))
 		})
 	}
 }

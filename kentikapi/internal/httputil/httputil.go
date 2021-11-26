@@ -40,7 +40,6 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	if cfg.RetryCfg.MaxDelay != nil {
 		c.RetryWaitMax = *cfg.RetryCfg.MaxDelay
 	}
-	cfg.RetryCfg.FillDefaults()
 	c.CheckRetry = makeRetryPolicy()
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
@@ -71,6 +70,7 @@ type RetryConfig struct {
 }
 
 func (cfg *ClientConfig) FillDefaults() {
+	cfg.RetryCfg.FillDefaults()
 	if cfg.HTTPClient == nil {
 		cfg.HTTPClient = defaultHTTPClient()
 	}
