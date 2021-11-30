@@ -6,16 +6,15 @@ package examples
 import (
 	"context"
 	"fmt"
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestSyntheticsAPIExample(t *testing.T) {
@@ -265,27 +264,27 @@ func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	PrettyPrint(getResp)
 	fmt.Println()
 
-	//TODO: PATCH AGENT is not working properly. request.agent.name should be ignored given mask but isn't
-	//fmt.Println("### PATCH AGENT")
-	//agent := *getResp.Agent
-	//if getResp.Agent.GetFamily() == synthetics.V202101BETA1IPFAMILY_V6 {
-	//	agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V4)
-	//} else {
-	//	agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V6)
-	//}
-	//patchReqPayload := *synthetics.NewV202101beta1PatchAgentRequest()
-	//patchReqPayload.SetAgent(agent)
-	//patchReqPayload.SetMask("agent.family")
-	//
-	//patchResp, httpResp, err := client.SyntheticsAdminServiceAPI.
-	//	AgentPatch(context.Background(), agentID).
-	//	Body(patchReqPayload).
-	//	Execute()
-	//if err != nil {
-	//	return fmt.Errorf("%v %v", err, httpResp)
-	//}
-	//PrettyPrint(patchResp)
-	//fmt.Println()
+	fmt.Println("### PATCH AGENT")
+	agent := *getResp.Agent
+	if getResp.Agent.GetFamily() == synthetics.V202101BETA1IPFAMILY_V6 {
+		agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V4)
+	} else {
+		agent.SetFamily(synthetics.V202101BETA1IPFAMILY_V6)
+	}
+	agent.Name = nil
+	patchReqPayload := *synthetics.NewV202101beta1PatchAgentRequest()
+	patchReqPayload.SetAgent(agent)
+	patchReqPayload.SetMask("agent.family")
+
+	patchResp, httpResp, err := client.SyntheticsAdminServiceAPI.
+		AgentPatch(context.Background(), agentID).
+		Body(patchReqPayload).
+		Execute()
+	if err != nil {
+		return fmt.Errorf("%v %v", err, httpResp)
+	}
+	PrettyPrint(patchResp)
+	fmt.Println()
 
 	// NOTE: as we can't create agents through the API - let's not delete them
 	// fmt.Println("### DELETE AGENT")
@@ -551,9 +550,9 @@ func runGRPCGetHealthForTests(ctx context.Context, client *kentikapi.Client, tes
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayLoad := &syntheticspb.GetHealthForTestsRequest{
-		Ids: testIDs,
+		Ids:       testIDs,
 		StartTime: timestamppb.New(time.Now().Add(-time.Hour)),
-		EndTime: timestamppb.Now(),
+		EndTime:   timestamppb.Now(),
 	}
 
 	getHealthResp, err := client.SyntheticsData.GetHealthForTests(ctx, healthPayLoad)
@@ -740,16 +739,16 @@ func makeGRPCExampleTest() *syntheticspb.Test {
 		},
 		HealthSettings:     healthSettings,
 		MonitoringSettings: monitorSettings,
-		Ping: ping,
-		Trace: trace,
-		Port:        443,
-		Protocol:    "icmp",
-		Family:      syntheticspb.IPFamily_IP_FAMILY_DUAL,
-		Servers:     []string{},
-		UseLocalIp:  false,
-		Reciprocal:  false,
-		RollupLevel: 1,
-		Http:        nil,
+		Ping:               ping,
+		Trace:              trace,
+		Port:               443,
+		Protocol:           "icmp",
+		Family:             syntheticspb.IPFamily_IP_FAMILY_DUAL,
+		Servers:            []string{},
+		UseLocalIp:         false,
+		Reciprocal:         false,
+		RollupLevel:        1,
+		Http:               nil,
 	}
 
 	userInfo := &syntheticspb.UserInfo{
@@ -759,14 +758,14 @@ func makeGRPCExampleTest() *syntheticspb.Test {
 	}
 
 	test := &syntheticspb.Test{
-		Name:          "example-test-1",
-		Type:          "hostname",
-		DeviceId:      "1000",
-		Status:        syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
-		Settings:      settings,
-		ExpiresOn:     timestamppb.New(time.Now().Add(time.Hour*6)),
-		Cdate:         timestamppb.Now(),
-		CreatedBy:     userInfo,
+		Name:      "example-test-1",
+		Type:      "hostname",
+		DeviceId:  "1000",
+		Status:    syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
+		Settings:  settings,
+		ExpiresOn: timestamppb.New(time.Now().Add(time.Hour * 6)),
+		Cdate:     timestamppb.Now(),
+		CreatedBy: userInfo,
 	}
 
 	return test
