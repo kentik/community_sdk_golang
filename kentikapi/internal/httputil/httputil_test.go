@@ -83,7 +83,7 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 					Transport: &st,
 				},
 				RetryCfg: httputil.RetryConfig{
-					MaxAttempts: intPtr(retryMax),
+					MaxAttempts: uintPtr(retryMax),
 					MinDelay:    durationPtr(1 * time.Microsecond),
 					MaxDelay:    durationPtr(10 * time.Microsecond),
 				},
@@ -125,7 +125,7 @@ func TestRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
 
 	c := httputil.NewRetryingClient(httputil.ClientConfig{
 		RetryCfg: httputil.RetryConfig{
-			MaxAttempts: intPtr(5),
+			MaxAttempts: uintPtr(5),
 			MinDelay:    durationPtr(10 * time.Second),
 			MaxDelay:    durationPtr(10 * time.Second),
 		},
@@ -158,7 +158,7 @@ func (t *spyTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 	return nil, t.transportError
 }
 
-func intPtr(v int) *int {
+func uintPtr(v uint) *uint {
 	return &v
 }
 

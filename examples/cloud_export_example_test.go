@@ -19,8 +19,10 @@ func TestCloudExportAPIExample(t *testing.T) {
 }
 
 func runCRUDCloudExport() error {
-	client := NewClient()
-	var err error
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
@@ -90,8 +92,10 @@ func runCRUDCloudExport() error {
 }
 
 func runGetAllCloudExports() error {
-	client := NewClient()
-	var err error
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()

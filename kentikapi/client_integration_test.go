@@ -5,32 +5,39 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
 
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
-	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
+	httpSynthetics "github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
 	testAgentID = "968"
 )
 
-func TestClient_PatchAgent(t *testing.T) {
+func TestClient_PatchAgentHTTP(t *testing.T) {
 	tests := []struct {
-		name             string
-		retryMax         *int
-		retryStatusCodes []int
-		retryMethods     []string
-		request          synthetics.V202101beta1PatchAgentRequest
+		name     string
+		retryMax *uint
+		request  httpSynthetics.V202101beta1PatchAgentRequest
 		// expectedRequestBody is map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
 		responses           []httpResponse
-		expectedResult      synthetics.V202101beta1PatchAgentResponse
+		expectedResult      httpSynthetics.V202101beta1PatchAgentResponse
 		expectedError       bool
 	}{
 		{
@@ -52,7 +59,7 @@ func TestClient_PatchAgent(t *testing.T) {
 				statusCode: http.StatusOK,
 				body:       dummyAgentResponseBody,
 			}},
-			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
+			expectedResult: httpSynthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
 		}, {
 			name:                "retry till success when status 429 Too Many Requests received",
 			request:             newPatchAgentNameRequest(),
@@ -66,13 +73,13 @@ func TestClient_PatchAgent(t *testing.T) {
 					body:       dummyAgentResponseBody,
 				},
 			},
-			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
+			expectedResult: httpSynthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
 		}, {
-			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 429",
+			name:                "retry 4 times when status 429, 502, 503 or 504 received and last status is 429",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
-				newErrorHTTPResponse(http.StatusInternalServerError),
+				newErrorHTTPResponse(http.StatusTooManyRequests),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
@@ -80,14 +87,14 @@ func TestClient_PatchAgent(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry 4 times when status 429, 500, 502, 503 or 504 received and last status is 504",
+			name:                "retry 4 times when status 429, 502, 503 or 504 received and last status is 504",
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
-				newErrorHTTPResponse(http.StatusInternalServerError),
 				newErrorHTTPResponse(http.StatusBadGateway),
 				newErrorHTTPResponse(http.StatusServiceUnavailable),
+				newErrorHTTPResponse(http.StatusGatewayTimeout),
 				newErrorHTTPResponse(http.StatusGatewayTimeout),
 			},
 			expectedError: true,
@@ -101,7 +108,7 @@ func TestClient_PatchAgent(t *testing.T) {
 			expectedError: true,
 		}, {
 			name:                "do not retry when retries disabled and status 429 Too Many Requests received",
-			retryMax:            intPtr(0),
+			retryMax:            uintPtr(0),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
@@ -110,46 +117,12 @@ func TestClient_PatchAgent(t *testing.T) {
 			expectedError: true,
 		}, {
 			name:                "retry specified number of times when status 429 Too Many Requests received",
-			retryMax:            intPtr(2),
+			retryMax:            uintPtr(2),
 			request:             newPatchAgentNameRequest(),
 			expectedRequestBody: newPatchAgentNameRequestBody(),
 			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 				newErrorHTTPResponse(http.StatusTooManyRequests),
-				newErrorHTTPResponse(http.StatusTooManyRequests),
-			},
-			expectedError: true,
-		}, {
-			name:                "retry only on configured HTTP response status codes if given any",
-			retryStatusCodes:    []int{777, 888, 999},
-			request:             newPatchAgentNameRequest(),
-			expectedRequestBody: newPatchAgentNameRequestBody(),
-			responses: []httpResponse{
-				newErrorHTTPResponse(777),
-				newErrorHTTPResponse(888),
-				newErrorHTTPResponse(999),
-				newErrorHTTPResponse(http.StatusTooManyRequests),
-			},
-			expectedError: true,
-		}, {
-			name:                "retry only on configured HTTP request methods if given any - retry case",
-			retryMethods:        []string{http.MethodTrace, http.MethodPatch},
-			request:             newPatchAgentNameRequest(),
-			expectedRequestBody: newPatchAgentNameRequestBody(),
-			responses: []httpResponse{
-				newErrorHTTPResponse(http.StatusTooManyRequests),
-				{
-					statusCode: http.StatusOK,
-					body:       dummyAgentResponseBody,
-				},
-			},
-			expectedResult: synthetics.V202101beta1PatchAgentResponse{Agent: newDummyAgent()},
-		}, {
-			name:                "retry only on configured HTTP request methods if given any - no retry case",
-			retryMethods:        []string{http.MethodTrace},
-			request:             newPatchAgentNameRequest(),
-			expectedRequestBody: newPatchAgentNameRequestBody(),
-			responses: []httpResponse{
 				newErrorHTTPResponse(http.StatusTooManyRequests),
 			},
 			expectedError: true,
@@ -162,19 +135,18 @@ func TestClient_PatchAgent(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				SyntheticsAPIURL: s.URL,
 				AuthEmail:        dummyAuthEmail,
 				AuthToken:        dummyAuthToken,
 				RetryCfg: kentikapi.RetryConfig{
-					MaxAttempts:          tt.retryMax,
-					MinDelay:             durationPtr(1 * time.Microsecond),
-					MaxDelay:             durationPtr(10 * time.Microsecond),
-					RetryableStatusCodes: tt.retryStatusCodes,
-					RetryableMethods:     tt.retryMethods,
+					MaxAttempts: tt.retryMax,
+					MinDelay:    durationPtr(1 * time.Microsecond),
+					MaxDelay:    durationPtr(10 * time.Microsecond),
 				},
 				LogPayloads: true,
 			})
+			require.NoError(t, err)
 
 			// act
 			result, httpResp, err := c.SyntheticsAdminServiceAPI.
@@ -212,17 +184,17 @@ func TestClient_PatchAgent(t *testing.T) {
 	}
 }
 
-func newPatchAgentNameRequest() synthetics.V202101beta1PatchAgentRequest {
-	return synthetics.V202101beta1PatchAgentRequest{
+func newPatchAgentNameRequest() httpSynthetics.V202101beta1PatchAgentRequest {
+	return httpSynthetics.V202101beta1PatchAgentRequest{
 		Agent: newDummyAgent(),
 		Mask:  stringPtr("agent.name"),
 	}
 }
 
-func newDummyAgent() *synthetics.V202101beta1Agent {
-	status := synthetics.V202101BETA1AGENTSTATUS_WAIT
-	family := synthetics.V202101BETA1IPFAMILY_DUAL
-	agent := &synthetics.V202101beta1Agent{
+func newDummyAgent() *httpSynthetics.V202101beta1Agent {
+	status := httpSynthetics.V202101BETA1AGENTSTATUS_WAIT
+	family := httpSynthetics.V202101BETA1IPFAMILY_DUAL
+	agent := &httpSynthetics.V202101beta1Agent{
 		Id:     stringPtr(testAgentID),
 		Name:   stringPtr("dummy-agent"),
 		Status: &status,
@@ -398,7 +370,7 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func intPtr(v int) *int {
+func uintPtr(v uint) *uint {
 	return &v
 }
 
@@ -416,4 +388,295 @@ func timePtr(v time.Time) *time.Time {
 
 func durationPtr(v time.Duration) *time.Duration {
 	return &v
+}
+
+func TestClient_GetAgent(t *testing.T) {
+	tests := []struct {
+		name              string
+		retryMax          *uint
+		request           *syntheticspb.GetAgentRequest
+		expectedRequestID string
+		responses         []gRPCResponse
+		expectedResult    *syntheticspb.GetAgentResponse
+		expectedErrorCode codes.Code
+		expectedErrorMsg  string
+		expectedError     bool
+	}{
+		{
+			name:              "empty request, status InvalidArgument received",
+			request:           &syntheticspb.GetAgentRequest{},
+			expectedRequestID: "",
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.InvalidArgument),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.InvalidArgument,
+			expectedErrorMsg:  codes.InvalidArgument.String(),
+			expectedError:     true,
+		}, {
+			name:              "request with invalid id, status NotFound received",
+			request:           &syntheticspb.GetAgentRequest{Id: "1000"},
+			expectedRequestID: "1000",
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.NotFound),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.NotFound,
+			expectedErrorMsg:  codes.NotFound.String(),
+			expectedError:     true,
+		}, {
+			name:              "valid request, agent returned",
+			request:           &syntheticspb.GetAgentRequest{Id: "968"},
+			expectedRequestID: "968",
+			responses: []gRPCResponse{
+				{
+					nil,
+					&syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
+				},
+			},
+			expectedResult: &syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
+		}, {
+			name:              "retry 2 times till success on code Unavailable",
+			request:           &syntheticspb.GetAgentRequest{Id: "968"},
+			expectedRequestID: "968",
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				{
+					nil,
+					&syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
+				},
+			},
+			expectedResult: &syntheticspb.GetAgentResponse{Agent: newDummyAgentForGRPC()},
+			expectedError:  false,
+		}, {
+			name:    "retry 4 times when code Unavailable received and last code is Unavailable",
+			request: &syntheticspb.GetAgentRequest{},
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.Unavailable,
+			expectedErrorMsg:  codes.Unavailable.String(),
+			expectedError:     true,
+		}, {
+			name:    "retry 4 times when code Unavailable received and last code is Unknown",
+			request: &syntheticspb.GetAgentRequest{},
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unknown),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.Unknown,
+			expectedErrorMsg:  codes.Unknown.String(),
+			expectedError:     true,
+		}, {
+			name:    "do not retry when code Unknown received",
+			request: &syntheticspb.GetAgentRequest{},
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unknown),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.Unknown,
+			expectedErrorMsg:  codes.Unknown.String(),
+			expectedError:     true,
+		}, {
+			name:     "do not retry when retries disabled and code Unavailable received",
+			retryMax: uintPtr(0),
+			request:  &syntheticspb.GetAgentRequest{},
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unavailable),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.Unavailable,
+			expectedErrorMsg:  codes.Unavailable.String(),
+			expectedError:     true,
+		}, {
+			name:     "retry specified number of times when code Unavailable received",
+			retryMax: uintPtr(2),
+			request:  &syntheticspb.GetAgentRequest{},
+			responses: []gRPCResponse{
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+				newErrorGRPCResponse(codes.Unavailable),
+			},
+			expectedResult:    nil,
+			expectedErrorCode: codes.Unavailable,
+			expectedErrorMsg:  codes.Unavailable.String(),
+			expectedError:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			s := newSpySyntheticsServer(t, tt.responses)
+			s.Start()
+			defer s.Stop()
+
+			client, err := kentikapi.NewClient(kentikapi.Config{
+				SyntheticsGRPCHostPort: s.url,
+				AuthToken:              dummyAuthToken,
+				AuthEmail:              dummyAuthEmail,
+				DisableTLS:             true,
+				RetryCfg: kentikapi.RetryConfig{
+					MaxAttempts: tt.retryMax,
+					MinDelay:    durationPtr(10 * time.Microsecond),
+				},
+			})
+			require.NoError(t, err)
+
+			// act
+			result, err := client.SyntheticsAdmin.GetAgent(
+				context.Background(),
+				tt.request,
+			)
+
+			// assert
+			t.Logf("Got response: %v, err: %v", result, err)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			if e, ok := status.FromError(err); ok {
+				assert.Equal(t, tt.expectedErrorCode, e.Code())
+				assert.Equal(t, tt.expectedErrorMsg, e.Message())
+			}
+
+			assert.Equal(t, len(s.responses), len(s.requests), "invalid number of requests")
+			for i, r := range s.requests {
+				assert.Equal(t, dummyAuthEmail, s.headers[i].Get(authEmailKey)[0])
+				assert.Equal(t, dummyAuthToken, s.headers[i].Get(authAPITokenKey)[0])
+				assert.Equal(t, tt.expectedRequestID, r.GetId())
+			}
+
+			assert.True(
+				t,
+				proto.Equal(tt.expectedResult, result),
+				fmt.Sprintf("Protobuf messages are not equal:\nexpected: %v\nactual:  %v", tt.expectedResult, result),
+			)
+		})
+	}
+}
+
+type spySyntheticsServer struct {
+	syntheticspb.UnimplementedSyntheticsAdminServiceServer
+	server *grpc.Server
+	url    string
+	t      testing.TB
+	// responses to return to the client
+	responses []gRPCResponse
+
+	// requests spied by the server
+	requests []*syntheticspb.GetAgentRequest
+	headers  []metadata.MD
+}
+
+type gRPCResponse struct {
+	err  error
+	body *syntheticspb.GetAgentResponse
+}
+
+func newSpySyntheticsServer(t testing.TB, responses []gRPCResponse) *spySyntheticsServer {
+	return &spySyntheticsServer{
+		t:         t,
+		responses: responses,
+	}
+}
+
+func (s *spySyntheticsServer) Start() {
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(s.t, err)
+
+	s.url = l.Addr().String()
+
+	s.server = grpc.NewServer()
+	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
+	go func() {
+		require.NoError(s.t, s.server.Serve(l))
+	}()
+}
+
+func (s *spySyntheticsServer) Stop() {
+	s.server.GracefulStop()
+}
+
+func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,
+) (*syntheticspb.GetAgentResponse, error) {
+	header, ok := metadata.FromIncomingContext(ctx)
+	assert.True(s.t, ok)
+	s.headers = append(s.headers, header)
+
+	s.requests = append(s.requests, req)
+
+	response := s.response()
+
+	return response.body, response.err
+}
+
+func (s *spySyntheticsServer) response() gRPCResponse {
+	if len(s.requests) > len(s.responses) {
+		return gRPCResponse{
+			status.Errorf(
+				codes.Unknown,
+				"spySyntheticsServer: unexpected request, requests count: %v, expected: %v",
+				len(s.requests),
+				len(s.responses),
+			),
+			nil,
+		}
+	}
+	return s.responses[len(s.requests)-1]
+}
+
+func newDummyAgentForGRPC() *syntheticspb.Agent {
+	return &syntheticspb.Agent{
+		Id:     testAgentID,
+		Name:   "dummy-agent",
+		Status: syntheticspb.AgentStatus_AGENT_STATUS_WAIT,
+		Alias:  "probe-4-ams-1",
+		Type:   "global",
+		Os:     "I use Manjaro BTW",
+		Ip:     "95.179.136.58",
+		Lat:    52.374031,
+		Long:   4.88969,
+		LastAuthed: timestamppb.New(time.Date(2020,
+			time.July,
+			9,
+			21,
+			37,
+			0,
+			826*1000000,
+			time.UTC,
+		)),
+		Family:    syntheticspb.IPFamily_IP_FAMILY_DUAL,
+		Asn:       20473,
+		SiteId:    "2137",
+		Version:   "0.0.2",
+		Challenge: "dummy-challenge",
+		City:      "Amsterdam",
+		Region:    "Noord-Holland",
+		Country:   "Netherlands",
+		TestIds:   []string{"13", "133", "1337"},
+		LocalIp:   "10.10.10.10",
+	}
+}
+
+func newErrorGRPCResponse(c codes.Code) gRPCResponse {
+	return gRPCResponse{
+		err: status.Errorf(
+			c,
+			c.String(),
+		),
+		body: nil,
+	}
 }

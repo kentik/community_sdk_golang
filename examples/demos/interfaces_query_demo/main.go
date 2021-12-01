@@ -3,30 +3,39 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
-// prerequisite: deviceID must be ID of already existing device
-const deviceID = models.ID(80603) // crated-before demo router
-
 func main() {
-	client := demos.NewClient()
+	client, err := demos.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create device and read ID
+	demos.Step("Create a device")
+	deviceID := createDevice(client)
 
 	// Interfaces
 	demos.Step("Create an interface")
-	id := createInterface(client)
+	id := createInterface(client, deviceID)
 
 	demos.Step("Get interface")
-	getInterface(client, id)
+	getInterface(client, deviceID, id)
 
 	demos.Step("Delete interface")
-	deleteInterface(client, id)
+	deleteInterface(client, deviceID, id)
 
 	demos.Step("Get all interfaces")
-	getAllInterfaces(client)
+	getAllInterfaces(client, deviceID)
+
+	// Delete Device
+	demos.Step("Delete device")
+	deleteDevice(client, deviceID)
 
 	// Query
 	demos.Step("Query for data")
@@ -36,7 +45,22 @@ func main() {
 	queryChart(client)
 }
 
-func createInterface(client *kentikapi.Client) models.ID {
+func createDevice(client *kentikapi.Client) models.ID {
+	device := models.NewDeviceDNS(
+		"interfaces_query_demo_device",
+		models.DeviceSubtypeAwsSubnet,
+		1,
+		11466,
+		models.CDNAttributeYes,
+	)
+	createdDevice, err := client.Devices.Create(context.Background(), *device)
+	demos.ExitOnError(err)
+	fmt.Printf("Successfuly created device, ID = %d\n", createdDevice.ID)
+
+	return createdDevice.ID
+}
+
+func createInterface(client *kentikapi.Client, deviceID models.ID) models.ID {
 	intf := models.NewInterface(
 		deviceID,
 		models.ID(2),
@@ -50,26 +74,33 @@ func createInterface(client *kentikapi.Client) models.ID {
 	return createdInterface.ID
 }
 
-func getInterface(client *kentikapi.Client, interfaceID models.ID) {
+func getInterface(client *kentikapi.Client, deviceID, interfaceID models.ID) {
 	fmt.Printf("Retrieving interface, deviceID = %d, interfaceID = %d\n", deviceID, interfaceID)
 	interface_, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
 	demos.ExitOnError(err)
 	demos.PrettyPrint(interface_)
 }
 
-func deleteInterface(client *kentikapi.Client, interfaceID models.ID) {
+func deleteInterface(client *kentikapi.Client, deviceID, interfaceID models.ID) {
 	fmt.Printf("Deleting interface, deviceID = %d, interfaceID = %d\n", deviceID, interfaceID)
 	err := client.Devices.Interfaces.Delete(context.Background(), deviceID, interfaceID)
 	demos.ExitOnError(err)
 	fmt.Println("Successful")
 }
 
-func getAllInterfaces(client *kentikapi.Client) {
+func getAllInterfaces(client *kentikapi.Client, deviceID models.ID) {
 	fmt.Printf("Listing interfaces for deviceID = %d\n", deviceID)
 	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), deviceID)
 	demos.ExitOnError(err)
 	demos.PrettyPrint(interfaces)
 	fmt.Printf("Total interfaces: %d\n", len(interfaces))
+}
+
+func deleteDevice(client *kentikapi.Client, deviceID models.ID) {
+	fmt.Printf("Deleting device, deviceID = %d\n", deviceID)
+	err := client.Devices.Delete(context.Background(), deviceID)
+	demos.ExitOnError(err)
+	fmt.Println("Successful")
 }
 
 func queryData(client *kentikapi.Client) {

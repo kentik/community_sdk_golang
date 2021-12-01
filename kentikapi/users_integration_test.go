@@ -166,11 +166,12 @@ func TestClient_GetAllUsers(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Users.GetAll(context.Background())
@@ -350,7 +351,7 @@ func TestClient_GetUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
@@ -360,6 +361,7 @@ func TestClient_GetUser(t *testing.T) {
 				},
 				Timeout: tt.timeout,
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Users.Get(context.Background(), testUserID)
@@ -397,7 +399,7 @@ func TestClient_GetUser(t *testing.T) {
 func TestClient_CreateUser(t *testing.T) {
 	tests := []struct {
 		name     string
-		retryMax *int
+		retryMax *uint
 		user     models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
@@ -487,11 +489,11 @@ func TestClient_CreateUser(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry 4 times and when status 429, 500, 502, 503, 504 received and last status is 429",
+			name:                "retry 4 times and when status 429, 502, 503, 504 received and last status is 429",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
 			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
 				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
@@ -499,12 +501,12 @@ func TestClient_CreateUser(t *testing.T) {
 			},
 			expectedError: true,
 		}, {
-			name:                "retry 5 times when status 429, 500, 502, 503, 504 received and last status is 502",
+			name:                "retry 5 times when status 429, 502, 503, 504 received and last status is 502",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			retryMax:            intPtr(5),
+			retryMax:            uintPtr(5),
 			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusInternalServerError),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
 				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
@@ -580,7 +582,7 @@ func TestClient_CreateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
@@ -590,6 +592,7 @@ func TestClient_CreateUser(t *testing.T) {
 					MaxDelay:    durationPtr(10 * time.Microsecond),
 				},
 			})
+			assert.NoError(t, err)
 
 			// act
 			result, err := c.Users.
@@ -721,11 +724,12 @@ func TestClient_UpdateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
 			user := tt.updateFields(&tt.user)
@@ -781,14 +785,15 @@ func TestClient_DeleteUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c := kentikapi.NewClient(kentikapi.Config{
+			c, err := kentikapi.NewClient(kentikapi.Config{
 				APIURL:    s.URL,
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 			})
+			assert.NoError(t, err)
 
 			// act
-			err := c.Users.Delete(context.Background(), testUserID)
+			err = c.Users.Delete(context.Background(), testUserID)
 
 			// assert
 			if tt.expectedError {

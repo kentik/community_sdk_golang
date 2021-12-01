@@ -43,16 +43,17 @@ func showRetryingOnMultipleCodes() error {
 	fmt.Printf("Running fake server on URL %v\n", s.URL)
 
 	demos.Step("Create Kentik API v6 client")
-	c := kentikapi.NewClient(kentikapi.Config{
+	c, err := kentikapi.NewClient(kentikapi.Config{
 		SyntheticsAPIURL: s.URL,
 		RetryCfg: kentikapi.RetryConfig{
-			MaxAttempts:          intPtr(42),
+			MaxAttempts:          uintPtr(42),
 			MinDelay:             durationPtr(100 * time.Millisecond),
 			MaxDelay:             durationPtr(10 * time.Second),
-			RetryableStatusCodes: []int{http.StatusTooManyRequests, http.StatusBadGateway, http.StatusServiceUnavailable},
-			RetryableMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		},
 	})
+	if err != nil {
+		return err
+	}
 
 	demos.Step("List synthetic agents")
 	result, _, err := c.SyntheticsAdminServiceAPI.
@@ -183,7 +184,7 @@ const dummyAgentsResponseBody string = `{
 	}]
 }`
 
-func intPtr(v int) *int {
+func uintPtr(v uint) *uint {
 	return &v
 }
 
