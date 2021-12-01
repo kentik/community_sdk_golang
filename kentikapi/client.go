@@ -220,6 +220,7 @@ func (c Config) makeConnForGRPC(hostPort string) (grpc.ClientConnInterface, erro
 		c.makeTLSOption(),
 		grpc.WithUnaryInterceptor(
 			grpcmiddleware.ChainUnaryClient(
+				c.makeTimeoutInterceptor(),
 				c.makeAuthInterceptor(),
 				c.makeRetryInterceptor(),
 			),
@@ -234,6 +235,16 @@ func (c Config) makeTLSOption() grpc.DialOption {
 	return grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
 		MinVersion: tls.VersionTLS13,
 	}))
+}
+
+func (c Config) makeTimeoutInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{},
+		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
+	) error {
+		ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+		defer cancel()
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
 }
 
 func (c Config) makeAuthInterceptor() grpc.UnaryClientInterceptor {
