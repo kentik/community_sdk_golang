@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
-
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloudexport"
 )
 
 func main() {
