@@ -21,7 +21,7 @@ const (
 // Retry-After header of HTTP 429 response is respected while calculating the retry delay.
 //
 // By default following retry policy is used:
-// - Retry on following HTTP status codes: [429, 500, 502, 503, 504],
+// - Retry on following HTTP status codes: [429, 502, 503, 504],
 // - Retry on following HTTP request methods: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
 // - Retry on underlying http.Client.Do() temporary errors.
 //

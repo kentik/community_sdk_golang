@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"log"
 	"os"
 
@@ -20,8 +21,6 @@ func main() {
 
 func showClientMerge() error {
 	demos.Step("Using Kentik API server")
-	// import "github.com/kentik/community_sdk_golang/apiv6/kentikapi" - synthetics, cloud export
-	// import "github.com/kentik/community_sdk_golang/kentikapi" - users, devices, etc.
 
 	email, token, err := ReadCredentialsFromEnv()
 	if err != nil {
@@ -45,7 +44,7 @@ func showClientMerge() error {
 	demos.PrettyPrint(result)
 
 	demos.Step("List agents using API v6")
-	getResp, _, err := c.SyntheticsAdminServiceAPI.AgentsList(context.Background()).Execute()
+	getResp, err := c.SyntheticsAdmin.ListAgents(context.Background(), &syntheticspb.ListAgentsRequest{})
 
 	fmt.Println("Received result:")
 	demos.PrettyPrint(getResp)

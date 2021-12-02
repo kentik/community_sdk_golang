@@ -3,9 +3,6 @@
 run:
   build-tags:
     - examples
-  skip-dirs:
-    - fakeapiserver/cloudexport
-    - fakeapiserver/synthetics
 
 issues:
   max-issues-per-linter: 0
@@ -110,6 +107,10 @@ linters-settings:
   errorlint:
     # Check whether fmt.Errorf uses the %w verb for formatting errors - too strict
     errorf: false
+  exhaustive:
+    # presence of "default" case in switch statements satisfies exhaustiveness,
+    # even if all enum members are not listed
+    default-signifies-exhaustive: true
   gocyclo:
     min-complexity: 10
   govet:
