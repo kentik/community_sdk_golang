@@ -77,4 +77,4 @@ Release process for the SDK is based on Git repository tags that follow [semanti
 
 To release the SDK:
 1. Make sure that all code that you want to release is in _master_ branch.
-1. Navigate to [repository releases page](https://github.com/kentik/community_sdk_golang/releases), click _Draft a new release_ button and put tag version (in _v[0-9].[0-9].[0-9]_ format), name and description.
+1. Navigate to [repository releases page](https://github.com/kentik/community_sdk_golang/releases), click _Draft a new release_ button and put tag version (in _v\[0-9].\[0-9].\[0-9]_ format), name and description.
