@@ -394,15 +394,15 @@ func TestClient_GetAgent(t *testing.T) {
 	tests := []struct {
 		name              string
 		retryMax          *uint
+		timeout           *time.Duration
 		request           *syntheticspb.GetAgentRequest
 		expectedRequestID string
 		responses         []gRPCResponse
+		handlingDelay     time.Duration
 		expectedResult    *syntheticspb.GetAgentResponse
 		expectedErrorCode codes.Code
 		expectedErrorMsg  string
 		expectedError     bool
-		timeout           *time.Duration
-		responseDelay     *time.Duration
 	}{
 		{
 			name:              "empty request, status InvalidArgument received",
@@ -514,28 +514,28 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedErrorMsg:  codes.Unavailable.String(),
 			expectedError:     true,
 		}, {
-			name:              "timeout after 100ms",
+			name:              "timeout after 1ms",
+			timeout:           durationPtr(1 * time.Millisecond),
 			request:           &syntheticspb.GetAgentRequest{},
 			responses:         []gRPCResponse{},
+			handlingDelay:     1 * time.Second,
 			expectedResult:    nil,
 			expectedErrorCode: codes.DeadlineExceeded,
 			expectedErrorMsg:  "context deadline exceeded",
 			expectedError:     true,
-			timeout:           durationPtr(100 * time.Millisecond),
-			responseDelay:     durationPtr(1 * time.Second),
 		}, {
 			name:    "timeout after 2 retries",
+			timeout: durationPtr(125 * time.Millisecond),
 			request: &syntheticspb.GetAgentRequest{},
 			responses: []gRPCResponse{
 				newErrorGRPCResponse(codes.Unavailable),
 				newErrorGRPCResponse(codes.Unavailable),
 			},
+			handlingDelay:     50 * time.Millisecond,
 			expectedResult:    nil,
 			expectedErrorCode: codes.DeadlineExceeded,
 			expectedErrorMsg:  "context deadline exceeded",
 			expectedError:     true,
-			timeout:           durationPtr(125 * time.Millisecond),
-			responseDelay:     durationPtr(50 * time.Millisecond),
 		},
 	}
 
@@ -543,7 +543,7 @@ func TestClient_GetAgent(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
 			s := newSpySyntheticsServer(t, tt.responses)
-			s.handlingDelay = tt.responseDelay
+			s.handlingDelay = tt.handlingDelay
 			s.Start()
 			defer s.Stop()
 
@@ -602,13 +602,12 @@ type spySyntheticsServer struct {
 	t      testing.TB
 	// responses to return to the client
 	responses []gRPCResponse
+	// handlingDelay specifies the delay applied while handling the request
+	handlingDelay time.Duration
 
 	// requests spied by the server
 	requests []*syntheticspb.GetAgentRequest
 	headers  []metadata.MD
-
-	// handlingDelay specifies the delay applied while handling the request
-	handlingDelay *time.Duration
 }
 
 type gRPCResponse struct {
@@ -642,12 +641,10 @@ func (s *spySyntheticsServer) Stop() {
 
 func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,
 ) (*syntheticspb.GetAgentResponse, error) {
+	time.Sleep(s.handlingDelay)
+
 	header, ok := metadata.FromIncomingContext(ctx)
 	assert.True(s.t, ok)
-
-	if s.handlingDelay != nil {
-		time.Sleep(*s.handlingDelay)
-	}
 
 	s.headers = append(s.headers, header)
 
