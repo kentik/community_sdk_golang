@@ -55,6 +55,11 @@ func runAdminServiceExamples() error {
 }
 
 func runDataServiceExamples() error {
+	testID, err := pickTestID()
+	if err != nil {
+		return err
+	}
+
 	client, err := NewClient()
 	if err != nil {
 		return err
@@ -63,14 +68,12 @@ func runDataServiceExamples() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	// NOTE: test of id 3541 must exist
-	if err = runGetHealthForTests(ctx, client, []string{"3541"}); err != nil {
+	if err = runGetHealthForTests(ctx, client, []string{testID}); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	// NOTE: test of id 3541 must exist
-	if err = runGetTraceForTest(ctx, client, "3541"); err != nil {
+	if err = runGetTraceForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -252,8 +255,10 @@ func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID st
 
 func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
-	// NOTE: agent of id 1717 must exist
-	agentID := "1717"
+	agentID, err := pickAgentID()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET AGENT")
 	getReq := client.SyntheticsAdminServiceAPI.AgentGet(ctx, agentID)
@@ -327,7 +332,7 @@ func runListAgents(ctx context.Context, client *kentikapi.Client) error {
 // prepare a Test for sending in CREATE request
 func makeExampleTest() *synthetics.V202101beta1Test {
 	hostname := synthetics.NewV202101beta1HostnameTest()
-	hostname.SetTarget("dummy-ht.com")
+	hostname.SetTarget("www.example.com")
 
 	ping := *synthetics.NewV202101beta1TestPingSettings()
 	ping.SetPeriod(60)
@@ -442,17 +447,20 @@ func runGRPCDataServiceExamples() error {
 		return err
 	}
 
+	testID, err := pickTestID()
+	if err != nil {
+		return err
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	// NOTE: test of id 3541 must exist
-	if err = runGRPCGetHealthForTests(ctx, client, []string{"3541"}); err != nil {
+	if err = runGRPCGetHealthForTests(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	// NOTE: test of id 3541 must exist
-	if err = runGRPCGetTraceForTest(ctx, client, "3541"); err != nil {
+	if err = runGRPCGetTraceForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -546,11 +554,11 @@ func runGRPCListTests(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func runGRPCGetHealthForTests(ctx context.Context, client *kentikapi.Client, testIDs []string) error {
+func runGRPCGetHealthForTests(ctx context.Context, client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayLoad := &syntheticspb.GetHealthForTestsRequest{
-		Ids:       testIDs,
+		Ids:       []string{testID},
 		StartTime: timestamppb.New(time.Now().Add(-time.Hour)),
 		EndTime:   timestamppb.Now(),
 	}
@@ -618,7 +626,10 @@ func runGRPCGetTraceForTest(ctx context.Context, client *kentikapi.Client, testI
 func runGRPCCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
 	// NOTE: agent of id 1717 must exist
-	agentID := "1717"
+	agentID, err := pickAgentID()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET AGENT")
 	getReqPayLoad := &syntheticspb.GetAgentRequest{Id: agentID}
@@ -631,15 +642,15 @@ func runGRPCCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 
 	fmt.Println("### PATCH AGENT")
 	agent := getResp.GetAgent()
-	if agent.GetFamily() == syntheticspb.IPFamily_IP_FAMILY_V6 {
-		agent.Family = syntheticspb.IPFamily_IP_FAMILY_V4
+	if agent.GetStatus() == syntheticspb.AgentStatus_AGENT_STATUS_OK {
+		agent.Status = syntheticspb.AgentStatus_AGENT_STATUS_WAIT
 	} else {
-		agent.Family = syntheticspb.IPFamily_IP_FAMILY_V6
+		agent.Status = syntheticspb.AgentStatus_AGENT_STATUS_OK
 	}
 	agent.Name = ""
 	patchReqPayload := &syntheticspb.PatchAgentRequest{
 		Agent: agent,
-		Mask:  &fieldmaskpb.FieldMask{Paths: []string{"agent.family"}},
+		Mask:  &fieldmaskpb.FieldMask{Paths: []string{"agent.status"}},
 	}
 	patchResp, err := client.SyntheticsAdmin.PatchAgent(ctx, patchReqPayload)
 	if err != nil {
@@ -715,7 +726,6 @@ func makeGRPCExampleTest() *syntheticspb.Test {
 
 	trace := &syntheticspb.TestTraceSettings{
 		Period:   60,
-		Count:    3,
 		Protocol: "udp",
 		Port:     33434,
 		Expiry:   22500,
@@ -724,7 +734,7 @@ func makeGRPCExampleTest() *syntheticspb.Test {
 
 	settings := &syntheticspb.TestSettings{
 		Definition: &syntheticspb.TestSettings_Hostname{
-			Hostname: &syntheticspb.HostnameTest{Target: "dummy-ht.com"},
+			Hostname: &syntheticspb.HostnameTest{Target: "example.com"},
 		},
 		AgentIds: []string{
 			"890",
@@ -748,25 +758,38 @@ func makeGRPCExampleTest() *syntheticspb.Test {
 		UseLocalIp:         false,
 		Reciprocal:         false,
 		RollupLevel:        1,
-		Http:               nil,
-	}
-
-	userInfo := &syntheticspb.UserInfo{
-		Id:       "144566",
-		Email:    "John Doe",
-		FullName: "john.doe@acme.com",
 	}
 
 	test := &syntheticspb.Test{
-		Name:      "example-test-1",
-		Type:      "hostname",
-		DeviceId:  "1000",
-		Status:    syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
-		Settings:  settings,
-		ExpiresOn: timestamppb.New(time.Now().Add(time.Hour * 6)),
-		Cdate:     timestamppb.Now(),
-		CreatedBy: userInfo,
+		Name:     "example-test-1",
+		Type:     "hostname",
+		DeviceId: "0",
+		Status:   syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
+		Settings: settings,
 	}
 
 	return test
+}
+
+func pickAgentID() (string, error) {
+	client, err := NewClient()
+	if err != nil {
+		return "", err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	if err != nil {
+		return "", err
+	}
+
+	if getAllResp.GetAgents() != nil {
+		for _, agent := range getAllResp.GetAgents() {
+			if agent.GetType() == "private" {
+				return agent.GetId(), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("No private agent found: %v", err)
 }

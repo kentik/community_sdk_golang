@@ -5,7 +5,6 @@ package examples
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -19,16 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var testID = flag.String("testid", "3541", "id of mesh test to display the result matrix for")
-
 func TestGetMeshTestResultsExample(t *testing.T) {
 	assert.NoError(t, runGetMeshTestResults())
 }
 
 func runGetMeshTestResults() error {
-	flag.Parse()
-
-	mesh, err := getMeshTestResults(*testID)
+	testID, err := pickTestID()
+	if err != nil {
+		return err
+	}
+	mesh, err := getMeshTestResults(testID)
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 	} else {
@@ -162,9 +161,11 @@ func TestGetMeshTestResultsGRPCExample(t *testing.T) {
 }
 
 func runGetMeshTestResultsGRPC() error {
-	flag.Parse()
-
-	mesh, err := getMeshTestResultsGRPC(*testID)
+	testID, err := pickTestID()
+	if err != nil {
+		return err
+	}
+	mesh, err := getMeshTestResultsGRPC(testID)
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 	} else {
@@ -283,4 +284,27 @@ func (m metricsMatrixGRPC) getMetricGRPC(fromAgent string, toAgent string) (*syn
 	}
 
 	return metric, true
+}
+
+func pickTestID() (string, error) {
+	client, err := NewClient()
+	if err != nil {
+		return "", err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
+	if err != nil {
+		return "", err
+	}
+
+	if getAllResp.Tests != nil {
+		for _, test := range getAllResp.GetTests() {
+			if test.GetType() == "application_mesh" {
+				return test.GetId(), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("No tests with type application_mesh: %v", err)
 }
