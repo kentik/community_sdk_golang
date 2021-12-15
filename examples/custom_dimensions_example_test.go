@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
@@ -127,6 +128,7 @@ func runCRUDCustomDimensions() error {
 	return nil
 }
 
+//nolint: gosec // no need for cryptographically secure RNG here
 func randID() string {
 	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")

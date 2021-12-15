@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
@@ -61,30 +62,7 @@ func runQueryData() error {
 	}
 
 	fmt.Println("### QUERY Data")
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
-	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
-	models.SetOptional(&agg2.Rank, 95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
-
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
-	query.Depth = 75
-	query.LookbackSeconds = 600 // last 10 minutes
-	query.HostnameLookup = true
-	query.TopX = 8
-	query.Depth = 75
-	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, true)
-
-	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
-
-	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
+	queryObject := makeQueryObject()
 
 	result, err := client.Query.Data(context.Background(), queryObject)
 	if err != nil {
@@ -96,6 +74,7 @@ func runQueryData() error {
 	return nil
 }
 
+//nolint:gosec // G204: Subprocess launched with variable - not an issue in this case
 func runQueryChart() error {
 	client, err := NewClient()
 	if err != nil {
@@ -143,7 +122,10 @@ func runQueryChart() error {
 	}
 	fmt.Printf("Returned chart image type: %s\n", result.ImageType)
 	filePath := path.Join(os.TempDir(), "chart.png")
-	result.SaveImageAs(filePath)
+	err = result.SaveImageAs(filePath)
+	if err != nil {
+		return err
+	}
 	cmd := exec.Command("firefox", filePath)
 	err = cmd.Run()
 	if err != nil {
@@ -161,6 +143,19 @@ func runQueryURL() error {
 	}
 
 	fmt.Println("### QUERY URL")
+	queryObject := makeQueryObject()
+
+	result, err := client.Query.URL(context.Background(), queryObject)
+	if err != nil {
+		return err
+	}
+	PrettyPrint(result)
+	fmt.Println()
+
+	return nil
+}
+
+func makeQueryObject() models.QueryObject {
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
 	models.SetOptional(&agg1.Raw, true)
 	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
@@ -184,14 +179,5 @@ func runQueryURL() error {
 
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
 
-	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
-
-	result, err := client.Query.URL(context.Background(), queryObject)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(result)
-	fmt.Println()
-
-	return nil
+	return models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 }

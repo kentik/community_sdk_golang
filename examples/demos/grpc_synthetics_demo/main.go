@@ -1,3 +1,4 @@
+//nolint:forbidigo
 package main
 
 import (
@@ -13,12 +14,12 @@ import (
 )
 
 func main() {
-	err := showGRPCClient()
-	if err != nil {
+	if err := showGRPCClient(); err != nil {
 		log.Fatal(err)
 	}
 }
 
+//nolint:gomnd
 func showGRPCClient() error {
 	email, token, err := examples.ReadCredentialsFromEnv()
 	if err != nil {
@@ -34,8 +35,8 @@ func showGRPCClient() error {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	ctx, close := context.WithTimeout(context.Background(), 100*time.Second)
-	defer close()
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
 
 	demos.Step("List synthetic agents")
 	result, err := c.SyntheticsAdmin.ListAgents(ctx, &synthetics.ListAgentsRequest{})

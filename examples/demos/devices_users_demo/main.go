@@ -1,3 +1,4 @@
+//nolint:forbidigo
 package main
 
 import (
@@ -34,6 +35,7 @@ func main() {
 	demos.Step("Finished!")
 }
 
+//nolint:gomnd
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(
 		"testapi_dns_awssubnet",
@@ -47,7 +49,7 @@ func createDevice(client *kentikapi.Client) models.ID {
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.ExitOnError(err)
-	fmt.Printf("Successfuly created device, ID = %d\n", createdDevice.ID)
+	fmt.Printf("Successfully created device, ID = %d\n", createdDevice.ID)
 
 	return createdDevice.ID
 }

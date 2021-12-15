@@ -1,11 +1,13 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"testing"
@@ -61,13 +63,12 @@ func getMeshTestResultsGRPC(testID string) ([]*syntheticspb.MeshResponse, error)
 		fmt.Println("Num health items:", len(healthItems))
 		if len(healthItems) > 0 {
 			return healthItems[0].GetMesh(), nil
-		} else {
-			return nil, nil
 		}
-	} else {
-		fmt.Println("[no health items received]")
 		return nil, nil
 	}
+
+	fmt.Println("[no health items received]")
+	return nil, nil
 }
 
 func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) {
@@ -85,15 +86,17 @@ func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) {
 		row := fromAgent + "\t"
 		for _, toAgent := range matrix.agents {
 			if metrics, ok := matrix.getMetricGRPC(fromAgent, toAgent); ok {
-				row = row + formatLatencyGRPC(metrics) + "\t"
+				row += formatLatencyGRPC(metrics) + "\t"
 			} else {
-				row = row + "[X]\t"
+				row += "[X]\t"
 			}
 		}
 		fmt.Fprintln(w, row)
 	}
 
-	w.Flush()
+	if err := w.Flush(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func makeTabWriterGRPC() *tabwriter.Writer {
@@ -107,10 +110,11 @@ func makeTabWriterGRPC() *tabwriter.Writer {
 }
 
 func formatLatencyGRPC(metrics *syntheticspb.MeshMetrics) string {
-	return strconv.FormatInt(metrics.GetLatency().Value/1000, 10) + "ms" // latency is returned in thousands of milliseconds, so need to divide by 1000
+	// latency is returned in thousands of milliseconds, so need to divide by 1000
+	return strconv.FormatInt(metrics.GetLatency().Value/1000, 10) + "ms"
 }
 
-// metricsMatrix holds "fromAgent" -> "toAgent" connection metrics
+// metricsMatrix holds "fromAgent" -> "toAgent" connection metrics.
 type metricsMatrixGRPC struct {
 	agents []string
 	cells  map[string]map[string]*syntheticspb.MeshMetrics
