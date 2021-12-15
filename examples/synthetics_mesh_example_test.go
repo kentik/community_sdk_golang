@@ -71,7 +71,7 @@ func getMeshTestResultsGRPC(testID string) ([]*syntheticspb.MeshResponse, error)
 }
 
 func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) {
-	w := makeTabWriter()
+	w := makeTabWriterGRPC()
 
 	// print table header
 	header := ".\t"
@@ -168,5 +168,5 @@ func pickTestID() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("No tests with type application_mesh: %v", err)
+	return "", fmt.Errorf("No tests with type application_mesh for requested Kentik account: %v", err)
 }

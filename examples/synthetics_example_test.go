@@ -11,7 +11,6 @@ import (
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
-	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -68,7 +67,7 @@ func runGRPCDataServiceExamples() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	if err = runGRPCGetHealthForTests(ctx, client, testID); err != nil {
+	if err = runGRPCGetHealthForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -167,7 +166,7 @@ func runGRPCListTests(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func runGRPCGetHealthForTests(ctx context.Context, client *kentikapi.Client, testID string) error {
+func runGRPCGetHealthForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayLoad := &syntheticspb.GetHealthForTestsRequest{
