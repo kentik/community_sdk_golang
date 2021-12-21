@@ -55,21 +55,6 @@ Development steps:
 - Run all tests, including usage examples: `go test -tags examples ./...`
 - Run golangci-lint: `golangci-lint run ./...`
 - Format the code: `./tools/fmt.sh`
-- Generate code for Synthetics and Cloud Export:
-  - Generate the client: `./generate_client.sh`
-  - Generate the fake server: `./generate_server.sh`
-  - Generate documentation: `./generate_docs.sh`
-
-Subset of the code is generated from API specification available at:
-- <https://github.com/kentik/api-schema-public/tree/master/gen/openapiv2/kentik/cloud_export/v202101beta1>
-- <https://github.com/kentik/api-schema-public/tree/master/gen/openapiv2/kentik/synthetics/v202101beta1>
-
-The OpenAPI Generator is used for code generation: <https://openapi-generator.tech/>.
-Generated code is checked-in to the repository, so that the user can _go get_ the library.
-
-Note that the generated code scaffolding needs to be complemented with actual logic implementation. Here are the lists of generated files of the fake server that need to be filled manually:
-- [./kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore](kentikapi/fakeapiserver/cloudexport/.openapi-generator-ignore)
-- [./kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore](kentikapi/fakeapiserver/synthetics/.openapi-generator-ignore)
 
 ### Release
 

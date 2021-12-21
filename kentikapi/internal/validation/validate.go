@@ -44,7 +44,7 @@ func getTypeName(i interface{}) string {
 	return tResource.Name()
 }
 
-//nolint:exhaustive,gocyclo
+//nolint:gocyclo
 func validate(method string, direction string, path string, v reflect.Value) []string {
 	missing := make([]string, 0)
 

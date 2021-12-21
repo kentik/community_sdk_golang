@@ -32,10 +32,6 @@ func NewClient() (*kentikapi.Client, error) {
 	client, err := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
 		AuthToken: token,
-
-		// examples can also be run against fakeapiserver by specifying the server url:
-		// SyntheticsAPIURL:  "http://localhost:8080",
-		// CloudExportAPIURL: "http://localhost:8080",
 	})
 	if err != nil {
 		return nil, err
