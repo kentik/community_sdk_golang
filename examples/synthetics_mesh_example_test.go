@@ -19,31 +19,30 @@ import (
 )
 
 func TestGetMeshTestResultsExample(t *testing.T) {
-	assert.NoError(t, runGetMeshTestResultsGRPC())
+	assert.NoError(t, runGetMeshTestResults())
 }
 
-func runGetMeshTestResultsGRPC() error {
+func runGetMeshTestResults() error {
 	testID, err := pickTestID()
 	if err != nil {
 		return err
 	}
 
-	mesh, err := getMeshTestResultsGRPC(testID)
+	mesh, err := getMeshTestResults(testID)
 	if err != nil {
 		return err
 	}
-
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 	} else {
-		metricsMatrix := newMetricsMatrixGRPC(mesh)
-		err = printMetricsMatrixGRPC(metricsMatrix)
+		metricsMatrix := newMetricsMatrix(mesh)
+		err = printMetricsMatrix(metricsMatrix)
 	}
 
 	return err
 }
 
-func getMeshTestResultsGRPC(testID string) ([]*syntheticspb.MeshResponse, error) {
+func getMeshTestResults(testID string) ([]*syntheticspb.MeshResponse, error) {
 	client, err := NewClient()
 	if err != nil {
 		return nil, err
@@ -74,8 +73,8 @@ func getMeshTestResultsGRPC(testID string) ([]*syntheticspb.MeshResponse, error)
 	return nil, nil
 }
 
-func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) error {
-	w := makeTabWriterGRPC()
+func printMetricsMatrix(matrix metricsMatrix) error {
+	w := makeTabWriter()
 
 	// print table header
 	header := ".\t"
@@ -88,8 +87,8 @@ func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) error {
 	for _, fromAgent := range matrix.agents {
 		row := fromAgent + "\t"
 		for _, toAgent := range matrix.agents {
-			if metrics, ok := matrix.getMetricGRPC(fromAgent, toAgent); ok {
-				row += formatLatencyGRPC(metrics) + "\t"
+			if metrics, ok := matrix.getMetric(fromAgent, toAgent); ok {
+				row += formatLatency(metrics) + "\t"
 			} else {
 				row += "[X]\t"
 			}
@@ -103,7 +102,7 @@ func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) error {
 	return nil
 }
 
-func makeTabWriterGRPC() *tabwriter.Writer {
+func makeTabWriter() *tabwriter.Writer {
 	const minWidth = 0  // minimal cell width including any padding
 	const tabWidth = 2  // width of tab characters (equivalent number of spaces)
 	const padding = 4   // distance between cells
@@ -113,18 +112,18 @@ func makeTabWriterGRPC() *tabwriter.Writer {
 	return w
 }
 
-func formatLatencyGRPC(metrics *syntheticspb.MeshMetrics) string {
+func formatLatency(metrics *syntheticspb.MeshMetrics) string {
 	// latency is returned in thousands of milliseconds, so need to divide by 1000
 	return strconv.FormatInt(metrics.GetLatency().Value/1000, 10) + "ms"
 }
 
 // metricsMatrix holds "fromAgent" -> "toAgent" connection metrics.
-type metricsMatrixGRPC struct {
+type metricsMatrix struct {
 	agents []string
 	cells  map[string]map[string]*syntheticspb.MeshMetrics
 }
 
-func newMetricsMatrixGRPC(mesh []*syntheticspb.MeshResponse) metricsMatrixGRPC {
+func newMetricsMatrix(mesh []*syntheticspb.MeshResponse) metricsMatrix {
 	// fill agents
 	agents := []string{}
 	for _, agent := range mesh {
@@ -139,10 +138,10 @@ func newMetricsMatrixGRPC(mesh []*syntheticspb.MeshResponse) metricsMatrixGRPC {
 			cells[fromAgent.GetAlias()][toAgent.GetAlias()] = toAgent.Metrics
 		}
 	}
-	return metricsMatrixGRPC{agents: agents, cells: cells}
+	return metricsMatrix{agents: agents, cells: cells}
 }
 
-func (m metricsMatrixGRPC) getMetricGRPC(fromAgent string, toAgent string) (*syntheticspb.MeshMetrics, bool) {
+func (m metricsMatrix) getMetric(fromAgent string, toAgent string) (*syntheticspb.MeshMetrics, bool) {
 	toAgents, ok := m.cells[fromAgent]
 	if !ok {
 		return nil, false
