@@ -15,11 +15,11 @@ import (
 )
 
 func TestCloudExportAPIExample(t *testing.T) {
-	assert.NoError(t, runGRPCCRUDCloudExport())
-	assert.NoError(t, runGRPCGetAllCloudExports())
+	assert.NoError(t, runCRUDCloudExport())
+	assert.NoError(t, runGetAllCloudExports())
 }
 
-func runGRPCCRUDCloudExport() error {
+func runCRUDCloudExport() error {
 	client, err := NewClient()
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func runGRPCCRUDCloudExport() error {
 	return nil
 }
 
-func runGRPCGetAllCloudExports() error {
+func runGetAllCloudExports() error {
 	client, err := NewClient()
 	if err != nil {
 		return err

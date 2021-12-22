@@ -18,11 +18,11 @@ import (
 )
 
 func TestSyntheticsAPIExample(t *testing.T) {
-	assert.NoError(t, runGRPCAdminServiceExamples())
-	assert.NoError(t, runGRPCDataServiceExamples())
+	assert.NoError(t, runAdminServiceExamples())
+	assert.NoError(t, runDataServiceExamples())
 }
 
-func runGRPCAdminServiceExamples() error {
+func runAdminServiceExamples() error {
 	client, err := NewClient()
 	if err != nil {
 		return err
@@ -31,22 +31,22 @@ func runGRPCAdminServiceExamples() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	if err = runGRPCCRUDTest(ctx, client); err != nil {
+	if err = runCRUDTest(ctx, client); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	if err = runGRPCListTests(ctx, client); err != nil {
+	if err = runListTests(ctx, client); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	if err = runGRPCCRUDAgent(ctx, client); err != nil {
+	if err = runCRUDAgent(ctx, client); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	if err = runGRPCListAgents(ctx, client); err != nil {
+	if err = runListAgents(ctx, client); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -54,7 +54,7 @@ func runGRPCAdminServiceExamples() error {
 	return nil
 }
 
-func runGRPCDataServiceExamples() error {
+func runDataServiceExamples() error {
 	client, err := NewClient()
 	if err != nil {
 		return err
@@ -68,12 +68,12 @@ func runGRPCDataServiceExamples() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	if err = runGRPCGetHealthForTest(ctx, client, testID); err != nil {
+	if err = runGetHealthForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	if err = runGRPCGetTraceForTest(ctx, client, testID); err != nil {
+	if err = runGetTraceForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -81,9 +81,9 @@ func runGRPCDataServiceExamples() error {
 	return nil
 }
 
-func runGRPCCRUDTest(ctx context.Context, client *kentikapi.Client) error {
+func runCRUDTest(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### CREATE TEST")
-	test := makeGRPCExampleTest()
+	test := makeExampleTest()
 	createReqPayload := &syntheticspb.CreateTestRequest{Test: test}
 	createResp, err := client.SyntheticsAdmin.CreateTest(ctx, createReqPayload)
 	if err != nil {
@@ -144,7 +144,7 @@ func runGRPCCRUDTest(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func runGRPCListTests(ctx context.Context, client *kentikapi.Client) error {
+func runListTests(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### LIST TESTS")
 
 	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
@@ -167,7 +167,7 @@ func runGRPCListTests(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func runGRPCGetHealthForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
+func runGetHealthForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET HEALTH FOR TESTS")
 
 	healthPayLoad := &syntheticspb.GetHealthForTestsRequest{
@@ -193,7 +193,7 @@ func runGRPCGetHealthForTest(ctx context.Context, client *kentikapi.Client, test
 	return nil
 }
 
-func runGRPCGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
+func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
 	fmt.Println("### GET TRACE FOR TEST")
 
 	tracePayLoad := &syntheticspb.GetTraceForTestRequest{
@@ -236,7 +236,7 @@ func runGRPCGetTraceForTest(ctx context.Context, client *kentikapi.Client, testI
 	return nil
 }
 
-func runGRPCCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
+func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
 	// NOTE: agent of id 1717 must exist
 	agentID, err := pickAgentID()
@@ -285,7 +285,7 @@ func runGRPCCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func runGRPCListAgents(ctx context.Context, client *kentikapi.Client) error {
+func runListAgents(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println("### LIST AGENTS")
 
 	getAllReq := &syntheticspb.ListAgentsRequest{}
@@ -309,7 +309,7 @@ func runGRPCListAgents(ctx context.Context, client *kentikapi.Client) error {
 	return nil
 }
 
-func makeGRPCExampleTest() *syntheticspb.Test {
+func makeExampleTest() *syntheticspb.Test {
 	healthSettings := &syntheticspb.HealthSettings{
 		LatencyCritical:     0,
 		LatencyWarning:      0,
