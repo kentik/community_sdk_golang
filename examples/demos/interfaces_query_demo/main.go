@@ -138,7 +138,8 @@ func queryData(client *kentikapi.Client) {
 	fmt.Println("Done.")
 
 	// display result
-	demos.DisplayQueryDataResult(result)
+	err = demos.DisplayQueryDataResult(result)
+	demos.ExitOnError(err)
 }
 
 //nolint:gomnd

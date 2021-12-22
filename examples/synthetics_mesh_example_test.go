@@ -7,7 +7,6 @@ package examples
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"testing"
@@ -30,11 +29,15 @@ func runGetMeshTestResultsGRPC() error {
 	}
 
 	mesh, err := getMeshTestResultsGRPC(testID)
+	if err != nil {
+		return err
+	}
+
 	if mesh == nil {
 		fmt.Println("Empty mesh test result received")
 	} else {
 		metricsMatrix := newMetricsMatrixGRPC(mesh)
-		printMetricsMatrixGRPC(metricsMatrix)
+		err = printMetricsMatrixGRPC(metricsMatrix)
 	}
 
 	return err
@@ -71,7 +74,7 @@ func getMeshTestResultsGRPC(testID string) ([]*syntheticspb.MeshResponse, error)
 	return nil, nil
 }
 
-func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) {
+func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) error {
 	w := makeTabWriterGRPC()
 
 	// print table header
@@ -95,8 +98,9 @@ func printMetricsMatrixGRPC(matrix metricsMatrixGRPC) {
 	}
 
 	if err := w.Flush(); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 func makeTabWriterGRPC() *tabwriter.Writer {

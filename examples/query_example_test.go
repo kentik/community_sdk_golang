@@ -62,9 +62,7 @@ func runQueryData() error {
 	}
 
 	fmt.Println("### QUERY Data")
-	queryObject := makeQueryObject()
-
-	result, err := client.Query.Data(context.Background(), queryObject)
+	result, err := client.Query.Data(context.Background(), makeQueryObject())
 	if err != nil {
 		return err
 	}
@@ -143,9 +141,7 @@ func runQueryURL() error {
 	}
 
 	fmt.Println("### QUERY URL")
-	queryObject := makeQueryObject()
-
-	result, err := client.Query.URL(context.Background(), queryObject)
+	result, err := client.Query.URL(context.Background(), makeQueryObject())
 	if err != nil {
 		return err
 	}

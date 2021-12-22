@@ -30,7 +30,6 @@ func makeUntypedData(v interface{}) untypedData {
 	return untypedData{V: v}
 }
 
-// TODO: test this file thoroughly. Previous code didn't panic so ok should be true.
 func (d untypedData) object(key string) untypedData {
 	if m, ok := d.V.(map[string]interface{}); ok {
 		return untypedData{V: m[key]}
@@ -53,13 +52,13 @@ func Step(msg string) {
 	fmt.Printf("%s%s%s\n", blueBold, msg, reset)
 	fmt.Printf("Press enter to continue...")
 	if _, err := fmt.Scanln(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 }
 
 //nolint:gomnd
 // DisplayQueryDataResult prints returned data series in form of a table.
-func DisplayQueryDataResult(r models.QueryDataResult) {
+func DisplayQueryDataResult(r models.QueryDataResult) error {
 	const printoutTableFormat = "%v\t%v\t\n" // bits/sec, datetime
 
 	if timeSeries, ok := makeUntypedData(r.Results[0]).
@@ -85,9 +84,10 @@ func DisplayQueryDataResult(r models.QueryDataResult) {
 		}
 		err := w.Flush()
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
+	return nil
 }
 
 // makeTabWriter prepares tabwriter for writing file list in form: Name  Size  Type.
@@ -112,7 +112,7 @@ func DisplayQueryChartResult(r models.QueryChartResult) error {
 
 	err = r.SaveImageAs(file.Name())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	cmd := exec.Command("firefox", file.Name())
 	return cmd.Run()
