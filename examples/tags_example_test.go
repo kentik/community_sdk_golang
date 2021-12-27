@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -70,8 +71,8 @@ func demonstrateTagsCRUD() error {
 
 	fmt.Println("### client.Tags.Update")
 	tag.FlowTag = "APITEST-TAG-ONE"
-	models.SetOptional(&t.DeviceType, "nat")
-	models.SetOptional(&t.Country, "GR")
+	t.DeviceType = pointer.ToString("nat")
+	t.Country = pointer.ToString("GR")
 
 	tag, err = client.Tags.Update(ctx, *tag)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	grpccloudesxport "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
@@ -138,7 +139,7 @@ func (c *Config) FillDefaults() {
 	}
 
 	if c.Timeout == nil {
-		c.Timeout = durationPtr(defaultTimeout)
+		c.Timeout = pointer.ToDuration(defaultTimeout)
 	}
 
 	c.RetryCfg.FillDefaults()
@@ -196,8 +197,4 @@ func (c Config) makeRetryInterceptor() grpc.UnaryClientInterceptor {
 		// grpcretry.WithMax specifies the number of total requests sent and not retries
 		grpcretry.WithMax(*c.RetryCfg.MaxAttempts+1),
 	)
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
 }

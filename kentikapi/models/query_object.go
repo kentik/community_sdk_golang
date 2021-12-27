@@ -28,6 +28,10 @@ const (
 	ImageTypeUnknown
 )
 
+func ImageTypePtr(i ImageType) *ImageType {
+	return &i
+}
+
 type Query struct {
 	Metric          MetricType
 	Dimension       []DimensionType
@@ -199,6 +203,10 @@ const (
 	ChartViewTypeTable                            // "table"
 	ChartViewTypeMatrix                           // "matrix"
 )
+
+func ChartViewTypePtr(c ChartViewType) *ChartViewType {
+	return &c
+}
 
 type AggregateFunctionType int
 

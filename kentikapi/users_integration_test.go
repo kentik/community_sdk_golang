@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -260,7 +261,7 @@ func TestClient_GetUser(t *testing.T) {
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
 				CompanyID:    74333,
-				UserAPIToken: testutil.StringPtr("****************************a997"),
+				UserAPIToken: pointer.ToString("****************************a997"),
 			},
 		}, {
 			name: "retry on status 502 Bad Gateway until invalid response format received",
@@ -308,7 +309,7 @@ func TestClient_GetUser(t *testing.T) {
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
 				CompanyID:    74333,
-				UserAPIToken: testutil.StringPtr("****************************a997"),
+				UserAPIToken: pointer.ToString("****************************a997"),
 			},
 		}, {
 			name: "default timeout is longer than 30 ms",
@@ -328,7 +329,7 @@ func TestClient_GetUser(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
-			timeout:             durationPtr(10 * time.Second),
+			timeout:             pointer.ToDuration(10 * time.Second),
 			expectedError:       true,
 			expectedTimeout:     false,
 		}, {
@@ -339,7 +340,7 @@ func TestClient_GetUser(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
-			timeout:             durationPtr(5 * time.Millisecond),
+			timeout:             pointer.ToDuration(5 * time.Millisecond),
 			expectedError:       true,
 			expectedTimeout:     true,
 		},
@@ -356,8 +357,8 @@ func TestClient_GetUser(t *testing.T) {
 				AuthEmail: dummyAuthEmail,
 				AuthToken: dummyAuthToken,
 				RetryCfg: kentikapi.RetryConfig{
-					MinDelay: durationPtr(1 * time.Microsecond),
-					MaxDelay: durationPtr(10 * time.Microsecond),
+					MinDelay: pointer.ToDuration(1 * time.Microsecond),
+					MaxDelay: pointer.ToDuration(10 * time.Microsecond),
 				},
 				Timeout: tt.timeout,
 			})
@@ -504,7 +505,7 @@ func TestClient_CreateUser(t *testing.T) {
 			name:                "retry 5 times when status 429, 502, 503, 504 received and last status is 502",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			retryMax:            uintPtr(5),
+			retryMax:            pointer.ToUint(5),
 			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
@@ -588,8 +589,8 @@ func TestClient_CreateUser(t *testing.T) {
 				AuthToken: dummyAuthToken,
 				RetryCfg: kentikapi.RetryConfig{
 					MaxAttempts: tt.retryMax,
-					MinDelay:    durationPtr(1 * time.Microsecond),
-					MaxDelay:    durationPtr(10 * time.Microsecond),
+					MinDelay:    pointer.ToDuration(1 * time.Microsecond),
+					MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
 				},
 			})
 			assert.NoError(t, err)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -110,9 +111,9 @@ func deleteDevice(client *kentikapi.Client, deviceID models.ID) {
 func queryData(client *kentikapi.Client) {
 	// prepare query
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
-	models.SetOptional(&agg1.Raw, true)
+	agg1.Raw = pointer.ToBool(true)
 	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
-	models.SetOptional(&agg2.Rank, 95)
+	agg2.Rank = pointer.ToInt(95)
 	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
 	query := models.NewQuery(
 		models.MetricTypeBytes,
@@ -124,10 +125,10 @@ func queryData(client *kentikapi.Client) {
 	query.TopX = 8
 	query.Depth = 75
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, true)
+	query.CIDR = pointer.ToInt(32)
+	query.CIDR6 = pointer.ToInt(128)
+	query.Outsort = pointer.ToString("avg_bits_per_sec")
+	query.AllSelected = pointer.ToBool(true)
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 
@@ -145,9 +146,9 @@ func queryData(client *kentikapi.Client) {
 func queryChart(client *kentikapi.Client) {
 	// prepare query
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
-	models.SetOptional(&agg1.Raw, true)
+	agg1.Raw = pointer.ToBool(true)
 	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
-	models.SetOptional(&agg2.Rank, 95)
+	agg2.Rank = pointer.ToInt(95)
 	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
 	query := models.NewQuery(
 		models.MetricTypeBytes,
@@ -161,19 +162,19 @@ func queryChart(client *kentikapi.Client) {
 	query.FastData = models.FastDataTypeAuto
 	query.TimeFormat = models.TimeFormatLocal
 	query.HostnameLookup = true
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, true)
-	models.SetOptional(&query.VizType, models.ChartViewTypeStackedArea)
-	models.SetOptional(&query.ShowOverlay, false)
-	models.SetOptional(&query.OverlayDay, -7)
-	models.SetOptional(&query.SyncAxes, false)
-	models.SetOptional(&query.PPSThreshold, 1)
+	query.CIDR = pointer.ToInt(32)
+	query.CIDR6 = pointer.ToInt(128)
+	query.Outsort = pointer.ToString("avg_bits_per_sec")
+	query.AllSelected = pointer.ToBool(true)
+	query.VizType = models.ChartViewTypePtr(models.ChartViewTypeStackedArea)
+	query.ShowOverlay = pointer.ToBool(false)
+	query.OverlayDay = pointer.ToInt(-7)
+	query.SyncAxes = pointer.ToBool(false)
+	query.PPSThreshold = pointer.ToInt(1)
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
-	models.SetOptional(&queryItem.IsOverlay, false)
+	queryItem.IsOverlay = pointer.ToBool(false)
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
-	models.SetOptional(&queryObject.ImageType, models.ImageTypePNG)
+	queryObject.ImageType = models.ImageTypePtr(models.ImageTypePNG)
 
 	// send query
 	fmt.Println("Sending query...")

@@ -3,6 +3,7 @@ module github.com/kentik/community_sdk_golang
 go 1.15
 
 require (
+	github.com/AlekSi/pointer v1.2.0
 	github.com/antchfx/jsonquery v1.1.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/hashicorp/go-retryablehttp"
 )
 
@@ -78,15 +79,15 @@ func (cfg *ClientConfig) FillDefaults() {
 
 func (c *RetryConfig) FillDefaults() {
 	if c.MaxAttempts == nil {
-		c.MaxAttempts = uintPtr(defaultMaxAttempts)
+		c.MaxAttempts = pointer.ToUint(defaultMaxAttempts)
 	}
 
 	if c.MinDelay == nil {
-		c.MinDelay = durationPtr(defaultMinDelay)
+		c.MinDelay = pointer.ToDuration(defaultMinDelay)
 	}
 
 	if c.MaxDelay == nil {
-		c.MaxDelay = durationPtr(defaultMaxDelay)
+		c.MaxDelay = pointer.ToDuration(defaultMaxDelay)
 	}
 }
 
@@ -153,12 +154,4 @@ func makeIntSet(s []int) map[int]struct{} {
 		result[sc] = struct{}{}
 	}
 	return result
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
-}
-
-func uintPtr(v uint) *uint {
-	return &v
 }

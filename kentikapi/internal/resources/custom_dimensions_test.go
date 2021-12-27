@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -187,27 +187,27 @@ func TestGetCustomDimension(t *testing.T) {
 					Value:         "testapi-dimension-value-1",
 					Direction:     models.PopulatorDirectionDst,
 					DeviceName:    "128.0.0.100,device1",
-					InterfaceName: testutil.StringPtr("interface1,interface2"),
-					Addr:          testutil.StringPtr("128.0.0.1/32,128.0.0.2/32"),
-					Port:          testutil.StringPtr("1001,1002"),
-					TCPFlags:      testutil.StringPtr("160"),
-					Protocol:      testutil.StringPtr("6,17"),
-					ASN:           testutil.StringPtr("101,102"),
-					NextHopASN:    testutil.StringPtr("201,202"),
-					NextHop:       testutil.StringPtr("128.0.200.1/32,128.0.200.2/32"),
-					BGPAsPath:     testutil.StringPtr("3001,3002"),
-					BGPCommunity:  testutil.StringPtr("401:499,501:599"),
-					DeviceType:    testutil.StringPtr("device-type1"),
-					Site:          testutil.StringPtr("site1,site2,site3"),
-					LastHopAsName: testutil.StringPtr("asn101,asn102"),
-					NextHopAsName: testutil.StringPtr("asn201,asn202"),
-					MAC:           testutil.StringPtr("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF"),
-					Country:       testutil.StringPtr("NL,SE"),
-					VLans:         testutil.StringPtr("2001,2002"),
+					InterfaceName: pointer.ToString("interface1,interface2"),
+					Addr:          pointer.ToString("128.0.0.1/32,128.0.0.2/32"),
+					Port:          pointer.ToString("1001,1002"),
+					TCPFlags:      pointer.ToString("160"),
+					Protocol:      pointer.ToString("6,17"),
+					ASN:           pointer.ToString("101,102"),
+					NextHopASN:    pointer.ToString("201,202"),
+					NextHop:       pointer.ToString("128.0.200.1/32,128.0.200.2/32"),
+					BGPAsPath:     pointer.ToString("3001,3002"),
+					BGPCommunity:  pointer.ToString("401:499,501:599"),
+					DeviceType:    pointer.ToString("device-type1"),
+					Site:          pointer.ToString("site1,site2,site3"),
+					LastHopAsName: pointer.ToString("asn101,asn102"),
+					NextHopAsName: pointer.ToString("asn201,asn202"),
+					MAC:           pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF"),
+					Country:       pointer.ToString("NL,SE"),
+					VLans:         pointer.ToString("2001,2002"),
 					ID:            1510871096,
 					CompanyID:     74333,
 					DimensionID:   24001,
-					User:          testutil.StringPtr("144319"),
+					User:          pointer.ToString("144319"),
 					MACCount:      2,
 					AddrCount:     2,
 					CreatedDate:   time.Date(2020, 12, 15, 8, 32, 19, 503788000, time.UTC),
@@ -215,11 +215,11 @@ func TestGetCustomDimension(t *testing.T) {
 				}, {
 					Value:       "testapi-dimension-value-3",
 					Direction:   models.PopulatorDirectionSrc,
-					Site:        testutil.StringPtr("site3"),
+					Site:        pointer.ToString("site3"),
 					ID:          1510862280,
 					CompanyID:   74333,
 					DimensionID: 24001,
-					User:        testutil.StringPtr("144319"),
+					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
 				}},
@@ -261,7 +261,7 @@ func TestGetCustomDimension(t *testing.T) {
 					ID:          1510862280,
 					CompanyID:   74333,
 					DimensionID: 24001,
-					User:        testutil.StringPtr("144319"),
+					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
 				}},
@@ -303,7 +303,7 @@ func TestGetCustomDimension(t *testing.T) {
 					ID:          1510862280,
 					CompanyID:   74333,
 					DimensionID: 24001,
-					User:        testutil.StringPtr("144319"),
+					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
 				}},
@@ -482,23 +482,23 @@ func TestCreatePopulator(t *testing.T) {
 		"device1,128.0.0.100",
 		models.PopulatorDirectionDst,
 	)
-	models.SetOptional(&populator.InterfaceName, "interface1,interface2")
-	models.SetOptional(&populator.Addr, "128.0.0.1/32,128.0.0.2/32")
-	models.SetOptional(&populator.Port, "1001,1002")
-	models.SetOptional(&populator.TCPFlags, "160")
-	models.SetOptional(&populator.Protocol, "6,17")
-	models.SetOptional(&populator.ASN, "101,102")
-	models.SetOptional(&populator.NextHopASN, "201,202")
-	models.SetOptional(&populator.NextHop, "128.0.200.1/32,128.0.200.2/32")
-	models.SetOptional(&populator.BGPAsPath, "3001,3002")
-	models.SetOptional(&populator.BGPCommunity, "401:499,501:599")
-	models.SetOptional(&populator.DeviceType, "device-type1")
-	models.SetOptional(&populator.Site, "site1,site2,site3")
-	models.SetOptional(&populator.LastHopAsName, "asn101,asn102")
-	models.SetOptional(&populator.NextHopAsName, "asn201,asn202")
-	models.SetOptional(&populator.MAC, "FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
-	models.SetOptional(&populator.Country, "NL,SE")
-	models.SetOptional(&populator.VLans, "2001,2002")
+	populator.InterfaceName = pointer.ToString("interface1,interface2")
+	populator.Addr = pointer.ToString("128.0.0.1/32,128.0.0.2/32")
+	populator.Port = pointer.ToString("1001,1002")
+	populator.TCPFlags = pointer.ToString("160")
+	populator.Protocol = pointer.ToString("6,17")
+	populator.ASN = pointer.ToString("101,102")
+	populator.NextHopASN = pointer.ToString("201,202")
+	populator.NextHop = pointer.ToString("128.0.200.1/32,128.0.200.2/32")
+	populator.BGPAsPath = pointer.ToString("3001,3002")
+	populator.BGPCommunity = pointer.ToString("401:499,501:599")
+	populator.DeviceType = pointer.ToString("device-type1")
+	populator.Site = pointer.ToString("site1,site2,site3")
+	populator.LastHopAsName = pointer.ToString("asn101,asn102")
+	populator.NextHopAsName = pointer.ToString("asn201,asn202")
+	populator.MAC = pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
+	populator.Country = pointer.ToString("NL,SE")
+	populator.VLans = pointer.ToString("2001,2002")
 
 	// act
 	created, err := customDimensionsAPI.Populators.Create(context.Background(), *populator)
@@ -598,11 +598,11 @@ func TestUpdatePopulator(t *testing.T) {
 		Value:       "testapi-dimension-value-3",
 		Direction:   models.PopulatorDirectionSrc,
 	}
-	models.SetOptional(&populator.InterfaceName, "interface3")
-	models.SetOptional(&populator.TCPFlags, "12")
-	models.SetOptional(&populator.Protocol, "17")
-	models.SetOptional(&populator.DeviceType, "device-type3")
-	models.SetOptional(&populator.Site, "site3")
+	populator.InterfaceName = pointer.ToString("interface3")
+	populator.TCPFlags = pointer.ToString("12")
+	populator.Protocol = pointer.ToString("17")
+	populator.DeviceType = pointer.ToString("device-type3")
+	populator.Site = pointer.ToString("site3")
 
 	// act
 	updated, err := customDimensionsAPI.Populators.Update(context.Background(), populator)
