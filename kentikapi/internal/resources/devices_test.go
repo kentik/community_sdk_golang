@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -109,13 +109,13 @@ func TestCreateDeviceRouter(t *testing.T) {
 		[]string{"128.0.0.10"},
 		false,
 	).WithBGPTypeDevice("77")
-	models.SetOptional(&router.DeviceDescription, "testapi router with full config")
-	models.SetOptional(&router.DeviceSNMNPIP, "127.0.0.1")
-	models.SetOptional(&router.DeviceSNMPv3Conf, *snmpv3conf)
-	models.SetOptional(&router.DeviceBGPNeighborIP, "127.0.0.2")
-	models.SetOptional(&router.DeviceBGPPassword, "bgp-optional-password")
-	models.SetOptional(&router.SiteID, 8483)
-	models.SetOptional(&router.DeviceBGPFlowSpec, true)
+	router.DeviceDescription = pointer.ToString("testapi router with full config")
+	router.DeviceSNMNPIP = pointer.ToString("127.0.0.1")
+	router.DeviceSNMPv3Conf = snmpv3conf
+	router.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
+	router.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
+	router.SiteID = models.IDPtr(8483)
+	router.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device, err := devicesAPI.Create(context.Background(), *router)
 
 	// assert request properly formed
@@ -286,9 +286,9 @@ func TestCreateDeviceDNS(t *testing.T) {
 		models.ID(11466),
 		models.CDNAttributeYes,
 	).WithBGPTypeOtherDevice(models.ID(42))
-	models.SetOptional(&dns.DeviceDescription, "testapi dns with minimal config")
-	models.SetOptional(&dns.SiteID, 8483)
-	models.SetOptional(&dns.DeviceBGPFlowSpec, true)
+	dns.DeviceDescription = pointer.ToString("testapi dns with minimal config")
+	dns.SiteID = models.IDPtr(8483)
+	dns.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device, err := devicesAPI.Create(context.Background(), *dns)
 
 	// assert request properly formed
@@ -453,16 +453,16 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 		DeviceSampleRate: 10,
 		DeviceSNMPv3Conf: snmpv3conf,
 	}
-	models.SetOptional(&router.DeviceDescription, "updated description")
-	models.SetOptional(&router.DeviceSNMNPIP, "127.0.0.10")
-	models.SetOptional(&router.MinimizeSNMP, true)
-	models.SetOptional(&router.PlanID, models.ID(11466))
-	models.SetOptional(&router.SiteID, models.ID(8483))
-	models.SetOptional(&router.DeviceBGPType, models.DeviceBGPTypeDevice)
-	models.SetOptional(&router.DeviceBGPNeighborASN, "77")
-	models.SetOptional(&router.DeviceBGPNeighborIPv6, "2001:db8:85a3:8d3:1319:8a2e:370:7348")
-	models.SetOptional(&router.DeviceBGPPassword, "bgp-optional-password")
-	models.SetOptional(&router.DeviceBGPFlowSpec, true)
+	router.DeviceDescription = pointer.ToString("updated description")
+	router.DeviceSNMNPIP = pointer.ToString("127.0.0.10")
+	router.MinimizeSNMP = pointer.ToBool(true)
+	router.PlanID = models.IDPtr(11466)
+	router.SiteID = models.IDPtr(8483)
+	router.DeviceBGPType = models.DeviceBGPTypePtr(models.DeviceBGPTypeDevice)
+	router.DeviceBGPNeighborASN = pointer.ToString("77")
+	router.DeviceBGPNeighborIPv6 = pointer.ToString("2001:db8:85a3:8d3:1319:8a2e:370:7348")
+	router.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
+	router.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device, err := devicesAPI.Update(context.Background(), router)
 
 	// assert request properly formed
@@ -727,21 +727,21 @@ func TestGetDevice(t *testing.T) {
 			expectedResult: &models.Device{
 				PlanID:              nil,
 				SiteID:              nil,
-				DeviceDescription:   testutil.StringPtr("testapi router with full config"),
+				DeviceDescription:   pointer.ToString("testapi router with full config"),
 				DeviceSampleRate:    1001,
 				SendingIPS:          []string{"128.0.0.11", "128.0.0.12"},
-				DeviceSNMNPIP:       testutil.StringPtr("129.0.0.1"),
-				DeviceSNMPCommunity: testutil.StringPtr(""),
-				MinimizeSNMP:        testutil.BoolPtr(false),
+				DeviceSNMNPIP:       pointer.ToString("129.0.0.1"),
+				DeviceSNMPCommunity: pointer.ToString(""),
+				MinimizeSNMP:        pointer.ToBool(false),
 				DeviceBGPType: func() *models.DeviceBGPType {
 					v := models.DeviceBGPTypeDevice
 					return &v
 				}(),
-				DeviceBGPNeighborIP:   testutil.StringPtr("127.0.0.1"),
+				DeviceBGPNeighborIP:   pointer.ToString("127.0.0.1"),
 				DeviceBGPNeighborIPv6: nil,
-				DeviceBGPNeighborASN:  testutil.StringPtr("11"),
-				DeviceBGPFlowSpec:     testutil.BoolPtr(true),
-				DeviceBGPPassword:     testutil.StringPtr("*********ass"),
+				DeviceBGPNeighborASN:  pointer.ToString("11"),
+				DeviceBGPFlowSpec:     pointer.ToBool(true),
+				DeviceBGPPassword:     pointer.ToString("*********ass"),
 				UseBGPDeviceID:        nil,
 				DeviceSNMPv3Conf: &models.SNMPv3Conf{
 					UserName: "John",
@@ -749,49 +749,49 @@ func TestGetDevice(t *testing.T) {
 						v := models.AuthenticationProtocolMD5
 						return &v
 					}(),
-					AuthenticationPassphrase: testutil.StringPtr("john_md5_pass"),
+					AuthenticationPassphrase: pointer.ToString("john_md5_pass"),
 					PrivacyProtocol: func() *models.PrivacyProtocol {
 						v := models.PrivacyProtocolDES
 						return &v
 					}(),
-					PrivacyPassphrase: testutil.StringPtr("**********ass"),
+					PrivacyPassphrase: pointer.ToString("**********ass"),
 				},
 				CDNAttr:         nil,
 				ID:              42,
 				DeviceName:      "testapi_router_full_1",
 				DeviceType:      models.DeviceTypeRouter,
 				DeviceSubType:   models.DeviceSubtypeRouter,
-				DeviceStatus:    testutil.StringPtr("V"),
-				DeviceFlowType:  testutil.StringPtr("auto"),
+				DeviceStatus:    pointer.ToString("V"),
+				DeviceFlowType:  pointer.ToString("auto"),
 				CompanyID:       74333,
 				SNMPLastUpdated: nil,
 				CreatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
 				UpdatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
-				BGPPeerIP4:      testutil.StringPtr("208.76.14.223"),
-				BGPPeerIP6:      testutil.StringPtr("2620:129:1:2::1"),
+				BGPPeerIP4:      pointer.ToString("208.76.14.223"),
+				BGPPeerIP6:      pointer.ToString("2620:129:1:2::1"),
 				Plan: models.DevicePlan{
-					ID:            testutil.IDPtr(11466),
-					CompanyID:     testutil.IDPtr(74333),
-					Name:          testutil.StringPtr("Free Trial Plan"),
-					Description:   testutil.StringPtr("Your Free Trial includes 6 devices (...)"),
-					Active:        testutil.BoolPtr(true),
-					MaxDevices:    testutil.IntPtr(6),
-					MaxFPS:        testutil.IntPtr(1000),
-					BGPEnabled:    testutil.BoolPtr(true),
-					FastRetention: testutil.IntPtr(30),
-					FullRetention: testutil.IntPtr(30),
-					CreatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
-					UpdatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
-					MaxBigdataFPS: testutil.IntPtr(30),
+					ID:            models.IDPtr(11466),
+					CompanyID:     models.IDPtr(74333),
+					Name:          pointer.ToString("Free Trial Plan"),
+					Description:   pointer.ToString("Your Free Trial includes 6 devices (...)"),
+					Active:        pointer.ToBool(true),
+					MaxDevices:    pointer.ToInt(6),
+					MaxFPS:        pointer.ToInt(1000),
+					BGPEnabled:    pointer.ToBool(true),
+					FastRetention: pointer.ToInt(30),
+					FullRetention: pointer.ToInt(30),
+					CreatedDate:   pointer.ToTime(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					UpdatedDate:   pointer.ToTime(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					MaxBigdataFPS: pointer.ToInt(30),
 					DeviceTypes:   []models.PlanDeviceType{},
 					Devices:       []models.PlanDevice{},
 				},
 				Site: &models.DeviceSite{
-					ID:        testutil.IDPtr(8483),
-					CompanyID: testutil.IDPtr(74333),
-					Latitude:  testutil.Float64Ptr(54.348972),
-					Longitude: testutil.Float64Ptr(18.659791),
-					SiteName:  testutil.StringPtr("marina gdańsk"),
+					ID:        models.IDPtr(8483),
+					CompanyID: models.IDPtr(74333),
+					Latitude:  pointer.ToFloat64(54.348972),
+					Longitude: pointer.ToFloat64(18.659791),
+					SiteName:  pointer.ToString("marina gdańsk"),
 				},
 				Labels: []models.DeviceLabel{
 					{
@@ -799,7 +799,7 @@ func TestGetDevice(t *testing.T) {
 						Color:       "#5340A5",
 						Devices:     nil,
 						ID:          2590,
-						UserID:      testutil.IDPtr(133210),
+						UserID:      models.IDPtr(133210),
 						CompanyID:   74333,
 						CreatedDate: time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC),
 						UpdatedDate: time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC),
@@ -809,7 +809,7 @@ func TestGetDevice(t *testing.T) {
 						Color:       "#5289D9",
 						Devices:     nil,
 						ID:          2751,
-						UserID:      testutil.IDPtr(136885),
+						UserID:      models.IDPtr(136885),
 						CompanyID:   74333,
 						CreatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
 						UpdatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
@@ -826,7 +826,7 @@ func TestGetDevice(t *testing.T) {
 						InterfaceDescription: "testapi-interface-2",
 						DeviceID:             42,
 						SNMPSpeed:            7,
-						InitialSNMPSpeed:     testutil.Float64Ptr(7),
+						InitialSNMPSpeed:     pointer.ToFloat64(7),
 					},
 				},
 			},
@@ -895,12 +895,12 @@ func TestGetDevice(t *testing.T) {
 			expectedResult: &models.Device{
 				PlanID:              nil,
 				SiteID:              nil,
-				DeviceDescription:   testutil.StringPtr("testapi dns with minimal config"),
+				DeviceDescription:   pointer.ToString("testapi dns with minimal config"),
 				DeviceSampleRate:    1,
 				SendingIPS:          []string{},
 				DeviceSNMNPIP:       nil,
-				DeviceSNMPCommunity: testutil.StringPtr(""),
-				MinimizeSNMP:        testutil.BoolPtr(false),
+				DeviceSNMPCommunity: pointer.ToString(""),
+				MinimizeSNMP:        pointer.ToBool(false),
 				DeviceBGPType: func() *models.DeviceBGPType {
 					v := models.DeviceBGPTypeNone
 					return &v
@@ -908,7 +908,7 @@ func TestGetDevice(t *testing.T) {
 				DeviceBGPNeighborIP:   nil,
 				DeviceBGPNeighborIPv6: nil,
 				DeviceBGPNeighborASN:  nil,
-				DeviceBGPFlowSpec:     testutil.BoolPtr(false),
+				DeviceBGPFlowSpec:     pointer.ToBool(false),
 				DeviceBGPPassword:     nil,
 				UseBGPDeviceID:        nil,
 				DeviceSNMPv3Conf:      nil,
@@ -920,8 +920,8 @@ func TestGetDevice(t *testing.T) {
 				DeviceName:      "testapi_dns_minimal_1",
 				DeviceType:      models.DeviceTypeHostNProbeDNSWWW,
 				DeviceSubType:   models.DeviceSubtypeAwsSubnet,
-				DeviceStatus:    testutil.StringPtr("V"),
-				DeviceFlowType:  testutil.StringPtr("auto"),
+				DeviceStatus:    pointer.ToString("V"),
+				DeviceFlowType:  pointer.ToString("auto"),
 				CompanyID:       74333,
 				SNMPLastUpdated: nil,
 				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
@@ -929,19 +929,19 @@ func TestGetDevice(t *testing.T) {
 				BGPPeerIP4:      nil,
 				BGPPeerIP6:      nil,
 				Plan: models.DevicePlan{
-					ID:            testutil.IDPtr(11466),
-					CompanyID:     testutil.IDPtr(74333),
-					Name:          testutil.StringPtr("Free Trial Plan"),
-					Description:   testutil.StringPtr("Your Free Trial includes 6 devices (...)"),
-					Active:        testutil.BoolPtr(true),
-					MaxDevices:    testutil.IntPtr(6),
-					MaxFPS:        testutil.IntPtr(1000),
-					BGPEnabled:    testutil.BoolPtr(true),
-					FastRetention: testutil.IntPtr(30),
-					FullRetention: testutil.IntPtr(30),
-					CreatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
-					UpdatedDate:   testutil.TimePtr(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
-					MaxBigdataFPS: testutil.IntPtr(30),
+					ID:            models.IDPtr(11466),
+					CompanyID:     models.IDPtr(74333),
+					Name:          pointer.ToString("Free Trial Plan"),
+					Description:   pointer.ToString("Your Free Trial includes 6 devices (...)"),
+					Active:        pointer.ToBool(true),
+					MaxDevices:    pointer.ToInt(6),
+					MaxFPS:        pointer.ToInt(1000),
+					BGPEnabled:    pointer.ToBool(true),
+					FastRetention: pointer.ToInt(30),
+					FullRetention: pointer.ToInt(30),
+					CreatedDate:   pointer.ToTime(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					UpdatedDate:   pointer.ToTime(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC)),
+					MaxBigdataFPS: pointer.ToInt(30),
 					DeviceTypes:   []models.PlanDeviceType{},
 					Devices:       []models.PlanDevice{},
 				},
@@ -991,12 +991,12 @@ func TestGetDevice(t *testing.T) {
 						v := models.AuthenticationProtocol("ap_teapot")
 						return &v
 					}(),
-					AuthenticationPassphrase: testutil.StringPtr("Auth_Pass"),
+					AuthenticationPassphrase: pointer.ToString("Auth_Pass"),
 					PrivacyProtocol: func() *models.PrivacyProtocol {
 						v := models.PrivacyProtocol("pp_teapot")
 						return &v
 					}(),
-					PrivacyPassphrase: testutil.StringPtr("******ass"),
+					PrivacyPassphrase: pointer.ToString("******ass"),
 				},
 				CDNAttr: func() *models.CDNAttribute {
 					v := models.CDNAttribute("cdna_teapot")
@@ -1052,12 +1052,12 @@ func TestGetDevice(t *testing.T) {
 						v := models.AuthenticationProtocol("")
 						return &v
 					}(),
-					AuthenticationPassphrase: testutil.StringPtr("Auth_Pass"),
+					AuthenticationPassphrase: pointer.ToString("Auth_Pass"),
 					PrivacyProtocol: func() *models.PrivacyProtocol {
 						v := models.PrivacyProtocol("")
 						return &v
 					}(),
-					PrivacyPassphrase: testutil.StringPtr("******ass"),
+					PrivacyPassphrase: pointer.ToString("******ass"),
 				},
 				CDNAttr: func() *models.CDNAttribute {
 					v := models.CDNAttribute("")
@@ -1935,8 +1935,8 @@ func TestCreateInterfaceFull(t *testing.T) {
 		"101:100",
 		"11.121.111.13:3254",
 	)
-	models.SetOptional(&vrf.Description, "vrf-description")
-	models.SetOptional(&vrf.ExtRouteDistinguisher, "15")
+	vrf.Description = pointer.ToString("vrf-description")
+	vrf.ExtRouteDistinguisher = pointer.ToString("15")
 	secondaryIP1 := models.SecondaryIP{Address: "127.0.0.2", Netmask: "255.255.255.0"}
 	secondaryIP2 := models.SecondaryIP{Address: "127.0.0.3", Netmask: "255.255.255.0"}
 	deviceID := models.ID(42)
@@ -1946,9 +1946,9 @@ func TestCreateInterfaceFull(t *testing.T) {
 		8,
 		"testapi-interface-2",
 	)
-	models.SetOptional(&intf.SNMPAlias, "interface-description-1")
-	models.SetOptional(&intf.InterfaceIP, "127.0.0.1")
-	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
+	intf.SNMPAlias = pointer.ToString("interface-description-1")
+	intf.InterfaceIP = pointer.ToString("127.0.0.1")
+	intf.InterfaceIPNetmask = pointer.ToString("255.255.255.0")
 	intf.SecondaryIPS = []models.SecondaryIP{secondaryIP1, secondaryIP2}
 	intf.VRF = vrf
 	created, err := devicesAPI.Interfaces.Create(context.Background(), *intf)
@@ -2138,8 +2138,8 @@ func TestUpdateInterfaceFull(t *testing.T) {
 		"101:100",
 		"11.121.111.13:444",
 	)
-	models.SetOptional(&vrf.Description, "vrf-description-44")
-	models.SetOptional(&vrf.ExtRouteDistinguisher, "44")
+	vrf.Description = pointer.ToString("vrf-description-44")
+	vrf.ExtRouteDistinguisher = pointer.ToString("44")
 	deviceID := models.ID(42)
 	interfaceID := models.ID(43)
 	intf := models.Interface{
@@ -2149,9 +2149,9 @@ func TestUpdateInterfaceFull(t *testing.T) {
 		SNMPSpeed:            44,
 		InterfaceDescription: "testapi-interface-44",
 	}
-	models.SetOptional(&intf.SNMPAlias, "interface-description-44")
-	models.SetOptional(&intf.InterfaceIP, "127.0.44.55")
-	models.SetOptional(&intf.InterfaceIPNetmask, "255.255.255.0")
+	intf.SNMPAlias = pointer.ToString("interface-description-44")
+	intf.InterfaceIP = pointer.ToString("127.0.44.55")
+	intf.InterfaceIPNetmask = pointer.ToString("255.255.255.0")
 	intf.VRF = vrf
 	updated, err := devicesAPI.Interfaces.Update(context.Background(), intf)
 

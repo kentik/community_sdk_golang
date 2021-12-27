@@ -231,6 +231,10 @@ const (
 	DeviceBGPTypeOtherDevice DeviceBGPType = "other_device"
 )
 
+func DeviceBGPTypePtr(d DeviceBGPType) *DeviceBGPType {
+	return &d
+}
+
 type AuthenticationProtocol string
 
 const (
@@ -254,3 +258,7 @@ const (
 	CDNAttributeYes  CDNAttribute = "Y"
 	CDNAttributeNo   CDNAttribute = "N"
 )
+
+func CDNAttributePtr(c CDNAttribute) *CDNAttribute {
+	return &c
+}

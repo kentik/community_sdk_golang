@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,15 +57,15 @@ func runCRUDRouter() error {
 		[]string{"128.0.0.10"},
 		false,
 	).WithBGPTypeDevice("77")
-	models.SetOptional(&device.DeviceDescription, "testapi device type router subrype router with full config")
-	models.SetOptional(&device.DeviceSNMNPIP, "127.0.0.1")
-	models.SetOptional(&device.DeviceSNMPv3Conf, *snmpv3conf)
-	models.SetOptional(&device.DeviceBGPNeighborIP, "127.0.0.2")
-	models.SetOptional(&device.DeviceBGPPassword, "bgp-optional-password")
-	models.SetOptional(&device.SiteID, 8483)
-	models.SetOptional(&device.DeviceBGPFlowSpec, true)
-	models.SetOptional(&device.DeviceBGPNeighborIP, "127.0.0.42")
-	models.SetOptional(&device.DeviceBGPPassword, "bgp-optional-password")
+	device.DeviceDescription = pointer.ToString("testapi device type router subrype router with full config")
+	device.DeviceSNMNPIP = pointer.ToString("127.0.0.1")
+	device.DeviceSNMPv3Conf = snmpv3conf
+	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
+	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
+	device.SiteID = pointer.ToInt(8483)
+	device.DeviceBGPFlowSpec = pointer.ToBool(true)
+	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.42")
+	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	if err != nil {
 		return err
@@ -75,8 +76,8 @@ func runCRUDRouter() error {
 	fmt.Println("### UPDATE ROUTER")
 	createdDevice.SendingIPS = []string{"128.0.0.15", "128.0.0.16"}
 	createdDevice.DeviceSampleRate = 10
-	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
-	models.SetOptional(&createdDevice.DeviceBGPNeighborASN, "88")
+	createdDevice.DeviceDescription = pointer.ToString("updated description")
+	createdDevice.DeviceBGPNeighborASN = pointer.ToString("88")
 	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
 	if err != nil {
 		return err
@@ -152,8 +153,8 @@ func runCRUDDNS() error {
 		models.ID(11466),
 		models.CDNAttributeYes,
 	)
-	models.SetOptional(&device.SiteID, 8483)
-	models.SetOptional(&device.DeviceBGPFlowSpec, true)
+	device.SiteID = models.IDPtr(8483)
+	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	if err != nil {
@@ -164,9 +165,9 @@ func runCRUDDNS() error {
 
 	fmt.Println("### UPDATE")
 	createdDevice.DeviceSampleRate = 10
-	models.SetOptional(&createdDevice.CDNAttr, models.CDNAttributeNo)
-	models.SetOptional(&createdDevice.DeviceDescription, "updated description")
-	models.SetOptional(&createdDevice.DeviceBGPFlowSpec, false)
+	createdDevice.CDNAttr = models.CDNAttributePtr(models.CDNAttributeNo)
+	createdDevice.DeviceDescription = pointer.ToString("updated description")
+	createdDevice.DeviceBGPFlowSpec = pointer.ToBool(false)
 	updatedDevice, err := client.Devices.Update(context.Background(), *createdDevice)
 	if err != nil {
 		return err

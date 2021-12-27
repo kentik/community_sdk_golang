@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -129,8 +130,8 @@ func TestCreateSite(t *testing.T) {
 
 	// act
 	site := models.NewSite("apitest-site-1")
-	models.SetOptional(&site.Longitude, 18.659577)
-	models.SetOptional(&site.Latitude, 54.349276)
+	site.Longitude = pointer.ToFloat64(18.659577)
+	site.Latitude = pointer.ToFloat64(54.349276)
 	created, err := sitesAPI.Create(context.Background(), *site)
 
 	// assert request properly formed
@@ -170,7 +171,7 @@ func TestUpdateSite(t *testing.T) {
 	// act
 	siteID := models.ID(42)
 	site := models.Site{ID: siteID, SiteName: "new-site"}
-	models.SetOptional(&site.Longitude, -45.0)
+	site.Longitude = pointer.ToFloat64(-45.0)
 	updated, err := sitesAPI.Update(context.Background(), site)
 
 	// assert request properly formed

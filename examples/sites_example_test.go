@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,7 +27,7 @@ func runCRUD() error {
 
 	fmt.Println("### CREATE")
 	site := models.NewSite("apitest-site-1")
-	models.SetOptional(&site.Longitude, 12.0)
+	site.Longitude = pointer.ToFloat64(12.0)
 	created, err := client.Sites.Create(context.Background(), *site)
 	if err != nil {
 		return err
@@ -36,7 +37,7 @@ func runCRUD() error {
 
 	fmt.Println("### UPDATE")
 	created.SiteName = "apitest-site-one"
-	models.SetOptional(&created.Latitude, 49.0)
+	created.Latitude = pointer.ToFloat64(49.0)
 	updated, err := client.Sites.Update(context.Background(), *created)
 	if err != nil {
 		return err

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -126,19 +127,12 @@ func TestQueryData(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
-	agg1 := models.Aggregate{
-		Name:   "avg_bits_per_sec",
-		Column: "f_sum_both_bytes",
-		Fn:     models.AggregateFunctionTypeAverage,
-	}
-	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.Aggregate{
-		Name:   "p95th_bits_per_sec",
-		Column: "f_sum_both_bytes",
-		Fn:     models.AggregateFunctionTypePercentile,
-	}
-	models.SetOptional(&agg2.Rank, 95)
-	agg3 := models.Aggregate{Name: "max_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeMax}
+	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1.Raw = pointer.ToBool(true)
+	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2.Rank = pointer.ToInt(95)
+	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
+
 	query := models.NewQuery(
 		models.MetricTypeBytes,
 		[]models.DimensionType{models.DimensionTypeTraffic},
@@ -146,18 +140,12 @@ func TestQueryData(t *testing.T) {
 	query.Depth = 75
 	query.HostnameLookup = true
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
-	models.SetOptional(
-		&query.StartingTime,
-		time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC),
-	)
-	models.SetOptional(
-		&query.EndingTime,
-		time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC),
-	)
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, true)
+	query.StartingTime = pointer.ToTime(time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
+	query.EndingTime = pointer.ToTime(time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
+	query.CIDR = pointer.ToInt(32)
+	query.CIDR6 = pointer.ToInt(128)
+	query.Outsort = pointer.ToString("avg_bits_per_sec")
+	query.AllSelected = pointer.ToBool(true)
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 
@@ -219,23 +207,11 @@ func TestQueryChart(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
-	agg1 := models.Aggregate{
-		Name:   "avg_bits_per_sec",
-		Column: "f_sum_both_bytes",
-		Fn:     models.AggregateFunctionTypeAverage,
-	}
-	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.Aggregate{
-		Name:   "p95th_bits_per_sec",
-		Column: "f_sum_both_bytes",
-		Fn:     models.AggregateFunctionTypePercentile,
-	}
-	models.SetOptional(&agg2.Rank, 95)
-	agg3 := models.Aggregate{
-		Name:   "max_bits_per_sec",
-		Column: "f_sum_both_bytes",
-		Fn:     models.AggregateFunctionTypeMax,
-	}
+	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1.Raw = pointer.ToBool(true)
+	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2.Rank = pointer.ToInt(95)
+	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
 
 	query := models.NewQuery(
 		models.MetricTypeBytes,
@@ -259,28 +235,22 @@ func TestQueryChart(t *testing.T) {
 	query.DeviceName = []string{"dev1", "dev2"}
 	query.MatrixBy = []string{models.DimensionTypeSrcGeoCity.String(), models.DimensionTypeDstGeoCity.String()}
 	query.Descriptor = "descriptor"
-	models.SetOptional(
-		&query.StartingTime,
-		time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC),
-	)
-	models.SetOptional(
-		&query.EndingTime,
-		time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC),
-	)
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, false)
-	models.SetOptional(&query.VizType, models.ChartViewTypeStackedArea)
-	models.SetOptional(&query.ShowOverlay, false)
-	models.SetOptional(&query.OverlayDay, -7)
-	models.SetOptional(&query.SyncAxes, false)
-	models.SetOptional(&query.PPSThreshold, 1)
+	query.StartingTime = pointer.ToTime(time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
+	query.EndingTime = pointer.ToTime(time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
+	query.CIDR = pointer.ToInt(32)
+	query.CIDR6 = pointer.ToInt(128)
+	query.Outsort = pointer.ToString("avg_bits_per_sec")
+	query.AllSelected = pointer.ToBool(false)
+	query.VizType = models.ChartViewTypePtr(models.ChartViewTypeStackedArea)
+	query.ShowOverlay = pointer.ToBool(false)
+	query.OverlayDay = pointer.ToInt(-7)
+	query.SyncAxes = pointer.ToBool(false)
+	query.PPSThreshold = pointer.ToInt(1)
 
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
-	models.SetOptional(&queryItem.IsOverlay, false)
+	queryItem.IsOverlay = pointer.ToBool(false)
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
-	models.SetOptional(&queryObject.ImageType, models.ImageTypePNG)
+	queryObject.ImageType = models.ImageTypePtr(models.ImageTypePNG)
 
 	// act
 	result, err := queryAPI.Chart(context.TODO(), queryObject)
@@ -361,11 +331,12 @@ func TestQueryURL(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport)
 
-	agg1 := models.Aggregate{Name: "avg_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeAverage}
-	models.SetOptional(&agg1.Raw, true)
-	agg2 := models.Aggregate{Name: "p95th_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypePercentile}
-	models.SetOptional(&agg2.Rank, 95)
-	agg3 := models.Aggregate{Name: "max_bits_per_sec", Column: "f_sum_both_bytes", Fn: models.AggregateFunctionTypeMax}
+	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1.Raw = pointer.ToBool(true)
+	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2.Rank = pointer.ToInt(95)
+	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
+
 	query := models.NewQuery(
 		models.MetricTypeBytes,
 		[]models.DimensionType{models.DimensionTypeTraffic},
@@ -373,12 +344,12 @@ func TestQueryURL(t *testing.T) {
 	query.Depth = 75
 	query.HostnameLookup = true
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
-	models.SetOptional(&query.StartingTime, time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
-	models.SetOptional(&query.EndingTime, time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
-	models.SetOptional(&query.CIDR, 32)
-	models.SetOptional(&query.CIDR6, 128)
-	models.SetOptional(&query.Outsort, "avg_bits_per_sec")
-	models.SetOptional(&query.AllSelected, true)
+	query.StartingTime = pointer.ToTime(time.Date(2001, 1, 1, 7, 45, 12, 234, time.UTC))
+	query.EndingTime = pointer.ToTime(time.Date(2001, 11, 23, 14, 17, 43, 458, time.UTC))
+	query.CIDR = pointer.ToInt(32)
+	query.CIDR6 = pointer.ToInt(128)
+	query.Outsort = pointer.ToString("avg_bits_per_sec")
+	query.AllSelected = pointer.ToBool(true)
 	queryItem := models.QueryArrayItem{Query: *query, Bucket: "Left +Y Axis"}
 	queryObject := models.QueryObject{Queries: []models.QueryArrayItem{queryItem}}
 

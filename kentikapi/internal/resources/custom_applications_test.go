@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -92,11 +93,11 @@ func TestCreateCustomApplication(t *testing.T) {
 	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	app := models.NewCustomApplication("apitest-customapp-1")
-	models.SetOptional(&app.Description, "Testing custom application api")
-	models.SetOptional(&app.IPRange, "192.168.0.1,192.168.0.2")
-	models.SetOptional(&app.Protocol, "6,17")
-	models.SetOptional(&app.Port, "9001,9002,9003")
-	models.SetOptional(&app.ASN, "asn1,asn2,asn3")
+	app.Description = pointer.ToString("Testing custom application api")
+	app.IPRange = pointer.ToString("192.168.0.1,192.168.0.2")
+	app.Protocol = pointer.ToString("6,17")
+	app.Port = pointer.ToString("9001,9002,9003")
+	app.ASN = pointer.ToString("asn1,asn2,asn3")
 
 	// act
 	created, err := applicationsAPI.Create(context.Background(), *app)
@@ -152,9 +153,9 @@ func TestUpdateCustomApplication(t *testing.T) {
 		ID:   appID,
 		Name: "apitest-customapp-one",
 	}
-	models.SetOptional(&app.Description, "TESTING CUSTOM APPS")
-	models.SetOptional(&app.IPRange, "192.168.5.1,192.168.5.2")
-	models.SetOptional(&app.Port, "9011,9012,9013")
+	app.Description = pointer.ToString("TESTING CUSTOM APPS")
+	app.IPRange = pointer.ToString("192.168.5.1,192.168.5.2")
+	app.Port = pointer.ToString("9011,9012,9013")
 
 	// act
 	updated, err := applicationsAPI.Update(context.Background(), app)
