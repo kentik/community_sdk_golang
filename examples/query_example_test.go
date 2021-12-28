@@ -18,6 +18,7 @@ import (
 )
 
 func TestQueryAPIExample(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 	assert.NoError(runQuerySQL())
 	assert.NoError(runQueryData())

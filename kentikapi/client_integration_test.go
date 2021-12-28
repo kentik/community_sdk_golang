@@ -166,7 +166,6 @@ func TestClient_GetAgent(t *testing.T) {
 			s := newSpySyntheticsServer(t, tt.responses)
 			s.handlingDelay = tt.handlingDelay
 			s.Start()
-			defer s.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
 				SyntheticsHostPort: s.url,
@@ -212,6 +211,8 @@ func TestClient_GetAgent(t *testing.T) {
 				proto.Equal(tt.expectedResult, result),
 				fmt.Sprintf("Protobuf messages are not equal:\nexpected: %v\nactual:  %v", tt.expectedResult, result),
 			)
+			s.Stop()
+			assert.True(t, <-s.done)
 		})
 	}
 }
@@ -220,6 +221,7 @@ type spySyntheticsServer struct {
 	syntheticspb.UnimplementedSyntheticsAdminServiceServer
 	server *grpc.Server
 	url    string
+	done   chan bool
 	t      testing.TB
 	// responses to return to the client
 	responses []gRPCResponse
@@ -238,6 +240,7 @@ type gRPCResponse struct {
 
 func newSpySyntheticsServer(t testing.TB, responses []gRPCResponse) *spySyntheticsServer {
 	return &spySyntheticsServer{
+		done:      make(chan bool),
 		t:         t,
 		responses: responses,
 	}
@@ -252,12 +255,14 @@ func (s *spySyntheticsServer) Start() {
 	s.server = grpc.NewServer()
 	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
 	go func() {
-		require.NoError(s.t, s.server.Serve(l))
+		err = s.server.Serve(l)
+		require.NoError(s.t, err)
+		s.done <- true
 	}()
 }
 
 func (s *spySyntheticsServer) Stop() {
-	s.server.GracefulStop()
+	s.server.Stop()
 }
 
 func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,

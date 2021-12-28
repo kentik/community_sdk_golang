@@ -20,6 +20,7 @@ import (
 )
 
 func TestGetMeshTestResultsExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runGetMeshTestResults())
 }
 
