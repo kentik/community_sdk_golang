@@ -14,6 +14,7 @@ import (
 )
 
 func TestDeviceLabelsAPIExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runGetAllDeviceLabels())
 	assert.NoError(t, runCRUDDeviceLabels())
 }

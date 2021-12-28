@@ -14,11 +14,13 @@ import (
 )
 
 func TestDemonstrateUsersCRUD(t *testing.T) {
+	t.Parallel()
 	err := demonstrateUsersCRUD()
 	assert.NoError(t, err)
 }
 
 func TestDemonstrateUsersGetAll(t *testing.T) {
+	t.Parallel()
 	err := demonstrateUsersGetAll()
 	assert.NoError(t, err)
 }

@@ -18,6 +18,7 @@ import (
 )
 
 func TestCustomDimensionsAPIExample(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 	assert.NoError(runGetAllCustomDimensions())
 	assert.NoError(runCRUDCustomDimensions())

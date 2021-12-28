@@ -15,6 +15,7 @@ import (
 )
 
 func TestCloudExportAPIExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runCRUDCloudExport())
 	assert.NoError(t, runGetAllCloudExports())
 }
