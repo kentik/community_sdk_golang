@@ -8,7 +8,6 @@ import (
 	"time"
 
 	synthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
-	"github.com/kentik/community_sdk_golang/examples"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
@@ -21,7 +20,7 @@ func main() {
 
 //nolint:gomnd
 func showGRPCClient() error {
-	email, token, err := examples.ReadCredentialsFromEnv()
+	email, token, err := kentikapi.ReadCredentialsFromEnv()
 	if err != nil {
 		return err
 	}

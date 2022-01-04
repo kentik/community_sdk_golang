@@ -3,10 +3,8 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
-	"os"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/examples/demos"
@@ -22,7 +20,7 @@ func main() {
 func showClientMerge() error {
 	demos.Step("Using Kentik API server")
 
-	email, token, err := ReadCredentialsFromEnv()
+	email, token, err := kentikapi.ReadCredentialsFromEnv()
 	if err != nil {
 		return err
 	}
@@ -53,18 +51,4 @@ func showClientMerge() error {
 	demos.PrettyPrint(getResp.GetAgents())
 
 	return err
-}
-
-func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
-	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
-	if !ok || authEmail == "" {
-		return "", "", errors.New("KTAPI_AUTH_EMAIL environment variable needs to be set")
-	}
-
-	authToken, ok = os.LookupEnv("KTAPI_AUTH_TOKEN")
-	if !ok || authToken == "" {
-		return "", "", errors.New("KTAPI_AUTH_TOKEN environment variable needs to be set")
-	}
-
-	return authEmail, authToken, nil
 }
