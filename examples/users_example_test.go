@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (

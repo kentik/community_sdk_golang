@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
@@ -37,7 +38,7 @@ func runGRPCCRUDCloudExport() error {
 		Name:          "test_gce_export",
 		PlanId:        "11467",
 		CloudProvider: "gce",
-		Properties:    &cloudexportpb.CloudExport_Gce{gce},
+		Properties:    &cloudexportpb.CloudExport_Gce{Gce: gce},
 	}
 	createReqPayload := &cloudexportpb.CreateCloudExportRequest{Export: export}
 

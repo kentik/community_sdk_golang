@@ -1,20 +1,20 @@
+//nolint:forbidigo
 package main
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"log"
 	"os"
 
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {
-	err := showClientMerge()
-	if err != nil {
+	if err := showClientMerge(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -34,11 +34,14 @@ func showClientMerge() error {
 		AuthToken: token,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	demos.Step("List users using API v5")
 	result, err := c.Users.GetAll(context.Background())
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("Received result:")
 	demos.PrettyPrint(result)
@@ -47,7 +50,7 @@ func showClientMerge() error {
 	getResp, err := c.SyntheticsAdmin.ListAgents(context.Background(), &syntheticspb.ListAgentsRequest{})
 
 	fmt.Println("Received result:")
-	demos.PrettyPrint(getResp)
+	demos.PrettyPrint(getResp.GetAgents())
 
 	return err
 }

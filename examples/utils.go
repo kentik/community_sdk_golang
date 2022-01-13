@@ -1,3 +1,4 @@
+//nolint:forbidigo
 package examples
 
 import (
@@ -9,7 +10,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
-// ReadCredentialsFromEnv reads and returns (email, token) pair from environment variables, or error if not set
+// ReadCredentialsFromEnv reads and returns (email, token) pair from environment variables, or error if not set.
 func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
 	if !ok || authEmail == "" {
@@ -24,7 +25,7 @@ func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	return authEmail, authToken, nil
 }
 
-// NewClient creates kentikapi client with credentials read from env variables
+// NewClient creates kentikapi client with credentials read from env variables.
 func NewClient() (*kentikapi.Client, error) {
 	email, token, err := ReadCredentialsFromEnv()
 	PanicOnError(err)
@@ -39,21 +40,21 @@ func NewClient() (*kentikapi.Client, error) {
 	return client, nil
 }
 
-// PanicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements
+// PanicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements.
 func PanicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-// PrettyPrint prints an object recursively in an indented way
+// PrettyPrint prints an object recursively in an indented way.
 func PrettyPrint(resource interface{}) {
 	prettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
 }
 
+//nolint:gocyclo
 func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	switch v.Kind() {
-
 	case reflect.Struct:
 		if _, hasStringer := t.MethodByName("String"); hasStringer {
 			prettyPrintIndented("%v\n", level, v)
@@ -95,6 +96,7 @@ func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	}
 }
 
+//nolint:gomnd
 func prettyPrintIndented(format string, level int, args ...interface{}) {
 	fmt.Printf("%*s", level*2, "")
 	fmt.Printf(format, args...)

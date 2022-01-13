@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
@@ -92,7 +93,7 @@ func runCRUDSavedFilters() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Succesfully deleted Saved Filter: %v\n", savedFilter.ID)
+	fmt.Printf("Successfully deleted Saved Filter: %v\n", savedFilter.ID)
 	fmt.Println()
 
 	return nil

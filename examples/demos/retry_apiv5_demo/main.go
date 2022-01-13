@@ -1,3 +1,4 @@
+//nolint:forbidigo
 package main
 
 import (
@@ -21,6 +22,7 @@ func main() {
 	}
 }
 
+//nolint:gomnd
 func showRetryingOnMultipleCodes() error {
 	demos.Step("Create fake Kentik API server")
 	h := newSpyHTTPHandler([]httpResponse{
@@ -44,9 +46,9 @@ func showRetryingOnMultipleCodes() error {
 	c, err := kentikapi.NewClient(kentikapi.Config{
 		APIURL: s.URL,
 		RetryCfg: kentikapi.RetryConfig{
-			MaxAttempts:          uintPtr(42),
-			MinDelay:             durationPtr(1 * time.Second),
-			MaxDelay:             durationPtr(2 * time.Second),
+			MaxAttempts: uintPtr(42),
+			MinDelay:    durationPtr(1 * time.Second),
+			MaxDelay:    durationPtr(2 * time.Second),
 		},
 	})
 	if err != nil {
@@ -92,7 +94,7 @@ func (h *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	h.requests = append(h.requests, httpRequest{
 		method: r.Method,
-		url_:   r.URL,
+		url:    r.URL,
 		header: r.Header,
 		body:   string(body),
 	})
@@ -105,8 +107,7 @@ func (h *spyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 func writeResponse(rw http.ResponseWriter, statusCode int, body string) {
 	rw.WriteHeader(statusCode)
-	_, err := rw.Write([]byte(body))
-	if err != nil {
+	if _, err := rw.Write([]byte(body)); err != nil {
 		log.Printf("spyHTTPHandler: failed to write response body: %v", err)
 	}
 }
@@ -127,7 +128,7 @@ func (h *spyHTTPHandler) response() httpResponse {
 
 type httpRequest struct {
 	method string
-	url_   *url.URL
+	url    *url.URL
 	header http.Header
 	body   string
 }

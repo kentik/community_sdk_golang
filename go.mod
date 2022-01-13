@@ -4,13 +4,11 @@ go 1.15
 
 require (
 	github.com/antchfx/jsonquery v1.1.4
-	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/kentik/api-schema-public v0.0.0-20211011204132-acc22cb40b78
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 	google.golang.org/genproto v0.0.0-20211005153810-c76a74d43a8e // indirect
 	google.golang.org/grpc v1.41.0
 	google.golang.org/protobuf v1.27.1

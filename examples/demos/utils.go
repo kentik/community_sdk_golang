@@ -1,8 +1,10 @@
+//nolint:forbidigo
 package demos
 
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"text/tabwriter"
@@ -12,13 +14,14 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
+//nolint:gochecknoglobals
 var (
 	ExitOnError = examples.PanicOnError
 	PrettyPrint = examples.PrettyPrint
 	NewClient   = examples.NewClient
 )
 
-// untypedData allows trawersing untyped structures made of maps and slices
+// untypedData allows trawersing untyped structures made of maps and slices.
 type untypedData struct {
 	V interface{}
 }
@@ -28,13 +31,17 @@ func makeUntypedData(v interface{}) untypedData {
 }
 
 func (d untypedData) object(key string) untypedData {
-	m := d.V.(map[string]interface{})
-	return untypedData{V: m[key]}
+	if m, ok := d.V.(map[string]interface{}); ok {
+		return untypedData{V: m[key]}
+	}
+	return untypedData{V: nil}
 }
 
 func (d untypedData) item(index int) untypedData {
-	l := d.V.([]interface{})
-	return untypedData{V: l[index]}
+	if l, ok := d.V.([]interface{}); ok {
+		return untypedData{V: l[index]}
+	}
+	return untypedData{V: nil}
 }
 
 func Step(msg string) {
@@ -44,33 +51,47 @@ func Step(msg string) {
 	fmt.Println()
 	fmt.Printf("%s%s%s\n", blueBold, msg, reset)
 	fmt.Printf("Press enter to continue...")
-	fmt.Scanln()
+	if _, err := fmt.Scanln(); err != nil {
+		log.Print(err)
+	}
 }
 
-// DisplayQueryDataResult prints returned data series in form of a table
-func DisplayQueryDataResult(r models.QueryDataResult) {
+//nolint:gomnd
+// DisplayQueryDataResult prints returned data series in form of a table.
+func DisplayQueryDataResult(r models.QueryDataResult) error {
 	const printoutTableFormat = "%v\t%v\t\n" // bits/sec, datetime
 
-	timeSeries := makeUntypedData(r.Results[0]).object("data").item(0).object("timeSeries").object("both_bits_per_sec").object("flow").V.([]interface{})
+	if timeSeries, ok := makeUntypedData(r.Results[0]).
+		object("data").
+		item(0).
+		object("timeSeries").
+		object("both_bits_per_sec").
+		object("flow").
+		V.([]interface{}); ok {
+		w := makeTabWriter()
 
-	w := makeTabWriter(printoutTableFormat)
+		// print table header
+		fmt.Fprintf(w, printoutTableFormat, "avg_bits_per_sec", "time")
+		fmt.Fprintf(w, printoutTableFormat, "----------------", "----")
 
-	// print table header
-	fmt.Fprintf(w, printoutTableFormat, "avg_bits_per_sec", "time")
-	fmt.Fprintf(w, printoutTableFormat, "----------------", "----")
-
-	// print table rows
-	for _, ts := range timeSeries {
-		timeBitsPeriod := ts.([]interface{})
-		unixTime := int64(timeBitsPeriod[0].(float64)) / 1000 // API returns time in milliseconds, we need seconds
-		avgBitsPerSecond := int64(timeBitsPeriod[1].(float64))
-		fmt.Fprintf(w, printoutTableFormat, avgBitsPerSecond, time.Unix(unixTime, 0))
+		// print table rows
+		for _, ts := range timeSeries {
+			if timeBitsPeriod, ok := ts.([]interface{}); ok {
+				unixTime := int64(timeBitsPeriod[0].(float64)) / 1000 // API returns time in milliseconds, we need seconds
+				avgBitsPerSecond := int64(timeBitsPeriod[1].(float64))
+				fmt.Fprintf(w, printoutTableFormat, avgBitsPerSecond, time.Unix(unixTime, 0))
+			}
+		}
+		err := w.Flush()
+		if err != nil {
+			return err
+		}
 	}
-	w.Flush()
+	return nil
 }
 
-// makeTabWriter prepares tabwriter for writing file list in form: Name  Size  Type
-func makeTabWriter(format string) *tabwriter.Writer {
+// makeTabWriter prepares tabwriter for writing file list in form: Name  Size  Type.
+func makeTabWriter() *tabwriter.Writer {
 	const minWidth = 0  // minimal cell width including any padding
 	const tabWidth = 2  // width of tab characters (equivalent number of spaces)
 	const padding = 4   // distance between cells
@@ -80,7 +101,8 @@ func makeTabWriter(format string) *tabwriter.Writer {
 	return w
 }
 
-// DisplayQueryChartResult shows returned chart image
+//nolint:gosec // G204: Subprocess launched with a potential tainted input or cmd arguments - not an issue
+// DisplayQueryChartResult shows returned chart image.
 func DisplayQueryChartResult(r models.QueryChartResult) error {
 	// generate temp filename
 	file, err := ioutil.TempFile("", "chart_*."+r.ImageType.String())
@@ -88,7 +110,10 @@ func DisplayQueryChartResult(r models.QueryChartResult) error {
 		return err
 	}
 
-	r.SaveImageAs(file.Name())
+	err = r.SaveImageAs(file.Name())
+	if err != nil {
+		return err
+	}
 	cmd := exec.Command("firefox", file.Name())
 	return cmd.Run()
 }

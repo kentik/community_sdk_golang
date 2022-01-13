@@ -1,3 +1,4 @@
+//nolint:forbidigo
 package main
 
 import (
@@ -45,6 +46,7 @@ func main() {
 	queryChart(client)
 }
 
+//nolint:gomnd
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(
 		"interfaces_query_demo_device",
@@ -55,11 +57,12 @@ func createDevice(client *kentikapi.Client) models.ID {
 	)
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.ExitOnError(err)
-	fmt.Printf("Successfuly created device, ID = %d\n", createdDevice.ID)
+	fmt.Printf("Successfully created device, ID = %d\n", createdDevice.ID)
 
 	return createdDevice.ID
 }
 
+//nolint:gomnd
 func createInterface(client *kentikapi.Client, deviceID models.ID) models.ID {
 	intf := models.NewInterface(
 		deviceID,
@@ -69,16 +72,16 @@ func createInterface(client *kentikapi.Client, deviceID models.ID) models.ID {
 	)
 	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
 	demos.ExitOnError(err)
-	fmt.Printf("Successfuly created interface, ID = %d\n", createdInterface.ID)
+	fmt.Printf("Successfully created interface, ID = %d\n", createdInterface.ID)
 
 	return createdInterface.ID
 }
 
 func getInterface(client *kentikapi.Client, deviceID, interfaceID models.ID) {
 	fmt.Printf("Retrieving interface, deviceID = %d, interfaceID = %d\n", deviceID, interfaceID)
-	interface_, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
+	i, err := client.Devices.Interfaces.Get(context.Background(), deviceID, interfaceID)
 	demos.ExitOnError(err)
-	demos.PrettyPrint(interface_)
+	demos.PrettyPrint(i)
 }
 
 func deleteInterface(client *kentikapi.Client, deviceID, interfaceID models.ID) {
@@ -103,6 +106,7 @@ func deleteDevice(client *kentikapi.Client, deviceID models.ID) {
 	fmt.Println("Successful")
 }
 
+//nolint:gomnd
 func queryData(client *kentikapi.Client) {
 	// prepare query
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
@@ -134,9 +138,11 @@ func queryData(client *kentikapi.Client) {
 	fmt.Println("Done.")
 
 	// display result
-	demos.DisplayQueryDataResult(result)
+	err = demos.DisplayQueryDataResult(result)
+	demos.ExitOnError(err)
 }
 
+//nolint:gomnd
 func queryChart(client *kentikapi.Client) {
 	// prepare query
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)

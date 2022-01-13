@@ -3,6 +3,7 @@
 run:
   build-tags:
     - examples
+  skip-dirs-use-default: false
 
 issues:
   max-issues-per-linter: 0

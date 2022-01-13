@@ -1,6 +1,7 @@
 //go:build examples
 // +build examples
 
+//nolint:testpackage,forbidigo
 package examples
 
 import (
@@ -272,14 +273,14 @@ func runGRPCCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	fmt.Println()
 
 	// NOTE: as we can't create agents through the API - let's not delete them
-	//fmt.Println("### DELETE AGENT")
-	//deleteReqPayLoad := &syntheticspb.DeleteAgentRequest{Id: agentID}
-	//_, err = client.SyntheticsAdmin.DeleteAgent(ctx, deleteReqPayLoad)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Println("Success")
-	//fmt.Println()
+	// fmt.Println("### DELETE AGENT")
+	// deleteReqPayLoad := &syntheticspb.DeleteAgentRequest{Id: agentID}
+	// _, err = client.SyntheticsAdmin.DeleteAgent(ctx, deleteReqPayLoad)
+	// if err != nil {
+	// 	return err
+	// }
+	// fmt.Println("Success")
+	// fmt.Println()
 
 	return nil
 }
