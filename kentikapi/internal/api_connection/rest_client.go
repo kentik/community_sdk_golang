@@ -35,13 +35,11 @@ type RestClientConfig struct {
 func NewRestClient(c RestClientConfig) *RestClient {
 	return &RestClient{
 		config: c,
-		httpClient: httputil.
-			NewRetryingClient(
-				httputil.ClientConfig{
-					HTTPClient: nil,
-					RetryCfg:   c.RetryCfg,
-				},
-			),
+		httpClient: httputil.NewRetryingClient(
+			httputil.ClientConfig{
+				RetryCfg: c.RetryCfg,
+			},
+		),
 	}
 }
 

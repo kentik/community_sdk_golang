@@ -21,7 +21,7 @@ const (
 // Exponential backoff algorithm is used to calculate delay between retries.
 // Retry-After header of HTTP 429 response is respected while calculating the retry delay.
 //
-// By default following retry policy is used:
+// By default, following retry policy is used:
 // - Retry on following HTTP status codes: [429, 502, 503, 504],
 // - Retry on following HTTP request methods: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
 // - Retry on underlying http.Client.Do() temporary errors.
@@ -45,12 +45,6 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
 	return c
-}
-
-// NewRetryingStdClient returns new http.Client with request retry strategy.
-// See NewRetryingClient for more information.
-func NewRetryingStdClient(cfg ClientConfig) *http.Client {
-	return NewRetryingClient(cfg).StandardClient()
 }
 
 // ClientConfig holds configuration for retrying client.

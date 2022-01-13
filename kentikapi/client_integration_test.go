@@ -220,6 +220,7 @@ type spySyntheticsServer struct {
 	syntheticspb.UnimplementedSyntheticsAdminServiceServer
 	server *grpc.Server
 	url    string
+	done   chan struct{}
 	t      testing.TB
 	// responses to return to the client
 	responses []gRPCResponse
@@ -238,6 +239,7 @@ type gRPCResponse struct {
 
 func newSpySyntheticsServer(t testing.TB, responses []gRPCResponse) *spySyntheticsServer {
 	return &spySyntheticsServer{
+		done:      make(chan struct{}),
 		t:         t,
 		responses: responses,
 	}
@@ -252,12 +254,16 @@ func (s *spySyntheticsServer) Start() {
 	s.server = grpc.NewServer()
 	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
 	go func() {
-		require.NoError(s.t, s.server.Serve(l))
+		err = s.server.Serve(l)
+		assert.NoError(s.t, err)
+		s.done <- struct{}{}
 	}()
 }
 
+// Stop blocks until the server is stopped. Graceful stop is not used to make tests quicker.
 func (s *spySyntheticsServer) Stop() {
-	s.server.GracefulStop()
+	s.server.Stop()
+	<-s.done
 }
 
 func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,
