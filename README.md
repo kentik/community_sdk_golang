@@ -37,7 +37,7 @@ export KTAPI_AUTH_TOKEN=<Kentik API authentication token>
 
 # Run from a Go module, e.g. the root of this repository
 # Adjust -run parameter to filter example names
-go test -tags examples -count 1 -v -run Users github.com/kentik/community_sdk_golang/examples
+go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/community_sdk_golang/examples
 ```
 
 To configure timeout for a client call for Cloud Export or Synthetics use _context.WithTimeout()_ and pass it to the request function. See [an example](examples/cloud_export_example_test.go).

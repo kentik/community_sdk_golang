@@ -13,6 +13,7 @@ import (
 )
 
 func TestPlansAPIExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runGetAllPlans())
 }
 

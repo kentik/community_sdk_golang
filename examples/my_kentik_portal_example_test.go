@@ -8,11 +8,14 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMyKentikPortalAPIExample(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 	assert.NoError(runCRUDExample())
 	assert.NoError(getAllTenants())
@@ -23,8 +26,10 @@ func runCRUDExample() error {
 	if err != nil {
 		return err
 	}
-	// TODO(mpalczynski): pick tenantID from a list of all tenants
-	tenantID := 577
+	tenantID, err := pickTenantID()
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("### GET")
 	tenant, err := client.MyKentikPortal.Get(context.Background(), tenantID)
@@ -64,4 +69,23 @@ func getAllTenants() error {
 
 	PrettyPrint(tenants)
 	return nil
+}
+
+func pickTenantID() (models.ID, error) {
+	client, err := NewClient()
+	if err != nil {
+		return 0, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	tenants, err := client.MyKentikPortal.GetAll(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	if tenants != nil {
+		return tenants[0].ID, nil
+	}
+	return 0, fmt.Errorf("No tenants in requested Kentik account: %v", err)
 }

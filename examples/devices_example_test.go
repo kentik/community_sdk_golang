@@ -15,6 +15,7 @@ import (
 )
 
 func TestDevicesAPIExample(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 	assert.NoError(runCRUDRouter())
 	assert.NoError(runCRUDDNS())

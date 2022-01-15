@@ -15,6 +15,7 @@ import (
 )
 
 func TestSitesAPIExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runCRUD())
 	assert.NoError(t, runGetAll())
 }

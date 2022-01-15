@@ -15,11 +15,13 @@ import (
 )
 
 func TestDemonstrateTagsCRUD(t *testing.T) {
+	t.Parallel()
 	err := demonstrateTagsCRUD()
 	assert.NoError(t, err)
 }
 
 func TestDemonstrateTagsGetAll(t *testing.T) {
+	t.Parallel()
 	err := demonstrateTagsGetAll()
 	assert.NoError(t, err)
 }

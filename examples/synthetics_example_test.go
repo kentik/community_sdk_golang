@@ -18,6 +18,7 @@ import (
 )
 
 func TestSyntheticsAPIExample(t *testing.T) {
+	t.Parallel()
 	assert.NoError(t, runAdminServiceExamples())
 	assert.NoError(t, runDataServiceExamples())
 }
