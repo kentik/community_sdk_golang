@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/stretchr/testify/assert"
@@ -124,7 +125,7 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:     "do not retry when retries disabled and code Unavailable received",
-			retryMax: uintPtr(0),
+			retryMax: pointer.ToUint(0),
 			request:  &syntheticspb.GetAgentRequest{},
 			responses: []gRPCResponse{
 				newErrorGRPCResponse(codes.Unavailable),
@@ -135,7 +136,7 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:     "retry specified number of times when code Unavailable received",
-			retryMax: uintPtr(2),
+			retryMax: pointer.ToUint(2),
 			request:  &syntheticspb.GetAgentRequest{},
 			responses: []gRPCResponse{
 				newErrorGRPCResponse(codes.Unavailable),
@@ -148,7 +149,7 @@ func TestClient_GetAgent(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:              "timeout during first request",
-			timeout:           durationPtr(1 * time.Millisecond),
+			timeout:           pointer.ToDuration(1 * time.Millisecond),
 			request:           &syntheticspb.GetAgentRequest{},
 			responses:         []gRPCResponse{},
 			handlingDelay:     1 * time.Second,
@@ -174,7 +175,7 @@ func TestClient_GetAgent(t *testing.T) {
 				DisableTLS:         true,
 				RetryCfg: kentikapi.RetryConfig{
 					MaxAttempts: tt.retryMax,
-					MinDelay:    durationPtr(10 * time.Microsecond),
+					MinDelay:    pointer.ToDuration(10 * time.Microsecond),
 				},
 				Timeout: tt.timeout,
 			})
@@ -219,6 +220,7 @@ type spySyntheticsServer struct {
 	syntheticspb.UnimplementedSyntheticsAdminServiceServer
 	server *grpc.Server
 	url    string
+	done   chan struct{}
 	t      testing.TB
 	// responses to return to the client
 	responses []gRPCResponse
@@ -237,6 +239,7 @@ type gRPCResponse struct {
 
 func newSpySyntheticsServer(t testing.TB, responses []gRPCResponse) *spySyntheticsServer {
 	return &spySyntheticsServer{
+		done:      make(chan struct{}),
 		t:         t,
 		responses: responses,
 	}
@@ -251,12 +254,16 @@ func (s *spySyntheticsServer) Start() {
 	s.server = grpc.NewServer()
 	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
 	go func() {
-		require.NoError(s.t, s.server.Serve(l))
+		err = s.server.Serve(l)
+		assert.NoError(s.t, err)
+		s.done <- struct{}{}
 	}()
 }
 
+// Stop blocks until the server is stopped. Graceful stop is not used to make tests quicker.
 func (s *spySyntheticsServer) Stop() {
-	s.server.GracefulStop()
+	s.server.Stop()
+	<-s.done
 }
 
 func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,
@@ -331,12 +338,4 @@ func newErrorGRPCResponse(c codes.Code) gRPCResponse {
 		),
 		body: nil,
 	}
-}
-
-func uintPtr(v uint) *uint {
-	return &v
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
 }

@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
@@ -46,9 +47,9 @@ func showRetryingOnMultipleCodes() error {
 	c, err := kentikapi.NewClient(kentikapi.Config{
 		APIURL: s.URL,
 		RetryCfg: kentikapi.RetryConfig{
-			MaxAttempts: uintPtr(42),
-			MinDelay:    durationPtr(1 * time.Second),
-			MaxDelay:    durationPtr(2 * time.Second),
+			MaxAttempts: pointer.ToUint(42),
+			MinDelay:    pointer.ToDuration(1 * time.Second),
+			MaxDelay:    pointer.ToDuration(2 * time.Second),
 		},
 	})
 	if err != nil {
@@ -181,11 +182,3 @@ const dummyUsersResponseBody string = `{
 		}
 	]
 }`
-
-func uintPtr(v uint) *uint {
-	return &v
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
-}

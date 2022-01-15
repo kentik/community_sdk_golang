@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -68,7 +69,7 @@ func TestClient_GetAllTags(t *testing.T) {
 				*newTestTagOne(t),
 				{
 					FlowTag:     "DNS_TRAFFIC",
-					Port:        testutil.StringPtr("53"),
+					Port:        pointer.ToString("53"),
 					ID:          452718,
 					UserID:      39242,
 					CompanyID:   26393,
@@ -222,7 +223,7 @@ func TestClient_CreateTag(t *testing.T) {
 			name: "minimal tag created",
 			tag: func() models.Tag {
 				tag := models.NewTag("TEST-TAG")
-				tag.DeviceName = testutil.StringPtr("test-device")
+				tag.DeviceName = pointer.ToString("test-device")
 				return *tag
 			}(),
 			expectedRequestBody: object{
@@ -248,7 +249,7 @@ func TestClient_CreateTag(t *testing.T) {
 			}`,
 			expectedResult: &models.Tag{
 				FlowTag:       "TEST-TAG",
-				DeviceName:    testutil.StringPtr("test-device"),
+				DeviceName:    pointer.ToString("test-device"),
 				DeviceType:    nil,
 				Site:          nil,
 				InterfaceName: nil,
@@ -279,24 +280,24 @@ func TestClient_CreateTag(t *testing.T) {
 			name: "tag created",
 			tag: models.Tag{
 				FlowTag:       "APITEST-TAG-1",
-				DeviceName:    testutil.StringPtr("192.168.5.100,device1"),
-				DeviceType:    testutil.StringPtr("router,switch"),
-				Site:          testutil.StringPtr("site1,site2"),
-				InterfaceName: testutil.StringPtr("interface1,interface2"),
-				Addr:          testutil.StringPtr("192.168.0.1/32,192.168.0.2/32"),
-				Port:          testutil.StringPtr("9000,9001"),
-				TCPFlags:      testutil.StringPtr("7"),
-				Protocol:      testutil.StringPtr("6,17"),
-				ASN:           testutil.StringPtr("101,102,103"),
-				LasthopAsName: testutil.StringPtr("as1,as2,as3"),
-				NexthopAsn:    testutil.StringPtr("51,52,53"),
-				NexthopAsName: testutil.StringPtr("as51,as52,as53"),
-				Nexthop:       testutil.StringPtr("192.168.7.1/32,192.168.7.2/32"),
-				BGPAspath:     testutil.StringPtr("201,202,203"),
-				BGPCommunity:  testutil.StringPtr("301,302,303"),
-				MAC:           testutil.StringPtr("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
-				Country:       testutil.StringPtr("ES,IT"),
-				VLANs:         testutil.StringPtr("4001,4002,4003"),
+				DeviceName:    pointer.ToString("192.168.5.100,device1"),
+				DeviceType:    pointer.ToString("router,switch"),
+				Site:          pointer.ToString("site1,site2"),
+				InterfaceName: pointer.ToString("interface1,interface2"),
+				Addr:          pointer.ToString("192.168.0.1/32,192.168.0.2/32"),
+				Port:          pointer.ToString("9000,9001"),
+				TCPFlags:      pointer.ToString("7"),
+				Protocol:      pointer.ToString("6,17"),
+				ASN:           pointer.ToString("101,102,103"),
+				LasthopAsName: pointer.ToString("as1,as2,as3"),
+				NexthopAsn:    pointer.ToString("51,52,53"),
+				NexthopAsName: pointer.ToString("as51,as52,as53"),
+				Nexthop:       pointer.ToString("192.168.7.1/32,192.168.7.2/32"),
+				BGPAspath:     pointer.ToString("201,202,203"),
+				BGPCommunity:  pointer.ToString("301,302,303"),
+				MAC:           pointer.ToString("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
+				Country:       pointer.ToString("ES,IT"),
+				VLANs:         pointer.ToString("4001,4002,4003"),
 			},
 			expectedRequestBody: object{
 				"tag": object{
@@ -410,14 +411,14 @@ func TestClient_UpdateTag(t *testing.T) {
 			},
 			updateFields: func(t *models.Tag) *models.Tag {
 				t.FlowTag = "APITEST-TAG-2"
-				t.DeviceName = testutil.StringPtr("device2,192.168.5.200")
-				t.DeviceType = testutil.StringPtr("router2,switch2")
-				t.Site = testutil.StringPtr("site3,site4")
-				t.InterfaceName = testutil.StringPtr("interface3,interface4")
-				t.TCPFlags = testutil.StringPtr("8")
-				t.ASN = testutil.StringPtr("111,112,113")
-				t.Country = testutil.StringPtr("ES,IT")
-				t.VLANs = testutil.StringPtr("4011,4012,4013")
+				t.DeviceName = pointer.ToString("device2,192.168.5.200")
+				t.DeviceType = pointer.ToString("router2,switch2")
+				t.Site = pointer.ToString("site3,site4")
+				t.InterfaceName = pointer.ToString("interface3,interface4")
+				t.TCPFlags = pointer.ToString("8")
+				t.ASN = pointer.ToString("111,112,113")
+				t.Country = pointer.ToString("ES,IT")
+				t.VLANs = pointer.ToString("4011,4012,4013")
 				return t
 			},
 			expectedRequestBody: object{
@@ -467,24 +468,24 @@ func TestClient_UpdateTag(t *testing.T) {
 			}`,
 			expectedResult: &models.Tag{
 				FlowTag:       "APITEST-TAG-2",
-				DeviceName:    testutil.StringPtr("192.168.5.200,device2"),
-				DeviceType:    testutil.StringPtr("router2,switch2"),
-				Site:          testutil.StringPtr("site3,site4"),
-				InterfaceName: testutil.StringPtr("interface3,interface4"),
-				Addr:          testutil.StringPtr("192.168.0.1/32,192.168.0.2/32"),
-				Port:          testutil.StringPtr("9000,9001"),
-				TCPFlags:      testutil.StringPtr("8"),
-				Protocol:      testutil.StringPtr("6,17"),
-				ASN:           testutil.StringPtr("111,112,113"),
-				LasthopAsName: testutil.StringPtr("as1,as2,as3"),
-				NexthopAsn:    testutil.StringPtr("51,52,53"),
-				NexthopAsName: testutil.StringPtr("as51,as52,as53"),
-				Nexthop:       testutil.StringPtr("192.168.7.1/32,192.168.7.2/32"),
-				BGPAspath:     testutil.StringPtr("201,202,203"),
-				BGPCommunity:  testutil.StringPtr("301,302,303"),
-				MAC:           testutil.StringPtr("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
-				Country:       testutil.StringPtr("ES,IT"),
-				VLANs:         testutil.StringPtr("4011,4012,4013"),
+				DeviceName:    pointer.ToString("192.168.5.200,device2"),
+				DeviceType:    pointer.ToString("router2,switch2"),
+				Site:          pointer.ToString("site3,site4"),
+				InterfaceName: pointer.ToString("interface3,interface4"),
+				Addr:          pointer.ToString("192.168.0.1/32,192.168.0.2/32"),
+				Port:          pointer.ToString("9000,9001"),
+				TCPFlags:      pointer.ToString("8"),
+				Protocol:      pointer.ToString("6,17"),
+				ASN:           pointer.ToString("111,112,113"),
+				LasthopAsName: pointer.ToString("as1,as2,as3"),
+				NexthopAsn:    pointer.ToString("51,52,53"),
+				NexthopAsName: pointer.ToString("as51,as52,as53"),
+				Nexthop:       pointer.ToString("192.168.7.1/32,192.168.7.2/32"),
+				BGPAspath:     pointer.ToString("201,202,203"),
+				BGPCommunity:  pointer.ToString("301,302,303"),
+				MAC:           pointer.ToString("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
+				Country:       pointer.ToString("ES,IT"),
+				VLANs:         pointer.ToString("4011,4012,4013"),
 				ID:            42,
 				UserID:        144319,
 				CompanyID:     74333,
@@ -626,24 +627,24 @@ const testTagOneResponseJSON = `{
 func newTestTagOne(t *testing.T) *models.Tag {
 	return &models.Tag{
 		FlowTag:       "APITEST-TAG-1",
-		DeviceName:    testutil.StringPtr("192.168.5.100,device1"),
-		DeviceType:    testutil.StringPtr("router,switch"),
-		Site:          testutil.StringPtr("site1,site2"),
-		InterfaceName: testutil.StringPtr("interface1,interface2"),
-		Addr:          testutil.StringPtr("192.168.0.1/32,192.168.0.2/32"),
-		Port:          testutil.StringPtr("9000,9001"),
-		TCPFlags:      testutil.StringPtr("7"),
-		Protocol:      testutil.StringPtr("6,17"),
-		ASN:           testutil.StringPtr("101,102,103"),
-		LasthopAsName: testutil.StringPtr("as1,as2,as3"),
-		NexthopAsn:    testutil.StringPtr("51,52,53"),
-		NexthopAsName: testutil.StringPtr("as51,as52,as53"),
-		Nexthop:       testutil.StringPtr("192.168.7.1/32,192.168.7.2/32"),
-		BGPAspath:     testutil.StringPtr("201,202,203"),
-		BGPCommunity:  testutil.StringPtr("301,302,303"),
-		MAC:           testutil.StringPtr("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
-		Country:       testutil.StringPtr("ES,IT"),
-		VLANs:         testutil.StringPtr("4001,4002,4003"),
+		DeviceName:    pointer.ToString("192.168.5.100,device1"),
+		DeviceType:    pointer.ToString("router,switch"),
+		Site:          pointer.ToString("site1,site2"),
+		InterfaceName: pointer.ToString("interface1,interface2"),
+		Addr:          pointer.ToString("192.168.0.1/32,192.168.0.2/32"),
+		Port:          pointer.ToString("9000,9001"),
+		TCPFlags:      pointer.ToString("7"),
+		Protocol:      pointer.ToString("6,17"),
+		ASN:           pointer.ToString("101,102,103"),
+		LasthopAsName: pointer.ToString("as1,as2,as3"),
+		NexthopAsn:    pointer.ToString("51,52,53"),
+		NexthopAsName: pointer.ToString("as51,as52,as53"),
+		Nexthop:       pointer.ToString("192.168.7.1/32,192.168.7.2/32"),
+		BGPAspath:     pointer.ToString("201,202,203"),
+		BGPCommunity:  pointer.ToString("301,302,303"),
+		MAC:           pointer.ToString("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
+		Country:       pointer.ToString("ES,IT"),
+		VLANs:         pointer.ToString("4001,4002,4003"),
 		ID:            42,
 		UserID:        144319,
 		CompanyID:     74333,

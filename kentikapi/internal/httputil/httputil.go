@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/hashicorp/go-retryablehttp"
 )
 
@@ -20,7 +21,7 @@ const (
 // Exponential backoff algorithm is used to calculate delay between retries.
 // Retry-After header of HTTP 429 response is respected while calculating the retry delay.
 //
-// By default following retry policy is used:
+// By default, following retry policy is used:
 // - Retry on following HTTP status codes: [429, 502, 503, 504],
 // - Retry on following HTTP request methods: [GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE].
 // - Retry on underlying http.Client.Do() temporary errors.
@@ -44,12 +45,6 @@ func NewRetryingClient(cfg ClientConfig) *retryablehttp.Client {
 	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
 
 	return c
-}
-
-// NewRetryingStdClient returns new http.Client with request retry strategy.
-// See NewRetryingClient for more information.
-func NewRetryingStdClient(cfg ClientConfig) *http.Client {
-	return NewRetryingClient(cfg).StandardClient()
 }
 
 // ClientConfig holds configuration for retrying client.
@@ -78,15 +73,15 @@ func (cfg *ClientConfig) FillDefaults() {
 
 func (c *RetryConfig) FillDefaults() {
 	if c.MaxAttempts == nil {
-		c.MaxAttempts = uintPtr(defaultMaxAttempts)
+		c.MaxAttempts = pointer.ToUint(defaultMaxAttempts)
 	}
 
 	if c.MinDelay == nil {
-		c.MinDelay = durationPtr(defaultMinDelay)
+		c.MinDelay = pointer.ToDuration(defaultMinDelay)
 	}
 
 	if c.MaxDelay == nil {
-		c.MaxDelay = durationPtr(defaultMaxDelay)
+		c.MaxDelay = pointer.ToDuration(defaultMaxDelay)
 	}
 }
 
@@ -153,12 +148,4 @@ func makeIntSet(s []int) map[int]struct{} {
 		result[sc] = struct{}{}
 	}
 	return result
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
-}
-
-func uintPtr(v uint) *uint {
-	return &v
 }

@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -66,23 +67,23 @@ func runCRUDCustomDimensions() error {
 
 	fmt.Println("### CREATE POPULATOR")
 	populator := models.NewPopulator(created.ID, "testapi-dimension-value-1", "device1,128.0.0.100", models.PopulatorDirectionDst)
-	models.SetOptional(&populator.InterfaceName, "interface1,interface2")
-	models.SetOptional(&populator.Addr, "128.0.0.1/32,128.0.0.2/32")
-	models.SetOptional(&populator.Port, "1001,1002")
-	models.SetOptional(&populator.TCPFlags, "160")
-	models.SetOptional(&populator.Protocol, "6,17")
-	models.SetOptional(&populator.ASN, "101,102")
-	models.SetOptional(&populator.NextHopASN, "201,202")
-	models.SetOptional(&populator.NextHop, "128.0.200.1/32,128.0.200.2/32")
-	models.SetOptional(&populator.BGPAsPath, "3001,3002")
-	models.SetOptional(&populator.BGPCommunity, "401:499,501:599")
-	models.SetOptional(&populator.DeviceType, "device-type1")
-	models.SetOptional(&populator.Site, "site1,site2,site3")
-	models.SetOptional(&populator.LastHopAsName, "asn101,asn102")
-	models.SetOptional(&populator.NextHopAsName, "asn201,asn202")
-	models.SetOptional(&populator.MAC, "FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
-	models.SetOptional(&populator.Country, "NL,SE")
-	models.SetOptional(&populator.VLans, "2001,2002")
+	populator.InterfaceName = pointer.ToString("interface1,interface2")
+	populator.Addr = pointer.ToString("128.0.0.1/32,128.0.0.2/32")
+	populator.Port = pointer.ToString("1001,1002")
+	populator.TCPFlags = pointer.ToString("160")
+	populator.Protocol = pointer.ToString("6,17")
+	populator.ASN = pointer.ToString("101,102")
+	populator.NextHopASN = pointer.ToString("201,202")
+	populator.NextHop = pointer.ToString("128.0.200.1/32,128.0.200.2/32")
+	populator.BGPAsPath = pointer.ToString("3001,3002")
+	populator.BGPCommunity = pointer.ToString("401:499,501:599")
+	populator.DeviceType = pointer.ToString("device-type1")
+	populator.Site = pointer.ToString("site1,site2,site3")
+	populator.LastHopAsName = pointer.ToString("asn101,asn102")
+	populator.NextHopAsName = pointer.ToString("asn201,asn202")
+	populator.MAC = pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
+	populator.Country = pointer.ToString("NL,SE")
+	populator.VLans = pointer.ToString("2001,2002")
 	createdPopulator, err := client.CustomDimensions.Populators.Create(context.Background(), *populator)
 	if err != nil {
 		return err

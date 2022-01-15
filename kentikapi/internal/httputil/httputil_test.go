@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 	"github.com/stretchr/testify/assert"
@@ -83,9 +84,9 @@ func TestRetryingClientWithSpyHTTPTransport_Do(t *testing.T) {
 					Transport: &st,
 				},
 				RetryCfg: httputil.RetryConfig{
-					MaxAttempts: uintPtr(retryMax),
-					MinDelay:    durationPtr(1 * time.Microsecond),
-					MaxDelay:    durationPtr(10 * time.Microsecond),
+					MaxAttempts: pointer.ToUint(retryMax),
+					MinDelay:    pointer.ToDuration(1 * time.Microsecond),
+					MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
 				},
 			})
 
@@ -125,9 +126,9 @@ func TestRetryingClient_Do_HandlesRetryAfterHeader(t *testing.T) {
 
 	c := httputil.NewRetryingClient(httputil.ClientConfig{
 		RetryCfg: httputil.RetryConfig{
-			MaxAttempts: uintPtr(5),
-			MinDelay:    durationPtr(10 * time.Second),
-			MaxDelay:    durationPtr(10 * time.Second),
+			MaxAttempts: pointer.ToUint(5),
+			MinDelay:    pointer.ToDuration(10 * time.Second),
+			MaxDelay:    pointer.ToDuration(10 * time.Second),
 		},
 	})
 
@@ -156,12 +157,4 @@ type spyTransport struct {
 func (t *spyTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 	t.requestsCount++
 	return nil, t.transportError
-}
-
-func uintPtr(v uint) *uint {
-	return &v
-}
-
-func durationPtr(v time.Duration) *time.Duration {
-	return &v
 }

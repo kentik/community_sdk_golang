@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -44,8 +45,8 @@ func createDevice(client *kentikapi.Client) models.ID {
 		models.ID(11466),
 		models.CDNAttributeYes,
 	)
-	models.SetOptional(&device.SiteID, 8483)
-	models.SetOptional(&device.DeviceBGPFlowSpec, true)
+	device.SiteID = models.IDPtr(8483)
+	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.ExitOnError(err)
