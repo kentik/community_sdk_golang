@@ -9,7 +9,6 @@ import (
 	"github.com/AlekSi/pointer"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	grpccloudesxport "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	grpcsynthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -38,6 +38,7 @@ const (
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
 	Alerting           *resources.AlertingAPI
+	CloudExports       *resources.CloudExportsAPI
 	CustomApplications *resources.CustomApplicationsAPI
 	CustomDimensions   *resources.CustomDimensionsAPI
 	DeviceLabels       *resources.DeviceLabelsAPI
@@ -50,11 +51,10 @@ type Client struct {
 	Tags               *resources.TagsAPI
 	Users              *resources.UsersAPI
 
-	// CloudExportAdmin, SyntheticsAdmin and SyntheticsData are gRPC clients
+	// SyntheticsAdmin and SyntheticsData are gRPC clients
 	// for Kentik API Cloud Export and Synthetics services.
-	CloudExportAdmin grpccloudesxport.CloudExportAdminServiceClient
-	SyntheticsAdmin  grpcsynthetics.SyntheticsAdminServiceClient
-	SyntheticsData   grpcsynthetics.SyntheticsDataServiceClient
+	SyntheticsAdmin grpcsynthetics.SyntheticsAdminServiceClient
+	SyntheticsData  grpcsynthetics.SyntheticsDataServiceClient
 
 	config Config
 }
@@ -107,6 +107,7 @@ func NewClient(c Config) (*Client, error) {
 	})
 	return &Client{
 		Alerting:           resources.NewAlertingAPI(rc),
+		CloudExports:       resources.NewCloudExportsAPI(cloudExportConnection),
 		CustomApplications: resources.NewCustomApplicationsAPI(rc),
 		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
 		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
@@ -119,9 +120,8 @@ func NewClient(c Config) (*Client, error) {
 		Tags:               resources.NewTagsAPI(rc),
 		Users:              resources.NewUsersAPI(rc),
 
-		CloudExportAdmin: grpccloudesxport.NewCloudExportAdminServiceClient(cloudExportConnection),
-		SyntheticsAdmin:  grpcsynthetics.NewSyntheticsAdminServiceClient(syntheticsConnection),
-		SyntheticsData:   grpcsynthetics.NewSyntheticsDataServiceClient(syntheticsConnection),
+		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(syntheticsConnection),
+		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(syntheticsConnection),
 
 		config: c,
 	}, nil
@@ -163,7 +163,7 @@ func makeConnForGRPC(c Config, hostPort string) (grpc.ClientConnInterface, error
 
 func makeTLSOption(c Config) grpc.DialOption {
 	if c.DisableTLS {
-		return grpc.WithInsecure()
+		return grpc.WithTransportCredentials(insecure.NewCredentials())
 	}
 	return grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
 		MinVersion: tls.VersionTLS13,
