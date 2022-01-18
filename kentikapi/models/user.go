@@ -4,7 +4,7 @@ import "time"
 
 // User model.
 type User struct {
-	// read-write properties (can be updated in update call)
+	// read-write properties
 	Username     string
 	UserFullName string
 	UserEmail    string
@@ -13,7 +13,7 @@ type User struct {
 	EmailService bool
 	EmailProduct bool
 
-	// read-only properties (can't be updated in update call)
+	// read-only properties
 	ID           ID
 	LastLogin    *time.Time
 	CreatedDate  time.Time

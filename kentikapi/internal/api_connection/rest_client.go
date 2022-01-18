@@ -76,7 +76,8 @@ func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.Ra
 
 // Post sends POST request to the API and returns raw response body
 //nolint:dupl
-func (c *RestClient) Post(ctx context.Context, path string, payload json.RawMessage,
+func (c *RestClient) Post(
+	ctx context.Context, path string, payload json.RawMessage,
 ) (responseBody json.RawMessage, err error) {
 	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()
@@ -107,7 +108,8 @@ func (c *RestClient) Post(ctx context.Context, path string, payload json.RawMess
 
 // Put sends PUT request to the API and returns raw response body
 //nolint:dupl
-func (c *RestClient) Put(ctx context.Context, path string, payload json.RawMessage,
+func (c *RestClient) Put(
+	ctx context.Context, path string, payload json.RawMessage,
 ) (responseBody json.RawMessage, err error) {
 	ctx, cancel := context.WithTimeout(ctx, *c.config.Timeout)
 	defer cancel()

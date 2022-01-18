@@ -25,10 +25,12 @@ func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
 	return authEmail, authToken, nil
 }
 
-// NewClient creates kentikapi client with credentials read from env variables.
+// NewClient creates Kentik API client with credentials read from environment variables.
 func NewClient() (*kentikapi.Client, error) {
 	email, token, err := ReadCredentialsFromEnv()
-	PanicOnError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	client, err := kentikapi.NewClient(kentikapi.Config{
 		AuthEmail: email,
@@ -38,13 +40,6 @@ func NewClient() (*kentikapi.Client, error) {
 		return nil, err
 	}
 	return client, nil
-}
-
-// PanicOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements.
-func PanicOnError(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 // PrettyPrint prints an object recursively in an indented way.

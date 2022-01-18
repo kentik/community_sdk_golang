@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	demos.Step("Create Kentik API client")
 	client, err := demos.NewClient()
 	if err != nil {
 		log.Fatal(err)

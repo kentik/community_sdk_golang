@@ -37,18 +37,18 @@ const (
 
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
-	Users              *resources.UsersAPI
-	Devices            *resources.DevicesAPI
-	DeviceLabels       *resources.DeviceLabelsAPI
-	Sites              *resources.SitesAPI
-	Tags               *resources.TagsAPI
-	SavedFilters       *resources.SavedFiltersAPI
-	CustomDimensions   *resources.CustomDimensionsAPI
+	Alerting           *resources.AlertingAPI
 	CustomApplications *resources.CustomApplicationsAPI
-	Query              *resources.QueryAPI
+	CustomDimensions   *resources.CustomDimensionsAPI
+	DeviceLabels       *resources.DeviceLabelsAPI
+	Devices            *resources.DevicesAPI
 	MyKentikPortal     *resources.MyKentikPortalAPI
 	Plans              *resources.PlansAPI
-	Alerting           *resources.AlertingAPI
+	Query              *resources.QueryAPI
+	SavedFilters       *resources.SavedFiltersAPI
+	Sites              *resources.SitesAPI
+	Tags               *resources.TagsAPI
+	Users              *resources.UsersAPI
 
 	// CloudExportAdmin, SyntheticsAdmin and SyntheticsData are gRPC clients
 	// for Kentik API Cloud Export and Synthetics services.
@@ -72,10 +72,10 @@ type Config struct {
 	RetryCfg            RetryConfig
 
 	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
-	// LogPayloads has no effect on CloudExportAdmin, SyntheticsAdmin and SyntheticsData.
+	// Note that this feature is currently broken.
 	LogPayloads bool
 	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
-	// A Timeout of zero means no timeout. Currently it works only for v5 Admin APIs (e.g. users, devices).
+	// A Timeout of zero means no timeout.
 	// Default: 100 seconds.
 	Timeout *time.Duration
 	// DisableTLS disables TLS for client connections.
@@ -89,11 +89,11 @@ type RetryConfig = httputil.RetryConfig
 func NewClient(c Config) (*Client, error) {
 	c.FillDefaults()
 
-	syntheticsConnection, err := c.makeConnForGRPC(c.SyntheticsHostPort)
+	syntheticsConnection, err := makeConnForGRPC(c, c.SyntheticsHostPort)
 	if err != nil {
 		return nil, fmt.Errorf("grpc synthetics connection: %v", err)
 	}
-	cloudExportConnection, err := c.makeConnForGRPC(c.CloudExportHostPort)
+	cloudExportConnection, err := makeConnForGRPC(c, c.CloudExportHostPort)
 	if err != nil {
 		return nil, fmt.Errorf("grpc cloud export connection: %v", err)
 	}
@@ -106,22 +106,24 @@ func NewClient(c Config) (*Client, error) {
 		Timeout:   c.Timeout,
 	})
 	return &Client{
-		Users:              resources.NewUsersAPI(rc),
-		Devices:            resources.NewDevicesAPI(rc),
-		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
-		Sites:              resources.NewSitesAPI(rc),
-		Tags:               resources.NewTagsAPI(rc),
-		SavedFilters:       resources.NewSavedFiltersAPI(rc),
-		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
+		Alerting:           resources.NewAlertingAPI(rc),
 		CustomApplications: resources.NewCustomApplicationsAPI(rc),
-		Query:              resources.NewQueryAPI(rc),
+		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
+		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
+		Devices:            resources.NewDevicesAPI(rc),
 		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc),
 		Plans:              resources.NewPlansAPI(rc),
-		Alerting:           resources.NewAlertingAPI(rc),
-		SyntheticsAdmin:    grpcsynthetics.NewSyntheticsAdminServiceClient(syntheticsConnection),
-		SyntheticsData:     grpcsynthetics.NewSyntheticsDataServiceClient(syntheticsConnection),
-		CloudExportAdmin:   grpccloudesxport.NewCloudExportAdminServiceClient(cloudExportConnection),
-		config:             c,
+		Query:              resources.NewQueryAPI(rc),
+		SavedFilters:       resources.NewSavedFiltersAPI(rc),
+		Sites:              resources.NewSitesAPI(rc),
+		Tags:               resources.NewTagsAPI(rc),
+		Users:              resources.NewUsersAPI(rc),
+
+		CloudExportAdmin: grpccloudesxport.NewCloudExportAdminServiceClient(cloudExportConnection),
+		SyntheticsAdmin:  grpcsynthetics.NewSyntheticsAdminServiceClient(syntheticsConnection),
+		SyntheticsData:   grpcsynthetics.NewSyntheticsDataServiceClient(syntheticsConnection),
+
+		config: c,
 	}, nil
 }
 
@@ -145,21 +147,21 @@ func (c *Config) FillDefaults() {
 	c.RetryCfg.FillDefaults()
 }
 
-func (c Config) makeConnForGRPC(hostPort string) (grpc.ClientConnInterface, error) {
+func makeConnForGRPC(c Config, hostPort string) (grpc.ClientConnInterface, error) {
 	return grpc.Dial(
 		hostPort,
-		c.makeTLSOption(),
+		makeTLSOption(c),
 		grpc.WithUnaryInterceptor(
 			grpcmiddleware.ChainUnaryClient(
-				c.makeTimeoutInterceptor(),
-				c.makeAuthInterceptor(),
-				c.makeRetryInterceptor(),
+				makeTimeoutInterceptor(c),
+				makeAuthInterceptor(c),
+				makeRetryInterceptor(c),
 			),
 		),
 	)
 }
 
-func (c Config) makeTLSOption() grpc.DialOption {
+func makeTLSOption(c Config) grpc.DialOption {
 	if c.DisableTLS {
 		return grpc.WithInsecure()
 	}
@@ -168,7 +170,7 @@ func (c Config) makeTLSOption() grpc.DialOption {
 	}))
 }
 
-func (c Config) makeTimeoutInterceptor() grpc.UnaryClientInterceptor {
+func makeTimeoutInterceptor(c Config) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
@@ -178,7 +180,7 @@ func (c Config) makeTimeoutInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
-func (c Config) makeAuthInterceptor() grpc.UnaryClientInterceptor {
+func makeAuthInterceptor(c Config) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
@@ -190,7 +192,7 @@ func (c Config) makeAuthInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
-func (c Config) makeRetryInterceptor() grpc.UnaryClientInterceptor {
+func makeRetryInterceptor(c Config) grpc.UnaryClientInterceptor {
 	return grpcretry.UnaryClientInterceptor(
 		grpcretry.WithBackoff(grpcretry.BackoffExponential(*c.RetryCfg.MinDelay)),
 		grpcretry.WithCodes(codes.Unavailable),

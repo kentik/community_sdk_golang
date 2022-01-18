@@ -5,12 +5,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	synthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
-	"github.com/kentik/community_sdk_golang/examples"
 	"github.com/kentik/community_sdk_golang/examples/demos"
-	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {
@@ -19,27 +16,16 @@ func main() {
 	}
 }
 
-//nolint:gomnd
 func showGRPCClient() error {
-	email, token, err := examples.ReadCredentialsFromEnv()
+	demos.Step("Create Kentik API client")
+	ctx := context.Background()
+	client, err := demos.NewClient()
 	if err != nil {
 		return err
 	}
 
-	demos.Step("Create Kentik API gRPC client")
-
-	c, err := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
-	if err != nil {
-		log.Fatalln(err)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-
 	demos.Step("List synthetic agents")
-	result, err := c.SyntheticsAdmin.ListAgents(ctx, &synthetics.ListAgentsRequest{})
+	result, err := client.SyntheticsAdmin.ListAgents(ctx, &synthetics.ListAgentsRequest{})
 
 	fmt.Println("Received result:")
 	demos.PrettyPrint(result.GetAgents())

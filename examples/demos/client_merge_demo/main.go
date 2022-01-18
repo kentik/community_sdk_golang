@@ -3,14 +3,11 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
-	"os"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/examples/demos"
-	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
 func main() {
@@ -20,25 +17,15 @@ func main() {
 }
 
 func showClientMerge() error {
-	demos.Step("Using Kentik API server")
-
-	email, token, err := ReadCredentialsFromEnv()
-	if err != nil {
-		return err
-	}
-
 	demos.Step("Create Kentik API client")
-
-	c, err := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
+	ctx := context.Background()
+	client, err := demos.NewClient()
 	if err != nil {
 		return err
 	}
 
 	demos.Step("List users using API v5")
-	result, err := c.Users.GetAll(context.Background())
+	result, err := client.Users.GetAll(ctx)
 	if err != nil {
 		return err
 	}
@@ -47,24 +34,10 @@ func showClientMerge() error {
 	demos.PrettyPrint(result)
 
 	demos.Step("List agents using API v6")
-	getResp, err := c.SyntheticsAdmin.ListAgents(context.Background(), &syntheticspb.ListAgentsRequest{})
+	getResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 
 	fmt.Println("Received result:")
 	demos.PrettyPrint(getResp.GetAgents())
 
 	return err
-}
-
-func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
-	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
-	if !ok || authEmail == "" {
-		return "", "", errors.New("KTAPI_AUTH_EMAIL environment variable needs to be set")
-	}
-
-	authToken, ok = os.LookupEnv("KTAPI_AUTH_TOKEN")
-	if !ok || authToken == "" {
-		return "", "", errors.New("KTAPI_AUTH_TOKEN environment variable needs to be set")
-	}
-
-	return authEmail, authToken, nil
 }

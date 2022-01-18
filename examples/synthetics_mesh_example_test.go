@@ -24,7 +24,9 @@ func TestGetMeshTestResultsExample(t *testing.T) {
 }
 
 func runGetMeshTestResults() error {
-	testID, err := pickTestID()
+	ctx := context.Background()
+
+	testID, err := pickTestID(ctx)
 	if err != nil {
 		return err
 	}
@@ -156,13 +158,11 @@ func (m metricsMatrix) getMetric(fromAgent string, toAgent string) (*syntheticsp
 	return metric, true
 }
 
-func pickTestID() (string, error) {
+func pickTestID(ctx context.Context) (string, error) {
 	client, err := NewClient()
 	if err != nil {
 		return "", err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
 
 	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
 	if err != nil {
@@ -176,5 +176,5 @@ func pickTestID() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("No tests with type application_mesh for requested Kentik account: %v", err)
+	return "", fmt.Errorf("no tests with type application_mesh for requested Kentik account: %v", err)
 }
