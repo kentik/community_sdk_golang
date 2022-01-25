@@ -1,6 +1,7 @@
 package api_payloads
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -15,12 +16,12 @@ type CreateManualMitigationRequest struct {
 }
 
 type Alarm struct {
-	AlarmID         models.ID         `json:"alarm_id"`
+	AlarmID         int               `json:"alarm_id"`
 	RowType         string            `json:"row_type"`
 	AlarmState      string            `json:"alarm_state"`
-	AlertID         models.ID         `json:"alert_id"`
-	MitigationID    models.ID         `json:"mitigation_id"`
-	TresholdID      models.ID         `json:"threshold_id"`
+	AlertID         int               `json:"alert_id"`
+	MitigationID    int               `json:"mitigation_id"`
+	TresholdID      int               `json:"threshold_id"`
 	AlertKey        string            `json:"alert_key"`
 	AlertDimension  string            `json:"alert_dimension"`
 	AlertMetric     []string          `json:"alert_metric"`
@@ -36,24 +37,24 @@ type Alarm struct {
 	AlarmStart      time.Time         `json:"alarm_start"`
 	AlarmEnd        *string           `json:"alarm_end,omitempty"`
 	AlarmLastComent *string           `json:"alarm_last_comment,omitempty"`
-	MitAlertID      models.ID         `json:"mit_alert_id"`
+	MitAlertID      int               `json:"mit_alert_id"`
 	MitAlertIP      string            `json:"mit_alert_ip"`
 	MitTresholdID   int               `json:"mit_treshold_id"`
 	Args            string            `json:"args"`
-	ID              models.ID         `json:"id"`
-	PolicyID        models.ID         `json:"policy_id"`
+	ID              int               `json:"id"`
+	PolicyID        int               `json:"policy_id"`
 	PolicyName      string            `json:"policy_name"`
 	AlertKeyLookup  string            `json:"alert_key_lookup"`
 }
 
 func (p Alarm) ToAlarm() models.Alarm {
 	return models.Alarm{
-		AlarmID:         p.AlarmID,
+		AlarmID:         strconv.Itoa(p.AlarmID),
 		RowType:         p.RowType,
 		AlarmState:      p.AlarmState,
-		AlertID:         p.AlertID,
-		MitigationID:    p.MitigationID,
-		TresholdID:      p.TresholdID,
+		AlertID:         strconv.Itoa(p.AlertID),
+		MitigationID:    strconv.Itoa(p.MitigationID),
+		TresholdID:      strconv.Itoa(p.TresholdID),
 		AlertKey:        p.AlertKey,
 		AlertDimension:  p.AlertDimension,
 		AlertMetric:     p.AlertMetric,
@@ -69,12 +70,12 @@ func (p Alarm) ToAlarm() models.Alarm {
 		AlarmStart:      p.AlarmStart,
 		AlarmEnd:        p.AlarmEnd,
 		AlarmLastComent: p.AlarmLastComent,
-		MitAlertID:      p.MitAlertID,
+		MitAlertID:      strconv.Itoa(p.MitAlertID),
 		MitAlertIP:      p.MitAlertIP,
 		MitTresholdID:   p.MitTresholdID,
 		Args:            p.Args,
-		ID:              p.ID,
-		PolicyID:        p.PolicyID,
+		ID:              strconv.Itoa(p.ID),
+		PolicyID:        strconv.Itoa(p.PolicyID),
 		PolicyName:      p.PolicyName,
 		AlertKeyLookup:  p.AlertKeyLookup,
 	}
@@ -86,9 +87,9 @@ type HistoricalAlert struct {
 	NewAlarmState   string            `json:"new_alarm_state"`
 	AlertMatchCount string            `json:"alert_match_count"`
 	AlertSeverity   string            `json:"alert_severity"`
-	AlertID         models.ID         `json:"alert_id"`
-	ThresholdID     models.ID         `json:"threshold_id"`
-	AlarmID         models.ID         `json:"alarm_id"`
+	AlertID         int               `json:"alert_id"`
+	ThresholdID     int               `json:"threshold_id"`
+	AlarmID         int               `json:"alarm_id"`
 	AlertKey        string            `json:"alert_key"`
 	AlertDimension  string            `json:"alert_dimension"`
 	AlertMetric     []string          `json:"alert_metric"`
@@ -105,8 +106,8 @@ type HistoricalAlert struct {
 	MitigationID    *int              `json:"mitigation_id,omitempty"`
 	MitMethodID     int               `json:"mit_method_id"`
 	Args            string            `json:"args"`
-	ID              models.ID         `json:"id"`
-	PolicyID        models.ID         `json:"policy_id"`
+	ID              int               `json:"id"`
+	PolicyID        int               `json:"policy_id"`
 	PolicyName      string            `json:"policy_name"`
 	AlertKeyLookup  string            `json:"alert_key_lookup"`
 }
@@ -118,9 +119,9 @@ func (p HistoricalAlert) ToHistoricalAlert() models.HistoricalAlert {
 		NewAlarmState:   p.NewAlarmState,
 		AlertMatchCount: p.AlertMatchCount,
 		AlertSeverity:   p.AlertSeverity,
-		AlertID:         p.AlertID,
-		ThresholdID:     p.ThresholdID,
-		AlarmID:         p.AlarmID,
+		AlertID:         strconv.Itoa(p.AlertID),
+		ThresholdID:     strconv.Itoa(p.ThresholdID),
+		AlarmID:         strconv.Itoa(p.AlarmID),
 		AlertKey:        p.AlertKey,
 		AlertDimension:  p.AlertDimension,
 		AlertMetric:     p.AlertMetric,
@@ -137,8 +138,8 @@ func (p HistoricalAlert) ToHistoricalAlert() models.HistoricalAlert {
 		MitigationID:    p.MitigationID,
 		MitMethodID:     p.MitMethodID,
 		Args:            p.Args,
-		ID:              p.ID,
-		PolicyID:        p.PolicyID,
+		ID:              strconv.Itoa(p.ID),
+		PolicyID:        strconv.Itoa(p.PolicyID),
 		PolicyName:      p.PolicyName,
 		AlertKeyLookup:  p.AlertKeyLookup,
 	}

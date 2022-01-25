@@ -32,6 +32,32 @@ func (p *IntAsString) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
+// StringAsInt evens out deserialization of numbers represented in JSON document sometimes as int and sometimes as string.
+type StringAsInt string
+
+func (p *StringAsInt) UnmarshalJSON(data []byte) (err error) {
+	// unmarshall int or string
+	var obj interface{}
+	if err = json.Unmarshal(data, &obj); err != nil {
+		return fmt.Errorf("StringAsInt.UnmarshalJSON error: %v", err)
+	}
+
+	// decide the type and convert to number
+	switch val := obj.(type) {
+	case string: // json.Unmarshall recognizes numbers as float64
+		*p = StringAsInt(val)
+	case int:
+		strval := strconv.Itoa(val)
+		*p = StringAsInt(strval)
+	case float64:
+		strval := strconv.Itoa(int(val))
+		*p = StringAsInt(strval)
+	default:
+		return fmt.Errorf("StringAsInt.UnmarshalJSON input should be string or int, got %v (%T)", val, val)
+	}
+	return nil
+}
+
 // BoolAsStringOrInt evens out deserialization of numbers represented in JSON document as bool, string or number.
 type BoolAsStringOrInt bool
 

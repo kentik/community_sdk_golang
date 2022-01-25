@@ -74,18 +74,18 @@ func getAllTenants() error {
 func pickTenantID() (models.ID, error) {
 	client, err := NewClient()
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
 	tenants, err := client.MyKentikPortal.GetAll(ctx)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	if tenants != nil {
 		return tenants[0].ID, nil
 	}
-	return 0, fmt.Errorf("No tenants in requested Kentik account: %v", err)
+	return "", fmt.Errorf("No tenants in requested Kentik account: %v", err)
 }

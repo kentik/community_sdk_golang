@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
@@ -77,7 +76,6 @@ func (a *DevicesAPI) Delete(ctx context.Context, id models.ID) error {
 // ApplyLabels assigns labels to given device.
 func (a *DevicesAPI) ApplyLabels(ctx context.Context, deviceID models.ID, labels []models.ID) (models.AppliedLabels, error) {
 	payload := api_payloads.LabelIDsToPayload(labels)
-
 	request := api_payloads.ApplyLabelsRequest{Labels: payload}
 	var response api_payloads.ApplyLabelsResponse
 	if err := a.UpdateAndValidate(ctx, api_endpoints.ApplyDeviceLabels(deviceID), request, &response); err != nil {

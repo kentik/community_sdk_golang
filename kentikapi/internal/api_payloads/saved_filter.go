@@ -39,8 +39,8 @@ type UpdateSavedFilterResponse struct {
 }
 
 type savedFilterPayload struct {
-	ID                IntAsString    `json:"id,omitempty"`
-	CompanyID         models.ID      `json:"company_id,string,omitempty"`
+	ID                StringAsInt    `json:"id,omitempty"`
+	CompanyID         models.ID      `json:"company_id,omitempty"`
 	FilterName        string         `json:"filter_name"`
 	FilterDescription string         `json:"filter_description"`
 	FilterLevel       string         `json:"filter_level,omitempty"`
@@ -56,7 +56,7 @@ func (p savedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 	}
 
 	return models.SavedFilter{
-		ID:                int(p.ID),
+		ID:                string(p.ID),
 		CompanyID:         p.CompanyID,
 		FilterName:        p.FilterName,
 		FilterDescription: p.FilterDescription,
@@ -70,7 +70,7 @@ func (p savedFilterPayload) ToSavedFilter() (models.SavedFilter, error) {
 //nolint:revive // savedFilterPayLoad doesn't need to be exported
 func SavedFilterToPayload(sf models.SavedFilter) savedFilterPayload {
 	return savedFilterPayload{
-		ID:                IntAsString(sf.ID),
+		ID:                StringAsInt(sf.ID),
 		CompanyID:         sf.CompanyID,
 		FilterName:        sf.FilterName,
 		FilterDescription: sf.FilterDescription,

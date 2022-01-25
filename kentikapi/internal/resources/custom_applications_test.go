@@ -63,9 +63,9 @@ func TestGetAll(t *testing.T) {
 	assert.Len(applications, 2)
 
 	app1 := applications[1]
-	assert.Equal(models.ID(43), app1.ID)
-	assert.Equal(models.ID(74333), app1.CompanyID)
-	assert.Equal(models.ID(144319), *app1.UserID)
+	assert.Equal(models.ID("43"), app1.ID)
+	assert.Equal(models.ID("74333"), app1.CompanyID)
+	assert.Equal(models.ID("144319"), *app1.UserID)
 	assert.Equal("apitest-customapp-2", app1.Name)
 	assert.Equal("TESTING CUSTOM APPS 2", *app1.Description)
 	assert.Equal("192.168.0.3,192.168.0.4", *app1.IPRange)
@@ -117,9 +117,9 @@ func TestCreateCustomApplication(t *testing.T) {
 	assert.Equal("asn1,asn2,asn3", payload.String("asn"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(207), created.ID)
-	assert.Equal(models.ID(74333), created.CompanyID)
-	assert.Equal(models.ID(144319), *created.UserID)
+	assert.Equal(models.ID("207"), created.ID)
+	assert.Equal(models.ID("74333"), created.CompanyID)
+	assert.Equal(models.ID("144319"), *created.UserID)
 	assert.Equal("apitest-customapp-1", created.Name)
 	assert.Equal("Testing custom application api", *created.Description)
 	assert.Equal("192.168.0.1,192.168.0.2", *created.IPRange)
@@ -148,7 +148,7 @@ func TestUpdateCustomApplication(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
 
-	appID := models.ID(207)
+	appID := models.ID("207")
 	app := models.CustomApplication{
 		ID:   appID,
 		Name: "apitest-customapp-one",
@@ -175,9 +175,9 @@ func TestUpdateCustomApplication(t *testing.T) {
 	assert.Nil(payload.Get("asn"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(207), updated.ID)
-	assert.Equal(models.ID(74333), updated.CompanyID)
-	assert.Equal(models.ID(144319), *updated.UserID)
+	assert.Equal(models.ID("207"), updated.ID)
+	assert.Equal(models.ID("74333"), updated.CompanyID)
+	assert.Equal(models.ID("144319"), *updated.UserID)
 	assert.Equal("apitest-customapp-one", updated.Name)
 	assert.Equal("TESTING CUSTOM APPS", *updated.Description)
 	assert.Equal("192.168.5.1,192.168.5.2", *updated.IPRange)
@@ -195,7 +195,7 @@ func TestDeleteCustomApplication(t *testing.T) {
 	appliationsAPI := resources.NewCustomApplicationsAPI(transport)
 
 	// act
-	appID := models.ID(42)
+	appID := models.ID("42")
 	err := appliationsAPI.Delete(context.Background(), appID)
 
 	// assert

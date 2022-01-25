@@ -46,11 +46,11 @@ type userPayload struct {
 	EmailProduct BoolAsStringOrInt `json:"email_product"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID           IntAsString `json:"id,omitempty"`
+	ID           StringAsInt `json:"id,omitempty"`
 	LastLogin    *time.Time  `json:"last_login,omitempty"`
 	CreatedDate  *time.Time  `json:"created_date,omitempty" response:"get,post,put"`
 	UpdatedDate  *time.Time  `json:"updated_date,omitempty" response:"get,post,put"`
-	CompanyID    IntAsString `json:"company_id,omitempty"`
+	CompanyID    StringAsInt `json:"company_id,omitempty"`
 	UserAPIToken *string     `json:"user_api_token,omitempty"`
 }
 

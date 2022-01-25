@@ -105,7 +105,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 		"testapi_router_router_full",
 		models.DeviceSubtypeRouter,
 		1,
-		models.ID(11466),
+		models.ID("11466"),
 		[]string{"128.0.0.10"},
 		false,
 	).WithBGPTypeDevice("77")
@@ -114,7 +114,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	router.DeviceSNMPv3Conf = snmpv3conf
 	router.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
 	router.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
-	router.SiteID = models.IDPtr(8483)
+	router.SiteID = models.IDPtr("8483")
 	router.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device, err := devicesAPI.Create(context.Background(), *router)
 
@@ -151,13 +151,13 @@ func TestCreateDeviceRouter(t *testing.T) {
 	assert.True(payload.Bool("device/device_bgp_flowspec"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), device.ID)
-	assert.Equal(models.ID(74333), device.CompanyID)
+	assert.Equal(models.ID("42"), device.ID)
+	assert.Equal(models.ID("74333"), device.CompanyID)
 	assert.Equal("testapi_router_router_full", device.DeviceName)
 	assert.Equal(models.DeviceTypeRouter, device.DeviceType)
 	assert.Equal("testapi router with full config", *device.DeviceDescription)
 	require.NotNil(device.Site)
-	assert.Equal(models.ID(8483), *device.Site.ID)
+	assert.Equal(models.ID("8483"), *device.Site.ID)
 	assert.Nil(device.Site.SiteName)
 	assert.Nil(device.Site.Latitude)
 	assert.Nil(device.Site.Longitude)
@@ -173,7 +173,7 @@ func TestCreateDeviceRouter(t *testing.T) {
 	assert.Nil(device.Plan.UpdatedDate)
 	assert.Nil(device.Plan.FastRetention)
 	assert.Nil(device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
+	assert.Equal(models.ID("11466"), *device.Plan.ID)
 	assert.Nil(device.Plan.MaxBigdataFPS)
 	assert.Nil(device.Plan.MaxDevices)
 	assert.Nil(device.Plan.MaxFPS)
@@ -283,11 +283,11 @@ func TestCreateDeviceDNS(t *testing.T) {
 		"testapi_dns-aws_subnet_bgp_other_device",
 		models.DeviceSubtypeAwsSubnet,
 		1,
-		models.ID(11466),
+		models.ID("11466"),
 		models.CDNAttributeYes,
-	).WithBGPTypeOtherDevice(models.ID(42))
+	).WithBGPTypeOtherDevice(models.ID("42"))
 	dns.DeviceDescription = pointer.ToString("testapi dns with minimal config")
-	dns.SiteID = models.IDPtr(8483)
+	dns.SiteID = models.IDPtr("8483")
 	dns.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device, err := devicesAPI.Create(context.Background(), *dns)
 
@@ -314,12 +314,12 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.False(payload.Exists("device/sending_ips")) // empty array should not be included in payload
 
 	// # and response properly parsed
-	assert.Equal(models.ID(43), device.ID)
+	assert.Equal(models.ID("43"), device.ID)
 	assert.Equal("testapi_dns_aws_subnet_bgp_other_device", device.DeviceName)
 	assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
 	assert.Equal("testapi dns with minimal config", *device.DeviceDescription)
 	assert.NotNil(device.Site)
-	assert.Equal(models.ID(8483), *device.Site.ID)
+	assert.Equal(models.ID("8483"), *device.Site.ID)
 	assert.Nil(device.Site.SiteName)
 	assert.Nil(device.Site.Latitude)
 	assert.Nil(device.Site.Longitude)
@@ -334,7 +334,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.Nil(device.Plan.UpdatedDate)
 	assert.Nil(device.Plan.FastRetention)
 	assert.Nil(device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
+	assert.Equal(models.ID("11466"), *device.Plan.ID)
 	assert.Nil(device.Plan.MaxBigdataFPS)
 	assert.Nil(device.Plan.MaxDevices)
 	assert.Nil(device.Plan.MaxFPS)
@@ -349,7 +349,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.False(*device.MinimizeSNMP)
 	assert.Equal(models.DeviceBGPTypeOtherDevice, *device.DeviceBGPType)
 	assert.True(*device.DeviceBGPFlowSpec)
-	assert.Equal(models.ID(42), *device.UseBGPDeviceID)
+	assert.Equal(models.ID("42"), *device.UseBGPDeviceID)
 	assert.Equal(time.Date(2021, 1, 8, 11, 10, 33, 465*1000000, time.UTC), device.CreatedDate)
 	assert.Equal(time.Date(2021, 1, 8, 11, 10, 33, 465*1000000, time.UTC), device.UpdatedDate)
 	assert.Nil(device.DeviceSNMPv3Conf)
@@ -445,7 +445,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	snmpv3conf := models.NewSNMPv3Conf("John")
 	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolSHA, "Auth_Pass")
 	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolAES, "Priv_Pass")
-	deviceID := models.ID(42)
+	deviceID := models.ID("42")
 
 	router := models.Device{
 		ID:               deviceID,
@@ -456,8 +456,8 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	router.DeviceDescription = pointer.ToString("updated description")
 	router.DeviceSNMNPIP = pointer.ToString("127.0.0.10")
 	router.MinimizeSNMP = pointer.ToBool(true)
-	router.PlanID = models.IDPtr(11466)
-	router.SiteID = models.IDPtr(8483)
+	router.PlanID = models.IDPtr("11466")
+	router.SiteID = models.IDPtr("8483")
 	router.DeviceBGPType = models.DeviceBGPTypePtr(models.DeviceBGPTypeDevice)
 	router.DeviceBGPNeighborASN = pointer.ToString("77")
 	router.DeviceBGPNeighborIPv6 = pointer.ToString("2001:db8:85a3:8d3:1319:8a2e:370:7348")
@@ -496,13 +496,13 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.True(payload.Bool("device/device_bgp_flowspec"))
 
 	// # and response properly parsed
-	assert.Equal(models.ID(42), device.ID)
-	assert.Equal(models.ID(74333), device.CompanyID)
+	assert.Equal(models.ID("42"), device.ID)
+	assert.Equal(models.ID("74333"), device.CompanyID)
 	assert.Equal("testapi_router_paloalto_minimal", device.DeviceName)
 	assert.Equal(models.DeviceTypeRouter, device.DeviceType)
 	assert.Equal("updated description", *device.DeviceDescription)
 	require.NotNil(device.Site)
-	assert.Equal(models.ID(8483), *device.Site.ID)
+	assert.Equal(models.ID("8483"), *device.Site.ID)
 	assert.Nil(device.Site.SiteName)
 	assert.Nil(device.Site.Latitude)
 	assert.Nil(device.Site.Longitude)
@@ -518,7 +518,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Nil(device.Plan.UpdatedDate)
 	assert.Nil(device.Plan.FastRetention)
 	assert.Nil(device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
+	assert.Equal(models.ID("11466"), *device.Plan.ID)
 	assert.Nil(device.Plan.MaxBigdataFPS)
 	assert.Nil(device.Plan.MaxDevices)
 	assert.Nil(device.Plan.MaxFPS)
@@ -592,11 +592,11 @@ func TestGetDevice(t *testing.T) {
 			}`,
 			expectedResult: &models.Device{
 				DeviceSampleRate: 1,
-				ID:               43,
+				ID:               "43",
 				DeviceName:       "testapi_dns_minimal_1",
 				DeviceType:       models.DeviceTypeRouter,
 				DeviceSubType:    models.DeviceSubtypeRouter,
-				CompanyID:        74333,
+				CompanyID:        "74333",
 				CreatedDate:      time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				UpdatedDate:      time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
@@ -757,21 +757,21 @@ func TestGetDevice(t *testing.T) {
 					PrivacyPassphrase: pointer.ToString("**********ass"),
 				},
 				CDNAttr:         nil,
-				ID:              42,
+				ID:              "42",
 				DeviceName:      "testapi_router_full_1",
 				DeviceType:      models.DeviceTypeRouter,
 				DeviceSubType:   models.DeviceSubtypeRouter,
 				DeviceStatus:    pointer.ToString("V"),
 				DeviceFlowType:  pointer.ToString("auto"),
-				CompanyID:       74333,
+				CompanyID:       "74333",
 				SNMPLastUpdated: nil,
 				CreatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
 				UpdatedDate:     time.Date(2020, 12, 17, 8, 24, 45, 74*1000000, time.UTC),
 				BGPPeerIP4:      pointer.ToString("208.76.14.223"),
 				BGPPeerIP6:      pointer.ToString("2620:129:1:2::1"),
 				Plan: models.DevicePlan{
-					ID:            models.IDPtr(11466),
-					CompanyID:     models.IDPtr(74333),
+					ID:            models.IDPtr("11466"),
+					CompanyID:     models.IDPtr("74333"),
 					Name:          pointer.ToString("Free Trial Plan"),
 					Description:   pointer.ToString("Your Free Trial includes 6 devices (...)"),
 					Active:        pointer.ToBool(true),
@@ -787,8 +787,8 @@ func TestGetDevice(t *testing.T) {
 					Devices:       []models.PlanDevice{},
 				},
 				Site: &models.DeviceSite{
-					ID:        models.IDPtr(8483),
-					CompanyID: models.IDPtr(74333),
+					ID:        models.IDPtr("8483"),
+					CompanyID: models.IDPtr("74333"),
 					Latitude:  pointer.ToFloat64(54.348972),
 					Longitude: pointer.ToFloat64(18.659791),
 					SiteName:  pointer.ToString("marina gdańsk"),
@@ -798,9 +798,9 @@ func TestGetDevice(t *testing.T) {
 						Name:        "AWS: terraform-demo-aws",
 						Color:       "#5340A5",
 						Devices:     nil,
-						ID:          2590,
-						UserID:      models.IDPtr(133210),
-						CompanyID:   74333,
+						ID:          "2590",
+						UserID:      models.IDPtr("133210"),
+						CompanyID:   "74333",
 						CreatedDate: time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC),
 						UpdatedDate: time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC),
 					},
@@ -808,9 +808,9 @@ func TestGetDevice(t *testing.T) {
 						Name:        "GCP: traffic-generator-gcp",
 						Color:       "#5289D9",
 						Devices:     nil,
-						ID:          2751,
-						UserID:      models.IDPtr(136885),
-						CompanyID:   74333,
+						ID:          "2751",
+						UserID:      models.IDPtr("136885"),
+						CompanyID:   "74333",
 						CreatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
 						UpdatedDate: time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC),
 					},
@@ -818,13 +818,13 @@ func TestGetDevice(t *testing.T) {
 				AllInterfaces: []models.AllInterfaces{
 					{
 						InterfaceDescription: "testapi-interface-1",
-						DeviceID:             42,
+						DeviceID:             "42",
 						SNMPSpeed:            75,
 						InitialSNMPSpeed:     nil,
 					},
 					{
 						InterfaceDescription: "testapi-interface-2",
-						DeviceID:             42,
+						DeviceID:             "42",
 						SNMPSpeed:            7,
 						InitialSNMPSpeed:     pointer.ToFloat64(7),
 					},
@@ -916,21 +916,21 @@ func TestGetDevice(t *testing.T) {
 					v := models.CDNAttributeYes
 					return &v
 				}(),
-				ID:              43,
+				ID:              "43",
 				DeviceName:      "testapi_dns_minimal_1",
 				DeviceType:      models.DeviceTypeHostNProbeDNSWWW,
 				DeviceSubType:   models.DeviceSubtypeAwsSubnet,
 				DeviceStatus:    pointer.ToString("V"),
 				DeviceFlowType:  pointer.ToString("auto"),
-				CompanyID:       74333,
+				CompanyID:       "74333",
 				SNMPLastUpdated: nil,
 				CreatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				UpdatedDate:     time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				BGPPeerIP4:      nil,
 				BGPPeerIP6:      nil,
 				Plan: models.DevicePlan{
-					ID:            models.IDPtr(11466),
-					CompanyID:     models.IDPtr(74333),
+					ID:            models.IDPtr("11466"),
+					CompanyID:     models.IDPtr("74333"),
 					Name:          pointer.ToString("Free Trial Plan"),
 					Description:   pointer.ToString("Your Free Trial includes 6 devices (...)"),
 					Active:        pointer.ToBool(true),
@@ -1002,11 +1002,11 @@ func TestGetDevice(t *testing.T) {
 					v := models.CDNAttribute("cdna_teapot")
 					return &v
 				}(),
-				ID:            43,
+				ID:            "43",
 				DeviceName:    "testapi_dns_minimal_1",
 				DeviceType:    models.DeviceType("dt_teapot"),
 				DeviceSubType: models.DeviceSubtype("ds_teapot"),
-				CompanyID:     74333,
+				CompanyID:     "74333",
 				CreatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				UpdatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
@@ -1063,11 +1063,11 @@ func TestGetDevice(t *testing.T) {
 					v := models.CDNAttribute("")
 					return &v
 				}(),
-				ID:            43,
+				ID:            "43",
 				DeviceName:    "testapi_dns_minimal_1",
 				DeviceType:    models.DeviceType(""),
 				DeviceSubType: models.DeviceSubtype(""),
-				CompanyID:     74333,
+				CompanyID:     "74333",
 				CreatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				UpdatedDate:   time.Date(2020, 12, 17, 12, 53, 1, 25*1000000, time.UTC),
 				Plan: models.DevicePlan{
@@ -1084,7 +1084,7 @@ func TestGetDevice(t *testing.T) {
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
 			devicesAPI := resources.NewDevicesAPI(transport)
-			deviceID := 43
+			deviceID := "43"
 
 			// act
 			result, err := devicesAPI.Get(context.Background(), deviceID)
@@ -1296,47 +1296,47 @@ func TestGetAllDevices(t *testing.T) {
 	require.Equal(2, len(devices))
 	// device 0
 	device := devices[0]
-	assert.Equal(models.ID(42), device.ID)
-	assert.Equal(models.ID(74333), device.CompanyID)
+	assert.Equal(models.ID("42"), device.ID)
+	assert.Equal(models.ID("74333"), device.CompanyID)
 	assert.Equal("testapi_router_full_1", device.DeviceName)
 	assert.Equal(models.DeviceTypeRouter, device.DeviceType)
 	assert.Equal("testapi router with full config", *device.DeviceDescription)
 	require.NotNil(device.Site)
-	assert.Equal(models.ID(8483), *device.Site.ID)
+	assert.Equal(models.ID("8483"), *device.Site.ID)
 	assert.Equal("marina gdańsk", *device.Site.SiteName)
 	assert.Equal(54.348972, *device.Site.Latitude)
 	assert.Equal(18.659791, *device.Site.Longitude)
-	assert.Equal(models.ID(74333), *device.Site.CompanyID)
+	assert.Equal(models.ID("74333"), *device.Site.CompanyID)
 	require.NotNil(device.Plan)
 	assert.True(*device.Plan.Active)
 	assert.True(*device.Plan.BGPEnabled)
 	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.CreatedDate)
-	assert.Equal(models.ID(74333), *device.Plan.CompanyID)
+	assert.Equal(models.ID("74333"), *device.Plan.CompanyID)
 	assert.Equal("Your Free Trial includes 6 devices (...)", *device.Plan.Description)
 	assert.Equal(0, len(device.Plan.DeviceTypes))
 	assert.Equal(0, len(device.Plan.Devices))
 	assert.Equal(time.Date(2020, 9, 3, 8, 41, 57, 489*1000000, time.UTC), *device.Plan.UpdatedDate)
 	assert.Equal(30, *device.Plan.FastRetention)
 	assert.Equal(30, *device.Plan.FullRetention)
-	assert.Equal(models.ID(11466), *device.Plan.ID)
+	assert.Equal(models.ID("11466"), *device.Plan.ID)
 	assert.Equal(30, *device.Plan.MaxBigdataFPS)
 	assert.Equal(6, *device.Plan.MaxDevices)
 	assert.Equal(1000, *device.Plan.MaxFPS)
 	assert.Equal("Free Trial Plan", *device.Plan.Name)
 	assert.Equal(2, len(device.Labels))
-	assert.Equal(models.ID(2590), device.Labels[0].ID)
+	assert.Equal(models.ID("2590"), device.Labels[0].ID)
 	assert.Equal("AWS: terraform-demo-aws", device.Labels[0].Name)
 	assert.Equal(time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC), device.Labels[0].UpdatedDate)
 	assert.Equal(time.Date(2020, 10, 5, 15, 28, 0, 276*1000000, time.UTC), device.Labels[0].CreatedDate)
-	assert.Equal(models.ID(133210), *device.Labels[0].UserID)
-	assert.Equal(models.ID(74333), device.Labels[0].CompanyID)
+	assert.Equal(models.ID("133210"), *device.Labels[0].UserID)
+	assert.Equal(models.ID("74333"), device.Labels[0].CompanyID)
 	assert.Equal("#5340A5", device.Labels[0].Color)
-	assert.Equal(models.ID(2751), device.Labels[1].ID)
+	assert.Equal(models.ID("2751"), device.Labels[1].ID)
 	assert.Equal("GCP: traffic-generator-gcp", device.Labels[1].Name)
 	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), device.Labels[1].UpdatedDate)
 	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), device.Labels[1].CreatedDate)
 	assert.Nil(device.Labels[1].UserID)
-	assert.Equal(models.ID(74333), device.Labels[1].CompanyID)
+	assert.Equal(models.ID("74333"), device.Labels[1].CompanyID)
 	assert.Equal("#5289D9", device.Labels[1].Color)
 	require.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
@@ -1369,7 +1369,7 @@ func TestGetAllDevices(t *testing.T) {
 
 	// device 1
 	device = devices[1]
-	assert.Equal(models.ID(43), device.ID)
+	assert.Equal(models.ID("43"), device.ID)
 	assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
 	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
 	assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
@@ -1382,7 +1382,7 @@ func TestDeleteDevice(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
+	deviceID := models.ID("42")
 	err := devicesAPI.Delete(context.Background(), deviceID)
 
 	// assert
@@ -1433,8 +1433,8 @@ func TestApplyLabels(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
-	labels := []models.ID{models.ID(3011), models.ID(3012)}
+	deviceID := models.ID("42")
+	labels := []models.ID{models.ID("3011"), models.ID("3012")}
 	result, err := devicesAPI.ApplyLabels(context.Background(), deviceID, labels)
 
 	// assert request properly formed
@@ -1447,26 +1447,26 @@ func TestApplyLabels(t *testing.T) {
 	assert.Equal(fmt.Sprintf("/devices/%v/labels", deviceID), transport.RequestPath)
 	require.NotNil(payload.Get("labels"))
 	assert.Equal(2, payload.Count("labels/*"))
-	assert.Equal(models.ID(3011), payload.Int("labels/*[1]/id"))
-	assert.Equal(models.ID(3012), payload.Int("labels/*[2]/id"))
+	assert.Equal(models.ID("3011"), payload.String("labels/*[1]/id"))
+	assert.Equal(models.ID("3012"), payload.String("labels/*[2]/id"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), result.ID)
+	assert.Equal(models.ID("42"), result.ID)
 	assert.Equal("test_router", result.DeviceName)
 	assert.Equal(2, len(result.Labels))
-	assert.Equal(models.ID(3011), result.Labels[0].ID)
+	assert.Equal(models.ID("3011"), result.Labels[0].ID)
 	assert.Equal("apitest-label-red", result.Labels[0].Name)
 	assert.Equal(time.Date(2021, 1, 11, 8, 38, 8, 678*1000000, time.UTC), result.Labels[0].CreatedDate)
 	assert.Equal(time.Date(2021, 1, 11, 8, 38, 8, 678*1000000, time.UTC), result.Labels[0].UpdatedDate)
-	assert.Equal(models.ID(144319), *result.Labels[0].UserID)
-	assert.Equal(models.ID(74333), result.Labels[0].CompanyID)
+	assert.Equal(models.ID("144319"), *result.Labels[0].UserID)
+	assert.Equal(models.ID("74333"), result.Labels[0].CompanyID)
 	assert.Equal("#FF0000", result.Labels[0].Color)
-	assert.Equal(models.ID(3012), result.Labels[1].ID)
+	assert.Equal(models.ID("3012"), result.Labels[1].ID)
 	assert.Equal("apitest-label-blue", result.Labels[1].Name)
 	assert.Equal(time.Date(2021, 1, 11, 8, 38, 42, 627*1000000, time.UTC), result.Labels[1].CreatedDate)
 	assert.Equal(time.Date(2021, 1, 11, 8, 38, 42, 627*1000000, time.UTC), result.Labels[1].UpdatedDate)
-	assert.Equal(models.ID(144319), *result.Labels[1].UserID)
-	assert.Equal(models.ID(74333), result.Labels[1].CompanyID)
+	assert.Equal(models.ID("144319"), *result.Labels[1].UserID)
+	assert.Equal(models.ID("74333"), result.Labels[1].CompanyID)
 	assert.Equal("#0000FF", result.Labels[1].Color)
 }
 
@@ -1502,8 +1502,8 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
-	interfaceID := models.ID(43)
+	deviceID := models.ID("42")
+	interfaceID := models.ID("43")
 	intf, err := devicesAPI.Interfaces.Get(context.Background(), deviceID, interfaceID)
 
 	// assert request properly formed
@@ -1516,10 +1516,10 @@ func TestGetInterfaceMinimal(t *testing.T) {
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
-	assert.Equal(models.ID(43), intf.ID)
-	assert.Equal(models.ID(74333), intf.CompanyID)
-	assert.Equal(models.ID(42), intf.DeviceID)
-	assert.Equal(models.ID(1), intf.SNMPID)
+	assert.Equal(models.ID("43"), intf.ID)
+	assert.Equal(models.ID("74333"), intf.CompanyID)
+	assert.Equal(models.ID("42"), intf.DeviceID)
+	assert.Equal(models.ID("1"), intf.SNMPID)
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Nil(intf.SNMPAlias)
 	assert.Nil(intf.InterfaceIP)
@@ -1605,8 +1605,8 @@ func TestGetInterfaceFull(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
-	interfaceID := models.ID(43)
+	deviceID := models.ID("42")
+	interfaceID := models.ID("43")
 	intf, err := devicesAPI.Interfaces.Get(context.Background(), deviceID, interfaceID)
 
 	// assert request properly formed
@@ -1619,10 +1619,10 @@ func TestGetInterfaceFull(t *testing.T) {
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
-	assert.Equal(models.ID(43), intf.ID)
-	assert.Equal(models.ID(74333), intf.CompanyID)
-	assert.Equal(models.ID(42), intf.DeviceID)
-	assert.Equal(models.ID(1), intf.SNMPID)
+	assert.Equal(models.ID("43"), intf.ID)
+	assert.Equal(models.ID("74333"), intf.CompanyID)
+	assert.Equal(models.ID("42"), intf.DeviceID)
+	assert.Equal(models.ID("1"), intf.SNMPID)
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Equal("interface-description-1", *intf.SNMPAlias)
 	assert.Equal("127.0.0.1", *intf.InterfaceIP)
@@ -1639,11 +1639,11 @@ func TestGetInterfaceFull(t *testing.T) {
 	assert.Equal(30100, intf.TopNextHopASNs[0].Packets)
 	assert.Equal(21, intf.TopNextHopASNs[1].ASN)
 	assert.Equal(30101, intf.TopNextHopASNs[1].Packets)
-	assert.Equal(models.ID(39902), *intf.VRFID)
+	assert.Equal(models.ID("39902"), *intf.VRFID)
 	require.NotNil(intf.VRF)
-	assert.Equal(models.ID(74333), intf.VRF.CompanyID)
+	assert.Equal(models.ID("74333"), intf.VRF.CompanyID)
 	assert.Equal("vrf-description", *intf.VRF.Description)
-	assert.Equal(models.ID(79175), intf.VRF.DeviceID)
+	assert.Equal(models.ID("79175"), intf.VRF.DeviceID)
 	assert.Equal("vrf-name", intf.VRF.Name)
 	assert.Equal("11.121.111.13:3254", intf.VRF.RouteDistinguisher)
 	assert.Equal("101:100", intf.VRF.RouteTarget)
@@ -1793,7 +1793,7 @@ func TestGetAllInterfaces(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
+	deviceID := models.ID("42")
 	interfaces, err := devicesAPI.Interfaces.GetAll(context.Background(), deviceID)
 
 	// assert request properly formed
@@ -1808,10 +1808,10 @@ func TestGetAllInterfaces(t *testing.T) {
 	// and response properly parsed
 	assert.Equal(3, len(interfaces))
 	intf := interfaces[0]
-	assert.Equal(models.ID(43), intf.ID)
-	assert.Equal(models.ID(74333), intf.CompanyID)
-	assert.Equal(models.ID(42), intf.DeviceID)
-	assert.Equal(models.ID(1), intf.SNMPID)
+	assert.Equal(models.ID("43"), intf.ID)
+	assert.Equal(models.ID("74333"), intf.CompanyID)
+	assert.Equal(models.ID("42"), intf.DeviceID)
+	assert.Equal(models.ID("1"), intf.SNMPID)
 	assert.Equal(15, intf.SNMPSpeed)
 	assert.Equal("interface-description-1", *intf.SNMPAlias)
 	assert.Equal("127.0.0.1", *intf.InterfaceIP)
@@ -1828,11 +1828,11 @@ func TestGetAllInterfaces(t *testing.T) {
 	assert.Equal(30100, intf.TopNextHopASNs[0].Packets)
 	assert.Equal(21, intf.TopNextHopASNs[1].ASN)
 	assert.Equal(30101, intf.TopNextHopASNs[1].Packets)
-	assert.Equal(models.ID(39902), *intf.VRFID)
+	assert.Equal(models.ID("39902"), *intf.VRFID)
 	require.NotNil(intf.VRF)
-	assert.Equal(models.ID(74333), intf.VRF.CompanyID)
+	assert.Equal(models.ID("74333"), intf.VRF.CompanyID)
 	assert.Equal("vrf-description", *intf.VRF.Description)
-	assert.Equal(models.ID(79175), intf.VRF.DeviceID)
+	assert.Equal(models.ID("79175"), intf.VRF.DeviceID)
 	assert.Equal("vrf-name", intf.VRF.Name)
 	assert.Equal("11.121.111.13:3254", intf.VRF.RouteDistinguisher)
 	assert.Equal("101:100", intf.VRF.RouteTarget)
@@ -1861,10 +1861,10 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
+	deviceID := models.ID("42")
 	intf := models.NewInterface(
 		deviceID,
-		models.ID(2),
+		models.ID("2"),
 		8,
 		"testapi-interface-2",
 	)
@@ -1884,8 +1884,8 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 
 	// and response properly parsed
 	assert.Equal(deviceID, created.DeviceID)
-	assert.Equal(models.ID(2), created.SNMPID)
-	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(models.ID("2"), created.SNMPID)
+	assert.Equal(models.ID("74333"), created.CompanyID)
 	assert.Equal(8, created.SNMPSpeed)
 	assert.Equal("testapi-interface-2", created.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 41, 16, 191*1000000, time.UTC), created.CreatedDate)
@@ -1939,10 +1939,10 @@ func TestCreateInterfaceFull(t *testing.T) {
 	vrf.ExtRouteDistinguisher = pointer.ToString("15")
 	secondaryIP1 := models.SecondaryIP{Address: "127.0.0.2", Netmask: "255.255.255.0"}
 	secondaryIP2 := models.SecondaryIP{Address: "127.0.0.3", Netmask: "255.255.255.0"}
-	deviceID := models.ID(42)
+	deviceID := models.ID("42")
 	intf := models.NewInterface(
 		deviceID,
-		models.ID(2),
+		models.ID("2"),
 		8,
 		"testapi-interface-2",
 	)
@@ -1980,8 +1980,8 @@ func TestCreateInterfaceFull(t *testing.T) {
 
 	// and response properly parsed
 	assert.Equal(deviceID, created.DeviceID)
-	assert.Equal(models.ID(243205880), created.SNMPID)
-	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(models.ID("243205880"), created.SNMPID)
+	assert.Equal(models.ID("74333"), created.CompanyID)
 	assert.Equal(8, created.SNMPSpeed)
 	assert.Equal("testapi-interface-1", created.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 31, 40, 619*1000000, time.UTC), created.CreatedDate)
@@ -1994,7 +1994,7 @@ func TestCreateInterfaceFull(t *testing.T) {
 	assert.Equal("interface-description-1", *created.SNMPAlias)
 	assert.Equal("127.0.0.1", *created.InterfaceIP)
 	assert.Equal("255.255.255.0", *created.InterfaceIPNetmask)
-	assert.Equal(models.ID(39903), *created.VRFID)
+	assert.Equal(models.ID("39903"), *created.VRFID)
 	assert.Nil(created.VRF)
 }
 
@@ -2005,8 +2005,8 @@ func TestDeleteInterface(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
-	interfaceID := models.ID(43)
+	deviceID := models.ID("42")
+	interfaceID := models.ID("43")
 	err := devicesAPI.Interfaces.Delete(context.Background(), deviceID, interfaceID)
 
 	// assert
@@ -2056,8 +2056,8 @@ func TestUpdateInterfaceMinimal(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	deviceID := models.ID(42)
-	interfaceID := models.ID(43)
+	deviceID := models.ID("42")
+	interfaceID := models.ID("43")
 	intf := models.Interface{SNMPSpeed: 75, DeviceID: deviceID, ID: interfaceID}
 	updated, err := devicesAPI.Interfaces.Update(context.Background(), intf)
 
@@ -2073,10 +2073,10 @@ func TestUpdateInterfaceMinimal(t *testing.T) {
 	assert.Zero(payload.GetAll("secondary_ips"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(43), updated.ID)
+	assert.Equal(models.ID("43"), updated.ID)
 	assert.Equal(deviceID, updated.DeviceID)
-	assert.Equal(models.ID(1), updated.SNMPID)
-	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(models.ID("1"), updated.SNMPID)
+	assert.Equal(models.ID("74333"), updated.CompanyID)
 	assert.Equal(75, updated.SNMPSpeed)
 	assert.Equal("testapi-interface-1", updated.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 13, 8, 50, 37, 68*1000000, time.UTC), updated.CreatedDate)
@@ -2085,7 +2085,7 @@ func TestUpdateInterfaceMinimal(t *testing.T) {
 	assert.Equal("interface-description-1", *updated.SNMPAlias)
 	assert.Equal("127.0.0.1", *updated.InterfaceIP)
 	assert.Equal("255.255.255.0", *updated.InterfaceIPNetmask)
-	assert.Equal(models.ID(39902), *updated.VRFID)
+	assert.Equal(models.ID("39902"), *updated.VRFID)
 	assert.Equal(0, len(updated.SecondaryIPS))
 	assert.Equal(0, len(updated.TopNextHopASNs))
 	assert.Nil(updated.VRF)
@@ -2140,12 +2140,12 @@ func TestUpdateInterfaceFull(t *testing.T) {
 	)
 	vrf.Description = pointer.ToString("vrf-description-44")
 	vrf.ExtRouteDistinguisher = pointer.ToString("44")
-	deviceID := models.ID(42)
-	interfaceID := models.ID(43)
+	deviceID := models.ID("42")
+	interfaceID := models.ID("43")
 	intf := models.Interface{
 		DeviceID:             deviceID,
 		ID:                   interfaceID,
-		SNMPID:               models.ID(4),
+		SNMPID:               models.ID("4"),
 		SNMPSpeed:            44,
 		InterfaceDescription: "testapi-interface-44",
 	}
@@ -2179,8 +2179,8 @@ func TestUpdateInterfaceFull(t *testing.T) {
 	// and response properly parsed
 	assert.Equal(interfaceID, updated.ID)
 	assert.Equal(deviceID, updated.DeviceID)
-	assert.Equal(models.ID(4), updated.SNMPID)
-	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(models.ID("4"), updated.SNMPID)
+	assert.Equal(models.ID("74333"), updated.CompanyID)
 	assert.Equal(44, updated.SNMPSpeed)
 	assert.Equal("testapi-interface-44", updated.InterfaceDescription)
 	assert.Equal(time.Date(2021, 1, 14, 14, 43, 43, 104*1000000, time.UTC), updated.CreatedDate)
@@ -2189,7 +2189,7 @@ func TestUpdateInterfaceFull(t *testing.T) {
 	assert.Equal("interface-description-44", *updated.SNMPAlias)
 	assert.Equal("127.0.44.55", *updated.InterfaceIP)
 	assert.Equal("255.255.255.0", *updated.InterfaceIPNetmask)
-	assert.Equal(models.ID(40055), *updated.VRFID)
+	assert.Equal(models.ID("40055"), *updated.VRFID)
 	assert.Equal(0, len(updated.SecondaryIPS))
 	assert.Equal(0, len(updated.TopNextHopASNs))
 	assert.Nil(updated.VRF)

@@ -1,6 +1,7 @@
 package api_payloads
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -20,8 +21,8 @@ func (r GetAllPlansResponse) ToPlans() (result []models.Plan, err error) {
 // PlanPayload represents JSON Plan payload as it is transmitted from KentikAPI.
 type PlanPayload struct {
 	// following fields can appear in request: none, response: get
-	ID            models.ID               `json:"id"`
-	CompanyID     models.ID               `json:"company_id"`
+	ID            int                     `json:"id"`
+	CompanyID     int                     `json:"company_id"`
 	Name          string                  `json:"name"`
 	Description   string                  `json:"description"`
 	Active        bool                    `json:"active"`
@@ -52,8 +53,8 @@ func payloadToPlan(p PlanPayload) (models.Plan, error) {
 	}
 
 	return models.Plan{
-		ID:            p.ID,
-		CompanyID:     p.CompanyID,
+		ID:            strconv.Itoa(p.ID),
+		CompanyID:     strconv.Itoa(p.CompanyID),
 		Name:          p.Name,
 		Description:   p.Description,
 		Active:        p.Active,
@@ -83,7 +84,7 @@ func payloadToPlanDeviceType(p planDeviceTypePayload) (models.PlanDeviceType, er
 type planDevicePayload struct {
 	DeviceName string    `json:"device_name"`
 	DeviceType string    `json:"device_type"`
-	ID         models.ID `json:"id,string"`
+	ID         models.ID `json:"id"`
 }
 
 func payloadToPlanDevice(p planDevicePayload) (models.PlanDevice, error) {

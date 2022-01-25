@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	testTagID = 42
+	testTagID = "42"
 )
 
 func TestClient_GetAllTags(t *testing.T) {
@@ -70,9 +70,9 @@ func TestClient_GetAllTags(t *testing.T) {
 				{
 					FlowTag:     "DNS_TRAFFIC",
 					Port:        pointer.ToString("53"),
-					ID:          452718,
-					UserID:      39242,
-					CompanyID:   26393,
+					ID:          "452718",
+					UserID:      "39242",
+					CompanyID:   "26393",
 					AddrCount:   0,
 					MACCount:    0,
 					EditedBy:    "el.celebes@acme.com",
@@ -267,9 +267,9 @@ func TestClient_CreateTag(t *testing.T) {
 				MAC:           nil,
 				Country:       nil,
 				VLANs:         nil,
-				ID:            1550982519,
-				UserID:        149492,
-				CompanyID:     74333,
+				ID:            "1550982519",
+				UserID:        "149492",
+				CompanyID:     "74333",
 				AddrCount:     0,
 				MACCount:      0,
 				EditedBy:      "foo.bar@baz.com",
@@ -407,7 +407,7 @@ func TestClient_UpdateTag(t *testing.T) {
 			name: "subset of fields updated",
 			tag: models.Tag{
 				FlowTag: "APITEST-TAG-1",
-				ID:      42,
+				ID:      "42",
 			},
 			updateFields: func(t *models.Tag) *models.Tag {
 				t.FlowTag = "APITEST-TAG-2"
@@ -486,9 +486,9 @@ func TestClient_UpdateTag(t *testing.T) {
 				MAC:           pointer.ToString("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
 				Country:       pointer.ToString("ES,IT"),
 				VLANs:         pointer.ToString("4011,4012,4013"),
-				ID:            42,
-				UserID:        144319,
-				CompanyID:     74333,
+				ID:            "42",
+				UserID:        "144319",
+				CompanyID:     "74333",
 				AddrCount:     2,
 				MACCount:      2,
 				EditedBy:      "john.doe@acme.com",
@@ -645,9 +645,9 @@ func newTestTagOne(t *testing.T) *models.Tag {
 		MAC:           pointer.ToString("FF:FF:FF:FF:FF:FE,FF:FF:FF:FF:FF:FF"),
 		Country:       pointer.ToString("ES,IT"),
 		VLANs:         pointer.ToString("4001,4002,4003"),
-		ID:            42,
-		UserID:        144319,
-		CompanyID:     74333,
+		ID:            "42",
+		UserID:        "144319",
+		CompanyID:     "74333",
 		AddrCount:     2,
 		MACCount:      2,
 		EditedBy:      "john.doe@acme.com",

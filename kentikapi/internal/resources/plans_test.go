@@ -84,15 +84,15 @@ func TestGetAllPlans(t *testing.T) {
 	// plan 0
 	plan := plans[0]
 	assert.True(plan.Active)
-	assert.Equal(models.ID(74333), plan.CompanyID)
+	assert.Equal(models.ID("74333"), plan.CompanyID)
 	assert.Equal(2, len(plan.DeviceTypes))
 	assert.Equal("router", plan.DeviceTypes[0].DeviceType)
 	assert.Equal("host-nprobe-dns-www", plan.DeviceTypes[1].DeviceType)
 	assert.Equal(4, len(plan.Devices))
-	assert.Equal(models.ID(77714), plan.Devices[0].ID)
+	assert.Equal(models.ID("77714"), plan.Devices[0].ID)
 	assert.Equal("testapi_router_minimal_1", plan.Devices[0].DeviceName)
 	assert.Equal("router", plan.Devices[0].DeviceType)
-	assert.Equal(models.ID(77720), plan.Devices[1].ID)
+	assert.Equal(models.ID("77720"), plan.Devices[1].ID)
 	assert.Equal("testapi_dns_minimal_1", plan.Devices[1].DeviceName)
 	assert.Equal("host-nprobe-dns-www", plan.Devices[1].DeviceType)
 }

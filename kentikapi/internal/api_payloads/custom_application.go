@@ -1,6 +1,7 @@
 package api_payloads
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -41,9 +42,9 @@ type CustomApplicationPayload struct {
 	ASN         *string `json:"asn,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID          *models.ID `json:"id,omitempty" response:"get,post,put"`
-	CompanyID   *models.ID `json:"company_id,string,omitempty" response:"get,post,put"`
-	UserID      *models.ID `json:"user_id,string,omitempty"`           // user_id happens to be returned as null
+	ID          *int       `json:"id,omitempty" response:"get,post,put"`
+	CompanyID   *models.ID `json:"company_id,omitempty" response:"get,post,put"`
+	UserID      *models.ID `json:"user_id,omitempty"`                  // user_id happens to be returned as null
 	CreatedDate *time.Time `json:"cdate,omitempty" response:"get,put"` // POST doesn't return cdate
 	UpdatedDate *time.Time `json:"edate,omitempty" response:"get,put"` // POST doesn't return edate
 }
@@ -57,7 +58,7 @@ func payloadToCustomApplication(p CustomApplicationPayload) (models.CustomApplic
 		Protocol:    p.Protocol,
 		Port:        p.Port,
 		ASN:         p.ASN,
-		ID:          *p.ID,
+		ID:          strconv.Itoa(*p.ID),
 		CompanyID:   *p.CompanyID,
 		UserID:      p.UserID,
 		CreatedDate: p.CreatedDate,

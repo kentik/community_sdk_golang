@@ -59,8 +59,8 @@ func runCreateManualMitigation() error {
 	// This data is invalid and saved filter will not be created.
 	mm := models.ManualMitigation{
 		IPCidr:                "192.168.0.0/24",
-		PlatformID:            1234,
-		MethodID:              12345,
+		PlatformID:            "1234",
+		MethodID:              "12345",
 		Comment:               nil,
 		MinutesBeforeAutoStop: "20",
 	}

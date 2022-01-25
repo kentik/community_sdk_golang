@@ -2,6 +2,7 @@ package api_payloads
 
 import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
+	"strconv"
 )
 
 // GetAllCustomDimensionsResponse represents CustomDimensionsAPI GetAll JSON response.
@@ -49,8 +50,8 @@ type CustomDimensionPayload struct {
 
 	// following fields can appear in request: none, response: get/post/put
 	Populators []PopulatorPayload `json:"populators" response:"get,post,put"`
-	ID         *models.ID         `json:"id" response:"get,post,put"`
-	CompanyID  *models.ID         `json:"company_id,string" response:"get,post,put"`
+	ID         *int               `json:"id" response:"get,post,put"`
+	CompanyID  *models.ID         `json:"company_id" response:"get,post,put"`
 }
 
 // payloadToCustomDimension transforms GET/POST/PUT response payload into CustomDimension.
@@ -60,7 +61,7 @@ func payloadToCustomDimension(p CustomDimensionPayload) models.CustomDimension {
 		DisplayName: p.DisplayName,
 		Type:        models.CustomDimensionType(*p.Type),
 		Populators:  payloadToPopulators(p.Populators),
-		ID:          *p.ID,
+		ID:          strconv.Itoa(*p.ID),
 		CompanyID:   *p.CompanyID,
 	}
 }
