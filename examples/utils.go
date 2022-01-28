@@ -2,32 +2,15 @@
 package examples
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"reflect"
 
 	"github.com/kentik/community_sdk_golang/kentikapi"
 )
 
-// ReadCredentialsFromEnv reads and returns (email, token) pair from environment variables, or error if not set.
-func ReadCredentialsFromEnv() (authEmail, authToken string, _ error) {
-	authEmail, ok := os.LookupEnv("KTAPI_AUTH_EMAIL")
-	if !ok || authEmail == "" {
-		return "", "", errors.New("KTAPI_AUTH_EMAIL environment variable needs to be set")
-	}
-
-	authToken, ok = os.LookupEnv("KTAPI_AUTH_TOKEN")
-	if !ok || authToken == "" {
-		return "", "", errors.New("KTAPI_AUTH_TOKEN environment variable needs to be set")
-	}
-
-	return authEmail, authToken, nil
-}
-
-// NewClient creates Kentik API client with credentials read from environment variables.
+// NewClient creates kentikapi client with credentials read from env variables.
 func NewClient() (*kentikapi.Client, error) {
-	email, token, err := ReadCredentialsFromEnv()
+	email, token, err := kentikapi.GetCredentials(kentikapi.DefaultProfile)
 	if err != nil {
 		return nil, err
 	}
