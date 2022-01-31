@@ -47,7 +47,6 @@ func main() {
 	queryChart(client)
 }
 
-//nolint:gomnd
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(
 		"interfaces_query_demo_device",

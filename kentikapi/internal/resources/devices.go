@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"

@@ -1,10 +1,10 @@
 package api_payloads
 
 import (
-	"github.com/AlekSi/pointer"
 	"strconv"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
@@ -79,7 +79,7 @@ type DevicePayload struct {
 	DeviceBGPNeighborASN  *string            `json:"device_bgp_neighbor_asn,omitempty"`
 	DeviceBGPFlowSpec     *bool              `json:"device_bgp_flowspec,omitempty"`
 	DeviceBGPPassword     *string            `json:"device_bgp_password,omitempty"`
-	UseBGPDeviceID        *int               `json:"use_bgp_device_id,omitempty"`
+	UseBGPDeviceID        *StringAsInt       `json:"use_bgp_device_id,omitempty"`
 	DeviceSNMPv3Conf      *snmpv3ConfPayload `json:"device_snmp_v3_conf,omitempty"`
 	CDNAttr               *string            `json:"cdn_attr,omitempty"`
 
@@ -123,10 +123,6 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		return models.Device{}, err
 	}
 
-	var bgpId string
-	if p.UseBGPDeviceID != nil {
-		bgpId = strconv.Itoa(*p.UseBGPDeviceID)
-	}
 	return models.Device{
 		ID:                    *p.ID,
 		CompanyID:             *p.CompanyID,
@@ -155,7 +151,7 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		DeviceBGPNeighborASN:  p.DeviceBGPNeighborASN,
 		DeviceBGPFlowSpec:     p.DeviceBGPFlowSpec,
 		DeviceBGPPassword:     p.DeviceBGPPassword,
-		UseBGPDeviceID:        pointer.ToStringOrNil(bgpId),
+		UseBGPDeviceID:        (*models.ID)(p.UseBGPDeviceID),
 		DeviceStatus:          p.DeviceStatus,
 		DeviceFlowType:        p.DeviceFlowType,
 		SNMPLastUpdated:       p.SNMPLastUpdated,
@@ -182,12 +178,6 @@ func deviceBGPTypeFromStringPtr(s *string) *models.DeviceBGPType {
 
 // DeviceToPayload prepares POST/PUT request payload: fill only the user-provided fields.
 func DeviceToPayload(d models.Device) DevicePayload {
-
-	var bgpId int
-	if d.UseBGPDeviceID != nil {
-		bgpId, _ = strconv.Atoi(*d.UseBGPDeviceID)
-	}
-
 	return DevicePayload{
 		DeviceName:            &d.DeviceName,
 		DeviceType:            stringPtr(string(d.DeviceType)),
@@ -208,7 +198,7 @@ func DeviceToPayload(d models.Device) DevicePayload {
 		DeviceBGPNeighborASN:  d.DeviceBGPNeighborASN,
 		DeviceBGPFlowSpec:     d.DeviceBGPFlowSpec,
 		DeviceBGPPassword:     d.DeviceBGPPassword,
-		UseBGPDeviceID:        pointer.ToIntOrNil(bgpId),
+		UseBGPDeviceID:        (*StringAsInt)(d.UseBGPDeviceID),
 	}
 }
 
@@ -354,14 +344,14 @@ func payloadToDeviceSite(p *deviceSitePayload) *models.DeviceSite {
 		id = strconv.Itoa(*p.ID)
 	}
 
-	var companyId string
+	var CompanyID string
 	if p.CompanyID != nil {
-		companyId = strconv.Itoa(*p.CompanyID)
+		CompanyID = strconv.Itoa(*p.CompanyID)
 	}
 
 	return &models.DeviceSite{
 		ID:        pointer.ToStringOrNil(id),
-		CompanyID: pointer.ToStringOrNil(companyId),
+		CompanyID: pointer.ToStringOrNil(CompanyID),
 		Latitude:  p.Latitude,
 		Longitude: p.Longitude,
 		SiteName:  p.SiteName,
@@ -389,7 +379,6 @@ type devicePlanPayload struct {
 	Devices       []planDevicePayload     `json:"devices"`
 }
 
-//nolint:dupl
 func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 	var deviceTypes []models.PlanDeviceType
 	err := utils.ConvertList(p.DeviceTypes, payloadToPlanDeviceType, &deviceTypes)
@@ -408,14 +397,14 @@ func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 		id = strconv.Itoa(*p.ID)
 	}
 
-	var companyId string
+	var CompanyID string
 	if p.CompanyID != nil {
-		companyId = strconv.Itoa(*p.CompanyID)
+		CompanyID = strconv.Itoa(*p.CompanyID)
 	}
 
 	return models.DevicePlan{
 		ID:            pointer.ToStringOrNil(id),
-		CompanyID:     pointer.ToStringOrNil(companyId),
+		CompanyID:     pointer.ToStringOrNil(CompanyID),
 		Name:          p.Name,
 		Description:   p.Description,
 		Active:        p.Active,

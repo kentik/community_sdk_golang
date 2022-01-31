@@ -2,6 +2,7 @@
 package demos
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -77,8 +78,13 @@ func DisplayQueryDataResult(r models.QueryDataResult) error {
 		// print table rows
 		for _, ts := range timeSeries {
 			if timeBitsPeriod, ok := ts.([]interface{}); ok {
-				unixTime := int64(timeBitsPeriod[0].(float64)) / 1000 // API returns time in milliseconds, we need seconds
-				avgBitsPerSecond := int64(timeBitsPeriod[1].(float64))
+				unixTimeMS, ok := timeBitsPeriod[0].(float64)
+				timeBitsPeriodMS, ok2 := timeBitsPeriod[1].(float64)
+				if !ok || !ok2 {
+					return errors.New("cannot convert timeBitsPeriod properties to float64")
+				}
+				unixTime := int64(unixTimeMS) / 1000 // API returns time in milliseconds, we need seconds
+				avgBitsPerSecond := int64(timeBitsPeriodMS)
 				fmt.Fprintf(w, printoutTableFormat, avgBitsPerSecond, time.Unix(unixTime, 0))
 			}
 		}

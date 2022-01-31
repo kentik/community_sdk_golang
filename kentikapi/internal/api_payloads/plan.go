@@ -38,7 +38,6 @@ type PlanPayload struct {
 	Devices       []planDevicePayload     `json:"devices"`
 }
 
-//nolint:dupl
 func payloadToPlan(p PlanPayload) (models.Plan, error) {
 	var deviceTypes []models.PlanDeviceType
 	err := utils.ConvertList(p.DeviceTypes, payloadToPlanDeviceType, &deviceTypes)

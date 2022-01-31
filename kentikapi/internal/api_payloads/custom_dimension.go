@@ -1,8 +1,9 @@
 package api_payloads
 
 import (
-	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"strconv"
+
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
 // GetAllCustomDimensionsResponse represents CustomDimensionsAPI GetAll JSON response.

@@ -36,7 +36,6 @@ func main() {
 	demos.Step("Finished!")
 }
 
-//nolint:gomnd
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(
 		"testapi_dns_awssubnet",
