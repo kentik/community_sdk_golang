@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+REPO_DIR=$(cd -- "$SCRIPT_DIR" && cd ../ && pwd)
+
+source "$REPO_DIR/tools/utility_functions.sh" || exit 1
+
 # INPUT:
 #   [none] - run all examples
 #   User
 #   Device
 
 function stage() {
-    BLUE_BOLD="\e[1m\e[34m"
-    RESET="\e[0m"
-    msg="$1"
-
     echo
-    echo -e "$BLUE_BOLD$msg$RESET"
+    colored_echo BOLD_BLUE "$1"
 }
 
 if [[ $1 != "" ]]; then

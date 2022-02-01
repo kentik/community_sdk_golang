@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-function stage() {
-    COLOR="\e[95m"
-    RESET="\e[0m"
-    msg="$1"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+REPO_DIR=$(cd -- "$SCRIPT_DIR" && cd ../ && pwd)
 
-    echo
-    echo -e "$COLOR$msg$RESET"
+source "$REPO_DIR/tools/utility_functions.sh" || exit 1
+
+function stage() {
+    colored_echo CYAN "$1"
 }
 
 function checkPrerequsites() {
