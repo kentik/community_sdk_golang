@@ -47,7 +47,7 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 // InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI.
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	SNMPID *models.ID `json:"snmp_id,omitempty" request:"post" response:"get,post,put"`
+	SNMPID *string `json:"snmp_id,omitempty" request:"post" response:"get,post,put"`
 	// caveat, GET returns snmp_speed as string but POST and PUT as int
 	SNMPSpeed            IntAsString `json:"snmp_speed,omitempty"`
 	InterfaceDescription *string     `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
@@ -61,9 +61,9 @@ type InterfacePayload struct {
 	SecondaryIPs []secondaryIPPayload `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID                          *models.ID             `json:"id,omitempty" response:"get,post,put"`
-	CompanyID                   *models.ID             `json:"company_id,omitempty" response:"get,post,put"`
-	DeviceID                    *models.ID             `json:"device_id,omitempty" response:"get,post,put"`
+	ID                          *string                `json:"id,omitempty" response:"get,post,put"`
+	CompanyID                   *string                `json:"company_id,omitempty" response:"get,post,put"`
+	DeviceID                    *string                `json:"device_id,omitempty" response:"get,post,put"`
 	CreatedDate                 *time.Time             `json:"cdate,omitempty" response:"get,post,put"`
 	UpdatedDate                 *time.Time             `json:"edate,omitempty" response:"get,post,put"`
 	InitialSNMPID               *string                `json:"initial_snmp_id,omitempty"` // API happens to return empty string ""
@@ -163,9 +163,9 @@ type vrfAttributesPayload struct {
 	ExtRouteDistinguisher *string `json:"ext_route_distinguisher,omitempty"` // not returned in any response
 
 	// following fields can appear in request: none, response: get
-	ID        *int       `json:"id,omitempty" response:"get"`
-	CompanyID *models.ID `json:"company_id,omitempty" response:"get"`
-	DeviceID  *models.ID `json:"device_id,omitempty" response:"get"`
+	ID        *int    `json:"id,omitempty" response:"get"`
+	CompanyID *string `json:"company_id,omitempty" response:"get"`
+	DeviceID  *string `json:"device_id,omitempty" response:"get"`
 }
 
 func payloadToVRFAttributes(p *vrfAttributesPayload) *models.VRFAttributes {

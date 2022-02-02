@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
@@ -65,8 +64,8 @@ func (r *ApplyLabelsResponse) ToAppliedLabels() (models.AppliedLabels, error) {
 // DevicePayload represents JSON Device payload as it is transmitted to and from KentikAPI.
 type DevicePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	PlanID                *models.ID         `json:"plan_id,omitempty" request:"post"`
-	SiteID                *models.ID         `json:"site_id,omitempty"`
+	PlanID                *string            `json:"plan_id,omitempty" request:"post"`
+	SiteID                *string            `json:"site_id,omitempty"`
 	DeviceDescription     *string            `json:"device_description,omitempty"`
 	DeviceSampleRate      *int               `json:"device_sample_rate,string,omitempty" request:"post" response:"get,post,put"`
 	SendingIPS            []string           `json:"sending_ips,omitempty"`
@@ -89,14 +88,14 @@ type DevicePayload struct {
 	DeviceSubType *string `json:"device_subtype,omitempty" request:"post" response:"get,post,put"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID              *models.ID             `json:"id,omitempty" response:"get,post,put"`
+	ID              *string                `json:"id,omitempty" response:"get,post,put"`
 	Plan            *devicePlanPayload     `json:"plan,omitempty" response:"get,post,put"`
 	Site            *deviceSitePayload     `json:"site,omitempty"`
 	Labels          []deviceLabelPayload   `json:"labels,omitempty"`
 	AllInterfaces   []allInterfacesPayload `json:"all_interfaces,omitempty"`
 	DeviceStatus    *string                `json:"device_status,omitempty"`
 	DeviceFlowType  *string                `json:"device_flow_type,omitempty"`
-	CompanyID       *models.ID             `json:"company_id,omitempty" response:"get,post,put"`
+	CompanyID       *string                `json:"company_id,omitempty" response:"get,post,put"`
 	SNMPLastUpdated *string                `json:"snmp_last_updated,omitempty"`
 	CreatedDate     *time.Time             `json:"created_date,omitempty" response:"get,post,put"`
 	UpdatedDate     *time.Time             `json:"updated_date,omitempty" response:"get,post,put"`
@@ -220,10 +219,10 @@ func deviceBGPTypeToStringPtr(t *models.DeviceBGPType) *string {
 
 // allInterfacesPayload represents JSON Device.AllInterfaces payload as it is transmitted from KentikAPI.
 type allInterfacesPayload struct {
-	DeviceID             models.ID `json:"device_id,omitempty"`
-	SNMPSpeed            float64   `json:"snmp_speed,string,omitempty"`
-	InterfaceDescription string    `json:"interface_description,omitempty"`
-	InitialSNMPSpeed     *float64  `json:"initial_snmp_speed,string,omitempty"`
+	DeviceID             string   `json:"device_id,omitempty"`
+	SNMPSpeed            float64  `json:"snmp_speed,string,omitempty"`
+	InterfaceDescription string   `json:"interface_description,omitempty"`
+	InitialSNMPSpeed     *float64 `json:"initial_snmp_speed,string,omitempty"`
 }
 
 func payloadToAllInterfaces(p allInterfacesPayload) (models.AllInterfaces, error) {
@@ -303,13 +302,13 @@ func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
 // deviceLabelPayload embedded under Device differs from standalone LabelPayload in that it lacks devices list,
 // and differs in field names, eg. cdate vs created_date, edate vs updated_date.
 type deviceLabelPayload struct {
-	ID          int        `json:"id"`
-	Color       string     `json:"color"`
-	Name        string     `json:"name"`
-	UserID      *models.ID `json:"user_id,omitempty"`
-	CompanyID   models.ID  `json:"company_id"`
-	CreatedDate time.Time  `json:"cdate"`
-	UpdatedDate time.Time  `json:"edate"`
+	ID          int       `json:"id"`
+	Color       string    `json:"color"`
+	Name        string    `json:"name"`
+	UserID      *string   `json:"user_id,omitempty"`
+	CompanyID   string    `json:"company_id"`
+	CreatedDate time.Time `json:"cdate"`
+	UpdatedDate time.Time `json:"edate"`
 }
 
 func payloadToDeviceLabel(p deviceLabelPayload) (models.DeviceLabel, error) {
@@ -327,11 +326,11 @@ func payloadToDeviceLabel(p deviceLabelPayload) (models.DeviceLabel, error) {
 // deviceSitePayload represents JSON Device.Site payload as it is transmitted from KentikAPI.
 // deviceSitePayload embeddedd under Device differs from regular SitePayload in that all fields are optional.
 type deviceSitePayload struct {
-	CompanyID *int     `json:"company_id,omitempty"`
-	ID        *int     `json:"id,omitempty"`
-	Latitude  *float64 `json:"lat,omitempty"`
-	Longitude *float64 `json:"lon,omitempty"`
-	SiteName  *string  `json:"site_name,omitempty"`
+	CompanyID *StringAsInt `json:"company_id,omitempty"`
+	ID        *StringAsInt `json:"id,omitempty"`
+	Latitude  *float64     `json:"lat,omitempty"`
+	Longitude *float64     `json:"lon,omitempty"`
+	SiteName  *string      `json:"site_name,omitempty"`
 }
 
 func payloadToDeviceSite(p *deviceSitePayload) *models.DeviceSite {
@@ -339,19 +338,9 @@ func payloadToDeviceSite(p *deviceSitePayload) *models.DeviceSite {
 		return nil
 	}
 
-	var id string
-	if p.ID != nil {
-		id = strconv.Itoa(*p.ID)
-	}
-
-	var CompanyID string
-	if p.CompanyID != nil {
-		CompanyID = strconv.Itoa(*p.CompanyID)
-	}
-
 	return &models.DeviceSite{
-		ID:        pointer.ToStringOrNil(id),
-		CompanyID: pointer.ToStringOrNil(CompanyID),
+		ID:        (*models.ID)(p.ID),
+		CompanyID: (*models.ID)(p.CompanyID),
 		Latitude:  p.Latitude,
 		Longitude: p.Longitude,
 		SiteName:  p.SiteName,
@@ -362,8 +351,8 @@ func payloadToDeviceSite(p *deviceSitePayload) *models.DeviceSite {
 // devicePlanPayload embedded under Device differs from regular PlanPayload in that all fields are optional.
 type devicePlanPayload struct {
 	// following fields can appear in request: none, response: get
-	ID            *int                    `json:"id,omitempty"`
-	CompanyID     *int                    `json:"company_id,omitempty"`
+	ID            *StringAsInt            `json:"id,omitempty"`
+	CompanyID     *StringAsInt            `json:"company_id,omitempty"`
 	Name          *string                 `json:"name,omitempty"`
 	Description   *string                 `json:"description,omitempty"`
 	Active        *bool                   `json:"active,omitempty"`
@@ -392,19 +381,9 @@ func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 		return models.DevicePlan{}, err
 	}
 
-	var id string
-	if p.ID != nil {
-		id = strconv.Itoa(*p.ID)
-	}
-
-	var CompanyID string
-	if p.CompanyID != nil {
-		CompanyID = strconv.Itoa(*p.CompanyID)
-	}
-
 	return models.DevicePlan{
-		ID:            pointer.ToStringOrNil(id),
-		CompanyID:     pointer.ToStringOrNil(CompanyID),
+		ID:            (*models.ID)(p.ID),
+		CompanyID:     (*models.ID)(p.CompanyID),
 		Name:          p.Name,
 		Description:   p.Description,
 		Active:        p.Active,
@@ -423,14 +402,18 @@ func payloadToDevicePlan(p devicePlanPayload) (models.DevicePlan, error) {
 
 // labelIDPayload represents JSON ApplyLabels.LabelID payload as it is transmitted to KentikAPI.
 type labelIDPayload struct {
-	ID string `json:"id"`
+	ID int `json:"id"`
 }
 
 //nolint:revive // labelIDPayLoad doesn't need to be exported
 func LabelIDsToPayload(ids []models.ID) []labelIDPayload {
 	result := make([]labelIDPayload, 0, len(ids))
 	for _, id := range ids {
-		result = append(result, labelIDPayload{ID: id})
+		intID, err := strconv.Atoi(id)
+		if err != nil {
+			return []labelIDPayload{}
+		}
+		result = append(result, labelIDPayload{ID: intID})
 	}
 	return result
 }

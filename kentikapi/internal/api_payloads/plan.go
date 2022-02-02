@@ -81,9 +81,9 @@ func payloadToPlanDeviceType(p planDeviceTypePayload) (models.PlanDeviceType, er
 
 // planDevicePayload represents JSON Plan.Devices payload as it is transmitted from KentikAPI.
 type planDevicePayload struct {
-	DeviceName string    `json:"device_name"`
-	DeviceType string    `json:"device_type"`
-	ID         models.ID `json:"id"`
+	DeviceName string `json:"device_name"`
+	DeviceType string `json:"device_type"`
+	ID         string `json:"id"`
 }
 
 func payloadToPlanDevice(p planDevicePayload) (models.PlanDevice, error) {

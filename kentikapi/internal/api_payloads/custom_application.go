@@ -43,8 +43,8 @@ type CustomApplicationPayload struct {
 
 	// following fields can appear in request: none, response: get/post/put
 	ID          *int       `json:"id,omitempty" response:"get,post,put"`
-	CompanyID   *models.ID `json:"company_id,omitempty" response:"get,post,put"`
-	UserID      *models.ID `json:"user_id,omitempty"`                  // user_id happens to be returned as null
+	CompanyID   *string    `json:"company_id,omitempty" response:"get,post,put"`
+	UserID      *string    `json:"user_id,omitempty"`                  // user_id happens to be returned as null
 	CreatedDate *time.Time `json:"cdate,omitempty" response:"get,put"` // POST doesn't return cdate
 	UpdatedDate *time.Time `json:"edate,omitempty" response:"get,put"` // POST doesn't return edate
 }

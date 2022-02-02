@@ -63,7 +63,7 @@ func runCRUDRouter() error {
 	device.DeviceSNMPv3Conf = snmpv3conf
 	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
 	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
-	device.SiteID = pointer.ToString("8483")
+	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.42")
 	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")

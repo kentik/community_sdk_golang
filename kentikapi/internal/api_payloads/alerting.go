@@ -15,12 +15,12 @@ type CreateManualMitigationRequest struct {
 	MinutesBeforeAutoStop string    `json:"minutesBeforeAutoStop"`
 }
 
-type Alarm struct {
+type AlarmPayload struct {
 	AlarmID         int               `json:"alarm_id"`
 	RowType         string            `json:"row_type"`
 	AlarmState      string            `json:"alarm_state"`
 	AlertID         int               `json:"alert_id"`
-	MitigationID    int               `json:"mitigation_id"`
+	MitigationID    *StringAsInt      `json:"mitigation_id"`
 	TresholdID      int               `json:"threshold_id"`
 	AlertKey        string            `json:"alert_key"`
 	AlertDimension  string            `json:"alert_dimension"`
@@ -47,13 +47,13 @@ type Alarm struct {
 	AlertKeyLookup  string            `json:"alert_key_lookup"`
 }
 
-func (p Alarm) ToAlarm() models.Alarm {
+func (p AlarmPayload) ToAlarm() models.Alarm {
 	return models.Alarm{
 		AlarmID:         strconv.Itoa(p.AlarmID),
 		RowType:         p.RowType,
 		AlarmState:      p.AlarmState,
 		AlertID:         strconv.Itoa(p.AlertID),
-		MitigationID:    strconv.Itoa(p.MitigationID),
+		MitigationID:    (*models.ID)(p.MitigationID),
 		TresholdID:      strconv.Itoa(p.TresholdID),
 		AlertKey:        p.AlertKey,
 		AlertDimension:  p.AlertDimension,
@@ -72,7 +72,7 @@ func (p Alarm) ToAlarm() models.Alarm {
 		AlarmLastComent: p.AlarmLastComent,
 		MitAlertID:      strconv.Itoa(p.MitAlertID),
 		MitAlertIP:      p.MitAlertIP,
-		MitTresholdID:   p.MitTresholdID,
+		MitTresholdID:   strconv.Itoa(p.MitTresholdID),
 		Args:            p.Args,
 		ID:              strconv.Itoa(p.ID),
 		PolicyID:        strconv.Itoa(p.PolicyID),
@@ -103,7 +103,7 @@ type HistoricalAlert struct {
 	CreationTime    time.Time         `json:"ctime"`
 	AlarmStartTime  *string           `json:"alarm_start_time,omitempty"`
 	Comment         *string           `json:"comment,omitempty"`
-	MitigationID    *int              `json:"mitigation_id,omitempty"`
+	MitigationID    *StringAsInt      `json:"mitigation_id,omitempty"`
 	MitMethodID     int               `json:"mit_method_id"`
 	Args            string            `json:"args"`
 	ID              int               `json:"id"`
@@ -135,8 +135,8 @@ func (p HistoricalAlert) ToHistoricalAlert() models.HistoricalAlert {
 		CreationTime:    p.CreationTime,
 		AlarmStartTime:  p.AlarmStartTime,
 		Comment:         p.Comment,
-		MitigationID:    p.MitigationID,
-		MitMethodID:     p.MitMethodID,
+		MitigationID:    (*models.ID)(p.MitigationID),
+		MitMethodID:     strconv.Itoa(p.MitMethodID),
 		Args:            p.Args,
 		ID:              strconv.Itoa(p.ID),
 		PolicyID:        strconv.Itoa(p.PolicyID),
@@ -163,7 +163,7 @@ type Response struct {
 	Result string `json:"result"`
 }
 
-type GetActiveAlertsResponse []Alarm
+type GetActiveAlertsResponse []AlarmPayload
 
 func (r GetActiveAlertsResponse) ToAlarms() []models.Alarm {
 	var alarms []models.Alarm

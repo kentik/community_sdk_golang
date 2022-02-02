@@ -15,6 +15,8 @@ import (
 )
 
 func TestCustomApplicationsAPIExample(t *testing.T) {
+	t.Skipf("Kentik API is broken")
+
 	t.Parallel()
 	assert := assert.New(t)
 	assert.NoError(runCRUDCustomApplications())

@@ -27,12 +27,12 @@ func (p *IntAsString) UnmarshalJSON(data []byte) (err error) {
 		}
 		*p = IntAsString(intval)
 	default:
-		return fmt.Errorf("IntAsString.UnmarshalJSON input should be string or int, got %v (%T)", val, val)
+		return fmt.Errorf("IntAsString.UnmarshalJSON input should be string or float64, got %v (%T)", val, val)
 	}
 	return nil
 }
 
-// StringAsInt evens out deserialization of numbers represented in JSON document sometimes as int and sometimes as string.
+// StringAsInt evens out deserialization of strings represented in JSON document sometimes as int and sometimes as string.
 type StringAsInt string
 
 func (p *StringAsInt) UnmarshalJSON(data []byte) (err error) {
@@ -42,18 +42,15 @@ func (p *StringAsInt) UnmarshalJSON(data []byte) (err error) {
 		return fmt.Errorf("StringAsInt.UnmarshalJSON error: %v", err)
 	}
 
-	// decide the type and convert to number
+	// decide the type and convert to string
 	switch val := obj.(type) {
-	case string: // json.Unmarshall recognizes numbers as float64
+	case string:
 		*p = StringAsInt(val)
-	case int:
-		strval := strconv.Itoa(val)
-		*p = StringAsInt(strval)
-	case float64:
-		strval := strconv.Itoa(int(val))
-		*p = StringAsInt(strval)
+	case float64: // json.Unmarshall recognizes numbers as float64
+		s := strconv.Itoa(int(val))
+		*p = StringAsInt(s)
 	default:
-		return fmt.Errorf("StringAsInt.UnmarshalJSON input should be string or int, got %v (%T)", val, val)
+		return fmt.Errorf("StringAsInt.UnmarshalJSON input should be string or float64, got %v (%T)", val, val)
 	}
 	return nil
 }

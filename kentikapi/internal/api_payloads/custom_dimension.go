@@ -52,7 +52,7 @@ type CustomDimensionPayload struct {
 	// following fields can appear in request: none, response: get/post/put
 	Populators []PopulatorPayload `json:"populators" response:"get,post,put"`
 	ID         *int               `json:"id" response:"get,post,put"`
-	CompanyID  *models.ID         `json:"company_id" response:"get,post,put"`
+	CompanyID  *string            `json:"company_id" response:"get,post,put"`
 }
 
 // payloadToCustomDimension transforms GET/POST/PUT response payload into CustomDimension.

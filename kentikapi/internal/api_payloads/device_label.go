@@ -48,8 +48,8 @@ type DeviceLabelPayload struct {
 
 	// following fields can appear in request: none, response: get/post/put
 	ID          *int                `json:"id,omitempty" response:"get,post,put"`
-	UserID      *models.ID          `json:"user_id,omitempty"` // user_id is not always returned
-	CompanyID   *models.ID          `json:"company_id,omitempty" response:"get,post,put"`
+	UserID      *string             `json:"user_id,omitempty"` // user_id is not always returned
+	CompanyID   *string             `json:"company_id,omitempty" response:"get,post,put"`
 	Devices     []deviceItemPayload `json:"devices,omitempty"`
 	CreatedDate *time.Time          `json:"created_date,omitempty" response:"get,post,put"`
 	UpdatedDate *time.Time          `json:"updated_date,omitempty" response:"get,post,put"`
@@ -58,10 +58,10 @@ type DeviceLabelPayload struct {
 type deviceItemPayload struct {
 	// following fields can appear in request: none, response: get, put.
 	// Not in post as newly created label is not assigned to any device
-	ID            models.ID `json:"id"`
-	DeviceName    string    `json:"device_name"`
-	DeviceSubtype string    `json:"device_subtype"`
-	DeviceType    *string   `json:"device_type"` // device_type is not always returned
+	ID            string  `json:"id"`
+	DeviceName    string  `json:"device_name"`
+	DeviceSubtype string  `json:"device_subtype"`
+	DeviceType    *string `json:"device_type"` // device_type is not always returned
 }
 
 // PayloadToDeviceLabel transforms GET/POST/PUT response payload into DeviceLabel.

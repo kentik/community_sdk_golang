@@ -54,7 +54,7 @@ type PopulatorPayload struct {
 	// following fields can appear in request: none, response: get/post/put
 	ID          *int       `json:"id" response:"get,post,put"`
 	DimensionID *int       `json:"dimension_id" response:"get,post,put"`
-	CompanyID   *models.ID `json:"company_id" response:"get,post,put"`
+	CompanyID   *string    `json:"company_id" response:"get,post,put"`
 	User        *string    `json:"user"` // not always returned
 	MACCount    *int       `json:"mac_count" response:"get,post,put"`
 	AddrCount   *int       `json:"addr_count" response:"get,post,put"`

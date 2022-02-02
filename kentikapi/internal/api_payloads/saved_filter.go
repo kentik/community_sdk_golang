@@ -40,7 +40,7 @@ type UpdateSavedFilterResponse struct {
 
 type savedFilterPayload struct {
 	ID                StringAsInt    `json:"id,omitempty"`
-	CompanyID         models.ID      `json:"company_id,omitempty"`
+	CompanyID         string         `json:"company_id,omitempty"`
 	FilterName        string         `json:"filter_name"`
 	FilterDescription string         `json:"filter_description"`
 	FilterLevel       string         `json:"filter_level,omitempty"`
