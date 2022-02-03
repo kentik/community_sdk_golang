@@ -24,7 +24,6 @@ function colored_echo() {
             BOLD_BLUE="\e[1m\e[96m"
             RED="\e[31m"
             YELLOW="\e[33m"
-            CYAN="\e[95m"
         }
         RESET="\e[0m"
         color_code=$(eval echo "\$$color")

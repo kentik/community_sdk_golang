@@ -5,10 +5,6 @@ REPO_DIR=$(cd -- "$SCRIPT_DIR" && cd ../ && pwd)
 
 source "$REPO_DIR/tools/utility_functions.sh" || exit 1
 
-function stage() {
-    colored_echo CYAN "$1"
-}
-
 function checkPrerequsites() {
     stage "Checking prerequisites"
 
