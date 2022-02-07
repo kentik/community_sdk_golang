@@ -76,7 +76,10 @@ func (a *DevicesAPI) Delete(ctx context.Context, id models.ID) error {
 
 // ApplyLabels assigns labels to given device.
 func (a *DevicesAPI) ApplyLabels(ctx context.Context, deviceID models.ID, labels []models.ID) (models.AppliedLabels, error) {
-	payload := api_payloads.LabelIDsToPayload(labels)
+	payload, err := api_payloads.LabelIDsToPayload(labels)
+	if err != nil {
+		return models.AppliedLabels{}, err
+	}
 	request := api_payloads.ApplyLabelsRequest{Labels: payload}
 	var response api_payloads.ApplyLabelsResponse
 	if err := a.UpdateAndValidate(ctx, api_endpoints.ApplyDeviceLabels(deviceID), request, &response); err != nil {
@@ -139,13 +142,11 @@ func (a *interfacesAPI) Update(ctx context.Context, intf models.Interface) (*mod
 	if err != nil {
 		return nil, err
 	}
-
 	request := api_payloads.UpdateInterfaceRequest(payload)
 	var response api_payloads.UpdateInterfaceResponse
 	if err = a.UpdateAndValidate(ctx, api_endpoints.UpdateInterface(intf.DeviceID, intf.ID), request, &response); err != nil {
 		return nil, err
 	}
-
 	result, err := response.ToInterface()
 	return &result, err
 }

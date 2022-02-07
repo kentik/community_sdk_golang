@@ -48,7 +48,7 @@ type UpdateDeviceResponse = GetDeviceResponse
 
 // ApplyLabelsResponse represents JSON ApplyLabelsResponse payload as it is transmitted from KentikAPI.
 type ApplyLabelsResponse struct {
-	ID         models.ID            `json:"id"`
+	ID         string               `json:"id"`
 	DeviceName string               `json:"device_name"`
 	Labels     []deviceLabelPayload `json:"labels"`
 }
@@ -406,14 +406,14 @@ type labelIDPayload struct {
 }
 
 //nolint:revive // labelIDPayLoad doesn't need to be exported
-func LabelIDsToPayload(ids []models.ID) []labelIDPayload {
+func LabelIDsToPayload(ids []models.ID) ([]labelIDPayload, error) {
 	result := make([]labelIDPayload, 0, len(ids))
 	for _, id := range ids {
 		intID, err := strconv.Atoi(id)
 		if err != nil {
-			return []labelIDPayload{}
+			return []labelIDPayload{}, err
 		}
 		result = append(result, labelIDPayload{ID: intID})
 	}
-	return result
+	return result, nil
 }
