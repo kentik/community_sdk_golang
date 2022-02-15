@@ -40,8 +40,6 @@ export KTAPI_AUTH_TOKEN=<Kentik API authentication token>
 go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/community_sdk_golang/examples
 ```
 
-To configure timeout for a client call for Cloud Export or Synthetics use _context.WithTimeout()_ and pass it to the request function. See [an example](examples/cloud_export_example_test.go).
-
 ## Development
 
 Anybody who wants to contribute to development is welcome to provide pull requests. To work on the SDK, install tools listed in [requirements section](#requirements).
@@ -50,7 +48,7 @@ Optional tools:
 - _golangci-lint_: <https://golangci-lint.run/usage/install/#local-installation>
 
 Development steps:
-- Compile the code: `go build ./...`
+- Compile the code: `go build -tags examples ./...`
 - Run tests: `go test ./...`
 - Run all tests, including usage examples: `go test -tags examples ./...`
 - Run golangci-lint: `golangci-lint run ./...`

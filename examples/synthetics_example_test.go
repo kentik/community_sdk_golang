@@ -24,13 +24,11 @@ func TestSyntheticsAPIExample(t *testing.T) {
 }
 
 func runAdminServiceExamples() error {
+	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
 		return err
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
 
 	if err = runCRUDTest(ctx, client); err != nil {
 		fmt.Println(err)
@@ -56,18 +54,17 @@ func runAdminServiceExamples() error {
 }
 
 func runDataServiceExamples() error {
+	ctx := context.Background()
+
 	client, err := NewClient()
 	if err != nil {
 		return err
 	}
 
-	testID, err := pickTestID()
+	testID, err := pickTestID(ctx)
 	if err != nil {
 		return err
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
 
 	if err = runGetHealthForTest(ctx, client, testID); err != nil {
 		fmt.Println(err)
@@ -386,12 +383,11 @@ func makeExampleTest() *syntheticspb.Test {
 }
 
 func pickAgentID() (string, error) {
+	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
 		return "", err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
 
 	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 	if err != nil {

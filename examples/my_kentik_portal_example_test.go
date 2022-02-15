@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -72,12 +71,11 @@ func getAllTenants() error {
 }
 
 func pickTenantID() (models.ID, error) {
+	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
 		return 0, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
 
 	tenants, err := client.MyKentikPortal.GetAll(ctx)
 	if err != nil {

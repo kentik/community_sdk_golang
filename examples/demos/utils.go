@@ -16,12 +16,11 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	ExitOnError = examples.PanicOnError
-	PrettyPrint = examples.PrettyPrint
 	NewClient   = examples.NewClient
+	PrettyPrint = examples.PrettyPrint
 )
 
-// untypedData allows trawersing untyped structures made of maps and slices.
+// untypedData allows traversing untyped structures made of maps and slices.
 type untypedData struct {
 	V interface{}
 }
@@ -53,6 +52,13 @@ func Step(msg string) {
 	fmt.Printf("Press enter to continue...")
 	if _, err := fmt.Scanln(); err != nil {
 		log.Print(err)
+	}
+}
+
+// ExitOnError converts err into panic; use it to reduce the number of: "if err != nil { return err }" statements.
+func ExitOnError(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -90,7 +96,7 @@ func DisplayQueryDataResult(r models.QueryDataResult) error {
 	return nil
 }
 
-// makeTabWriter prepares tabwriter for writing file list in form: Name  Size  Type.
+// makeTabWriter prepares tab writer for writing file list in form: Name  Size  Type.
 func makeTabWriter() *tabwriter.Writer {
 	const minWidth = 0  // minimal cell width including any padding
 	const tabWidth = 2  // width of tab characters (equivalent number of spaces)
