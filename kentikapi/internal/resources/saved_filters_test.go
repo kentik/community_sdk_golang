@@ -73,8 +73,8 @@ func TestSavedFiltersList(t *testing.T) {
 
 	expected := []models.SavedFilter{
 		{
-			ID:        8162,
-			CompanyID: 74333,
+			ID:        "8162",
+			CompanyID: "74333",
 			Filters: models.Filters{
 				Connector: "All",
 				FilterGroups: []models.FilterGroups{
@@ -98,8 +98,8 @@ func TestSavedFiltersList(t *testing.T) {
 			FilterLevel:       "company",
 		},
 		{
-			ID:        8275,
-			CompanyID: 74333,
+			ID:        "8275",
+			CompanyID: "74333",
 			Filters: models.Filters{
 				Connector: "All",
 				FilterGroups: []models.FilterGroups{
@@ -163,8 +163,8 @@ func TestGetSavedFilterInfo(t *testing.T) {
 		"filter_level": "company"
 	}`
 	expected := models.SavedFilter{
-		ID:        8275,
-		CompanyID: 74333,
+		ID:        "8275",
+		CompanyID: "74333",
 		Filters: models.Filters{
 			Connector: "All",
 			FilterGroups: []models.FilterGroups{
@@ -191,7 +191,7 @@ func TestGetSavedFilterInfo(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
-	savedFilter, err := savedFiltersAPI.Get(context.Background(), 8275)
+	savedFilter, err := savedFiltersAPI.Get(context.Background(), "8275")
 
 	assert.NoError(t, err)
 	assert.Equal(t, &expected, savedFilter)
@@ -243,11 +243,11 @@ func TestCreateSavedFilter(t *testing.T) {
 				},
 			},
 		},
-		CompanyID:   74333,
+		CompanyID:   "74333",
 		FilterLevel: "company",
 		CreatedDate: time.Date(2020, 12, 16, 10, 46, 13, 95e6, time.UTC),
 		UpdatedDate: time.Date(2020, 12, 26, 10, 46, 13, 95e6, time.UTC),
-		ID:          8152,
+		ID:          "8152",
 	}
 	// TODO(lwolanin): To test request payloads use JSONPayloadInspector like in most of tests
 	expectedRequestPayload := "{\"filter_name\":\"test_filter1\"," +
@@ -311,7 +311,7 @@ func TestUpdateSavedFilter(t *testing.T) {
 		"edate":"2020-12-16T11:26:19.187Z",
 		"filter_level":"company"
 	}`
-	expectedRequestPayload := "{\"id\":8153,\"filter_name\":\"test_filter1\"," +
+	expectedRequestPayload := "{\"id\":\"8153\",\"filter_name\":\"test_filter1\"," +
 		"\"filter_description\":\"Updated Saved Filter description\",\"cdate\":\"0001-01-01T00:00:00Z\"," +
 		"\"edate\":\"0001-01-01T00:00:00Z\",\"filters\":{\"connector\":\"All\"," +
 		"\"filterGroups\":[{\"connector\":\"All\",\"not\":false,\"filters\":[{\"filterField\":\"dst_as\"," +
@@ -320,7 +320,7 @@ func TestUpdateSavedFilter(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
-	filterID := 8153
+	filterID := "8153"
 	toUpdate := models.SavedFilter{
 		FilterName: "test_filter1",
 		Filters: models.Filters{
@@ -356,7 +356,7 @@ func TestDeleteSavedFilter(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
 
-	filterID := 8153
+	filterID := "8153"
 	err := savedFiltersAPI.Detete(context.Background(), filterID)
 
 	assert.NoError(t, err)

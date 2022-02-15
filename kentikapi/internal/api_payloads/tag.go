@@ -59,9 +59,9 @@ type tagPayload struct {
 	VLANs         *string `json:"vlans,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID          IntAsString `json:"id,omitempty"`
-	UserID      IntAsString `json:"user,omitempty"`
-	CompanyID   IntAsString `json:"company_id,omitempty"`
+	ID          StringAsInt `json:"id,omitempty"`
+	UserID      StringAsInt `json:"user,omitempty"`
+	CompanyID   StringAsInt `json:"company_id,omitempty"`
 	AddrCount   int         `json:"addr_count,omitempty"`
 	MACCount    int         `json:"mac_count,omitempty"`
 	EditedBy    string      `json:"edited_by,omitempty"`

@@ -24,14 +24,14 @@ func TestCrerateManualMitigation(t *testing.T) {
 			"result": "OK"
 		}
     }`
-	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":1234,"methodID":12345,"minutesBeforeAutoStop":"20"}`
+	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":"1234","methodID":"12345","minutesBeforeAutoStop":"20"}`
 
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	alertingAPI := resources.NewAlertingAPI(transport)
 	mm := models.ManualMitigation{
 		IPCidr:                "192.168.0.0/24",
-		PlatformID:            1234,
-		MethodID:              12345,
+		PlatformID:            "1234",
+		MethodID:              "12345",
 		Comment:               nil,
 		MinutesBeforeAutoStop: "20",
 	}
@@ -85,11 +85,12 @@ func TestGetActiveAlerts(t *testing.T) {
 	alarmEndStr := "0000-00-00 00:00:00"
 	expected := []models.Alarm{
 		{
-			AlarmID:         82867908,
+			AlarmID:         "82867908",
 			RowType:         "Alarm",
 			AlarmState:      "ALARM",
-			AlertID:         15094,
-			TresholdID:      76518,
+			AlertID:         "15094",
+			MitigationID:    nil,
+			TresholdID:      "76518",
 			AlertKey:        "443",
 			AlertDimension:  "Port_dst",
 			AlertMetric:     []string{"bits"},
@@ -104,12 +105,12 @@ func TestGetActiveAlerts(t *testing.T) {
 			DebugMode:       false,
 			AlarmStart:      time.Date(2021, time.January, 19, 13, 50, 0, 0, time.UTC),
 			AlarmEnd:        &alarmEndStr,
-			MitAlertID:      0,
+			MitAlertID:      "0",
 			MitAlertIP:      "",
-			MitTresholdID:   0,
+			MitTresholdID:   "0",
 			Args:            "",
-			ID:              0,
-			PolicyID:        15094,
+			ID:              "0",
+			PolicyID:        "15094",
 			PolicyName:      "test_policy1",
 			AlertKeyLookup:  "443",
 		},
@@ -185,9 +186,9 @@ func TestGetAlertsHistory(t *testing.T) {
 			NewAlarmState:   "ALARM",
 			AlertMatchCount: "1",
 			AlertSeverity:   "minor",
-			AlertID:         15094,
-			ThresholdID:     76518,
-			AlarmID:         82867908,
+			AlertID:         "15094",
+			ThresholdID:     "76518",
+			AlarmID:         "82867908",
 			AlertKey:        "443",
 			AlertDimension:  "Port_dst",
 			AlertMetric:     []string{"bits"},
@@ -200,9 +201,9 @@ func TestGetAlertsHistory(t *testing.T) {
 			DebugMode:       false,
 			CreationTime:    time.Date(2021, time.January, 19, 13, 50, 0, 0, time.UTC),
 			AlarmStartTime:  &dateStr,
-			MitMethodID:     0,
-			ID:              0,
-			PolicyID:        15094,
+			MitMethodID:     "0",
+			ID:              "0",
+			PolicyID:        "15094",
 			PolicyName:      "test_policy1",
 			AlertKeyLookup:  "443",
 		},

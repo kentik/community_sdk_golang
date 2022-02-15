@@ -27,7 +27,7 @@ func TestGetSite(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	sitesAPI := resources.NewSitesAPI(transport)
-	siteID := models.ID(42)
+	siteID := models.ID("42")
 
 	// act
 	site, err := sitesAPI.Get(context.Background(), siteID)
@@ -40,11 +40,11 @@ func TestGetSite(t *testing.T) {
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), site.ID)
+	assert.Equal(models.ID("42"), site.ID)
 	assert.Equal("apitest-site-1", site.SiteName)
 	assert.Equal(54.349276, *site.Latitude)
 	assert.Equal(18.659577, *site.Longitude)
-	assert.Equal(models.ID(3250), site.CompanyID)
+	assert.Equal(models.ID("3250"), site.CompanyID)
 }
 
 func TestGetAllSites(t *testing.T) {
@@ -92,25 +92,25 @@ func TestGetAllSites(t *testing.T) {
 	require.Equal(3, len(sites))
 	// site 0
 	site := sites[0]
-	assert.Equal(models.ID(7758), site.ID)
+	assert.Equal(models.ID("7758"), site.ID)
 	assert.Equal("AWS us-east-1", site.SiteName)
 	assert.Nil(site.Latitude)
 	assert.Nil(site.Longitude)
-	assert.Equal(models.ID(74333), site.CompanyID)
+	assert.Equal(models.ID("74333"), site.CompanyID)
 	// site 1
 	site = sites[1]
-	assert.Equal(models.ID(8483), site.ID)
+	assert.Equal(models.ID("8483"), site.ID)
 	assert.Equal("marina gdańsk", site.SiteName)
 	assert.Equal(54.348972, *site.Latitude)
 	assert.Equal(18.659791, *site.Longitude)
-	assert.Equal(models.ID(74333), site.CompanyID)
+	assert.Equal(models.ID("74333"), site.CompanyID)
 	// site 2
 	site = sites[2]
-	assert.Equal(models.ID(8592), site.ID)
+	assert.Equal(models.ID("8592"), site.ID)
 	assert.Equal("mysite", site.SiteName)
 	assert.Equal(1.0, *site.Latitude)
 	assert.Equal(2.0, *site.Longitude)
-	assert.Equal(models.ID(74333), site.CompanyID)
+	assert.Equal(models.ID("74333"), site.CompanyID)
 }
 
 func TestCreateSite(t *testing.T) {
@@ -146,11 +146,11 @@ func TestCreateSite(t *testing.T) {
 	assert.Equal(54.349276, payload.Float("site/lat"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), created.ID)
+	assert.Equal(models.ID("42"), created.ID)
 	assert.Equal("apitest-site-1", created.SiteName)
 	assert.Equal(54.349276, *created.Latitude)
 	assert.Equal(18.659577, *created.Longitude)
-	assert.Equal(models.ID(3250), created.CompanyID)
+	assert.Equal(models.ID("3250"), created.CompanyID)
 }
 
 func TestUpdateSite(t *testing.T) {
@@ -169,7 +169,7 @@ func TestUpdateSite(t *testing.T) {
 	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
-	siteID := models.ID(42)
+	siteID := models.ID("42")
 	site := models.Site{ID: siteID, SiteName: "new-site"}
 	site.Longitude = pointer.ToFloat64(-45.0)
 	updated, err := sitesAPI.Update(context.Background(), site)
@@ -186,11 +186,11 @@ func TestUpdateSite(t *testing.T) {
 	assert.Equal(-45.0, payload.Float("site/lon"))
 
 	// # and response properly parsed
-	assert.Equal(models.ID(42), updated.ID)
+	assert.Equal(models.ID("42"), updated.ID)
 	assert.Equal("new-site", updated.SiteName)
 	assert.Equal(-15.0, *updated.Latitude)
 	assert.Equal(-45.0, *updated.Longitude)
-	assert.Equal(models.ID(3250), updated.CompanyID)
+	assert.Equal(models.ID("3250"), updated.CompanyID)
 }
 
 func TestDeleteSite(t *testing.T) {
@@ -200,7 +200,7 @@ func TestDeleteSite(t *testing.T) {
 	sitesAPI := resources.NewSitesAPI(transport)
 
 	// act
-	siteID := models.ID(42)
+	siteID := models.ID("42")
 	err := sitesAPI.Delete(context.Background(), siteID)
 
 	// assert

@@ -50,11 +50,11 @@ func TestTenantsList(t *testing.T) {
 		}
 	]`
 
-	companyID := 74333
+	companyID := "74333"
 
 	expected := []models.Tenant{
 		{
-			ID:          577,
+			ID:          "577",
 			CompanyID:   &companyID,
 			Name:        "test_tenant",
 			Description: "This is test tenant",
@@ -62,19 +62,19 @@ func TestTenantsList(t *testing.T) {
 			UpdatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
 			Users: []models.TenantUser{
 				{
-					ID:        148099,
-					CompanyID: 74333,
+					ID:        "148099",
+					CompanyID: "74333",
 					Email:     "test@tenant.user",
-					TenantID:  577,
+					TenantID:  "577",
 				}, {
-					ID:        148113,
-					CompanyID: 74333,
+					ID:        "148113",
+					CompanyID: "74333",
 					Email:     "user@testtenant.com",
-					TenantID:  577,
+					TenantID:  "577",
 				},
 			},
 		}, {
-			ID:          578,
+			ID:          "578",
 			Name:        "test_tenant2",
 			Description: "",
 			CreatedDate: time.Date(2020, 12, 21, 10, 57, 53, 425e6, time.UTC),
@@ -125,10 +125,10 @@ func TestGetTenantInfo(t *testing.T) {
 		"updated_date": "2020-12-21T10:55:52.449Z"
 	}`
 
-	companyID := 74333
+	companyID := "74333"
 
 	expected := models.Tenant{
-		ID:          577,
+		ID:          "577",
 		CompanyID:   &companyID,
 		Name:        "test_tenant",
 		Description: "This is test tenant",
@@ -136,15 +136,15 @@ func TestGetTenantInfo(t *testing.T) {
 		UpdatedDate: time.Date(2020, 12, 21, 10, 55, 52, 449e6, time.UTC),
 		Users: []models.TenantUser{
 			{
-				ID:        148099,
-				CompanyID: 74333,
+				ID:        "148099",
+				CompanyID: "74333",
 				Email:     "test@tenant.user",
-				TenantID:  577,
+				TenantID:  "577",
 			}, {
-				ID:        148113,
-				CompanyID: 74333,
+				ID:        "148113",
+				CompanyID: "74333",
 				Email:     "user@testtenant.com",
-				TenantID:  577,
+				TenantID:  "577",
 			},
 		},
 	}
@@ -153,7 +153,7 @@ func TestGetTenantInfo(t *testing.T) {
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
-	tenant, err := myKentikPortalAPI.Get(context.Background(), 577)
+	tenant, err := myKentikPortalAPI.Get(context.Background(), "577")
 
 	// assert
 	require.NoError(t, err)
@@ -175,17 +175,17 @@ func TestTenantUserCreate(t *testing.T) {
 	}`
 
 	expected := models.TenantUser{
-		ID:        158564,
+		ID:        "158564",
 		Email:     "test@test.test",
-		TenantID:  578,
-		CompanyID: 74333,
+		TenantID:  "578",
+		CompanyID: "74333",
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: createTenantUserResponse}
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
-	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), 577, "test@test.test")
+	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), "577", "test@test.test")
 
 	// assert
 	// TODO(lwolanin): Validate the request path passed to transport
@@ -206,8 +206,8 @@ func TestTenantUserDelete(t *testing.T) {
 	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
 
 	// act
-	tenantID := models.ID(478)
-	userID := models.ID(420)
+	tenantID := models.ID("478")
+	userID := models.ID("420")
 	err := myKentikPortalAPI.DeleteTenantUser(context.Background(), tenantID, userID)
 
 	// assert

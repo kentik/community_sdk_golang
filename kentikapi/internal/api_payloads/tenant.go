@@ -1,6 +1,7 @@
 package api_payloads
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -18,7 +19,7 @@ func (p GetAllTenantsResponse) ToTenants() (result []models.Tenant, err error) {
 }
 
 type TenantPayload struct {
-	ID          models.ID           `json:"id"`
+	ID          int                 `json:"id"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
 	Users       []TenantUserPayload `json:"users"`
@@ -27,13 +28,13 @@ type TenantPayload struct {
 }
 
 type TenantUserPayload struct {
-	ID        models.ID  `json:"id,string"`
+	ID        string     `json:"id"`
 	Email     string     `json:"user_email"`
 	Name      *string    `json:"user_name,omitempty"`
 	Fullname  *string    `json:"user_full_name,omitempty"`
 	LastLogin *time.Time `json:"last_login,omitempty"`
-	TenantID  models.ID  `json:"tenant_id,string"`
-	CompanyID models.ID  `json:"company_id,string"`
+	TenantID  string     `json:"tenant_id"`
+	CompanyID string     `json:"company_id"`
 }
 
 func (p TenantPayload) ToTenant() (models.Tenant, error) {
@@ -47,7 +48,7 @@ func (p TenantPayload) ToTenant() (models.Tenant, error) {
 		companyID = &p.Users[0].CompanyID
 	}
 	return models.Tenant{
-		ID:          p.ID,
+		ID:          strconv.Itoa(p.ID),
 		CompanyID:   companyID,
 		Name:        p.Name,
 		Description: p.Description,

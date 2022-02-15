@@ -2,6 +2,7 @@ package api_payloads
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
@@ -46,7 +47,7 @@ type UpdateInterfaceResponse = CreateInterfaceResponse
 // InterfacePayload represents JSON Interface payload as it is transmitted to and from KentikAPI.
 type InterfacePayload struct {
 	// following fields can appear in request: post/put, response: get/post/put
-	SNMPID *models.ID `json:"snmp_id,string,omitempty" request:"post" response:"get,post,put"`
+	SNMPID *string `json:"snmp_id,omitempty" request:"post" response:"get,post,put"`
 	// caveat, GET returns snmp_speed as string but POST and PUT as int
 	SNMPSpeed            IntAsString `json:"snmp_speed,omitempty"`
 	InterfaceDescription *string     `json:"interface_description,omitempty" request:"post" response:"get,post,put"`
@@ -56,13 +57,13 @@ type InterfacePayload struct {
 	// caveat, for non-set vrf GET returns vrf as null, but POST and PUT as empty object "{}"
 	VRF *vrfAttributesPayload `json:"vrf,omitempty"`
 	// caveat, GET returns vrf_id as string but POST and PUT as int
-	VRFID        *IntAsString         `json:"vrf_id,omitempty"`
+	VRFID        *StringAsInt         `json:"vrf_id,omitempty"`
 	SecondaryIPs []secondaryIPPayload `json:"secondary_ips,omitempty"`
 
 	// following fields can appear in request: none, response: get/post/put
-	ID                          *models.ID             `json:"id,string,omitempty" response:"get,post,put"`
-	CompanyID                   *models.ID             `json:"company_id,string,omitempty" response:"get,post,put"`
-	DeviceID                    *models.ID             `json:"device_id,string,omitempty" response:"get,post,put"`
+	ID                          *string                `json:"id,omitempty" response:"get,post,put"`
+	CompanyID                   *string                `json:"company_id,omitempty" response:"get,post,put"`
+	DeviceID                    *string                `json:"device_id,omitempty" response:"get,post,put"`
 	CreatedDate                 *time.Time             `json:"cdate,omitempty" response:"get,post,put"`
 	UpdatedDate                 *time.Time             `json:"edate,omitempty" response:"get,post,put"`
 	InitialSNMPID               *string                `json:"initial_snmp_id,omitempty"` // API happens to return empty string ""
@@ -111,7 +112,7 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 		SNMPAlias:            p.SNMPAlias,
 		InterfaceIP:          p.InterfaceIP,
 		InterfaceIPNetmask:   p.InterfaceIPNetmask,
-		VRFID:                (*int)(p.VRFID),
+		VRFID:                (*string)(p.VRFID),
 		VRF:                  payloadToVRFAttributes(p.VRF),
 		SecondaryIPS:         secondaryIPs,
 
@@ -144,7 +145,7 @@ func InterfaceToPayload(i models.Interface) (InterfacePayload, error) {
 		InterfaceIP:          i.InterfaceIP,
 		InterfaceIPNetmask:   i.InterfaceIPNetmask,
 		VRF:                  vrfAttributesToPayload(i.VRF),
-		VRFID:                (*IntAsString)(i.VRFID),
+		VRFID:                (*StringAsInt)(i.VRFID),
 		SecondaryIPs:         secondaryIPs,
 	}, nil
 }
@@ -162,23 +163,22 @@ type vrfAttributesPayload struct {
 	ExtRouteDistinguisher *string `json:"ext_route_distinguisher,omitempty"` // not returned in any response
 
 	// following fields can appear in request: none, response: get
-	ID        *models.ID `json:"id,omitempty" response:"get"`
-	CompanyID *models.ID `json:"company_id,string,omitempty" response:"get"`
-	DeviceID  *models.ID `json:"device_id,string,omitempty" response:"get"`
+	ID        *int    `json:"id,omitempty" response:"get"`
+	CompanyID *string `json:"company_id,omitempty" response:"get"`
+	DeviceID  *string `json:"device_id,omitempty" response:"get"`
 }
 
 func payloadToVRFAttributes(p *vrfAttributesPayload) *models.VRFAttributes {
 	if p == nil {
 		return nil
 	}
-
 	return &models.VRFAttributes{
 		Name:                  p.Name,
 		RouteTarget:           p.RouteTarget,
 		RouteDistinguisher:    p.RouteDistinguisher,
 		Description:           p.Description,
 		ExtRouteDistinguisher: p.ExtRouteDistinguisher,
-		ID:                    *p.ID,
+		ID:                    strconv.Itoa(*p.ID),
 		CompanyID:             *p.CompanyID,
 		DeviceID:              *p.DeviceID,
 	}

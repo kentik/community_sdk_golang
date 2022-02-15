@@ -46,11 +46,11 @@ func TestCreateDeviceLabel(t *testing.T) {
 	assert.Equal("#00FF00", payload.String("color"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), label.ID)
+	assert.Equal(models.ID("42"), label.ID)
 	assert.Equal("apitest-device_label-1", label.Name)
 	assert.Equal("#00FF00", label.Color)
-	assert.Equal(models.ID(52), *label.UserID)
-	assert.Equal(models.ID(72), label.CompanyID)
+	assert.Equal(models.ID("52"), *label.UserID)
+	assert.Equal(models.ID("72"), label.CompanyID)
 	assert.Equal(time.Date(2018, 5, 16, 20, 21, 10, 406*1000000, time.UTC), label.CreatedDate)
 	assert.Equal(time.Date(2018, 5, 16, 20, 21, 10, 406*1000000, time.UTC), label.UpdatedDate)
 	assert.Len(label.Devices, 0)
@@ -72,7 +72,7 @@ func TestUpdateDeviceLabel(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 	label := models.DeviceLabel{Name: "apitest-device_label-one", Color: "#AA00FF"}
-	label.ID = models.ID(42)
+	label.ID = models.ID("42")
 
 	// act
 	updated, err := labelsAPI.Update(context.Background(), label)
@@ -88,11 +88,11 @@ func TestUpdateDeviceLabel(t *testing.T) {
 	assert.Equal("#AA00FF", payload.String("color"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), updated.ID)
+	assert.Equal(models.ID("42"), updated.ID)
 	assert.Equal("apitest-device_label-one", updated.Name)
 	assert.Equal("#AA00FF", updated.Color)
-	assert.Equal(models.ID(52), *updated.UserID)
-	assert.Equal(models.ID(72), updated.CompanyID)
+	assert.Equal(models.ID("52"), *updated.UserID)
+	assert.Equal(models.ID("72"), updated.CompanyID)
 	assert.Equal(time.Date(2018, 5, 16, 20, 21, 10, 406*1000000, time.UTC), updated.CreatedDate)
 	assert.Equal(time.Date(2018, 6, 16, 20, 21, 10, 406*1000000, time.UTC), updated.UpdatedDate)
 	assert.Len(updated.Devices, 0)
@@ -120,7 +120,7 @@ func TestGetLabel(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
-	labelID := models.ID(32)
+	labelID := models.ID("32")
 
 	// act
 	label, err := labelsAPI.Get(context.Background(), labelID)
@@ -134,15 +134,15 @@ func TestGetLabel(t *testing.T) {
 	assert.Zero(transport.RequestBody)
 
 	// and response properly parsed
-	assert.Equal(models.ID(32), label.ID)
+	assert.Equal(models.ID("32"), label.ID)
 	assert.Equal("ISP", label.Name)
 	assert.Equal("#f1d5b9", label.Color)
-	assert.Equal(models.ID(52), *label.UserID)
-	assert.Equal(models.ID(72), label.CompanyID)
+	assert.Equal(models.ID("52"), *label.UserID)
+	assert.Equal(models.ID("72"), label.CompanyID)
 	assert.Equal(time.Date(2018, 5, 16, 20, 21, 10, 406*1000000, time.UTC), label.CreatedDate)
 	assert.Equal(time.Date(2018, 5, 16, 20, 21, 10, 406*1000000, time.UTC), label.UpdatedDate)
 	assert.Len(label.Devices, 1)
-	assert.Equal(models.ID(42), label.Devices[0].ID)
+	assert.Equal(models.ID("42"), label.Devices[0].ID)
 	assert.Equal("my_device_1", label.Devices[0].DeviceName)
 	assert.Equal("router", label.Devices[0].DeviceSubtype)
 	assert.Nil(label.Devices[0].DeviceType)
@@ -203,25 +203,25 @@ func TestGetAllLabels(t *testing.T) {
 	// and response properly parsed
 	require.Len(labels, 2)
 
-	assert.Equal(models.ID(41), labels[0].ID)
+	assert.Equal(models.ID("41"), labels[0].ID)
 	assert.Equal("device_labels_1", labels[0].Name)
 	assert.Equal("#5289D9", labels[0].Color)
 	assert.Nil(labels[0].UserID)
-	assert.Equal(models.ID(74333), labels[0].CompanyID)
+	assert.Equal(models.ID("74333"), labels[0].CompanyID)
 	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), labels[0].CreatedDate)
 	assert.Equal(time.Date(2020, 11, 20, 12, 54, 49, 575*1000000, time.UTC), labels[0].UpdatedDate)
 	assert.Len(labels[0].Devices, 0)
 
-	assert.Equal(models.ID(42), labels[1].ID)
+	assert.Equal(models.ID("42"), labels[1].ID)
 	assert.Equal("device_labels_2", labels[1].Name)
 	assert.Equal("#3F4EA0", labels[1].Color)
-	assert.Equal(models.ID(136885), *labels[1].UserID)
-	assert.Equal(models.ID(74333), labels[1].CompanyID)
+	assert.Equal(models.ID("136885"), *labels[1].UserID)
+	assert.Equal(models.ID("74333"), labels[1].CompanyID)
 	assert.Equal(time.Date(2020, 11, 20, 13, 45, 27, 430*1000000, time.UTC), labels[1].CreatedDate)
 	assert.Equal(time.Date(2020, 11, 20, 13, 45, 27, 430*1000000, time.UTC), labels[1].UpdatedDate)
 	assert.Len(labels[1].Devices, 2)
 
-	assert.Equal(models.ID(2), labels[1].Devices[1].ID)
+	assert.Equal(models.ID("2"), labels[1].Devices[1].ID)
 	assert.Equal("device2", labels[1].Devices[1].DeviceName)
 	assert.Equal("subtype2", labels[1].Devices[1].DeviceSubtype)
 	assert.Equal("type2", *labels[1].Devices[1].DeviceType)
@@ -237,7 +237,7 @@ func TestDeleteDeviceLabel(t *testing.T) {
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
 
 	// act
-	labelID := models.ID(42)
+	labelID := models.ID("42")
 	err := labelsAPI.Delete(context.Background(), labelID)
 
 	// assert

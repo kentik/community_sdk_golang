@@ -53,11 +53,11 @@ func TestCreateCustomDimension(t *testing.T) {
 	assert.Equal("string", payload.String("type"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(42), created.ID)
+	assert.Equal(models.ID("42"), created.ID)
 	assert.Equal("c_testapi_dimension_1", created.Name)
 	assert.Equal("dimension_display_name", created.DisplayName)
 	assert.Equal(models.CustomDimensionTypeStr, created.Type)
-	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(models.ID("74333"), created.CompanyID)
 	assert.Len(created.Populators, 0)
 }
 
@@ -76,7 +76,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
-	dimensionID := models.ID(42)
+	dimensionID := models.ID("42")
 	dimension := models.CustomDimension{ID: dimensionID, DisplayName: "dimension_display_name2"}
 
 	// act
@@ -93,11 +93,11 @@ func TestUpdateCustomDimension(t *testing.T) {
 	assert.Equal("dimension_display_name2", payload.String("display_name"))
 
 	// # and response properly parsed
-	assert.Equal(models.ID(42), updated.ID)
+	assert.Equal(models.ID("42"), updated.ID)
 	assert.Equal("c_testapi_dimension_1", updated.Name)
 	assert.Equal("dimension_display_name2", updated.DisplayName)
 	assert.Equal(models.CustomDimensionTypeStr, updated.Type)
-	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(models.ID("74333"), updated.CompanyID)
 	assert.Len(updated.Populators, 0)
 }
 
@@ -181,8 +181,8 @@ func TestGetCustomDimension(t *testing.T) {
 				DisplayName: "dimension_display_name",
 				Name:        "c_testapi_dimension_1",
 				Type:        models.CustomDimensionTypeStr,
-				ID:          42,
-				CompanyID:   74333,
+				ID:          "42",
+				CompanyID:   "74333",
 				Populators: []models.Populator{{
 					Value:         "testapi-dimension-value-1",
 					Direction:     models.PopulatorDirectionDst,
@@ -204,9 +204,9 @@ func TestGetCustomDimension(t *testing.T) {
 					MAC:           pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF"),
 					Country:       pointer.ToString("NL,SE"),
 					VLans:         pointer.ToString("2001,2002"),
-					ID:            1510871096,
-					CompanyID:     74333,
-					DimensionID:   24001,
+					ID:            "1510871096",
+					CompanyID:     "74333",
+					DimensionID:   "24001",
 					User:          pointer.ToString("144319"),
 					MACCount:      2,
 					AddrCount:     2,
@@ -216,9 +216,9 @@ func TestGetCustomDimension(t *testing.T) {
 					Value:       "testapi-dimension-value-3",
 					Direction:   models.PopulatorDirectionSrc,
 					Site:        pointer.ToString("site3"),
-					ID:          1510862280,
-					CompanyID:   74333,
-					DimensionID: 24001,
+					ID:          "1510862280",
+					CompanyID:   "74333",
+					DimensionID: "24001",
 					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
@@ -253,14 +253,14 @@ func TestGetCustomDimension(t *testing.T) {
 				DisplayName: "dimension_display_name",
 				Name:        "c_testapi_dimension_1",
 				Type:        models.CustomDimensionType("t_teapot"),
-				ID:          42,
-				CompanyID:   74333,
+				ID:          "42",
+				CompanyID:   "74333",
 				Populators: []models.Populator{{
 					Value:       "testapi-dimension-value-3",
 					Direction:   models.PopulatorDirection("d_teapot"),
-					ID:          1510862280,
-					CompanyID:   74333,
-					DimensionID: 24001,
+					ID:          "1510862280",
+					CompanyID:   "74333",
+					DimensionID: "24001",
 					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
@@ -295,14 +295,14 @@ func TestGetCustomDimension(t *testing.T) {
 				DisplayName: "dimension_display_name",
 				Name:        "c_testapi_dimension_1",
 				Type:        models.CustomDimensionType(""),
-				ID:          42,
-				CompanyID:   74333,
+				ID:          "42",
+				CompanyID:   "74333",
 				Populators: []models.Populator{{
 					Value:       "testapi-dimension-value-3",
 					Direction:   models.PopulatorDirection(""),
-					ID:          1510862280,
-					CompanyID:   74333,
-					DimensionID: 24001,
+					ID:          "1510862280",
+					CompanyID:   "74333",
+					DimensionID: "24001",
 					User:        pointer.ToString("144319"),
 					CreatedDate: time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC),
 					UpdatedDate: time.Date(2020, 12, 15, 11, 11, 30, 0, time.UTC),
@@ -315,7 +315,7 @@ func TestGetCustomDimension(t *testing.T) {
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
 			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
-			dimensionID := 42
+			dimensionID := "42"
 
 			// act
 			dimension, err := customDimensionsAPI.Get(context.Background(), dimensionID)
@@ -394,27 +394,27 @@ func TestGetAllCustomDimensions(t *testing.T) {
 	require.Equal(2, len(dimensions))
 
 	// dimension 0
-	assert.Equal(models.ID(42), dimensions[0].ID)
+	assert.Equal(models.ID("42"), dimensions[0].ID)
 	assert.Equal("c_testapi_dimension_1", dimensions[0].Name)
 	assert.Equal("dimension_display_name1", dimensions[0].DisplayName)
 	assert.Equal(models.CustomDimensionTypeStr, dimensions[0].Type)
 
 	// dimension 1
-	assert.Equal(models.ID(43), dimensions[1].ID)
+	assert.Equal(models.ID("43"), dimensions[1].ID)
 	assert.Equal("c_testapi_dimension_2", dimensions[1].Name)
 	assert.Equal("dimension_display_name2", dimensions[1].DisplayName)
 	assert.Equal(models.CustomDimensionTypeUint32, dimensions[1].Type)
-	assert.Equal(models.ID(74334), dimensions[1].CompanyID)
+	assert.Equal(models.ID("74334"), dimensions[1].CompanyID)
 	assert.Len(dimensions[1].Populators, 1)
-	assert.Equal(models.ID(1510862280), dimensions[1].Populators[0].ID)
-	assert.Equal(models.ID(24001), dimensions[1].Populators[0].DimensionID)
+	assert.Equal(models.ID("1510862280"), dimensions[1].Populators[0].ID)
+	assert.Equal(models.ID("24001"), dimensions[1].Populators[0].DimensionID)
 	assert.Equal("testapi-dimension-value-3", dimensions[1].Populators[0].Value)
 	assert.Equal(models.PopulatorDirectionSrc, dimensions[1].Populators[0].Direction)
 	assert.Equal(0, dimensions[1].Populators[0].AddrCount)
 	assert.Equal("144319", *dimensions[1].Populators[0].User)
 	assert.Equal(time.Date(2020, 12, 15, 7, 55, 23, 0, time.UTC), dimensions[1].Populators[0].CreatedDate)
 	assert.Equal(time.Date(2020, 12, 15, 10, 50, 22, 0, time.UTC), dimensions[1].Populators[0].UpdatedDate)
-	assert.Equal(models.ID(74333), dimensions[1].Populators[0].CompanyID)
+	assert.Equal(models.ID("74333"), dimensions[1].Populators[0].CompanyID)
 	assert.Equal("site3", *dimensions[1].Populators[0].Site)
 	assert.Equal(0, dimensions[1].Populators[0].MACCount)
 }
@@ -426,7 +426,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
-	dimensionID := models.ID(42)
+	dimensionID := models.ID("42")
 	err := customDimensionsAPI.Delete(context.Background(), dimensionID)
 
 	// assert
@@ -475,7 +475,7 @@ func TestCreatePopulator(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
-	dimensionID := models.ID(24001)
+	dimensionID := models.ID("24001")
 	populator := models.NewPopulator(
 		dimensionID,
 		"testapi-dimension-value-1",
@@ -534,8 +534,8 @@ func TestCreatePopulator(t *testing.T) {
 	assert.Equal("2001,2002", payload.String("populator/vlans"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(1510862280), created.ID)
-	assert.Equal(models.ID(24001), created.DimensionID)
+	assert.Equal(models.ID("1510862280"), created.ID)
+	assert.Equal(models.ID("24001"), created.DimensionID)
 	assert.Equal("testapi-dimension-value-1", created.Value)
 	assert.Equal(models.PopulatorDirectionDst, created.Direction)
 	assert.Equal("128.0.0.100,device1", created.DeviceName)
@@ -556,7 +556,7 @@ func TestCreatePopulator(t *testing.T) {
 	assert.Equal("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF", *created.MAC)
 	assert.Equal("NL,SE", *created.Country)
 	assert.Equal("2001,2002", *created.VLans)
-	assert.Equal(models.ID(74333), created.CompanyID)
+	assert.Equal(models.ID("74333"), created.CompanyID)
 	assert.Equal("144319", *created.User)
 	assert.Equal(2, created.MACCount)
 	assert.Equal(2, created.AddrCount)
@@ -589,8 +589,8 @@ func TestUpdatePopulator(t *testing.T) {
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
-	dimensionID := models.ID(24001)
-	populatorID := models.ID(1510862280)
+	dimensionID := models.ID("24001")
+	populatorID := models.ID("1510862280")
 
 	populator := models.Populator{
 		DimensionID: dimensionID,
@@ -625,8 +625,8 @@ func TestUpdatePopulator(t *testing.T) {
 	assert.Equal("17", payload.String("populator/protocol"))
 
 	// and response properly parsed
-	assert.Equal(models.ID(1510862280), updated.ID)
-	assert.Equal(models.ID(24001), updated.DimensionID)
+	assert.Equal(models.ID("1510862280"), updated.ID)
+	assert.Equal(models.ID("24001"), updated.DimensionID)
 	assert.Equal("testapi-dimension-value-3", updated.Value)
 	assert.Equal(models.PopulatorDirectionSrc, updated.Direction)
 	assert.Equal("interface3", *updated.InterfaceName)
@@ -634,7 +634,7 @@ func TestUpdatePopulator(t *testing.T) {
 	assert.Equal("17", *updated.Protocol)
 	assert.Equal("device-type3", *updated.DeviceType)
 	assert.Equal("site3", *updated.Site)
-	assert.Equal(models.ID(74333), updated.CompanyID)
+	assert.Equal(models.ID("74333"), updated.CompanyID)
 	assert.Equal("144319", *updated.User)
 	assert.Equal(0, updated.MACCount)
 	assert.Equal(0, updated.AddrCount)
@@ -649,8 +649,8 @@ func TestDeletePopulator(t *testing.T) {
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 
 	// act
-	dimensionID := models.ID(42)
-	populatorID := models.ID(5012)
+	dimensionID := models.ID("42")
+	populatorID := models.ID("5012")
 	err := customDimensionsAPI.Populators.Delete(context.Background(), dimensionID, populatorID)
 
 	// assert

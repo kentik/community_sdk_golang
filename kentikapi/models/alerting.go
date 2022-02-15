@@ -18,7 +18,7 @@ type Alarm struct {
 	RowType         string
 	AlarmState      string
 	AlertID         ID
-	MitigationID    ID
+	MitigationID    *ID
 	TresholdID      ID
 	AlertKey        string
 	AlertDimension  string
@@ -37,7 +37,7 @@ type Alarm struct {
 	AlarmLastComent *string
 	MitAlertID      ID
 	MitAlertIP      string
-	MitTresholdID   int
+	MitTresholdID   ID
 	Args            string
 	ID              ID
 	PolicyID        ID
@@ -67,8 +67,8 @@ type HistoricalAlert struct {
 	CreationTime    time.Time
 	AlarmStartTime  *string
 	Comment         *string
-	MitigationID    *int
-	MitMethodID     int
+	MitigationID    *ID
+	MitMethodID     ID
 	Args            string
 	ID              ID
 	PolicyID        ID

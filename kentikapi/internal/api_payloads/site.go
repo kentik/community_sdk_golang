@@ -40,11 +40,11 @@ type UpdateSiteResponse = CreateSiteResponse
 
 // SitePayload represents JSON Plan payload as it is transmitted to and from KentikAPI.
 type SitePayload struct {
-	ID        IntAsString `json:"id"`        // caveat, POST and GET return id as int but PUT as string
+	ID        StringAsInt `json:"id"`        // caveat, POST and GET return id as int but PUT as string
 	SiteName  string      `json:"site_name"` // site_name is required always, also in PUT
 	Latitude  *float64    `json:"lat,omitempty"`
 	Longitude *float64    `json:"lon,omitempty"`
-	CompanyID IntAsString `json:"company_id"` // caveat, GET returns company_id as int but POST and PUT as string
+	CompanyID StringAsInt `json:"company_id"` // caveat, GET returns company_id as int but POST and PUT as string
 }
 
 func payloadToSite(p SitePayload) (models.Site, error) {
@@ -59,10 +59,10 @@ func payloadToSite(p SitePayload) (models.Site, error) {
 
 func SiteToPayload(site models.Site) (SitePayload, error) {
 	return SitePayload{
-		ID:        IntAsString(site.ID),
+		ID:        StringAsInt(site.ID),
 		SiteName:  site.SiteName,
 		Latitude:  site.Latitude,
 		Longitude: site.Longitude,
-		CompanyID: IntAsString(site.CompanyID),
+		CompanyID: StringAsInt(site.CompanyID),
 	}, nil
 }

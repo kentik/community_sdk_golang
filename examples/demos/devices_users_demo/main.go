@@ -37,34 +37,33 @@ func main() {
 	demos.Step("Finished!")
 }
 
-//nolint:gomnd
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(
 		"testapi_dns_awssubnet",
 		models.DeviceSubtypeAwsSubnet,
 		1,
-		models.ID(11466),
+		models.ID("11466"),
 		models.CDNAttributeYes,
 	)
-	device.SiteID = models.IDPtr(8483)
+	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.ExitOnError(err)
-	fmt.Printf("Successfully created device, ID = %d\n", createdDevice.ID)
+	fmt.Printf("Successfully created device, ID = %v\n", createdDevice.ID)
 
 	return createdDevice.ID
 }
 
 func getDevice(client *kentikapi.Client, id models.ID) {
-	fmt.Printf("Retrieving device of ID = %d\n", id)
+	fmt.Printf("Retrieving device of ID = %v\n", id)
 	device, err := client.Devices.Get(context.Background(), id)
 	demos.ExitOnError(err)
 	demos.PrettyPrint(device)
 }
 
 func deleteDevice(client *kentikapi.Client, id models.ID) {
-	fmt.Printf("Deleting device of ID = %d\n", id)
+	fmt.Printf("Deleting device of ID = %v\n", id)
 	err := client.Devices.Delete(context.Background(), id) // archive
 	demos.ExitOnError(err)
 	err = client.Devices.Delete(context.Background(), id) // delete

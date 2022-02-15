@@ -22,7 +22,7 @@ const (
 	authAPITokenKey = "X-CH-Auth-API-Token"
 	dummyAuthEmail  = "email@example.com"
 	dummyAuthToken  = "api-test-token"
-	testUserID      = 145999
+	testUserID      = "145999"
 )
 
 type object = map[string]interface{}
@@ -78,7 +78,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				]
         	}`,
 			expectedResult: []models.User{{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -88,7 +88,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			}},
 		}, {
@@ -131,7 +131,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				]
         	}`,
 			expectedResult: []models.User{{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -141,10 +141,10 @@ func TestClient_GetAllUsers(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			}, {
-				ID:           666666,
+				ID:           "666666",
 				Username:     "Alice",
 				UserFullName: "Alice Awesome",
 				UserEmail:    "alice.awesome@company.com",
@@ -154,7 +154,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 				LastLogin:    testutil.ParseISO8601Timestamp(t, "2021-02-05T11:40:09.257Z"),
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2021-01-05T12:49:21.306Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2021-02-05T11:40:09.258Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			}},
 		},
@@ -250,7 +250,7 @@ func TestClient_GetUser(t *testing.T) {
 				},
 			},
 			expectedResult: &models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -260,7 +260,7 @@ func TestClient_GetUser(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: pointer.ToString("****************************a997"),
 			},
 		}, {
@@ -298,7 +298,7 @@ func TestClient_GetUser(t *testing.T) {
 				},
 			},
 			expectedResult: &models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -308,7 +308,7 @@ func TestClient_GetUser(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: pointer.ToString("****************************a997"),
 			},
 		}, {
@@ -452,7 +452,7 @@ func TestClient_CreateUser(t *testing.T) {
 				},
 			},
 			expectedResult: &models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -462,7 +462,7 @@ func TestClient_CreateUser(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			},
 		}, {
@@ -561,7 +561,7 @@ func TestClient_CreateUser(t *testing.T) {
 				},
 			},
 			expectedResult: &models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -571,7 +571,7 @@ func TestClient_CreateUser(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			},
 		},
@@ -659,7 +659,7 @@ func TestClient_UpdateUser(t *testing.T) {
 		}, {
 			name: "subset of fields updated",
 			user: models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Test User",
 				UserEmail:    "test@user.example",
@@ -702,7 +702,7 @@ func TestClient_UpdateUser(t *testing.T) {
 				}
 			}`,
 			expectedResult: &models.User{
-				ID:           145999,
+				ID:           "145999",
 				Username:     "testuser",
 				UserFullName: "Updated Username",
 				UserEmail:    "test@user.example",
@@ -712,7 +712,7 @@ func TestClient_UpdateUser(t *testing.T) {
 				LastLogin:    nil,
 				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
 				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    74333,
+				CompanyID:    "74333",
 				UserAPIToken: nil,
 			},
 		},

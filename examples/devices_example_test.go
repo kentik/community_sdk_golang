@@ -54,7 +54,7 @@ func runCRUDRouter() error {
 		"testapi_router_router_full",
 		models.DeviceSubtypeRouter,
 		1,
-		models.ID(11466),
+		models.ID("11466"),
 		[]string{"128.0.0.10"},
 		false,
 	).WithBGPTypeDevice("77")
@@ -63,7 +63,7 @@ func runCRUDRouter() error {
 	device.DeviceSNMPv3Conf = snmpv3conf
 	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
 	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
-	device.SiteID = pointer.ToInt(8483)
+	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 	device.DeviceBGPNeighborIP = pointer.ToString("127.0.0.42")
 	device.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
@@ -89,7 +89,7 @@ func runCRUDRouter() error {
 	fmt.Println("### CREATE INTERFACE")
 	intf := models.NewInterface(
 		createdDevice.ID,
-		models.ID(2),
+		models.ID("2"),
 		15,
 		"testapi-interface",
 	)
@@ -151,10 +151,10 @@ func runCRUDDNS() error {
 		"testapi_dns_awssubnet",
 		models.DeviceSubtypeAwsSubnet,
 		1,
-		models.ID(11466),
+		models.ID("11466"),
 		models.CDNAttributeYes,
 	)
-	device.SiteID = models.IDPtr(8483)
+	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
@@ -216,7 +216,7 @@ func runGetAllInterfaces() error {
 	}
 
 	fmt.Println("### GET ALL INTERFACES")
-	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), models.ID(80166))
+	interfaces, err := client.Devices.Interfaces.GetAll(context.Background(), models.ID("80166"))
 	if err != nil {
 		return err
 	}
