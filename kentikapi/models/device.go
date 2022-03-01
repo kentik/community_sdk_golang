@@ -42,6 +42,16 @@ type Device struct {
 	AllInterfaces   []AllInterfaces
 }
 
+// DeviceRouterRequiredFields is subset of Device fields required to create a DeviceRouter.
+type DeviceRouterRequiredFields struct {
+	DeviceName       string
+	DeviceSubType    DeviceSubtype
+	DeviceSampleRate int
+	PlanID           ID
+	SendingIPS       []string
+	MinimizeSNMP     bool
+}
+
 // NewDeviceRouter creates a new Router with all necessary fields set
 // Optional fields that can be set for router include:
 // - DeviceSNMNPIP
@@ -51,27 +61,27 @@ type Device struct {
 // - DeviceDescription
 // - SiteID
 // - DeviceBGPFlowSpec.
-func NewDeviceRouter(
-	// common required
-	deviceName string,
-	deviceSubType DeviceSubtype,
-	deviceSampleRate int,
-	planID ID,
-	// router required
-	sendingIPS []string,
-	minimizeSNMP bool,
-) *Device {
+func NewDeviceRouter(r DeviceRouterRequiredFields) *Device {
 	bgpType := DeviceBGPTypeNone // default
 	return &Device{
 		DeviceType:       DeviceTypeRouter,
-		DeviceName:       deviceName,
-		DeviceSubType:    deviceSubType,
-		DeviceSampleRate: deviceSampleRate,
-		PlanID:           &planID,
+		DeviceName:       r.DeviceName,
+		DeviceSubType:    r.DeviceSubType,
+		DeviceSampleRate: r.DeviceSampleRate,
+		PlanID:           &r.PlanID,
 		DeviceBGPType:    &bgpType,
-		SendingIPS:       sendingIPS,
-		MinimizeSNMP:     &minimizeSNMP,
+		SendingIPS:       r.SendingIPS,
+		MinimizeSNMP:     &r.MinimizeSNMP,
 	}
+}
+
+// DeviceDNSRequiredFields is subset of Device fields required to create a DeviceDNS.
+type DeviceDNSRequiredFields struct {
+	DeviceName       string
+	DeviceSubType    DeviceSubtype
+	DeviceSampleRate int
+	PlanID           ID
+	CdnAttr          CDNAttribute
 }
 
 // NewDeviceDNS creates a new DSN with all necessary fields set
@@ -79,24 +89,16 @@ func NewDeviceRouter(
 // - DeviceDescription
 // - SiteID
 // - DeviceBGPFlowSpec.
-func NewDeviceDNS(
-	// common required
-	deviceName string,
-	deviceSubType DeviceSubtype,
-	deviceSampleRate int,
-	planID ID,
-	// dns required
-	cdnAttr CDNAttribute,
-) *Device {
+func NewDeviceDNS(d DeviceDNSRequiredFields) *Device {
 	bgpType := DeviceBGPTypeNone // default
 	return &Device{
 		DeviceType:       DeviceTypeHostNProbeDNSWWW,
-		DeviceName:       deviceName,
-		DeviceSubType:    deviceSubType,
-		DeviceSampleRate: deviceSampleRate,
-		PlanID:           &planID,
+		DeviceName:       d.DeviceName,
+		DeviceSubType:    d.DeviceSubType,
+		DeviceSampleRate: d.DeviceSampleRate,
+		PlanID:           &d.PlanID,
 		DeviceBGPType:    &bgpType,
-		CDNAttr:          &cdnAttr,
+		CDNAttr:          &d.CdnAttr,
 	}
 }
 

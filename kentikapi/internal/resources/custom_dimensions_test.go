@@ -31,11 +31,11 @@ func TestCreateCustomDimension(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
-	dimension := models.NewCustomDimension(
-		"c_testapi_dimension_1",
-		"dimension_display_name",
-		models.CustomDimensionTypeStr,
-	)
+	dimension := models.NewCustomDimension(models.CustomDimensionRequiredFields{
+		Name:        "c_testapi_dimension_1",
+		DisplayName: "dimension_display_name",
+		Type:        models.CustomDimensionTypeStr,
+	})
 
 	// act
 	created, err := customDimensionsAPI.Create(context.Background(), *dimension)
@@ -476,12 +476,12 @@ func TestCreatePopulator(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport)
 	dimensionID := models.ID("24001")
-	populator := models.NewPopulator(
-		dimensionID,
-		"testapi-dimension-value-1",
-		"device1,128.0.0.100",
-		models.PopulatorDirectionDst,
-	)
+	populator := models.NewPopulator(models.PopulatorRequiredFields{
+		DimensionID: dimensionID,
+		Value:       "testapi-dimension-value-1",
+		DeviceName:  "device1,128.0.0.100",
+		Direction:   models.PopulatorDirectionDst,
+	})
 	populator.InterfaceName = pointer.ToString("interface1,interface2")
 	populator.Addr = pointer.ToString("128.0.0.1/32,128.0.0.2/32")
 	populator.Port = pointer.ToString("1001,1002")

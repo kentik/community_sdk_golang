@@ -341,6 +341,7 @@ func makeExampleTest() *syntheticspb.Test {
 		Port:     33434,
 		Expiry:   22500,
 		Limit:    30,
+		Count:    1,
 	}
 
 	settings := &syntheticspb.TestSettings{
