@@ -234,9 +234,10 @@ func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID st
 	return nil
 }
 
+// runCRUDAgent demonstrates available methods of Agent API. Note that there is no create method in the API.
+// Delete method exists but is omitted here, because of lack of create method.
+// Currently, there is a bug involving agent.name in the API, so patch method is also omitted.
 func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
-	// NOTE: no CREATE method exists for agents in the API, thus no example for CREATE
-	// NOTE: agent of id 1717 must exist
 	agentID, err := pickAgentID()
 	if err != nil {
 		return err
@@ -250,35 +251,6 @@ func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
 	}
 	PrettyPrint(getResp.GetAgent())
 	fmt.Println()
-
-	fmt.Println("### PATCH AGENT")
-	agent := getResp.GetAgent()
-	if agent.GetStatus() == syntheticspb.AgentStatus_AGENT_STATUS_OK {
-		agent.Status = syntheticspb.AgentStatus_AGENT_STATUS_WAIT
-	} else {
-		agent.Status = syntheticspb.AgentStatus_AGENT_STATUS_OK
-	}
-	agent.Name = ""
-	patchReqPayload := &syntheticspb.PatchAgentRequest{
-		Agent: agent,
-		Mask:  &fieldmaskpb.FieldMask{Paths: []string{"agent.status"}},
-	}
-	patchResp, err := client.SyntheticsAdmin.PatchAgent(ctx, patchReqPayload)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(patchResp.GetAgent())
-	fmt.Println()
-
-	// NOTE: as we can't create agents through the API - let's not delete them
-	// fmt.Println("### DELETE AGENT")
-	// deleteReqPayLoad := &syntheticspb.DeleteAgentRequest{Id: agentID}
-	// _, err = client.SyntheticsAdmin.DeleteAgent(ctx, deleteReqPayLoad)
-	// if err != nil {
-	// 	return err
-	// }
-	// fmt.Println("Success")
-	// fmt.Println()
 
 	return nil
 }
@@ -341,6 +313,7 @@ func makeExampleTest() *syntheticspb.Test {
 		Port:     33434,
 		Expiry:   22500,
 		Limit:    30,
+		Count:    1,
 	}
 
 	settings := &syntheticspb.TestSettings{
