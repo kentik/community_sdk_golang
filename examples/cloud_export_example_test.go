@@ -52,7 +52,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 	}
 
 	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidCloudExportsCount)
-	fmt.Printf("Listed cloud exports: %+v\n", getAllResp.CloudExports)
+	fmt.Println("Listed cloud exports:")
+	PrettyPrint(getAllResp.CloudExports)
 
 	fmt.Println("Creating AWS cloud export")
 	ce := models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
@@ -83,7 +84,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 		return fmt.Errorf("client.CloudExports.Create: %w", err)
 	}
 
-	fmt.Printf("Created AWS cloud export: %+v\n", ce)
+	fmt.Println("Created AWS cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Getting AWS cloud export")
 	ce, err = client.CloudExports.Get(ctx, ce.ID)
@@ -91,7 +93,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 		return fmt.Errorf("client.CloudExports.Get: %w", err)
 	}
 
-	fmt.Printf("Got AWS cloud export: %+v\n", ce)
+	fmt.Println("Got AWS cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Updating AWS cloud export")
 	ce.Name = "updated-example-aws-export"
@@ -103,7 +106,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 		return fmt.Errorf("client.CloudExports.Update: %w", err)
 	}
 
-	fmt.Printf("Updated cloud export: %+v\n", ce)
+	fmt.Println("Updated cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Deleting AWS cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
@@ -150,7 +154,8 @@ func demonstrateCloudExportAPIWithAzure() error {
 		return fmt.Errorf("client.CloudExports.Create: %w", err)
 	}
 
-	fmt.Printf("Created Azure cloud export: %+v\n", ce)
+	fmt.Println("Created Azure cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Deleting Azure cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
@@ -196,7 +201,8 @@ func demonstrateCloudExportAPIWithGCE() error {
 		return fmt.Errorf("client.CloudExports.Create: %w", err)
 	}
 
-	fmt.Printf("Created GCE cloud export: %+v\n", ce)
+	fmt.Println("Created GCE cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Deleting GCE cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
@@ -240,7 +246,8 @@ func demonstrateCloudExportAPIWithIBM() error {
 		return fmt.Errorf("client.CloudExports.Create: %w", err)
 	}
 
-	fmt.Printf("Created IBM cloud export: %+v\n", ce)
+	fmt.Println("Created IBM cloud export:")
+	PrettyPrint(ce)
 
 	fmt.Println("Deleting IBM cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
