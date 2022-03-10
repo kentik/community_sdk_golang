@@ -6,6 +6,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_endpoints"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/utils"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -14,28 +15,32 @@ type SitesAPI struct {
 }
 
 // NewSitesAPI is constructor.
-func NewSitesAPI(transport api_connection.Transport) *SitesAPI {
+func NewSitesAPI(transport api_connection.Transport, logPayloads bool) *SitesAPI {
 	return &SitesAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 
 // GetAll sites.
 func (a *SitesAPI) GetAll(ctx context.Context) ([]models.Site, error) {
+	utils.LogPayload(a.LogPayloads, "GetAll sites Kentik API request", "")
 	var response api_payloads.GetAllSitesResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetAllSites(), &response); err != nil {
 		return []models.Site{}, err
 	}
+	utils.LogPayload(a.LogPayloads, "GetAll sites Kentik API response", response)
 
 	return response.ToSites()
 }
 
 // Get site with given ID.
 func (a *SitesAPI) Get(ctx context.Context, id models.ID) (*models.Site, error) {
+	utils.LogPayload(a.LogPayloads, "Get site Kentik API request ID", id)
 	var response api_payloads.GetSiteResponse
 	if err := a.GetAndValidate(ctx, api_endpoints.GetSite(id), &response); err != nil {
 		return nil, err
 	}
+	utils.LogPayload(a.LogPayloads, "Get site Kentik API response", response)
 
 	site, err := response.ToSite()
 	return &site, err
@@ -47,12 +52,14 @@ func (a *SitesAPI) Create(ctx context.Context, site models.Site) (*models.Site, 
 	if err != nil {
 		return nil, err
 	}
+	utils.LogPayload(a.LogPayloads, "Create site Kentik API request", payload)
 
 	request := api_payloads.CreateSiteRequest{Payload: payload}
 	var response api_payloads.CreateSiteResponse
 	if err = a.PostAndValidate(ctx, api_endpoints.CreateSite(), request, &response); err != nil {
 		return nil, err
 	}
+	utils.LogPayload(a.LogPayloads, "Create site Kentik API response", response)
 
 	result, err := response.ToSite()
 	return &result, err
@@ -64,12 +71,14 @@ func (a *SitesAPI) Update(ctx context.Context, site models.Site) (*models.Site, 
 	if err != nil {
 		return nil, err
 	}
+	utils.LogPayload(a.LogPayloads, "Update site Kentik API request", payload)
 
 	request := api_payloads.UpdateSiteRequest{Payload: payload}
 	var response api_payloads.UpdateSiteResponse
 	if err = a.UpdateAndValidate(ctx, api_endpoints.UpdateSite(site.ID), request, &response); err != nil {
 		return nil, err
 	}
+	utils.LogPayload(a.LogPayloads, "Update site Kentik API response", response)
 
 	result, err := response.ToSite()
 	return &result, err
@@ -77,6 +86,7 @@ func (a *SitesAPI) Update(ctx context.Context, site models.Site) (*models.Site, 
 
 // Delete site.
 func (a *SitesAPI) Delete(ctx context.Context, id models.ID) error {
+	utils.LogPayload(a.LogPayloads, "Delete site Kentik API request ID", id)
 	if err := a.DeleteAndValidate(ctx, api_endpoints.DeleteSite(id), nil); err != nil {
 		return err
 	}

@@ -29,7 +29,7 @@ func TestCreateDeviceLabel(t *testing.T) {
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	labelsAPI := resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport, false)
 	label := models.NewDeviceLabel("apitest-device_label-1", "#00FF00")
 
 	// act
@@ -70,7 +70,7 @@ func TestUpdateDeviceLabel(t *testing.T) {
 		"updated_date": "2018-06-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	labelsAPI := resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport, false)
 	label := models.DeviceLabel{Name: "apitest-device_label-one", Color: "#AA00FF"}
 	label.ID = models.ID("42")
 
@@ -119,7 +119,7 @@ func TestGetLabel(t *testing.T) {
 		"updated_date": "2018-05-16T20:21:10.406Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	labelsAPI := resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport, false)
 	labelID := models.ID("32")
 
 	// act
@@ -187,7 +187,7 @@ func TestGetAllLabels(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	labelsAPI := resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport, false)
 
 	// act
 	labels, err := labelsAPI.GetAll(context.Background())
@@ -234,7 +234,7 @@ func TestDeleteDeviceLabel(t *testing.T) {
 		"success": true
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	labelsAPI := resources.NewDeviceLabelsAPI(transport)
+	labelsAPI := resources.NewDeviceLabelsAPI(transport, false)
 
 	// act
 	labelID := models.ID("42")

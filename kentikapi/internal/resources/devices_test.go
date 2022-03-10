@@ -95,7 +95,7 @@ func TestCreateDeviceRouter(t *testing.T) {
         }
     }`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	snmpv3conf := models.NewSNMPv3Conf("John")
@@ -276,7 +276,7 @@ func TestCreateDeviceDNS(t *testing.T) {
         }
     }`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	dns := models.NewDeviceDNS(
@@ -439,7 +439,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
         }
     }`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	snmpv3conf := models.NewSNMPv3Conf("John")
@@ -1083,7 +1083,7 @@ func TestGetDevice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
-			devicesAPI := resources.NewDevicesAPI(transport)
+			devicesAPI := resources.NewDevicesAPI(transport, false)
 			deviceID := "43"
 
 			// act
@@ -1278,7 +1278,7 @@ func TestGetAllDevices(t *testing.T) {
         ]
     }`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	devices, err := devicesAPI.GetAll(context.Background())
@@ -1379,7 +1379,7 @@ func TestDeleteDevice(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1430,7 +1430,7 @@ func TestApplyLabels(t *testing.T) {
         ]
     }`
 	transport := &api_connection.StubTransport{ResponseBody: applyLabelsResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1499,7 +1499,7 @@ func TestGetInterfaceMinimal(t *testing.T) {
         }
     }`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1602,7 +1602,7 @@ func TestGetInterfaceFull(t *testing.T) {
         }
     }`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1790,7 +1790,7 @@ func TestGetAllInterfaces(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1858,7 +1858,7 @@ func TestCreateInterfaceMinimal(t *testing.T) {
         "id": "43"
     }`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -1927,7 +1927,7 @@ func TestCreateInterfaceFull(t *testing.T) {
         ]
     }`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	vrf := models.NewVRFAttributes(
@@ -2002,7 +2002,7 @@ func TestDeleteInterface(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "{}"
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -2053,7 +2053,7 @@ func TestUpdateInterfaceMinimal(t *testing.T) {
         "initial_interface_ip_netmask": null
     }`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	deviceID := models.ID("42")
@@ -2130,7 +2130,7 @@ func TestUpdateInterfaceFull(t *testing.T) {
         "initial_interface_ip_netmask": null
     }`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	devicesAPI := resources.NewDevicesAPI(transport)
+	devicesAPI := resources.NewDevicesAPI(transport, false)
 
 	// act
 	vrf := models.NewVRFAttributes(

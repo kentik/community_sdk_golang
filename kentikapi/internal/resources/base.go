@@ -11,7 +11,8 @@ import (
 
 // BaseAPI provides marshall/unmarshall + validation functionality for all resource APIs.
 type BaseAPI struct {
-	Transport api_connection.Transport
+	Transport   api_connection.Transport
+	LogPayloads bool
 }
 
 // GetAndValidate retrieves json at "url", unmarshalls and validates against required fields defined in struct tags of "output"

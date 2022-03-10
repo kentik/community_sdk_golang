@@ -26,7 +26,7 @@ func TestGetSite(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	sitesAPI := resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport, false)
 	siteID := models.ID("42")
 
 	// act
@@ -76,7 +76,7 @@ func TestGetAllSites(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	sitesAPI := resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport, false)
 
 	// act
 	sites, err := sitesAPI.GetAll(context.Background())
@@ -126,7 +126,7 @@ func TestCreateSite(t *testing.T) {
 		}     
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	sitesAPI := resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport, false)
 
 	// act
 	site := models.NewSite("apitest-site-1")
@@ -166,7 +166,7 @@ func TestUpdateSite(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	sitesAPI := resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport, false)
 
 	// act
 	siteID := models.ID("42")
@@ -197,7 +197,7 @@ func TestDeleteSite(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting site responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	sitesAPI := resources.NewSitesAPI(transport)
+	sitesAPI := resources.NewSitesAPI(transport, false)
 
 	// act
 	siteID := models.ID("42")
