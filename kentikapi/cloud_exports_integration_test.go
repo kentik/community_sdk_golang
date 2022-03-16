@@ -342,9 +342,8 @@ func TestClient_CreateCloudExport(t *testing.T) {
 		}, {
 			name: "minimal AWS export created",
 			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
-				Name:          "minimal-aws-export",
-				PlanID:        "11467",
-				CloudProvider: models.CloudProviderAWS,
+				Name:   "minimal-aws-export",
+				PlanID: "11467",
 				AWSProperties: models.AWSPropertiesRequiredFields{
 					Bucket: "dummy-bucket",
 				},

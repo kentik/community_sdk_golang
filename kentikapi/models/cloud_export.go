@@ -5,7 +5,7 @@ func NewAWSCloudExport(obj CloudExportAWSRequiredFields) *CloudExport {
 	return &CloudExport{
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
-		CloudProvider: obj.CloudProvider,
+		CloudProvider: CloudProviderAWS,
 		AWSProperties: &AWSProperties{
 			Bucket: obj.AWSProperties.Bucket,
 		},
@@ -17,7 +17,7 @@ func NewAzureCloudExport(obj CloudExportAzureRequiredFields) *CloudExport {
 	return &CloudExport{
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
-		CloudProvider: obj.CloudProvider,
+		CloudProvider: CloudProviderAzure,
 		AzureProperties: &AzureProperties{
 			Location:       obj.AzureProperties.Location,
 			ResourceGroup:  obj.AzureProperties.ResourceGroup,
@@ -32,7 +32,7 @@ func NewGCECloudExport(obj CloudExportGCERequiredFields) *CloudExport {
 	return &CloudExport{
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
-		CloudProvider: obj.CloudProvider,
+		CloudProvider: CloudProviderGCE,
 		GCEProperties: &GCEProperties{
 			Project:      obj.GCEProperties.Project,
 			Subscription: obj.GCEProperties.Subscription,
@@ -45,7 +45,7 @@ func NewIBMCloudExport(obj CloudExportIBMRequiredFields) *CloudExport {
 	return &CloudExport{
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
-		CloudProvider: obj.CloudProvider,
+		CloudProvider: CloudProviderIBM,
 		IBMProperties: &IBMProperties{
 			Bucket: obj.IBMProperties.Bucket,
 		},
@@ -167,7 +167,6 @@ type CloudExportStatus struct {
 type CloudExportAWSRequiredFields struct {
 	Name          string
 	PlanID        string
-	CloudProvider CloudProvider
 	AWSProperties AWSPropertiesRequiredFields
 }
 
@@ -180,7 +179,6 @@ type AWSPropertiesRequiredFields struct {
 type CloudExportAzureRequiredFields struct {
 	Name            string
 	PlanID          string
-	CloudProvider   CloudProvider
 	AzureProperties AzurePropertiesRequiredFields
 }
 
@@ -196,7 +194,6 @@ type AzurePropertiesRequiredFields struct {
 type CloudExportGCERequiredFields struct {
 	Name          string
 	PlanID        string
-	CloudProvider CloudProvider
 	GCEProperties GCEPropertiesRequiredFields
 }
 
@@ -210,7 +207,6 @@ type GCEPropertiesRequiredFields struct {
 type CloudExportIBMRequiredFields struct {
 	Name          string
 	PlanID        string
-	CloudProvider CloudProvider
 	IBMProperties IBMPropertiesRequiredFields
 }
 

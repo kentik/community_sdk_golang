@@ -57,9 +57,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 
 	fmt.Println("Creating AWS cloud export")
 	ce := models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
-		Name:          "example-aws-export",
-		PlanID:        "11467",
-		CloudProvider: models.CloudProviderAWS,
+		Name:   "example-aws-export",
+		PlanID: "11467",
 		AWSProperties: models.AWSPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
 		},
@@ -128,9 +127,8 @@ func demonstrateCloudExportAPIWithAzure() error {
 
 	fmt.Println("Creating Azure cloud export")
 	ce := models.NewAzureCloudExport(models.CloudExportAzureRequiredFields{
-		Name:          "example-azure-export",
-		PlanID:        "11467",
-		CloudProvider: models.CloudProviderAzure,
+		Name:   "example-azure-export",
+		PlanID: "11467",
 		AzureProperties: models.AzurePropertiesRequiredFields{
 			Location:       "dummy-location",
 			ResourceGroup:  "dummy-rg",
@@ -177,9 +175,8 @@ func demonstrateCloudExportAPIWithGCE() error {
 	fmt.Println("Creating GCE cloud export")
 	fmt.Println("Creating Azure cloud export")
 	ce := models.NewGCECloudExport(models.CloudExportGCERequiredFields{
-		Name:          "example-gce-export",
-		PlanID:        "11467",
-		CloudProvider: models.CloudProviderGCE,
+		Name:   "example-gce-export",
+		PlanID: "11467",
 		GCEProperties: models.GCEPropertiesRequiredFields{
 			Project:      "dummy-project",
 			Subscription: "dummy-subscription",
@@ -223,9 +220,8 @@ func demonstrateCloudExportAPIWithIBM() error {
 
 	fmt.Println("Creating IBM cloud export")
 	ce := models.NewIBMCloudExport(models.CloudExportIBMRequiredFields{
-		Name:          "example-ibm-export",
-		PlanID:        "11467",
-		CloudProvider: models.CloudProviderIBM,
+		Name:   "example-ibm-export",
+		PlanID: "11467",
 		IBMProperties: models.IBMPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
 		},
