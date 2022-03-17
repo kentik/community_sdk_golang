@@ -13,6 +13,22 @@ type ManualMitigation struct {
 	MinutesBeforeAutoStop string
 }
 
+// ManualMitigationRequiredFields is subset of ManualMitigation fields required to create a ManualMitigation.
+type ManualMitigationRequiredFields struct {
+	IPCidr     string
+	PlatformID string
+	MethodID   string
+}
+
+// NewUManualMitigation creates a new ManualMitigation with all required fields set.
+func NewUManualMitigation(u ManualMitigationRequiredFields) *ManualMitigation {
+	return &ManualMitigation{
+		IPCidr:     u.IPCidr,
+		PlatformID: u.PlatformID,
+		MethodID:   u.MethodID,
+	}
+}
+
 type Alarm struct {
 	AlarmID         ID
 	RowType         string

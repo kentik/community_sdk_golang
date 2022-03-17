@@ -16,13 +16,19 @@ type SavedFilter struct {
 	UpdatedDate time.Time
 }
 
+// SavedFilterRequiredFields is subset of SavedFilter fields required to create a SavedFilter.
+type SavedFilterRequiredFields struct {
+	FilterName        string
+	FilterDescription string
+	Filters           Filters
+}
+
 // NewSavedFilter creates a new SavedFilter with all required fields set.
-func NewSavedFilter(name string, description string, level string, filters Filters) SavedFilter {
-	return SavedFilter{
-		FilterName:        name,
-		FilterDescription: description,
-		FilterLevel:       level,
-		Filters:           filters,
+func NewSavedFilter(f SavedFilterRequiredFields) *SavedFilter {
+	return &SavedFilter{
+		FilterName:        f.FilterName,
+		FilterDescription: f.FilterDescription,
+		Filters:           f.Filters,
 	}
 }
 
