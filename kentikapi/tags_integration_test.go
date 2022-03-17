@@ -151,6 +151,7 @@ func TestClient_GetTag(t *testing.T) {
 			expectedResult: newTestTagOne(t),
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
