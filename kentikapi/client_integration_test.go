@@ -21,11 +21,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
-	testAgentID = "968"
+	warsawAgentID = "41910"
 )
 
 func TestClient_GetUserWithRetries(t *testing.T) {
@@ -175,32 +174,26 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 	tests := []struct {
 		name              string
 		options           []kentikapi.ClientOption
-		request           *syntheticspb.GetAgentRequest
-		expectedRequestID string
 		responses         []gRPCGetAgentResponse
 		handlingDelay     time.Duration
-		expectedResult    *syntheticspb.GetAgentResponse
-		expectedErrorCode codes.Code
-		expectedErrorMsg  string
+		expectedResult    *models.SyntheticsAgent
 		expectedError     bool
+		expectedErrorCode *codes.Code
 	}{
 		{
-			name:              "retry 2 times till success on code Unavailable",
-			request:           &syntheticspb.GetAgentRequest{Id: testAgentID},
-			expectedRequestID: testAgentID,
+			name: "retry 2 times till success on code Unavailable",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				{
 					nil,
-					&syntheticspb.GetAgentResponse{Agent: newDummyAgent()},
+					&syntheticspb.GetAgentResponse{Agent: newWarsawAgentPayload()},
 				},
 			},
-			expectedResult: &syntheticspb.GetAgentResponse{Agent: newDummyAgent()},
+			expectedResult: newWarsawAgent(),
 			expectedError:  false,
 		}, {
-			name:    "retry 4 times when code Unavailable received and last code is Unavailable",
-			request: &syntheticspb.GetAgentRequest{},
+			name: "retry 4 times when code Unavailable received and last code is Unavailable",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
@@ -209,12 +202,10 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 			},
 			expectedResult:    nil,
-			expectedErrorCode: codes.Unavailable,
-			expectedErrorMsg:  codes.Unavailable.String(),
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.Unavailable),
 		}, {
-			name:    "retry 4 times when code Unavailable received and last code is Unknown",
-			request: &syntheticspb.GetAgentRequest{},
+			name: "retry 4 times when code Unavailable received and last code is Unknown",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
@@ -223,61 +214,51 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				newErrorGRPCGetAgentResponse(codes.Unknown),
 			},
 			expectedResult:    nil,
-			expectedErrorCode: codes.Unknown,
-			expectedErrorMsg:  codes.Unknown.String(),
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.Unknown),
 		}, {
-			name:    "do not retry when code Unknown received",
-			request: &syntheticspb.GetAgentRequest{},
+			name: "do not retry when code Unknown received",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unknown),
 			},
 			expectedResult:    nil,
-			expectedErrorCode: codes.Unknown,
-			expectedErrorMsg:  codes.Unknown.String(),
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.Unknown),
 		}, {
 			name:    "do not retry when retries disabled and code Unavailable received",
 			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(0)},
-			request: &syntheticspb.GetAgentRequest{},
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 			},
 			expectedResult:    nil,
-			expectedErrorCode: codes.Unavailable,
-			expectedErrorMsg:  codes.Unavailable.String(),
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.Unavailable),
 		}, {
 			name:    "retry specified number of times when code Unavailable received",
 			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(2)},
-			request: &syntheticspb.GetAgentRequest{},
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 			},
 			expectedResult:    nil,
-			expectedErrorCode: codes.Unavailable,
-			expectedErrorMsg:  codes.Unavailable.String(),
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.Unavailable),
 		}, {
 			name:              "timeout during first request",
 			options:           []kentikapi.ClientOption{kentikapi.WithTimeout(5 * time.Millisecond)},
-			request:           &syntheticspb.GetAgentRequest{},
 			responses:         []gRPCGetAgentResponse{},
 			handlingDelay:     1 * time.Second,
 			expectedResult:    nil,
-			expectedErrorCode: codes.DeadlineExceeded,
-			expectedErrorMsg:  "context deadline exceeded",
 			expectedError:     true,
+			expectedErrorCode: codePtr(codes.DeadlineExceeded),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			server := newSpySyntheticsServerWithDelays(t, tt.responses)
-			server.handlingDelay = tt.handlingDelay
+			server := newSpySyntheticsServerWithDelays(t, tt.responses, tt.handlingDelay)
 			server.Start()
 			defer server.Stop()
 
@@ -291,29 +272,29 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.SyntheticsAdmin.GetAgent(context.Background(), tt.request)
+			result, err := client.Synthetics.Agents.Get(context.Background(), warsawAgentID)
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
+				if tt.expectedErrorCode != nil {
+					s, ok := status.FromError(err)
+					assert.True(t, ok)
+					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				}
 			} else {
 				assert.NoError(t, err)
 			}
 
-			if e, ok := status.FromError(err); ok {
-				assert.Equal(t, tt.expectedErrorCode, e.Code())
-				assert.Equal(t, tt.expectedErrorMsg, e.Message())
-			}
-
 			assert.Equal(t, len(server.responses), len(server.requests), "invalid number of requests")
-			for i, r := range server.requests {
-				assert.Equal(t, dummyAuthEmail, server.metadataSlice[i].Get(authEmailKey)[0])
-				assert.Equal(t, dummyAuthToken, server.metadataSlice[i].Get(authAPITokenKey)[0])
-				assert.Equal(t, tt.expectedRequestID, r.GetId())
+			for _, r := range server.requests {
+				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
+				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
+				assert.Equal(t, warsawAgentID, r.data.GetId())
 			}
 
-			testutil.AssertProtoEqual(t, tt.expectedResult, result)
+			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
 }
@@ -331,8 +312,7 @@ type spySyntheticsServerWithDelays struct {
 	handlingDelay time.Duration
 
 	// requests spied by the server
-	requests      []*syntheticspb.GetAgentRequest
-	metadataSlice []metadata.MD
+	requests []getAgentRequest
 }
 
 type gRPCGetAgentResponse struct {
@@ -340,11 +320,14 @@ type gRPCGetAgentResponse struct {
 	body *syntheticspb.GetAgentResponse
 }
 
-func newSpySyntheticsServerWithDelays(t testing.TB, responses []gRPCGetAgentResponse) *spySyntheticsServerWithDelays {
+func newSpySyntheticsServerWithDelays(
+	t testing.TB, responses []gRPCGetAgentResponse, handlingDelay time.Duration,
+) *spySyntheticsServerWithDelays {
 	return &spySyntheticsServerWithDelays{
-		done:      make(chan struct{}),
-		t:         t,
-		responses: responses,
+		done:          make(chan struct{}),
+		t:             t,
+		responses:     responses,
+		handlingDelay: handlingDelay,
 	}
 }
 
@@ -375,9 +358,10 @@ func (s *spySyntheticsServerWithDelays) GetAgent(
 	time.Sleep(s.handlingDelay)
 
 	md, _ := metadata.FromIncomingContext(ctx)
-	s.metadataSlice = append(s.metadataSlice, md)
-
-	s.requests = append(s.requests, req)
+	s.requests = append(s.requests, getAgentRequest{
+		metadata: md,
+		data:     req,
+	})
 
 	response := s.response()
 	return response.body, response.err
@@ -396,33 +380,6 @@ func (s *spySyntheticsServerWithDelays) response() gRPCGetAgentResponse {
 		}
 	}
 	return s.responses[len(s.requests)-1]
-}
-
-func newDummyAgent() *syntheticspb.Agent {
-	return &syntheticspb.Agent{
-		Id:            testAgentID,
-		SiteName:      "dummy-site-name",
-		Status:        syntheticspb.AgentStatus_AGENT_STATUS_WAIT,
-		Alias:         "probe-4-ams-1",
-		Type:          "global",
-		Os:            "I use Manjaro BTW",
-		Ip:            "95.179.136.58",
-		Lat:           52.374031,
-		Long:          4.88969,
-		LastAuthed:    timestamppb.New(time.Date(2020, time.July, 9, 21, 37, 0, 826*1000000, time.UTC)),
-		Family:        syntheticspb.IPFamily_IP_FAMILY_DUAL,
-		Asn:           20473,
-		SiteId:        "2137",
-		Version:       "0.0.2",
-		City:          "Amsterdam",
-		Region:        "Noord-Holland",
-		Country:       "Netherlands",
-		TestIds:       []string{"13", "133", "1337"},
-		LocalIp:       "10.10.10.10",
-		CloudRegion:   "dummy-region",
-		CloudProvider: "dummy-cloud-provider",
-		AgentImpl:     syntheticspb.ImplementType_IMPLEMENT_TYPE_RUST,
-	}
 }
 
 func newErrorGRPCGetAgentResponse(c codes.Code) gRPCGetAgentResponse {
