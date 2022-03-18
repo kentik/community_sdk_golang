@@ -84,6 +84,28 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 				},
 				InvalidCloudExportsCount: 1,
 			},
+		}, {
+			name: "2 exports received - one empty",
+			response: listCEResponse{
+				data: &cloudexportpb.ListCloudExportResponse{
+					Exports: []*cloudexportpb.CloudExport{
+						newFullAWSCloudExportPayload(),
+						nil,
+					},
+					InvalidExportsCount: 0,
+				},
+			},
+			expectedResult: &models.GetAllCloudExportsResponse{
+				CloudExports: []models.CloudExport{
+					*newFullAWSCloudExport(),
+					// client receives initialized, empty CE here
+					{
+						Type:    models.CloudExportTypeUnspecified,
+						Enabled: pointer.ToBool(false),
+					},
+				},
+				InvalidCloudExportsCount: 0,
+			},
 		},
 	}
 
@@ -339,6 +361,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				data: &cloudexportpb.CreateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name: "minimal AWS export created",
 			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
@@ -563,6 +586,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				data: &cloudexportpb.UpdateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name:    "full AWS export updated",
 			request: newFullAWSCloudExport(),

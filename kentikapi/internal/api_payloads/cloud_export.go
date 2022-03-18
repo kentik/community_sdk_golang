@@ -2,6 +2,7 @@ package api_payloads
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
@@ -11,32 +12,38 @@ import (
 
 type ListCloudExportsResponse cloudexportpb.ListCloudExportResponse
 
-func (r *ListCloudExportsResponse) ToModel() *models.GetAllCloudExportsResponse {
+func (r *ListCloudExportsResponse) ToModel() (*models.GetAllCloudExportsResponse, error) {
 	if r == nil {
-		return nil
+		return nil, nil
+	}
+
+	ces, err := cloudExportsFromPayload(r.Exports)
+	if err != nil {
+		return nil, err
 	}
 
 	return &models.GetAllCloudExportsResponse{
-		CloudExports:             cloudExportsFromPayload(r.Exports),
+		CloudExports:             ces,
 		InvalidCloudExportsCount: r.InvalidExportsCount,
-	}
+	}, nil
 }
 
-func cloudExportsFromPayload(exports []*cloudexportpb.CloudExport) []models.CloudExport {
+func cloudExportsFromPayload(exports []*cloudexportpb.CloudExport) ([]models.CloudExport, error) {
 	var result []models.CloudExport
-	for _, e := range exports {
-		ce := CloudExportFromPayload(e)
-		if ce != nil {
-			result = append(result, *ce)
+	for i, e := range exports {
+		ce, err := CloudExportFromPayload(e)
+		if err != nil {
+			return nil, fmt.Errorf("cloud export with index %v: %w", i, err)
 		}
+		result = append(result, *ce)
 	}
-	return result
+	return result, nil
 }
 
 // CloudExportFromPayload converts cloud export payload to model.
-func CloudExportFromPayload(ce *cloudexportpb.CloudExport) *models.CloudExport {
+func CloudExportFromPayload(ce *cloudexportpb.CloudExport) (*models.CloudExport, error) {
 	if ce == nil {
-		return nil
+		return nil, fmt.Errorf("cloud export response payload is nil")
 	}
 
 	return &models.CloudExport{
@@ -54,8 +61,8 @@ func CloudExportFromPayload(ce *cloudexportpb.CloudExport) *models.CloudExport {
 		GCEProperties:   gcePropertiesFromPayload(ce.GetGce()),
 		IBMProperties:   ibmPropertiesFromPayload(ce.GetIbm()),
 		BGP:             bgpPropertiesFromPayload(ce.GetBgp()),
-		CurrentStatus:   currentStatusFromPayload(ce.GetCurrentStatus()),
-	}
+		CurrentStatus:   currentStatusFromPayload(ce.GetCurrentStatus(), ce.Id),
+	}, nil
 }
 
 func awsPropertiesFromPayload(aws *cloudexportpb.AwsProperties) *models.AWSProperties {
@@ -118,8 +125,9 @@ func bgpPropertiesFromPayload(bgp *cloudexportpb.BgpProperties) *models.BGPPrope
 	}
 }
 
-func currentStatusFromPayload(cs *cloudexportpb.Status) *models.CloudExportStatus {
+func currentStatusFromPayload(cs *cloudexportpb.Status, id string) *models.CloudExportStatus {
 	if cs == nil {
+		log.Printf("Warning: currentStatusFromPayload: CloudExport.CurrentStatus is nil; resource ID: %v\n", id)
 		return nil
 	}
 
