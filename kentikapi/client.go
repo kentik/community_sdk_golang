@@ -154,9 +154,9 @@ func makeConnForGRPC(c Config, hostPort string) (grpc.ClientConnInterface, error
 		grpc.WithUnaryInterceptor(
 			grpcmiddleware.ChainUnaryClient(
 				makeTimeoutInterceptor(c),
+				makeLoggerInterceptor(c),
 				makeAuthInterceptor(c),
 				makeRetryInterceptor(c),
-				makeLoggerInterceptor(c),
 			),
 		),
 	)
@@ -210,12 +210,6 @@ func makeLoggerInterceptor(c Config) grpc.UnaryClientInterceptor {
 			log.Printf("Kentik API request - %s - %+v\n", method, req)
 		}
 		err := invoker(ctx, method, req, reply, cc, opts...)
-		if err != nil {
-			if c.LogPayloads {
-				log.Printf("grpc connection error: %v", err)
-			}
-			return err
-		}
 		if c.LogPayloads {
 			log.Printf("Kentik API response - %s - %+v\n", method, reply)
 		}
