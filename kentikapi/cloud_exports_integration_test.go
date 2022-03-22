@@ -224,15 +224,13 @@ func TestClient_GetCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: &models.CloudExport{
-				ID:              "58192",
-				Type:            models.CloudExportTypeKentikManaged,
-				Enabled:         pointer.ToBool(true),
-				Name:            "minimal-aws-export",
-				Description:     "",
-				APIRoot:         "https://api.kentik.com",
-				FlowDestination: "https://flow.kentik.com",
-				PlanID:          "11467",
-				CloudProvider:   models.CloudProviderAWS,
+				ID:            "58192",
+				Type:          models.CloudExportTypeKentikManaged,
+				Enabled:       pointer.ToBool(true),
+				Name:          "minimal-aws-export",
+				Description:   "",
+				PlanID:        "11467",
+				CloudProvider: models.CloudProviderAWS,
 				AWSProperties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
@@ -413,15 +411,13 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: &models.CloudExport{
-				ID:              "58192",
-				Type:            models.CloudExportTypeKentikManaged,
-				Enabled:         pointer.ToBool(true),
-				Name:            "minimal-aws-export",
-				Description:     "",
-				APIRoot:         "https://api.kentik.com",
-				FlowDestination: "https://flow.kentik.com",
-				PlanID:          "11467",
-				CloudProvider:   models.CloudProviderAWS,
+				ID:            "58192",
+				Type:          models.CloudExportTypeKentikManaged,
+				Enabled:       pointer.ToBool(true),
+				Name:          "minimal-aws-export",
+				Description:   "",
+				PlanID:        "11467",
+				CloudProvider: models.CloudProviderAWS,
 				AWSProperties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
@@ -943,13 +939,11 @@ func newFullIBMCloudExport() *models.CloudExport {
 
 func newFullCloudExport() *models.CloudExport {
 	return &models.CloudExport{
-		Type:            models.CloudExportTypeKentikManaged,
-		Enabled:         pointer.ToBool(true),
-		Name:            "full-export",
-		Description:     "Export with all fields set", // including read-only fields
-		APIRoot:         "https://api.kentik.com",
-		FlowDestination: "https://flow.kentik.com",
-		PlanID:          "11467",
+		Type:        models.CloudExportTypeKentikManaged,
+		Enabled:     pointer.ToBool(true),
+		Name:        "full-export",
+		Description: "Export with all fields set", // including read-only fields
+		PlanID:      "11467",
 		BGP: &models.BGPProperties{
 			ApplyBGP:       pointer.ToBool(true),
 			UseBGPDeviceID: "dummy-device-id",
@@ -1022,14 +1016,14 @@ func newFullIBMCloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
+// newFullCloudExportPayload returns payload with all fields set.
+// ApiRoot and FlowDest are going to be removed from the API and are omitted.
 func newFullCloudExportPayload() *cloudexportpb.CloudExport {
 	return &cloudexportpb.CloudExport{
 		Type:        cloudexportpb.CloudExportType_CLOUD_EXPORT_TYPE_KENTIK_MANAGED,
 		Enabled:     true,
 		Name:        "full-export",
 		Description: "Export with all fields set", // including read-only fields
-		ApiRoot:     "https://api.kentik.com",
-		FlowDest:    "https://flow.kentik.com",
 		PlanId:      "11467",
 		Bgp: &cloudexportpb.BgpProperties{
 			ApplyBgp:       true,

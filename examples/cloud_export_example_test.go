@@ -1,7 +1,7 @@
 //go:build examples
 // +build examples
 
-//nolint:forbidigo,goconst,testpackage
+//nolint:forbidigo,testpackage
 package examples
 
 import (
@@ -66,8 +66,6 @@ func demonstrateCloudExportAPIWithAWS() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy AWS description"
-	ce.APIRoot = "https://dummy.api.kentik.com"
-	ce.FlowDestination = "https://dummy.flow.kentik.com"
 	ce.AWSProperties.IAMRoleARN = "dummy-iam-role-arn"
 	ce.AWSProperties.Region = "dummy-region"
 	ce.AWSProperties.DeleteAfterRead = pointer.ToBool(true)
@@ -139,8 +137,6 @@ func demonstrateCloudExportAPIWithAzure() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy Azure description"
-	ce.APIRoot = "https://dummy.api.kentik.com"
-	ce.FlowDestination = "https://dummy.flow.kentik.com"
 	ce.AzureProperties.SecurityPrincipalEnabled = pointer.ToBool(true)
 	ce.BGP = &models.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
@@ -185,8 +181,6 @@ func demonstrateCloudExportAPIWithGCE() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy GCE description"
-	ce.APIRoot = "https://dummy.api.kentik.com"
-	ce.FlowDestination = "https://dummy.flow.kentik.com"
 	ce.BGP = &models.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
@@ -229,8 +223,6 @@ func demonstrateCloudExportAPIWithIBM() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy IBM description"
-	ce.APIRoot = "https://dummy.api.kentik.com"
-	ce.FlowDestination = "https://dummy.flow.kentik.com"
 	ce.BGP = &models.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
