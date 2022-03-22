@@ -30,7 +30,7 @@ func TestCreateCustomDimension(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 	dimension := models.NewCustomDimension(
 		"c_testapi_dimension_1",
 		"dimension_display_name",
@@ -75,7 +75,7 @@ func TestUpdateCustomDimension(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 	dimensionID := models.ID("42")
 	dimension := models.CustomDimension{ID: dimensionID, DisplayName: "dimension_display_name2"}
 
@@ -314,7 +314,7 @@ func TestGetCustomDimension(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
 			transport := &api_connection.StubTransport{ResponseBody: tt.responseBody}
-			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+			customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 			dimensionID := "42"
 
 			// act
@@ -376,7 +376,7 @@ func TestGetAllCustomDimensions(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 
 	// act
 	dimensions, err := customDimensionsAPI.GetAll(context.Background())
@@ -423,7 +423,7 @@ func TestDeleteCustomDimension(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 
 	// act
 	dimensionID := models.ID("42")
@@ -474,7 +474,7 @@ func TestCreatePopulator(t *testing.T) {
 		}
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 	dimensionID := models.ID("24001")
 	populator := models.NewPopulator(
 		dimensionID,
@@ -588,7 +588,7 @@ func TestUpdatePopulator(t *testing.T) {
 	}`
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 	dimensionID := models.ID("24001")
 	populatorID := models.ID("1510862280")
 
@@ -646,7 +646,7 @@ func TestDeletePopulator(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting device responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, false)
+	customDimensionsAPI := resources.NewCustomDimensionsAPI(transport, true)
 
 	// act
 	dimensionID := models.ID("42")

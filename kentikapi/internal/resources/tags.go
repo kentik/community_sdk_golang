@@ -42,13 +42,11 @@ func (a *TagsAPI) Get(ctx context.Context, id models.ID) (*models.Tag, error) {
 
 // Create creates new tag.
 func (a *TagsAPI) Create(ctx context.Context, tag models.Tag) (*models.Tag, error) {
-	payload := api_payloads.CreateTagRequest{Tag: api_payloads.TagToPayload(tag)}
-
 	var response api_payloads.CreateTagResponse
 	err := a.PostAndValidate(
 		ctx,
 		api_endpoints.TagPath,
-		payload,
+		api_payloads.CreateTagRequest{Tag: api_payloads.TagToPayload(tag)},
 		&response,
 	)
 	if err != nil {
@@ -60,13 +58,11 @@ func (a *TagsAPI) Create(ctx context.Context, tag models.Tag) (*models.Tag, erro
 
 // Update updates the tag.
 func (a *TagsAPI) Update(ctx context.Context, tag models.Tag) (*models.Tag, error) {
-	request := api_payloads.UpdateTagRequest{Tag: api_payloads.TagToPayload(tag)}
-
 	var response api_payloads.UpdateTagResponse
 	err := a.UpdateAndValidate(
 		ctx,
 		api_endpoints.GetTagPath(tag.ID),
-		request,
+		api_payloads.UpdateTagRequest{Tag: api_payloads.TagToPayload(tag)},
 		&response,
 	)
 	if err != nil {

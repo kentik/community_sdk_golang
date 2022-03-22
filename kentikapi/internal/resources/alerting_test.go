@@ -27,7 +27,7 @@ func TestCrerateManualMitigation(t *testing.T) {
 	expectedRequestBody := `{"ipCidr":"192.168.0.0/24","platformID":"1234","methodID":"12345","minutesBeforeAutoStop":"20"}`
 
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	alertingAPI := resources.NewAlertingAPI(transport, false)
+	alertingAPI := resources.NewAlertingAPI(transport, true)
 	mm := models.ManualMitigation{
 		IPCidr:                "192.168.0.0/24",
 		PlatformID:            "1234",
@@ -80,7 +80,7 @@ func TestGetActiveAlerts(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	alertingAPI := resources.NewAlertingAPI(transport, false)
+	alertingAPI := resources.NewAlertingAPI(transport, true)
 
 	alarmEndStr := "0000-00-00 00:00:00"
 	expected := []models.Alarm{
@@ -176,7 +176,7 @@ func TestGetAlertsHistory(t *testing.T) {
         }
     ]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	alertingAPI := resources.NewAlertingAPI(transport, false)
+	alertingAPI := resources.NewAlertingAPI(transport, true)
 
 	dateStr := "2021-01-19 13:50:00"
 	expected := []models.HistoricalAlert{

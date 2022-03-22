@@ -49,7 +49,7 @@ func TestQuerySQL(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := resources.NewQueryAPI(transport, false)
+	queryAPI := resources.NewQueryAPI(transport, true)
 
 	// act
 	result, err := queryAPI.SQL(context.TODO(), querySQL)
@@ -125,7 +125,7 @@ func TestQueryData(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := resources.NewQueryAPI(transport, false)
+	queryAPI := resources.NewQueryAPI(transport, true)
 
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
 	agg1.Raw = pointer.ToBool(true)
@@ -205,7 +205,7 @@ func TestQueryChart(t *testing.T) {
 	data := "ImageDataEncodedBase64=="
 	queryResponsePayload := `{"dataUri": "data:image/png;base64,ImageDataEncodedBase64=="}`
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := resources.NewQueryAPI(transport, false)
+	queryAPI := resources.NewQueryAPI(transport, true)
 
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
 	agg1.Raw = pointer.ToBool(true)
@@ -329,7 +329,7 @@ func TestQueryURL(t *testing.T) {
 	unquotedResponse := "https://portal.kentik.com/portal/#Charts/shortUrl/e0d24b3cc8dfe41f9093668e531cbe96"
 	queryResponsePayload := `"` + unquotedResponse + `"` // actual response is url in quotation marks
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
-	queryAPI := resources.NewQueryAPI(transport, false)
+	queryAPI := resources.NewQueryAPI(transport, true)
 
 	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
 	agg1.Raw = pointer.ToBool(true)

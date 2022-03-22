@@ -42,12 +42,11 @@ func (a *UsersAPI) Get(ctx context.Context, id models.ID) (*models.User, error) 
 
 // Create creates new user.
 func (a *UsersAPI) Create(ctx context.Context, user models.User) (*models.User, error) {
-	request := api_payloads.CreateUserRequest{User: api_payloads.UserToPayload(user)}
 	var response api_payloads.CreateUserResponse
 	err := a.PostAndValidate(
 		ctx,
 		api_endpoints.UserPath,
-		request,
+		api_payloads.CreateUserRequest{User: api_payloads.UserToPayload(user)},
 		&response,
 	)
 	if err != nil {
@@ -59,12 +58,11 @@ func (a *UsersAPI) Create(ctx context.Context, user models.User) (*models.User, 
 
 // Update updates the user.
 func (a *UsersAPI) Update(ctx context.Context, user models.User) (*models.User, error) {
-	request := api_payloads.UpdateUserRequest{User: api_payloads.UserToPayload(user)}
 	var response api_payloads.UpdateUserResponse
 	err := a.UpdateAndValidate(
 		ctx,
 		api_endpoints.GetUserPath(user.ID),
-		request,
+		api_payloads.UpdateUserRequest{User: api_payloads.UserToPayload(user)},
 		&response,
 	)
 	if err != nil {

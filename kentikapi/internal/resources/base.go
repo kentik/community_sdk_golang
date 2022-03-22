@@ -19,9 +19,9 @@ type BaseAPI struct {
 // GetAndValidate retrieves json at "url", unmarshalls and validates against required fields defined in struct tags of "output"
 // output must be pointer to object or nil.
 func (b BaseAPI) GetAndValidate(ctx context.Context, url string, output interface{}) error {
-	LogPayload(b.LogPayloads, "Kentik API request - GetAndValidate", url, "")
+	b.logPayload("Kentik API request - GET", url, "")
 	responseBody, err := b.Transport.Get(ctx, url)
-	LogPayload(b.LogPayloads, "Kentik API response - GetAndValidate", url, responseBody)
+	b.logPayload("Kentik API response - GET", url, responseBody)
 	if err != nil {
 		return err
 	}
@@ -48,14 +48,14 @@ func (b BaseAPI) PostAndValidate(ctx context.Context, url string, input interfac
 	if err := validation.CheckRequestRequiredFields("post", input); err != nil {
 		return err
 	}
-	LogPayload(b.LogPayloads, "Kentik API request - PostAndValidate", url, input)
 	payload, err := json.Marshal(input)
+	b.logPayload("Kentik API request - POST", url, payload)
 	if err != nil {
 		return fmt.Errorf("encode request body: %v", err)
 	}
 
 	responseBody, err := b.Transport.Post(ctx, url, payload)
-	LogPayload(b.LogPayloads, "Kentik API response - PostAndValidate", url, responseBody)
+	b.logPayload("Kentik API response - POST", url, responseBody)
 	if err != nil {
 		return err
 	}
@@ -82,14 +82,14 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 	if err := validation.CheckRequestRequiredFields("put", input); err != nil {
 		return err
 	}
-	LogPayload(b.LogPayloads, "Kentik API request - UpdateAndValidate", url, input)
 	payload, err := json.Marshal(input)
+	b.logPayload("Kentik API request - PUT", url, payload)
 	if err != nil {
 		return fmt.Errorf("encode request body: %v", err)
 	}
 
 	responseBody, err := b.Transport.Put(ctx, url, payload)
-	LogPayload(b.LogPayloads, "Kentik API response - UpdateAndValidate", url, responseBody)
+	b.logPayload("Kentik API response - PUT", url, responseBody)
 	if err != nil {
 		return err
 	}
@@ -113,9 +113,9 @@ func (b BaseAPI) UpdateAndValidate(ctx context.Context, url string, input interf
 // against required fields defined in struct tags of "output"
 // output must be pointer to object or nil.
 func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output interface{}) error {
-	LogPayload(b.LogPayloads, "Kentik API request - DeleteAndValidate", url, "")
+	b.logPayload("Kentik API request - DELETE", url, "")
 	responseBody, err := b.Transport.Delete(ctx, url)
-	LogPayload(b.LogPayloads, "Kentik API response - DeleteAndValidate", url, responseBody)
+	b.logPayload("Kentik API response - DELETE", url, responseBody)
 	if err != nil {
 		return err
 	}
@@ -135,16 +135,12 @@ func (b BaseAPI) DeleteAndValidate(ctx context.Context, url string, output inter
 	return nil
 }
 
-func LogPayload(l bool, msg, url string, payload interface{}) {
-	if l {
+func (b BaseAPI) logPayload(msg, url string, payload interface{}) {
+	if b.LogPayloads {
 		if payload == "" {
 			log.Printf("%s %s", msg, url)
 		} else {
-			jsonData, err := json.Marshal(&payload)
-			if err != nil {
-				log.Printf("%s %s - %s", msg, url, payload)
-			}
-			log.Printf("%s %s - %s", msg, url, jsonData)
+			log.Printf("%s %s - %s", msg, url, payload)
 		}
 	}
 }

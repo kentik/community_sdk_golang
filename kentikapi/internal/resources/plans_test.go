@@ -66,7 +66,7 @@ func TestGetAllPlans(t *testing.T) {
 		]
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	plansAPI := resources.NewPlansAPI(transport, false)
+	plansAPI := resources.NewPlansAPI(transport, true)
 
 	// act
 	plans, err := plansAPI.GetAll(context.Background())
