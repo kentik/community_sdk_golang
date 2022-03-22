@@ -30,7 +30,10 @@ func TestCreateDeviceLabel(t *testing.T) {
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
 	labelsAPI := resources.NewDeviceLabelsAPI(transport)
-	label := models.NewDeviceLabel("apitest-device_label-1", "#00FF00")
+	label := models.NewDeviceLabel(models.DeviceLabelRequiredFields{
+		Name:  "apitest-device_label-1",
+		Color: "#00FF00",
+	})
 
 	// act
 	label, err := labelsAPI.Create(context.Background(), *label)

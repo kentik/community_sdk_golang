@@ -101,14 +101,14 @@ func TestCreateDeviceRouter(t *testing.T) {
 	snmpv3conf := models.NewSNMPv3Conf("John")
 	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolMD5, "Auth_Pass")
 	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolDES, "Priv_Pass")
-	router := models.NewDeviceRouter(
-		"testapi_router_router_full",
-		models.DeviceSubtypeRouter,
-		1,
-		models.ID("11466"),
-		[]string{"128.0.0.10"},
-		false,
-	).WithBGPTypeDevice("77")
+	router := models.NewDeviceRouter(models.DeviceRouterRequiredFields{
+		DeviceName:       "testapi_router_router_full",
+		DeviceSubType:    models.DeviceSubtypeRouter,
+		DeviceSampleRate: 1,
+		PlanID:           models.ID("11466"),
+		SendingIPS:       []string{"128.0.0.10"},
+		MinimizeSNMP:     false,
+	}).WithBGPTypeDevice("77")
 	router.DeviceDescription = pointer.ToString("testapi router with full config")
 	router.DeviceSNMNPIP = pointer.ToString("127.0.0.1")
 	router.DeviceSNMPv3Conf = snmpv3conf
@@ -279,13 +279,13 @@ func TestCreateDeviceDNS(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	dns := models.NewDeviceDNS(
-		"testapi_dns-aws_subnet_bgp_other_device",
-		models.DeviceSubtypeAwsSubnet,
-		1,
-		models.ID("11466"),
-		models.CDNAttributeYes,
-	).WithBGPTypeOtherDevice(models.ID("42"))
+	dns := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
+		DeviceName:       "testapi_dns-aws_subnet_bgp_other_device",
+		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSampleRate: 1,
+		PlanID:           models.ID("11466"),
+		CdnAttr:          models.CDNAttributeYes,
+	}).WithBGPTypeOtherDevice(models.ID("42"))
 	dns.DeviceDescription = pointer.ToString("testapi dns with minimal config")
 	dns.SiteID = models.IDPtr("8483")
 	dns.DeviceBGPFlowSpec = pointer.ToBool(true)
@@ -1862,12 +1862,12 @@ func TestCreateInterfaceMinimal(t *testing.T) {
 
 	// act
 	deviceID := models.ID("42")
-	intf := models.NewInterface(
-		deviceID,
-		models.ID("2"),
-		8,
-		"testapi-interface-2",
-	)
+	intf := models.NewInterface(models.InterfaceRequiredFields{
+		DeviceID:             deviceID,
+		SNMPID:               models.ID("2"),
+		SNMPSpeed:            8,
+		InterfaceDescription: "testapi-interface-2",
+	})
 	created, err := devicesAPI.Interfaces.Create(context.Background(), *intf)
 
 	// assert request properly formed
@@ -1930,22 +1930,22 @@ func TestCreateInterfaceFull(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	vrf := models.NewVRFAttributes(
-		"vrf-name",
-		"101:100",
-		"11.121.111.13:3254",
-	)
+	vrf := models.NewVRFAttributes(models.VRFAttributesRequiredFields{
+		Name:               "vrf-name",
+		RouteTarget:        "101:100",
+		RouteDistinguisher: "11.121.111.13:3254",
+	})
 	vrf.Description = pointer.ToString("vrf-description")
 	vrf.ExtRouteDistinguisher = pointer.ToString("15")
 	secondaryIP1 := models.SecondaryIP{Address: "127.0.0.2", Netmask: "255.255.255.0"}
 	secondaryIP2 := models.SecondaryIP{Address: "127.0.0.3", Netmask: "255.255.255.0"}
 	deviceID := models.ID("42")
-	intf := models.NewInterface(
-		deviceID,
-		models.ID("2"),
-		8,
-		"testapi-interface-2",
-	)
+	intf := models.NewInterface(models.InterfaceRequiredFields{
+		DeviceID:             deviceID,
+		SNMPID:               models.ID("2"),
+		SNMPSpeed:            8,
+		InterfaceDescription: "testapi-interface-2",
+	})
 	intf.SNMPAlias = pointer.ToString("interface-description-1")
 	intf.InterfaceIP = pointer.ToString("127.0.0.1")
 	intf.InterfaceIPNetmask = pointer.ToString("255.255.255.0")
@@ -2133,11 +2133,11 @@ func TestUpdateInterfaceFull(t *testing.T) {
 	devicesAPI := resources.NewDevicesAPI(transport)
 
 	// act
-	vrf := models.NewVRFAttributes(
-		"vrf-name-44",
-		"101:100",
-		"11.121.111.13:444",
-	)
+	vrf := models.NewVRFAttributes(models.VRFAttributesRequiredFields{
+		Name:               "vrf-name-44",
+		RouteTarget:        "101:100",
+		RouteDistinguisher: "11.121.111.13:444",
+	})
 	vrf.Description = pointer.ToString("vrf-description-44")
 	vrf.ExtRouteDistinguisher = pointer.ToString("44")
 	deviceID := models.ID("42")

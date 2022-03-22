@@ -12,13 +12,20 @@ type CustomDimension struct {
 	Populators []Populator
 }
 
-// NewCustomDimension creates a CustomDimension with all necessary fields set
+// CustomDimensionRequiredFields is subset of CustomDimension fields required to create a CustomDimension.
 // Note: name must begin with "c_" and be unique even among already deleted custom dimensions as names are retained for 1 year.
-func NewCustomDimension(name, displayName string, dimensionType CustomDimensionType) *CustomDimension {
+type CustomDimensionRequiredFields struct {
+	Name        string
+	DisplayName string
+	Type        CustomDimensionType
+}
+
+// NewCustomDimension creates a CustomDimension with all necessary fields set.
+func NewCustomDimension(d CustomDimensionRequiredFields) *CustomDimension {
 	return &CustomDimension{
-		Name:        name,
-		DisplayName: displayName,
-		Type:        dimensionType,
+		Name:        d.Name,
+		DisplayName: d.DisplayName,
+		Type:        d.Type,
 	}
 }
 

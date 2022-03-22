@@ -44,7 +44,8 @@ func runCRUDSavedFilters() error {
 	}
 
 	fmt.Println("### CREATE")
-	newSavedFilter := models.SavedFilter{
+
+	newSavedFilter := models.NewSavedFilter(models.SavedFilterRequiredFields{
 		FilterName:        "New_Filter_test",
 		FilterDescription: "description of freshly created saved filter",
 		Filters: models.Filters{
@@ -63,8 +64,8 @@ func runCRUDSavedFilters() error {
 				},
 			},
 		},
-	}
-	savedFilter, err := client.SavedFilters.Create(context.Background(), newSavedFilter)
+	})
+	savedFilter, err := client.SavedFilters.Create(context.Background(), *newSavedFilter)
 	if err != nil {
 		return err
 	}

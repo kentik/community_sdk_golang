@@ -57,14 +57,13 @@ func runCreateManualMitigation() error {
 
 	fmt.Println("### CREATE MANUAL MITIGATION")
 	// This data is invalid and saved filter will not be created.
-	mm := models.ManualMitigation{
-		IPCidr:                "192.168.0.0/24",
-		PlatformID:            "1234",
-		MethodID:              "12345",
-		Comment:               nil,
-		MinutesBeforeAutoStop: "20",
-	}
-	err = client.Alerting.CreateManualMitigation(context.Background(), mm)
+	mm := models.NewUManualMitigation(models.ManualMitigationRequiredFields{
+		IPCidr:     "192.168.0.0/24",
+		PlatformID: "1234",
+		MethodID:   "12345",
+	})
+	mm.MinutesBeforeAutoStop = "20"
+	err = client.Alerting.CreateManualMitigation(context.Background(), *mm)
 	if err != nil {
 		fmt.Println("Saved Filter not created")
 	}

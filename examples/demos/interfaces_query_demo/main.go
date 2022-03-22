@@ -49,13 +49,14 @@ func main() {
 }
 
 func createDevice(client *kentikapi.Client) models.ID {
-	device := models.NewDeviceDNS(
-		"interfaces_query_demo_device",
-		models.DeviceSubtypeAwsSubnet,
-		1,
-		"11466",
-		models.CDNAttributeYes,
-	)
+	device := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
+		DeviceName:       "interfaces_query_demo_device",
+		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSampleRate: 1,
+		PlanID:           models.ID("11466"),
+		CdnAttr:          models.CDNAttributeYes,
+	})
+
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
 	demos.ExitOnError(err)
 	fmt.Printf("Successfully created device, ID = %v\n", createdDevice.ID)
@@ -65,12 +66,12 @@ func createDevice(client *kentikapi.Client) models.ID {
 
 //nolint:gomnd
 func createInterface(client *kentikapi.Client, deviceID models.ID) models.ID {
-	intf := models.NewInterface(
-		deviceID,
-		models.ID("2"),
-		15,
-		"testapi-interface-demo",
-	)
+	intf := models.NewInterface(models.InterfaceRequiredFields{
+		DeviceID:             deviceID,
+		SNMPID:               models.ID("2"),
+		SNMPSpeed:            15,
+		InterfaceDescription: "testapi-interface-demo",
+	})
 	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
 	demos.ExitOnError(err)
 	fmt.Printf("Successfully created interface, ID = %v\n", createdInterface.ID)
@@ -110,15 +111,27 @@ func deleteDevice(client *kentikapi.Client, deviceID models.ID) {
 //nolint:gomnd
 func queryData(client *kentikapi.Client) {
 	// prepare query
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	})
 	agg1.Raw = pointer.ToBool(true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	})
 	agg2.Rank = pointer.ToInt(95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
+	agg3 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	})
+	query := models.NewQuery(models.QueryRequiredFields{
+		Metric:    models.MetricTypeBytes,
+		Dimension: []models.DimensionType{models.DimensionTypeTraffic},
+	})
 	query.Depth = 75
 	query.LookbackSeconds = 60 * 30 // last 30 minutes
 	query.HostnameLookup = true
@@ -146,15 +159,27 @@ func queryData(client *kentikapi.Client) {
 //nolint:gomnd
 func queryChart(client *kentikapi.Client) {
 	// prepare query
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	})
 	agg1.Raw = pointer.ToBool(true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	})
 	agg2.Rank = pointer.ToInt(95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
+	agg3 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	})
+	query := models.NewQuery(models.QueryRequiredFields{
+		Metric:    models.MetricTypeBytes,
+		Dimension: []models.DimensionType{models.DimensionTypeTraffic},
+	})
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
 	query.LookbackSeconds = 60 * 60 // last 60 minutes
 	query.QueryTitle = "avg_bits_per_sec for last 60 minutes"
