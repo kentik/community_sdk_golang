@@ -2,7 +2,11 @@ package kentikapi_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -10,6 +14,7 @@ import (
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -23,7 +28,152 @@ const (
 	testAgentID = "968"
 )
 
-func TestClient_GetAgent(t *testing.T) {
+func TestClient_GetUserWithRetries(t *testing.T) {
+	tests := []struct {
+		name                string
+		responses           []testutil.HTTPResponse
+		serverHandlingDelay time.Duration
+		timeout             *time.Duration
+		expectedResult      *models.User
+		expectedError       bool
+		expectedTimeout     bool
+	}{
+		{
+			name: "retry on status 502 Bad Gateway until invalid response format received",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusOK, Body: "invalid JSON"},
+			},
+			expectedError: true,
+		}, {
+			name: "retry till success when status 429 Too Many Requests received",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				{
+					StatusCode: http.StatusOK,
+					Body: `{
+							"user": {
+								"id": "145999",
+								"username": "testuser",
+								"user_full_name": "Test User",
+								"user_email": "test@user.example",
+								"role": "Member",
+								"email_service": true,
+								"email_product": true,
+								"last_login": null,
+								"created_date": "2020-12-09T14:48:42.187Z",
+								"updated_date": "2020-12-09T14:48:43.243Z",
+								"company_id": "74333",
+								"user_api_token": "****************************a997",
+								"filters": {},
+								"saved_filters": []
+							}
+						}`,
+				},
+			},
+			expectedResult: &models.User{
+				ID:           "145999",
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: true,
+				LastLogin:    nil,
+				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
+				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
+				CompanyID:    "74333",
+				UserAPIToken: pointer.ToString("****************************a997"),
+			},
+		}, {
+			name: "default timeout is longer than 30 ms",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			expectedError:       true,
+			expectedTimeout:     false,
+		}, {
+			name: "timeout is longer than the wait for response with retries",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			timeout:             pointer.ToDuration(10 * time.Second),
+			expectedError:       true,
+			expectedTimeout:     false,
+		}, {
+			name: "timeout during first request",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			timeout:             pointer.ToDuration(5 * time.Millisecond),
+			expectedError:       true,
+			expectedTimeout:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses, tt.serverHandlingDelay)
+			s := httptest.NewServer(h)
+			defer s.Close()
+
+			c, err := kentikapi.NewClient(kentikapi.Config{
+				APIURL:    s.URL,
+				AuthEmail: dummyAuthEmail,
+				AuthToken: dummyAuthToken,
+				RetryCfg: kentikapi.RetryConfig{
+					MinDelay: pointer.ToDuration(1 * time.Microsecond),
+					MaxDelay: pointer.ToDuration(10 * time.Microsecond),
+				},
+				Timeout: tt.timeout,
+			})
+			assert.NoError(t, err)
+
+			// act
+			result, err := c.Users.Get(context.Background(), testUserID)
+
+			// assert
+			t.Logf("Got result: %v, err: %v", result, err)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			if tt.expectedTimeout {
+				assert.True(t, errors.Is(err, context.DeadlineExceeded))
+			} else {
+				assert.False(t, errors.Is(err, context.DeadlineExceeded))
+			}
+
+			if !tt.expectedTimeout {
+				assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			}
+
+			for _, r := range h.Requests {
+				assert.Equal(t, http.MethodGet, r.Method)
+				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
+				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
+				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
+			}
+
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
+
+func TestClient_GetAgentWithRetries(t *testing.T) {
 	tests := []struct {
 		name              string
 		retryMax          *uint
@@ -38,39 +188,6 @@ func TestClient_GetAgent(t *testing.T) {
 		expectedError     bool
 	}{
 		{
-			name:              "empty request, status InvalidArgument received",
-			request:           &syntheticspb.GetAgentRequest{},
-			expectedRequestID: "",
-			responses: []gRPCGetAgentResponse{
-				newErrorGRPCGetAgentResponse(codes.InvalidArgument),
-			},
-			expectedResult:    nil,
-			expectedErrorCode: codes.InvalidArgument,
-			expectedErrorMsg:  codes.InvalidArgument.String(),
-			expectedError:     true,
-		}, {
-			name:              "status NotFound received",
-			request:           &syntheticspb.GetAgentRequest{Id: "1000"},
-			expectedRequestID: "1000",
-			responses: []gRPCGetAgentResponse{
-				newErrorGRPCGetAgentResponse(codes.NotFound),
-			},
-			expectedResult:    nil,
-			expectedErrorCode: codes.NotFound,
-			expectedErrorMsg:  codes.NotFound.String(),
-			expectedError:     true,
-		}, {
-			name:              "agent returned",
-			request:           &syntheticspb.GetAgentRequest{Id: testAgentID},
-			expectedRequestID: testAgentID,
-			responses: []gRPCGetAgentResponse{
-				{
-					nil,
-					&syntheticspb.GetAgentResponse{Agent: newDummyAgent()},
-				},
-			},
-			expectedResult: &syntheticspb.GetAgentResponse{Agent: newDummyAgent()},
-		}, {
 			name:              "retry 2 times till success on code Unavailable",
 			request:           &syntheticspb.GetAgentRequest{Id: testAgentID},
 			expectedRequestID: testAgentID,
@@ -162,13 +279,13 @@ func TestClient_GetAgent(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			s := newSpySyntheticsServer(t, tt.responses)
-			s.handlingDelay = tt.handlingDelay
-			s.Start()
-			defer s.Stop()
+			server := newSpySyntheticsServerWithDelays(t, tt.responses)
+			server.handlingDelay = tt.handlingDelay
+			server.Start()
+			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				SyntheticsHostPort: s.url,
+				SyntheticsHostPort: server.url,
 				AuthToken:          dummyAuthToken,
 				AuthEmail:          dummyAuthEmail,
 				DisableTLS:         true,
@@ -181,10 +298,7 @@ func TestClient_GetAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.SyntheticsAdmin.GetAgent(
-				context.Background(),
-				tt.request,
-			)
+			result, err := client.SyntheticsAdmin.GetAgent(context.Background(), tt.request)
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -199,10 +313,10 @@ func TestClient_GetAgent(t *testing.T) {
 				assert.Equal(t, tt.expectedErrorMsg, e.Message())
 			}
 
-			assert.Equal(t, len(s.responses), len(s.requests), "invalid number of requests")
-			for i, r := range s.requests {
-				assert.Equal(t, dummyAuthEmail, s.headers[i].Get(authEmailKey)[0])
-				assert.Equal(t, dummyAuthToken, s.headers[i].Get(authAPITokenKey)[0])
+			assert.Equal(t, len(server.responses), len(server.requests), "invalid number of requests")
+			for i, r := range server.requests {
+				assert.Equal(t, dummyAuthEmail, server.metadataSlice[i].Get(authEmailKey)[0])
+				assert.Equal(t, dummyAuthToken, server.metadataSlice[i].Get(authAPITokenKey)[0])
 				assert.Equal(t, tt.expectedRequestID, r.GetId())
 			}
 
@@ -211,7 +325,7 @@ func TestClient_GetAgent(t *testing.T) {
 	}
 }
 
-type spySyntheticsServer struct {
+type spySyntheticsServerWithDelays struct {
 	syntheticspb.UnimplementedSyntheticsAdminServiceServer
 	server *grpc.Server
 
@@ -224,8 +338,8 @@ type spySyntheticsServer struct {
 	handlingDelay time.Duration
 
 	// requests spied by the server
-	requests []*syntheticspb.GetAgentRequest
-	headers  []metadata.MD
+	requests      []*syntheticspb.GetAgentRequest
+	metadataSlice []metadata.MD
 }
 
 type gRPCGetAgentResponse struct {
@@ -233,15 +347,15 @@ type gRPCGetAgentResponse struct {
 	body *syntheticspb.GetAgentResponse
 }
 
-func newSpySyntheticsServer(t testing.TB, responses []gRPCGetAgentResponse) *spySyntheticsServer {
-	return &spySyntheticsServer{
+func newSpySyntheticsServerWithDelays(t testing.TB, responses []gRPCGetAgentResponse) *spySyntheticsServerWithDelays {
+	return &spySyntheticsServerWithDelays{
 		done:      make(chan struct{}),
 		t:         t,
 		responses: responses,
 	}
 }
 
-func (s *spySyntheticsServer) Start() {
+func (s *spySyntheticsServerWithDelays) Start() {
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(s.t, err)
 
@@ -257,33 +371,31 @@ func (s *spySyntheticsServer) Start() {
 }
 
 // Stop blocks until the server is stopped. Graceful stop is not used to make tests quicker.
-func (s *spySyntheticsServer) Stop() {
+func (s *spySyntheticsServerWithDelays) Stop() {
 	s.server.Stop()
 	<-s.done
 }
 
-func (s *spySyntheticsServer) GetAgent(ctx context.Context, req *syntheticspb.GetAgentRequest,
+func (s *spySyntheticsServerWithDelays) GetAgent(
+	ctx context.Context, req *syntheticspb.GetAgentRequest,
 ) (*syntheticspb.GetAgentResponse, error) {
 	time.Sleep(s.handlingDelay)
 
-	header, ok := metadata.FromIncomingContext(ctx)
-	assert.True(s.t, ok)
-
-	s.headers = append(s.headers, header)
+	md, _ := metadata.FromIncomingContext(ctx)
+	s.metadataSlice = append(s.metadataSlice, md)
 
 	s.requests = append(s.requests, req)
 
 	response := s.response()
-
 	return response.body, response.err
 }
 
-func (s *spySyntheticsServer) response() gRPCGetAgentResponse {
+func (s *spySyntheticsServerWithDelays) response() gRPCGetAgentResponse {
 	if len(s.requests) > len(s.responses) {
 		return gRPCGetAgentResponse{
 			status.Errorf(
 				codes.Unknown,
-				"spySyntheticsServer: unexpected request, requests count: %v, expected: %v",
+				"spySyntheticsServerWithDelays: unexpected request, requests count: %v, expected: %v",
 				len(s.requests),
 				len(s.responses),
 			),

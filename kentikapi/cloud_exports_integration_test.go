@@ -86,7 +86,6 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -257,7 +256,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 			expectedResult: newFullIBMCloudExport(),
 		},
 	}
-
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
