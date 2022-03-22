@@ -46,26 +46,43 @@ func CloudExportFromPayload(ce *cloudexportpb.CloudExport) (*models.CloudExport,
 		return nil, fmt.Errorf("cloud export response payload is nil")
 	}
 
+	properties, err := propertiesFromPayload(ce)
+	if err != nil {
+		return nil, err
+	}
+
 	return &models.CloudExport{
-		ID:              ce.Id,
-		Type:            models.CloudExportType(ce.Type.String()),
-		Enabled:         pointer.ToBool(ce.Enabled),
-		Name:            ce.Name,
-		Description:     ce.Description,
-		PlanID:          ce.PlanId,
-		CloudProvider:   models.CloudProvider(ce.CloudProvider),
-		AWSProperties:   awsPropertiesFromPayload(ce.GetAws()),
-		AzureProperties: azurePropertiesFromPayload(ce.GetAzure()),
-		GCEProperties:   gcePropertiesFromPayload(ce.GetGce()),
-		IBMProperties:   ibmPropertiesFromPayload(ce.GetIbm()),
-		BGP:             bgpPropertiesFromPayload(ce.GetBgp()),
-		CurrentStatus:   currentStatusFromPayload(ce.GetCurrentStatus(), ce.Id),
+		ID:            ce.Id,
+		Type:          models.CloudExportType(ce.Type.String()),
+		Enabled:       pointer.ToBool(ce.Enabled),
+		Name:          ce.Name,
+		Description:   ce.Description,
+		PlanID:        ce.PlanId,
+		CloudProvider: models.CloudProvider(ce.CloudProvider),
+		Properties:    properties,
+		BGP:           bgpPropertiesFromPayload(ce.GetBgp()),
+		CurrentStatus: currentStatusFromPayload(ce.GetCurrentStatus(), ce.Id),
 	}, nil
 }
 
-func awsPropertiesFromPayload(aws *cloudexportpb.AwsProperties) *models.AWSProperties {
+func propertiesFromPayload(ce *cloudexportpb.CloudExport) (models.CloudExportProperties, error) {
+	switch ce.CloudProvider {
+	case "aws":
+		return awsPropertiesFromPayload(ce.GetAws())
+	case "azure":
+		return azurePropertiesFromPayload(ce.GetAzure())
+	case "gce":
+		return gcePropertiesFromPayload(ce.GetGce())
+	case "ibm":
+		return ibmPropertiesFromPayload(ce.GetIbm())
+	default:
+		return nil, fmt.Errorf("invalid cloud provider in response payload: %v", ce.CloudProvider)
+	}
+}
+
+func awsPropertiesFromPayload(aws *cloudexportpb.AwsProperties) (*models.AWSProperties, error) {
 	if aws == nil {
-		return nil
+		return nil, fmt.Errorf("no AWS properties in response payload")
 	}
 	return &models.AWSProperties{
 		Bucket:          aws.GetBucket(),
@@ -73,12 +90,12 @@ func awsPropertiesFromPayload(aws *cloudexportpb.AwsProperties) *models.AWSPrope
 		Region:          aws.GetRegion(),
 		DeleteAfterRead: pointer.ToBool(aws.GetDeleteAfterRead()),
 		MultipleBuckets: pointer.ToBool(aws.GetMultipleBuckets()),
-	}
+	}, nil
 }
 
-func azurePropertiesFromPayload(azure *cloudexportpb.AzureProperties) *models.AzureProperties {
+func azurePropertiesFromPayload(azure *cloudexportpb.AzureProperties) (*models.AzureProperties, error) {
 	if azure == nil {
-		return nil
+		return nil, fmt.Errorf("no Azure properties in response payload")
 	}
 
 	return &models.AzureProperties{
@@ -87,28 +104,28 @@ func azurePropertiesFromPayload(azure *cloudexportpb.AzureProperties) *models.Az
 		StorageAccount:           azure.GetStorageAccount(),
 		SubscriptionID:           azure.GetSubscriptionId(),
 		SecurityPrincipalEnabled: pointer.ToBool(azure.GetSecurityPrincipalEnabled()),
-	}
+	}, nil
 }
 
-func gcePropertiesFromPayload(gce *cloudexportpb.GceProperties) *models.GCEProperties {
+func gcePropertiesFromPayload(gce *cloudexportpb.GceProperties) (*models.GCEProperties, error) {
 	if gce == nil {
-		return nil
+		return nil, fmt.Errorf("no GCE properties in response payload")
 	}
 
 	return &models.GCEProperties{
 		Project:      gce.GetProject(),
 		Subscription: gce.GetSubscription(),
-	}
+	}, nil
 }
 
-func ibmPropertiesFromPayload(ibm *cloudexportpb.IbmProperties) *models.IBMProperties {
+func ibmPropertiesFromPayload(ibm *cloudexportpb.IbmProperties) (*models.IBMProperties, error) {
 	if ibm == nil {
-		return nil
+		return nil, fmt.Errorf("no IBM properties in response payload")
 	}
 
 	return &models.IBMProperties{
 		Bucket: ibm.GetBucket(),
-	}
+	}, nil
 }
 
 func bgpPropertiesFromPayload(bgp *cloudexportpb.BgpProperties) *models.BGPProperties {
@@ -190,11 +207,11 @@ func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *models.Clou
 func awsPropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_Aws {
 	return &cloudexportpb.CloudExport_Aws{
 		Aws: &cloudexportpb.AwsProperties{
-			Bucket:          ce.AWSProperties.Bucket,
-			IamRoleArn:      ce.AWSProperties.IAMRoleARN,
-			Region:          ce.AWSProperties.Region,
-			DeleteAfterRead: pointer.GetBool(ce.AWSProperties.DeleteAfterRead),
-			MultipleBuckets: pointer.GetBool(ce.AWSProperties.MultipleBuckets),
+			Bucket:          ce.GetAWSProperties().Bucket,
+			IamRoleArn:      ce.GetAWSProperties().IAMRoleARN,
+			Region:          ce.GetAWSProperties().Region,
+			DeleteAfterRead: pointer.GetBool(ce.GetAWSProperties().DeleteAfterRead),
+			MultipleBuckets: pointer.GetBool(ce.GetAWSProperties().MultipleBuckets),
 		},
 	}
 }
@@ -202,11 +219,11 @@ func awsPropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_A
 func azurePropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_Azure {
 	return &cloudexportpb.CloudExport_Azure{
 		Azure: &cloudexportpb.AzureProperties{
-			Location:                 ce.AzureProperties.Location,
-			ResourceGroup:            ce.AzureProperties.ResourceGroup,
-			StorageAccount:           ce.AzureProperties.StorageAccount,
-			SubscriptionId:           ce.AzureProperties.SubscriptionID,
-			SecurityPrincipalEnabled: pointer.GetBool(ce.AzureProperties.SecurityPrincipalEnabled),
+			Location:                 ce.GetAzureProperties().Location,
+			ResourceGroup:            ce.GetAzureProperties().ResourceGroup,
+			StorageAccount:           ce.GetAzureProperties().StorageAccount,
+			SubscriptionId:           ce.GetAzureProperties().SubscriptionID,
+			SecurityPrincipalEnabled: pointer.GetBool(ce.GetAzureProperties().SecurityPrincipalEnabled),
 		},
 	}
 }
@@ -214,8 +231,8 @@ func azurePropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport
 func gcePropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_Gce {
 	return &cloudexportpb.CloudExport_Gce{
 		Gce: &cloudexportpb.GceProperties{
-			Project:      ce.GCEProperties.Project,
-			Subscription: ce.GCEProperties.Subscription,
+			Project:      ce.GetGCEProperties().Project,
+			Subscription: ce.GetGCEProperties().Subscription,
 		},
 	}
 }
@@ -223,7 +240,7 @@ func gcePropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_G
 func ibmPropertiesToPayload(ce *models.CloudExport) *cloudexportpb.CloudExport_Ibm {
 	return &cloudexportpb.CloudExport_Ibm{
 		Ibm: &cloudexportpb.IbmProperties{
-			Bucket: ce.IBMProperties.Bucket,
+			Bucket: ce.GetIBMProperties().Bucket,
 		},
 	}
 }
