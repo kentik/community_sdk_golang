@@ -49,7 +49,11 @@ func runCRUDCustomDimensions() error {
 
 	fmt.Println("### CREATE DIMENSION")
 	name := "c_testapi_dim_" + randID() // random id as even deleted names are held for 1 year and must be unique
-	dimension := models.NewCustomDimension(name, "test_dimension", models.CustomDimensionTypeStr)
+	dimension := models.NewCustomDimension(models.CustomDimensionRequiredFields{
+		Name:        name,
+		DisplayName: "test_dimension",
+		Type:        models.CustomDimensionTypeStr,
+	})
 	created, err := client.CustomDimensions.Create(context.Background(), *dimension)
 	if err != nil {
 		return err
@@ -67,7 +71,12 @@ func runCRUDCustomDimensions() error {
 	fmt.Println()
 
 	fmt.Println("### CREATE POPULATOR")
-	populator := models.NewPopulator(created.ID, "testapi-dimension-value-1", "device1,128.0.0.100", models.PopulatorDirectionDst)
+	populator := models.NewPopulator(models.PopulatorRequiredFields{
+		DimensionID: created.ID,
+		Value:       "testapi-dimension-value-1",
+		DeviceName:  "device1,128.0.0.100",
+		Direction:   models.PopulatorDirectionDst,
+	})
 	populator.InterfaceName = pointer.ToString("interface1,interface2")
 	populator.Addr = pointer.ToString("128.0.0.1/32,128.0.0.2/32")
 	populator.Port = pointer.ToString("1001,1002")

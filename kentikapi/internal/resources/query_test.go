@@ -127,16 +127,28 @@ func TestQueryData(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport, true)
 
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	})
 	agg1.Raw = pointer.ToBool(true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	})
 	agg2.Rank = pointer.ToInt(95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
+	agg3 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	})
 
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
+	query := models.NewQuery(models.QueryRequiredFields{
+		Metric:    models.MetricTypeBytes,
+		Dimension: []models.DimensionType{models.DimensionTypeTraffic},
+	})
 	query.Depth = 75
 	query.HostnameLookup = true
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}
@@ -207,16 +219,28 @@ func TestQueryChart(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport, true)
 
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	})
 	agg1.Raw = pointer.ToBool(true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	})
 	agg2.Rank = pointer.ToInt(95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
+	agg3 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	})
 
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
+	query := models.NewQuery(models.QueryRequiredFields{
+		Metric:    models.MetricTypeBytes,
+		Dimension: []models.DimensionType{models.DimensionTypeTraffic},
+	})
 	// filter_ = Filter(filterField="dst_as", operator="=", filterValue="") // SavedFilters is dependency here
 	// filter_group = FilterGroups(connector="All", not_=False, filters=[filter_]) // SavedFilters is dependency here
 	filters := models.Filters{
@@ -331,16 +355,28 @@ func TestQueryURL(t *testing.T) {
 	transport := &api_connection.StubTransport{ResponseBody: queryResponsePayload}
 	queryAPI := resources.NewQueryAPI(transport, true)
 
-	agg1 := models.NewAggregate("avg_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeAverage)
+	agg1 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "avg_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeAverage,
+	})
 	agg1.Raw = pointer.ToBool(true)
-	agg2 := models.NewAggregate("p95th_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypePercentile)
+	agg2 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "p95th_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypePercentile,
+	})
 	agg2.Rank = pointer.ToInt(95)
-	agg3 := models.NewAggregate("max_bits_per_sec", "f_sum_both_bytes", models.AggregateFunctionTypeMax)
+	agg3 := models.NewAggregate(models.AggregateRequiredFields{
+		Name:   "max_bits_per_sec",
+		Column: "f_sum_both_bytes",
+		Fn:     models.AggregateFunctionTypeMax,
+	})
 
-	query := models.NewQuery(
-		models.MetricTypeBytes,
-		[]models.DimensionType{models.DimensionTypeTraffic},
-	)
+	query := models.NewQuery(models.QueryRequiredFields{
+		Metric:    models.MetricTypeBytes,
+		Dimension: []models.DimensionType{models.DimensionTypeTraffic},
+	})
 	query.Depth = 75
 	query.HostnameLookup = true
 	query.Aggregates = []models.Aggregate{agg1, agg2, agg3}

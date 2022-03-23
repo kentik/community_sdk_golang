@@ -16,11 +16,17 @@ type DeviceLabel struct {
 	UpdatedDate time.Time
 }
 
+// DeviceLabelRequiredFields is subset of DeviceLabel fields required to create a DeviceLabel.
+type DeviceLabelRequiredFields struct {
+	Name  string
+	Color string
+}
+
 // NewDeviceLabel creates a DeviceLabel with all necessary fields set.
-func NewDeviceLabel(name string, color string) *DeviceLabel {
+func NewDeviceLabel(d DeviceLabelRequiredFields) *DeviceLabel {
 	return &DeviceLabel{
-		Name:  name,
-		Color: color,
+		Name:  d.Name,
+		Color: d.Color,
 	}
 }
 

@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-	"fmt"
 
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
@@ -29,7 +28,7 @@ func (a *CloudExportsAPI) GetAll(ctx context.Context) (*models.GetAllCloudExport
 		return nil, err
 	}
 
-	return (*api_payloads.ListCloudExportsResponse)(response).ToModel(), nil
+	return (*api_payloads.ListCloudExportsResponse)(response).ToModel()
 }
 
 // Get retrieves Cloud Export with given ID.
@@ -39,12 +38,7 @@ func (a *CloudExportsAPI) Get(ctx context.Context, id models.ID) (*models.CloudE
 		return nil, err
 	}
 
-	obj := api_payloads.CloudExportFromPayload(response.GetExport())
-	if obj == nil {
-		return nil, fmt.Errorf("get cloud export with ID %v: API returned no data and no error", id)
-	}
-
-	return obj, nil
+	return api_payloads.CloudExportFromPayload(response.GetExport())
 }
 
 // Create creates new Cloud Export.
@@ -62,7 +56,7 @@ func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*
 		return nil, err
 	}
 
-	return api_payloads.CloudExportFromPayload(response.GetExport()), nil
+	return api_payloads.CloudExportFromPayload(response.GetExport())
 }
 
 // Update updates the Cloud Export.
@@ -80,7 +74,7 @@ func (a *CloudExportsAPI) Update(ctx context.Context, ce *models.CloudExport) (*
 		return nil, err
 	}
 
-	return api_payloads.CloudExportFromPayload(response.GetExport()), nil
+	return api_payloads.CloudExportFromPayload(response.GetExport())
 }
 
 // Delete removes Cloud Export with given ID.

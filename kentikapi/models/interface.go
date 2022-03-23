@@ -29,13 +29,21 @@ type Interface struct {
 	TopNextHopASNs              []TopNextHopASN
 }
 
+// InterfaceRequiredFields is subset of Interface fields required to create an Interface.
+type InterfaceRequiredFields struct {
+	DeviceID             ID
+	SNMPID               ID
+	SNMPSpeed            int
+	InterfaceDescription string
+}
+
 // NewInterface creates a new Interface with all necessary fields set.
-func NewInterface(deviceID ID, snmpID ID, snmpSpeed int, interfaceDescription string) *Interface {
+func NewInterface(i InterfaceRequiredFields) *Interface {
 	return &Interface{
-		DeviceID:             deviceID,
-		SNMPID:               snmpID,
-		SNMPSpeed:            snmpSpeed,
-		InterfaceDescription: interfaceDescription,
+		DeviceID:             i.DeviceID,
+		SNMPID:               i.SNMPID,
+		SNMPSpeed:            i.SNMPSpeed,
+		InterfaceDescription: i.InterfaceDescription,
 	}
 }
 
@@ -53,12 +61,19 @@ type VRFAttributes struct {
 	DeviceID  ID
 }
 
+// VRFAttributesRequiredFields is subset of VRFAttributes fields required to create a VRFAttributes.
+type VRFAttributesRequiredFields struct {
+	Name               string
+	RouteTarget        string
+	RouteDistinguisher string
+}
+
 // NewVRFAttributes creates new VRFAttributes with all necessary fields set.
-func NewVRFAttributes(name string, routeTarget string, routeDistinguisher string) *VRFAttributes {
+func NewVRFAttributes(v VRFAttributesRequiredFields) *VRFAttributes {
 	return &VRFAttributes{
-		Name:               name,
-		RouteTarget:        routeTarget,
-		RouteDistinguisher: routeDistinguisher,
+		Name:               v.Name,
+		RouteTarget:        v.RouteTarget,
+		RouteDistinguisher: v.RouteDistinguisher,
 	}
 }
 
