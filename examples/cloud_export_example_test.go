@@ -45,19 +45,19 @@ func demonstrateCloudExportAPIWithAWS() error {
 		return err
 	}
 
-	fmt.Println("Getting all cloud exports")
+	fmt.Println("### Getting all cloud exports")
 	getAllResp, err := client.CloudExports.GetAll(ctx)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.GetAll: %w", err)
 	}
 
 	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidCloudExportsCount)
-	fmt.Println("Listed cloud exports:")
+	fmt.Println("Got all cloud exports:")
 	PrettyPrint(getAllResp.CloudExports)
 
-	fmt.Println("Creating AWS cloud export")
+	fmt.Println("### Creating AWS cloud export")
 	ce := models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
-		Name:   "example-aws-export",
+		Name:   "go-sdk-example-aws-export",
 		PlanID: "11467",
 		AWSProperties: models.AWSPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
@@ -84,7 +84,7 @@ func demonstrateCloudExportAPIWithAWS() error {
 	fmt.Println("Created AWS cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Getting AWS cloud export")
+	fmt.Println("### Getting AWS cloud export")
 	ce, err = client.CloudExports.Get(ctx, ce.ID)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.Get: %w", err)
@@ -93,8 +93,8 @@ func demonstrateCloudExportAPIWithAWS() error {
 	fmt.Println("Got AWS cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Updating AWS cloud export")
-	ce.Name = "updated-example-aws-export"
+	fmt.Println("### Updating AWS cloud export")
+	ce.Name = "go-sdk-updated-aws-export"
 	ce.Description = "Updated description"
 	ce.GetAWSProperties().Bucket = "updated-bucket"
 	ce.BGP.UseBGPDeviceID = "updated-bgp-device-id"
@@ -106,7 +106,7 @@ func demonstrateCloudExportAPIWithAWS() error {
 	fmt.Println("Updated cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Deleting AWS cloud export")
+	fmt.Println("### Deleting AWS cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.Delete: %w", err)
@@ -123,9 +123,9 @@ func demonstrateCloudExportAPIWithAzure() error {
 		return err
 	}
 
-	fmt.Println("Creating Azure cloud export")
+	fmt.Println("### Creating Azure cloud export")
 	ce := models.NewAzureCloudExport(models.CloudExportAzureRequiredFields{
-		Name:   "example-azure-export",
+		Name:   "go-sdk-example-azure-export",
 		PlanID: "11467",
 		AzureProperties: models.AzurePropertiesRequiredFields{
 			Location:       "dummy-location",
@@ -151,7 +151,7 @@ func demonstrateCloudExportAPIWithAzure() error {
 	fmt.Println("Created Azure cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Deleting Azure cloud export")
+	fmt.Println("### Deleting Azure cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.Delete: %w", err)
@@ -168,10 +168,9 @@ func demonstrateCloudExportAPIWithGCE() error {
 		return err
 	}
 
-	fmt.Println("Creating GCE cloud export")
-	fmt.Println("Creating Azure cloud export")
+	fmt.Println("### Creating GCE cloud export")
 	ce := models.NewGCECloudExport(models.CloudExportGCERequiredFields{
-		Name:   "example-gce-export",
+		Name:   "go-sdk-example-gce-export",
 		PlanID: "11467",
 		GCEProperties: models.GCEPropertiesRequiredFields{
 			Project:      "dummy-project",
@@ -195,7 +194,7 @@ func demonstrateCloudExportAPIWithGCE() error {
 	fmt.Println("Created GCE cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Deleting GCE cloud export")
+	fmt.Println("### Deleting GCE cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.Delete: %w", err)
@@ -212,9 +211,9 @@ func demonstrateCloudExportAPIWithIBM() error {
 		return err
 	}
 
-	fmt.Println("Creating IBM cloud export")
+	fmt.Println("### Creating IBM cloud export")
 	ce := models.NewIBMCloudExport(models.CloudExportIBMRequiredFields{
-		Name:   "example-ibm-export",
+		Name:   "go-sdk-example-ibm-export",
 		PlanID: "11467",
 		IBMProperties: models.IBMPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
@@ -237,7 +236,7 @@ func demonstrateCloudExportAPIWithIBM() error {
 	fmt.Println("Created IBM cloud export:")
 	PrettyPrint(ce)
 
-	fmt.Println("Deleting IBM cloud export")
+	fmt.Println("### Deleting IBM cloud export")
 	err = client.CloudExports.Delete(ctx, ce.ID)
 	if err != nil {
 		return fmt.Errorf("client.CloudExports.Delete: %w", err)

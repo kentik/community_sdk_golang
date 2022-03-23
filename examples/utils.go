@@ -3,6 +3,7 @@ package examples
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/kentik/community_sdk_golang/kentikapi"
@@ -15,14 +16,11 @@ func NewClient() (*kentikapi.Client, error) {
 		return nil, err
 	}
 
-	client, err := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
+	return kentikapi.NewClient(kentikapi.Config{
+		AuthEmail:   email,
+		AuthToken:   token,
+		LogPayloads: false,
 	})
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
 }
 
 // PrettyPrint prints an object recursively in an indented way.
@@ -32,6 +30,12 @@ func PrettyPrint(resource interface{}) {
 
 //nolint:gocyclo
 func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
+	const maxDepth = 20
+	if level > maxDepth {
+		log.Printf("Pretty print depth level exceeded %v - omitting\n", maxDepth)
+		return
+	}
+
 	switch v.Kind() {
 	case reflect.Struct:
 		if _, hasStringer := t.MethodByName("String"); hasStringer {

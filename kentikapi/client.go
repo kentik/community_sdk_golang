@@ -12,7 +12,7 @@ import (
 	"github.com/AlekSi/pointer"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	grpcsynthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
@@ -54,8 +54,8 @@ type Client struct {
 
 	// SyntheticsAdmin and SyntheticsData are gRPC clients
 	// for Kentik API Cloud Export and Synthetics services.
-	SyntheticsAdmin grpcsynthetics.SyntheticsAdminServiceClient
-	SyntheticsData  grpcsynthetics.SyntheticsDataServiceClient
+	SyntheticsAdmin syntheticspb.SyntheticsAdminServiceClient
+	SyntheticsData  syntheticspb.SyntheticsDataServiceClient
 
 	config Config
 }
@@ -114,8 +114,8 @@ func NewClient(c Config) (*Client, error) {
 		Tags:               resources.NewTagsAPI(rc),
 		Users:              resources.NewUsersAPI(rc),
 
-		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(grpcConnection),
-		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(grpcConnection),
+		SyntheticsAdmin: syntheticspb.NewSyntheticsAdminServiceClient(grpcConnection),
+		SyntheticsData:  syntheticspb.NewSyntheticsDataServiceClient(grpcConnection),
 
 		config: c,
 	}, nil
@@ -229,11 +229,13 @@ func makeLoggerInterceptor(c Config) grpc.UnaryClientInterceptor {
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
 		if c.LogPayloads {
-			log.Printf("Kentik API request - %s - %+v\n", method, req)
+			log.Printf("Kentik API request: target=%s method=%s payload=%+v", cc.Target(), method, req)
 		}
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		if c.LogPayloads {
-			log.Printf("Kentik API response - %s - %+v\n", method, reply)
+			log.Printf(
+				"Kentik API response: target=%s method=%s payload=%+v error=%v", cc.Target(), method, reply, err,
+			)
 		}
 		return err
 	}
