@@ -128,16 +128,17 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-				RetryCfg: kentikapi.RetryConfig{
-					MinDelay: pointer.ToDuration(1 * time.Microsecond),
-					MaxDelay: pointer.ToDuration(10 * time.Microsecond),
-				},
-				Timeout: tt.timeout,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithTimeout(tt.timeout),
+				kentikapi.WithRetryConfig(
+					kentikapi.RetryConfig{
+						MinDelay: pointer.ToDuration(1 * time.Microsecond),
+						MaxDelay: pointer.ToDuration(10 * time.Microsecond),
+					}),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -283,17 +284,17 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			server.handlingDelay = tt.handlingDelay
 			server.Start()
 			defer server.Stop()
-
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-				RetryCfg: kentikapi.RetryConfig{
-					MaxAttempts: tt.retryMax,
-					MinDelay:    pointer.ToDuration(10 * time.Microsecond),
-				},
-				Timeout: tt.timeout,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithTimeout(tt.timeout),
+				kentikapi.WithRetryConfig(
+					kentikapi.RetryConfig{
+						MaxAttempts: tt.retryMax,
+						MinDelay:    pointer.ToDuration(10 * time.Microsecond),
+					}),
+			)
 			require.NoError(t, err)
 
 			// act

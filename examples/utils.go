@@ -15,10 +15,10 @@ func NewClient() (*kentikapi.Client, error) {
 		return nil, err
 	}
 
-	client, err := kentikapi.NewClient(kentikapi.Config{
-		AuthEmail: email,
-		AuthToken: token,
-	})
+	client, err := kentikapi.NewClient(
+		kentikapi.WithAuthEmail(email),
+		kentikapi.WithAuthToken(token),
+	)
 	if err != nil {
 		return nil, err
 	}

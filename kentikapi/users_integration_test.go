@@ -166,11 +166,11 @@ func TestClient_GetAllUsers(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -263,11 +263,11 @@ func TestClient_GetUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -478,16 +478,17 @@ func TestClient_CreateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-				RetryCfg: kentikapi.RetryConfig{
-					MaxAttempts: tt.retryMax,
-					MinDelay:    pointer.ToDuration(1 * time.Microsecond),
-					MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
-				},
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithRetryConfig(
+					kentikapi.RetryConfig{
+						MaxAttempts: tt.retryMax,
+						MinDelay:    pointer.ToDuration(1 * time.Microsecond),
+						MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
+					}),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -620,11 +621,11 @@ func TestClient_UpdateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -681,11 +682,11 @@ func TestClient_DeleteUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			assert.NoError(t, err)
 
 			// act

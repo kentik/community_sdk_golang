@@ -44,14 +44,14 @@ func showRetryingOnMultipleCodes() error {
 	fmt.Printf("Running fake server on URL %v\n", s.URL)
 
 	demos.Step("Create Kentik API v5 client")
-	c, err := kentikapi.NewClient(kentikapi.Config{
-		APIURL: s.URL,
-		RetryCfg: kentikapi.RetryConfig{
+	c, err := kentikapi.NewClient(
+		kentikapi.WithAPIURL(s.URL),
+		kentikapi.WithRetryConfig(kentikapi.RetryConfig{
 			MaxAttempts: pointer.ToUint(42),
 			MinDelay:    pointer.ToDuration(1 * time.Second),
 			MaxDelay:    pointer.ToDuration(2 * time.Second),
-		},
-	})
+		}),
+	)
 	if err != nil {
 		return err
 	}

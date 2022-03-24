@@ -79,9 +79,54 @@ type Config struct {
 
 type RetryConfig = httputil.RetryConfig
 
+type ConfigOption func(*Config)
+
+func WithAPIURL(apiURL string) ConfigOption {
+	return func(c *Config) {
+		c.APIURL = apiURL
+	}
+}
+
+func WithAuthEmail(authEmail string) ConfigOption {
+	return func(c *Config) {
+		c.AuthEmail = authEmail
+	}
+}
+
+func WithAuthToken(authToken string) ConfigOption {
+	return func(c *Config) {
+		c.AuthToken = authToken
+	}
+}
+
+func WithTimeout(timeout *time.Duration) ConfigOption {
+	return func(c *Config) {
+		if timeout != nil {
+			c.Timeout = timeout
+		}
+	}
+}
+
+func WithRetryConfig(retryCfg RetryConfig) ConfigOption {
+	return func(c *Config) {
+		retryCfg.FillDefaults()
+		c.RetryCfg = retryCfg
+	}
+}
+
+func WithLogPayloads() ConfigOption {
+	return func(c *Config) {
+		c.LogPayloads = true
+	}
+}
+
 // NewClient creates a new Kentik API client.
-func NewClient(c Config) (*Client, error) {
+func NewClient(opts ...ConfigOption) (*Client, error) {
+	c := Config{}
 	c.FillDefaults()
+	for _, opt := range opts {
+		opt(&c)
+	}
 
 	apiV5URL, err := makeAPIV5URL(c.APIURL)
 	if err != nil {

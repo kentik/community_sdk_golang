@@ -107,11 +107,11 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			})
 			server.Start()
 			defer server.Stop()
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			require.NoError(t, err)
 
 			// act
@@ -265,6 +265,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 			expectedResult: newFullIBMCloudExport(),
 		},
 	}
+
 	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -275,11 +276,11 @@ func TestClient_GetCloudExport(t *testing.T) {
 			server.Start()
 			defer server.Stop()
 
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			require.NoError(t, err)
 
 			// act
@@ -497,11 +498,11 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			server.Start()
 			defer server.Stop()
 
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			require.NoError(t, err)
 
 			// act
@@ -598,11 +599,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			server.Start()
 			defer server.Stop()
 
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			require.NoError(t, err)
 
 			// act
@@ -670,11 +671,11 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			server.Start()
 			defer server.Stop()
 
-			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
-			})
+			client, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL("http://"+server.url),
+				kentikapi.WithAuthEmail(dummyAuthEmail),
+				kentikapi.WithAuthToken(dummyAuthToken),
+			)
 			require.NoError(t, err)
 
 			// act
