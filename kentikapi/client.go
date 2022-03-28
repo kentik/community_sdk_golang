@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net"
 	"net/url"
 	"time"
@@ -69,7 +70,6 @@ type Config struct {
 	RetryCfg  RetryConfig
 
 	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
-	// Note that this feature is currently broken.
 	LogPayloads bool
 	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
 	// A Timeout of zero means no timeout.
@@ -153,6 +153,7 @@ func makeConnForGRPC(c Config) (grpc.ClientConnInterface, error) {
 		grpc.WithUnaryInterceptor(
 			grpcmiddleware.ChainUnaryClient(
 				makeTimeoutInterceptor(c),
+				makeLoggerInterceptor(c),
 				makeAuthInterceptor(c),
 				makeRetryInterceptor(c),
 			),
@@ -221,4 +222,19 @@ func makeRetryInterceptor(c Config) grpc.UnaryClientInterceptor {
 		// grpcretry.WithMax specifies the number of total requests sent and not retries
 		grpcretry.WithMax(*c.RetryCfg.MaxAttempts+1),
 	)
+}
+
+func makeLoggerInterceptor(c Config) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{},
+		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
+	) error {
+		if c.LogPayloads {
+			log.Printf("Kentik API request - %s - %+v\n", method, req)
+		}
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		if c.LogPayloads {
+			log.Printf("Kentik API response - %s - %+v\n", method, reply)
+		}
+		return err
+	}
 }
