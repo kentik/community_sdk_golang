@@ -84,9 +84,30 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 				},
 				InvalidCloudExportsCount: 1,
 			},
+		}, {
+			name: "2 exports received - one empty",
+			response: listCEResponse{
+				data: &cloudexportpb.ListCloudExportResponse{
+					Exports: []*cloudexportpb.CloudExport{
+						newFullAWSCloudExportPayload(),
+						nil,
+					},
+					InvalidExportsCount: 0,
+				},
+			},
+			expectedResult: &models.GetAllCloudExportsResponse{
+				CloudExports: []models.CloudExport{
+					*newFullAWSCloudExport(),
+					// client receives initialized, empty CE here
+					{
+						Type:    models.CloudExportTypeUnspecified,
+						Enabled: pointer.ToBool(false),
+					},
+				},
+				InvalidCloudExportsCount: 0,
+			},
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -95,12 +116,10 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			})
 			server.Start()
 			defer server.Stop()
-
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -202,15 +221,13 @@ func TestClient_GetCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: &models.CloudExport{
-				ID:              "58192",
-				Type:            models.CloudExportTypeKentikManaged,
-				Enabled:         pointer.ToBool(true),
-				Name:            "minimal-aws-export",
-				Description:     "",
-				APIRoot:         "https://api.kentik.com",
-				FlowDestination: "https://flow.kentik.com",
-				PlanID:          "11467",
-				CloudProvider:   models.CloudProviderAWS,
+				ID:            "58192",
+				Type:          models.CloudExportTypeKentikManaged,
+				Enabled:       pointer.ToBool(true),
+				Name:          "minimal-aws-export",
+				Description:   "",
+				PlanID:        "11467",
+				CloudProvider: models.CloudProviderAWS,
 				AWSProperties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
@@ -257,7 +274,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 			expectedResult: newFullIBMCloudExport(),
 		},
 	}
-
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -268,10 +285,9 @@ func TestClient_GetCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -339,6 +355,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				data: &cloudexportpb.CreateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name: "minimal AWS export created",
 			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
@@ -390,15 +407,13 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: &models.CloudExport{
-				ID:              "58192",
-				Type:            models.CloudExportTypeKentikManaged,
-				Enabled:         pointer.ToBool(true),
-				Name:            "minimal-aws-export",
-				Description:     "",
-				APIRoot:         "https://api.kentik.com",
-				FlowDestination: "https://flow.kentik.com",
-				PlanID:          "11467",
-				CloudProvider:   models.CloudProviderAWS,
+				ID:            "58192",
+				Type:          models.CloudExportTypeKentikManaged,
+				Enabled:       pointer.ToBool(true),
+				Name:          "minimal-aws-export",
+				Description:   "",
+				PlanID:        "11467",
+				CloudProvider: models.CloudProviderAWS,
 				AWSProperties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
@@ -492,10 +507,9 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -563,6 +577,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				data: &cloudexportpb.UpdateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name:    "full AWS export updated",
 			request: newFullAWSCloudExport(),
@@ -593,10 +608,9 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -666,10 +680,9 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -919,13 +932,11 @@ func newFullIBMCloudExport() *models.CloudExport {
 
 func newFullCloudExport() *models.CloudExport {
 	return &models.CloudExport{
-		Type:            models.CloudExportTypeKentikManaged,
-		Enabled:         pointer.ToBool(true),
-		Name:            "full-export",
-		Description:     "Export with all fields set", // including read-only fields
-		APIRoot:         "https://api.kentik.com",
-		FlowDestination: "https://flow.kentik.com",
-		PlanID:          "11467",
+		Type:        models.CloudExportTypeKentikManaged,
+		Enabled:     pointer.ToBool(true),
+		Name:        "full-export",
+		Description: "Export with all fields set", // including read-only fields
+		PlanID:      "11467",
 		BGP: &models.BGPProperties{
 			ApplyBGP:       pointer.ToBool(true),
 			UseBGPDeviceID: "dummy-device-id",
@@ -998,14 +1009,14 @@ func newFullIBMCloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
+// newFullCloudExportPayload returns payload with all fields set.
+// ApiRoot and FlowDest are going to be removed from the API and are omitted.
 func newFullCloudExportPayload() *cloudexportpb.CloudExport {
 	return &cloudexportpb.CloudExport{
 		Type:        cloudexportpb.CloudExportType_CLOUD_EXPORT_TYPE_KENTIK_MANAGED,
 		Enabled:     true,
 		Name:        "full-export",
 		Description: "Export with all fields set", // including read-only fields
-		ApiRoot:     "https://api.kentik.com",
-		FlowDest:    "https://flow.kentik.com",
 		PlanId:      "11467",
 		Bgp: &cloudexportpb.BgpProperties{
 			ApplyBgp:       true,

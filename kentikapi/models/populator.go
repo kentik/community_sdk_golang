@@ -36,13 +36,21 @@ type Populator struct {
 	UpdatedDate time.Time
 }
 
+// PopulatorRequiredFields is subset of Populator fields required to create a Populator.
+type PopulatorRequiredFields struct {
+	DimensionID ID
+	Value       string
+	DeviceName  string
+	Direction   PopulatorDirection
+}
+
 // NewPopulator creates a Populator with all necessary fields set.
-func NewPopulator(dimensionID ID, value, deviceName string, direction PopulatorDirection) *Populator {
+func NewPopulator(p PopulatorRequiredFields) *Populator {
 	return &Populator{
-		DimensionID: dimensionID,
-		Value:       value,
-		DeviceName:  deviceName,
-		Direction:   direction,
+		DimensionID: p.DimensionID,
+		Value:       p.Value,
+		DeviceName:  p.DeviceName,
+		Direction:   p.Direction,
 	}
 }
 

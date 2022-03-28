@@ -5,6 +5,8 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"net"
+	"net/url"
 	"time"
 
 	"github.com/AlekSi/pointer"
@@ -30,10 +32,8 @@ const (
 
 // Kentik API URLs.
 const (
-	APIURLUS            = "https://api.kentik.com/api/v5"
-	APIURLEU            = "https://api.kentik.eu/api/v5"
-	syntheticsHostPort  = "synthetics.api.kentik.com:443"
-	cloudExportHostPort = "cloudexport.api.kentik.com:443"
+	APIURLUS = "https://api.kentik.com"
+	APIURLEU = "https://api.kentik.eu"
 )
 
 // Client is the root object for manipulating all the Kentik API resources.
@@ -62,15 +62,12 @@ type Client struct {
 
 // Config holds configuration of the client.
 type Config struct {
-	// APIURL defaults to "https://api.kentik.com/api/v5"
+	// APIURL defaults to "https://api.kentik.com"
 	APIURL string
-	// SyntheticsHostPort defaults to "synthetics.api.kentik.com:443".
-	SyntheticsHostPort string
-	// CloudExportHostPort defaults to "cloudexport.api.kentik.com:443".
-	CloudExportHostPort string
-	AuthEmail           string
-	AuthToken           string
-	RetryCfg            RetryConfig
+
+	AuthEmail string
+	AuthToken string
+	RetryCfg  RetryConfig
 
 	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
 	LogPayloads bool
@@ -78,9 +75,6 @@ type Config struct {
 	// A Timeout of zero means no timeout.
 	// Default: 100 seconds.
 	Timeout *time.Duration
-	// DisableTLS disables TLS for client connections.
-	// It has effect only on gRPC services: CloudExportAdmin, SyntheticsAdmin and SyntheticsData.
-	DisableTLS bool
 }
 
 type RetryConfig = httputil.RetryConfig
@@ -89,17 +83,17 @@ type RetryConfig = httputil.RetryConfig
 func NewClient(c Config) (*Client, error) {
 	c.FillDefaults()
 
-	syntheticsConnection, err := makeConnForGRPC(c, c.SyntheticsHostPort)
+	apiV5URL, err := makeAPIV5URL(c.APIURL)
 	if err != nil {
-		return nil, fmt.Errorf("grpc synthetics connection: %v", err)
-	}
-	cloudExportConnection, err := makeConnForGRPC(c, c.CloudExportHostPort)
-	if err != nil {
-		return nil, fmt.Errorf("grpc cloud export connection: %v", err)
+		return nil, fmt.Errorf("make API v5 URL: %v", err)
 	}
 
+	grpcConnection, err := makeConnForGRPC(c)
+	if err != nil {
+		return nil, fmt.Errorf("grpc connection: %v", err)
+	}
 	rc := api_connection.NewRestClient(api_connection.RestClientConfig{
-		APIURL:    c.APIURL,
+		APIURL:    apiV5URL,
 		AuthEmail: c.AuthEmail,
 		AuthToken: c.AuthToken,
 		RetryCfg:  c.RetryCfg,
@@ -107,7 +101,7 @@ func NewClient(c Config) (*Client, error) {
 	})
 	return &Client{
 		Alerting:           resources.NewAlertingAPI(rc),
-		CloudExports:       resources.NewCloudExportsAPI(cloudExportConnection),
+		CloudExports:       resources.NewCloudExportsAPI(grpcConnection),
 		CustomApplications: resources.NewCustomApplicationsAPI(rc),
 		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
 		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
@@ -120,8 +114,8 @@ func NewClient(c Config) (*Client, error) {
 		Tags:               resources.NewTagsAPI(rc),
 		Users:              resources.NewUsersAPI(rc),
 
-		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(syntheticsConnection),
-		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(syntheticsConnection),
+		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(grpcConnection),
+		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(grpcConnection),
 
 		config: c,
 	}, nil
@@ -132,14 +126,6 @@ func (c *Config) FillDefaults() {
 		c.APIURL = APIURLUS
 	}
 
-	if c.CloudExportHostPort == "" {
-		c.CloudExportHostPort = cloudExportHostPort
-	}
-
-	if c.SyntheticsHostPort == "" {
-		c.SyntheticsHostPort = syntheticsHostPort
-	}
-
 	if c.Timeout == nil {
 		c.Timeout = pointer.ToDuration(defaultTimeout)
 	}
@@ -147,10 +133,23 @@ func (c *Config) FillDefaults() {
 	c.RetryCfg.FillDefaults()
 }
 
-func makeConnForGRPC(c Config, hostPort string) (grpc.ClientConnInterface, error) {
+func makeAPIV5URL(apiURL string) (string, error) {
+	u, err := url.Parse(apiURL)
+	if err != nil {
+		return "", err
+	}
+	u.Path += "/api/v5"
+	return u.String(), nil
+}
+
+func makeConnForGRPC(c Config) (grpc.ClientConnInterface, error) {
+	grpcHostPort, tlsEnabled, err := makeGRPCHostPort(c.APIURL)
+	if err != nil {
+		return nil, err
+	}
 	return grpc.Dial(
-		hostPort,
-		makeTLSOption(c),
+		grpcHostPort,
+		makeTLSOption(tlsEnabled),
 		grpc.WithUnaryInterceptor(
 			grpcmiddleware.ChainUnaryClient(
 				makeTimeoutInterceptor(c),
@@ -162,8 +161,31 @@ func makeConnForGRPC(c Config, hostPort string) (grpc.ClientConnInterface, error
 	)
 }
 
-func makeTLSOption(c Config) grpc.DialOption {
-	if c.DisableTLS {
+func makeGRPCHostPort(apiURL string) (grpcHostPort string, tlsEnabled bool, err error) {
+	tlsEnabled = false
+	u, err := url.Parse(apiURL)
+	if err != nil {
+		return "", false, err
+	}
+	grpcHostPort = u.Host
+	if u.Scheme == "https" {
+		tlsEnabled = true
+		if u.Port() == "" {
+			grpcHostPort += ":443"
+		}
+	}
+	if u.Scheme == "http" && u.Port() == "" {
+		grpcHostPort += ":80"
+	}
+	hostIP := net.ParseIP(u.Hostname())
+	if hostIP != nil {
+		return grpcHostPort, tlsEnabled, nil
+	}
+	return "grpc." + grpcHostPort, tlsEnabled, nil
+}
+
+func makeTLSOption(tlsEnabled bool) grpc.DialOption {
+	if !tlsEnabled {
 		return grpc.WithTransportCredentials(insecure.NewCredentials())
 	}
 	return grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{

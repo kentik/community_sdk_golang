@@ -47,17 +47,19 @@ func runCRUDRouter() error {
 	}
 
 	fmt.Println("### CREATE ROUTER")
+
 	snmpv3conf := models.NewSNMPv3Conf("John")
 	snmpv3conf = snmpv3conf.WithAuthentication(models.AuthenticationProtocolMD5, "Auth_Pass")
 	snmpv3conf = snmpv3conf.WithPrivacy(models.PrivacyProtocolDES, "Priv_Pass")
-	device := models.NewDeviceRouter(
-		"testapi_router_router_full",
-		models.DeviceSubtypeRouter,
-		1,
-		models.ID("11466"),
-		[]string{"128.0.0.10"},
-		false,
-	).WithBGPTypeDevice("77")
+
+	device := models.NewDeviceRouter(models.DeviceRouterRequiredFields{
+		DeviceName:       "testapi_router_router_full",
+		DeviceSubType:    models.DeviceSubtypeRouter,
+		DeviceSampleRate: 1,
+		PlanID:           models.ID("11466"),
+		SendingIPS:       []string{"128.0.0.10"},
+		MinimizeSNMP:     false,
+	}).WithBGPTypeDevice("77")
 	device.DeviceDescription = pointer.ToString("testapi device type router subrype router with full config")
 	device.DeviceSNMNPIP = pointer.ToString("127.0.0.1")
 	device.DeviceSNMPv3Conf = snmpv3conf
@@ -87,12 +89,12 @@ func runCRUDRouter() error {
 	fmt.Println()
 
 	fmt.Println("### CREATE INTERFACE")
-	intf := models.NewInterface(
-		createdDevice.ID,
-		models.ID("2"),
-		15,
-		"testapi-interface",
-	)
+	intf := models.NewInterface(models.InterfaceRequiredFields{
+		DeviceID:             createdDevice.ID,
+		SNMPID:               models.ID("2"),
+		SNMPSpeed:            15,
+		InterfaceDescription: "testapi-interface",
+	})
 	createdInterface, err := client.Devices.Interfaces.Create(context.Background(), *intf)
 	if err != nil {
 		return err
@@ -147,13 +149,13 @@ func runCRUDDNS() error {
 	}
 
 	fmt.Println("### CREATE DNS")
-	device := models.NewDeviceDNS(
-		"testapi_dns_awssubnet",
-		models.DeviceSubtypeAwsSubnet,
-		1,
-		models.ID("11466"),
-		models.CDNAttributeYes,
-	)
+	device := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
+		DeviceName:       "testapi_dns_awssubnet",
+		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSampleRate: 1,
+		PlanID:           models.ID("11466"),
+		CdnAttr:          models.CDNAttributeYes,
+	})
 	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)
 

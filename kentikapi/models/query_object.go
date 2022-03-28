@@ -61,12 +61,18 @@ type Query struct {
 	SyncAxes        *bool          // only used in QueryChart, QueryURL
 }
 
+// QueryRequiredFields is subset of Query fields required to create an Query.
+type QueryRequiredFields struct {
+	Metric    MetricType
+	Dimension []DimensionType
+}
+
 // NewQuery creates a Query with all required fields set.
 //nolint:gomnd
-func NewQuery(metric MetricType, dimension []DimensionType) *Query {
+func NewQuery(q QueryRequiredFields) *Query {
 	return &Query{
-		Metric:          metric,
-		Dimension:       dimension,
+		Metric:          q.Metric,
+		Dimension:       q.Dimension,
 		TopX:            8,
 		Depth:           100,
 		FastData:        FastDataTypeAuto,
@@ -87,12 +93,19 @@ type Aggregate struct {
 	Raw        *bool // required for chart queries
 }
 
+// AggregateRequiredFields is subset of Aggregate fields required to create an Aggregate.
+type AggregateRequiredFields struct {
+	Name   string
+	Column string
+	Fn     AggregateFunctionType
+}
+
 // NewAggregate creates an Aggregate with all required fields set.
-func NewAggregate(name string, column string, fn AggregateFunctionType) Aggregate {
+func NewAggregate(a AggregateRequiredFields) Aggregate {
 	return Aggregate{
-		Name:       name,
-		Column:     column,
-		Fn:         fn,
+		Name:       a.Name,
+		Column:     a.Column,
+		Fn:         a.Fn,
 		SampleRate: 1,
 	}
 }
