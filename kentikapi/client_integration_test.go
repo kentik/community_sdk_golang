@@ -265,7 +265,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			expectedError:     true,
 		}, {
 			name:              "timeout during first request",
-			timeout:           pointer.ToDuration(1 * time.Millisecond),
+			timeout:           pointer.ToDuration(5 * time.Millisecond),
 			request:           &syntheticspb.GetAgentRequest{},
 			responses:         []gRPCGetAgentResponse{},
 			handlingDelay:     1 * time.Second,
