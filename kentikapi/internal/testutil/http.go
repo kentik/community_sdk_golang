@@ -34,6 +34,10 @@ func NewSpyHTTPHandler(t testing.TB, responseCode int, responseBody []byte) *Spy
 }
 
 func (h *SpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	if r.Method == "PRI" {
+		h.t.Log("SpyHTTPHandler: omitting HTTP/2 connection preface (PRI)")
+		return
+	}
 	h.RequestsCount++
 	h.LastMethod = r.Method
 	h.LastURL = r.URL
@@ -74,6 +78,10 @@ func NewMultipleResponseSpyHTTPHandler(t testing.TB, responses []HTTPResponse, h
 }
 
 func (h *MultipleResponseSpyHTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	if r.Method == "PRI" {
+		h.t.Log("MultipleResponseSpyHTTPHandler: omitting HTTP/2 connection preface (PRI)")
+		return
+	}
 	body, err := ioutil.ReadAll(r.Body)
 	assert.NoError(h.t, err)
 

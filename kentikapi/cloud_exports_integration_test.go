@@ -116,12 +116,10 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			})
 			server.Start()
 			defer server.Stop()
-
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -287,10 +285,9 @@ func TestClient_GetCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -510,10 +507,9 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -612,10 +608,9 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
@@ -685,10 +680,9 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				CloudExportHostPort: server.url,
-				AuthToken:           dummyAuthToken,
-				AuthEmail:           dummyAuthEmail,
-				DisableTLS:          true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 
