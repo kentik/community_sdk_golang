@@ -95,17 +95,8 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 					InvalidExportsCount: 0,
 				},
 			},
-			expectedResult: &models.GetAllCloudExportsResponse{
-				CloudExports: []models.CloudExport{
-					*newFullAWSCloudExport(),
-					// client receives initialized, empty CE here
-					{
-						Type:    models.CloudExportTypeUnspecified,
-						Enabled: pointer.ToBool(false),
-					},
-				},
-				InvalidCloudExportsCount: 0,
-			},
+			// empty response fails validation
+			expectedError: true,
 		},
 	}
 	for _, tt := range tests {
@@ -228,7 +219,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 				Description:   "",
 				PlanID:        "11467",
 				CloudProvider: models.CloudProviderAWS,
-				AWSProperties: &models.AWSProperties{
+				Properties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
 					Region:          "",
@@ -414,7 +405,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				Description:   "",
 				PlanID:        "11467",
 				CloudProvider: models.CloudProviderAWS,
-				AWSProperties: &models.AWSProperties{
+				Properties: &models.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
 					Region:          "",
@@ -885,7 +876,7 @@ func newFullAWSCloudExport() *models.CloudExport {
 	ce := newFullCloudExport()
 	ce.ID = awsCloudExportID
 	ce.CloudProvider = models.CloudProviderAWS
-	ce.AWSProperties = &models.AWSProperties{
+	ce.Properties = &models.AWSProperties{
 		Bucket:          "dummy-bucket",
 		IAMRoleARN:      "arn:aws:iam::003740049406:role/trafficTerraformIngestRole",
 		Region:          "us-east-2",
@@ -899,7 +890,7 @@ func newFullAzureCloudExport() *models.CloudExport {
 	ce := newFullCloudExport()
 	ce.ID = azureCloudExportID
 	ce.CloudProvider = models.CloudProviderAzure
-	ce.AzureProperties = &models.AzureProperties{
+	ce.Properties = &models.AzureProperties{
 		Location:                 "dummy-location",
 		ResourceGroup:            "dummy-rg",
 		StorageAccount:           "dummy-sa",
@@ -913,7 +904,7 @@ func newFullGCECloudExport() *models.CloudExport {
 	ce := newFullCloudExport()
 	ce.ID = gceCloudExportID
 	ce.CloudProvider = models.CloudProviderGCE
-	ce.GCEProperties = &models.GCEProperties{
+	ce.Properties = &models.GCEProperties{
 		Project:      "dummy-project",
 		Subscription: "dummy-subscription",
 	}
@@ -924,7 +915,7 @@ func newFullIBMCloudExport() *models.CloudExport {
 	ce := newFullCloudExport()
 	ce.ID = ibmCloudExportID
 	ce.CloudProvider = models.CloudProviderIBM
-	ce.IBMProperties = &models.IBMProperties{
+	ce.Properties = &models.IBMProperties{
 		Bucket: "dummy-bucket",
 	}
 	return ce

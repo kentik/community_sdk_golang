@@ -6,7 +6,7 @@ func NewAWSCloudExport(obj CloudExportAWSRequiredFields) *CloudExport {
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
 		CloudProvider: CloudProviderAWS,
-		AWSProperties: &AWSProperties{
+		Properties: &AWSProperties{
 			Bucket: obj.AWSProperties.Bucket,
 		},
 	}
@@ -18,7 +18,7 @@ func NewAzureCloudExport(obj CloudExportAzureRequiredFields) *CloudExport {
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
 		CloudProvider: CloudProviderAzure,
-		AzureProperties: &AzureProperties{
+		Properties: &AzureProperties{
 			Location:       obj.AzureProperties.Location,
 			ResourceGroup:  obj.AzureProperties.ResourceGroup,
 			StorageAccount: obj.AzureProperties.StorageAccount,
@@ -33,7 +33,7 @@ func NewGCECloudExport(obj CloudExportGCERequiredFields) *CloudExport {
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
 		CloudProvider: CloudProviderGCE,
-		GCEProperties: &GCEProperties{
+		Properties: &GCEProperties{
 			Project:      obj.GCEProperties.Project,
 			Subscription: obj.GCEProperties.Subscription,
 		},
@@ -46,7 +46,7 @@ func NewIBMCloudExport(obj CloudExportIBMRequiredFields) *CloudExport {
 		Name:          obj.Name,
 		PlanID:        obj.PlanID,
 		CloudProvider: CloudProviderIBM,
-		IBMProperties: &IBMProperties{
+		Properties: &IBMProperties{
 			Bucket: obj.IBMProperties.Bucket,
 		},
 	}
@@ -76,14 +76,8 @@ type CloudExport struct {
 	PlanID string
 	// CloudProvider is the cloud provider targeted by this export, e.g. AWS, Azure, GCE, IBM.
 	CloudProvider CloudProvider
-	// AWSProperties are specific to Amazon Web Services VPC flow logs exports.
-	AWSProperties *AWSProperties
-	// AzureProperties are specific to Azure exports.
-	AzureProperties *AzureProperties
-	// GCEProperties are specific to Google Cloud export.
-	GCEProperties *GCEProperties
-	// IBMProperties are specific to IBM Cloud exports.
-	IBMProperties *IBMProperties
+	// / Properties specific to the cloud provider (AWS, Azure, GCE, IBM).
+	Properties CloudExportProperties
 	// BGPProperties are optional BGP related settings.
 	BGP *BGPProperties
 
@@ -93,6 +87,31 @@ type CloudExport struct {
 	ID ID
 	// CurrentStatus is the most current status Kentik has about this export. This is read-only and assigned by Kentik.
 	CurrentStatus *CloudExportStatus
+}
+
+func (ce *CloudExport) GetAWSProperties() *AWSProperties {
+	p, _ := ce.Properties.(*AWSProperties) //nolint:errcheck // user can check the pointer
+	return p
+}
+
+func (ce *CloudExport) GetAzureProperties() *AzureProperties {
+	p, _ := ce.Properties.(*AzureProperties) //nolint:errcheck // user can check the pointer
+	return p
+}
+
+func (ce *CloudExport) GetGCEProperties() *GCEProperties {
+	p, _ := ce.Properties.(*GCEProperties) //nolint:errcheck // user can check the pointer
+	return p
+}
+
+func (ce *CloudExport) GetIBMProperties() *IBMProperties {
+	p, _ := ce.Properties.(*IBMProperties) //nolint:errcheck // user can check the pointer
+	return p
+}
+
+// CloudExportProperties emulates a union of AWSProperties, AzureProperties, GCEProperties and IBMProperties.
+type CloudExportProperties interface {
+	isCloudExportProperties()
 }
 
 // AWSProperties are specific to Amazon Web Services VPC flow logs exports.
@@ -109,6 +128,8 @@ type AWSProperties struct {
 	MultipleBuckets *bool
 }
 
+func (p *AWSProperties) isCloudExportProperties() {}
+
 // AzureProperties are specific to Azure exports.
 type AzureProperties struct {
 	// Location is an Azure location.
@@ -123,6 +144,8 @@ type AzureProperties struct {
 	SecurityPrincipalEnabled *bool
 }
 
+func (p *AzureProperties) isCloudExportProperties() {}
+
 // GCEProperties are specific to Google Cloud export.
 type GCEProperties struct {
 	// Project is a GCE project name.
@@ -131,11 +154,15 @@ type GCEProperties struct {
 	Subscription string
 }
 
+func (p *GCEProperties) isCloudExportProperties() {}
+
 // IBMProperties are specific to IBM Cloud exports.
 type IBMProperties struct {
 	// Bucket is an IBM bucket.
 	Bucket string
 }
+
+func (p *IBMProperties) isCloudExportProperties() {}
 
 // BGPProperties are optional BGP related settings.
 type BGPProperties struct {

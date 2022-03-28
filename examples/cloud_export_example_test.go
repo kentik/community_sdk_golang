@@ -66,10 +66,10 @@ func demonstrateCloudExportAPIWithAWS() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy AWS description"
-	ce.AWSProperties.IAMRoleARN = "dummy-iam-role-arn"
-	ce.AWSProperties.Region = "dummy-region"
-	ce.AWSProperties.DeleteAfterRead = pointer.ToBool(true)
-	ce.AWSProperties.MultipleBuckets = pointer.ToBool(true)
+	ce.GetAWSProperties().IAMRoleARN = "dummy-iam-role-arn"
+	ce.GetAWSProperties().Region = "dummy-region"
+	ce.GetAWSProperties().DeleteAfterRead = pointer.ToBool(true)
+	ce.GetAWSProperties().MultipleBuckets = pointer.ToBool(true)
 	ce.BGP = &models.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
@@ -96,7 +96,7 @@ func demonstrateCloudExportAPIWithAWS() error {
 	fmt.Println("Updating AWS cloud export")
 	ce.Name = "updated-example-aws-export"
 	ce.Description = "Updated description"
-	ce.AWSProperties.Bucket = "updated-bucket"
+	ce.GetAWSProperties().Bucket = "updated-bucket"
 	ce.BGP.UseBGPDeviceID = "updated-bgp-device-id"
 	ce, err = client.CloudExports.Update(ctx, ce)
 	if err != nil {
@@ -137,7 +137,7 @@ func demonstrateCloudExportAPIWithAzure() error {
 	ce.Type = models.CloudExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy Azure description"
-	ce.AzureProperties.SecurityPrincipalEnabled = pointer.ToBool(true)
+	ce.GetAzureProperties().SecurityPrincipalEnabled = pointer.ToBool(true)
 	ce.BGP = &models.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
