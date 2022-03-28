@@ -163,7 +163,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodGet, r.Method)
-				assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), r.URL.Path)
+				assert.Equal(t, fmt.Sprintf("/api/v5/user/%v", testUserID), r.URL.Path)
 				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
 				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
 			}
@@ -285,10 +285,9 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				SyntheticsHostPort: server.url,
-				AuthToken:          dummyAuthToken,
-				AuthEmail:          dummyAuthEmail,
-				DisableTLS:         true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 				RetryCfg: kentikapi.RetryConfig{
 					MaxAttempts: tt.retryMax,
 					MinDelay:    pointer.ToDuration(10 * time.Microsecond),

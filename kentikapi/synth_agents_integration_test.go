@@ -68,10 +68,9 @@ func TestClient_GetAgent(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				SyntheticsHostPort: server.url,
-				AuthToken:          dummyAuthToken,
-				AuthEmail:          dummyAuthEmail,
-				DisableTLS:         true,
+				APIURL:    "http://" + server.url,
+				AuthToken: dummyAuthToken,
+				AuthEmail: dummyAuthEmail,
 			})
 			require.NoError(t, err)
 

@@ -110,7 +110,7 @@ func TestClient_GetAllTags(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodGet, h.LastMethod)
-			assert.Equal(t, "/tags", h.LastURL.Path)
+			assert.Equal(t, "/api/v5/tags", h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 
@@ -179,7 +179,7 @@ func TestClient_GetTag(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodGet, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/tag/%v", testTagID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/tag/%v", testTagID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 
@@ -357,7 +357,7 @@ func TestClient_CreateTag(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodPost, h.LastMethod)
-			assert.Equal(t, "/tag", h.LastURL.Path)
+			assert.Equal(t, "/api/v5/tag", h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 			assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, h.LastRequestBody))
@@ -527,7 +527,7 @@ func TestClient_UpdateTag(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodPut, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/tag/%v", tag.ID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/tag/%v", tag.ID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 			assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, h.LastRequestBody))
@@ -586,7 +586,7 @@ func TestClient_DeleteTag(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodDelete, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/tag/%v", testTagID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/tag/%v", testTagID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 			assert.Equal(t, "", h.LastRequestBody)
