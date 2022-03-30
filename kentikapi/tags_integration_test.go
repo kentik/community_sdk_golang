@@ -92,8 +92,7 @@ func TestClient_GetAllTags(t *testing.T) {
 
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			assert.NoError(t, err)
 
@@ -161,8 +160,7 @@ func TestClient_GetTag(t *testing.T) {
 
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			assert.NoError(t, err)
 
@@ -339,8 +337,7 @@ func TestClient_CreateTag(t *testing.T) {
 
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			assert.NoError(t, err)
 
@@ -508,8 +505,7 @@ func TestClient_UpdateTag(t *testing.T) {
 
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			assert.NoError(t, err)
 
@@ -569,8 +565,7 @@ func TestClient_DeleteTag(t *testing.T) {
 
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			assert.NoError(t, err)
 

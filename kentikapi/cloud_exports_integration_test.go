@@ -109,8 +109,7 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			defer server.Stop()
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			require.NoError(t, err)
 
@@ -278,8 +277,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			require.NoError(t, err)
 
@@ -500,8 +498,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			require.NoError(t, err)
 
@@ -601,8 +598,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			require.NoError(t, err)
 
@@ -673,8 +669,7 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
-				kentikapi.WithAuthEmail(dummyAuthEmail),
-				kentikapi.WithAuthToken(dummyAuthToken),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 			)
 			require.NoError(t, err)
 

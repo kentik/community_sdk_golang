@@ -25,9 +25,12 @@ import (
 
 //nolint:gosec
 const (
-	authAPITokenKey = "X-CH-Auth-API-Token"
-	authEmailKey    = "X-CH-Auth-Email"
-	defaultTimeout  = 100 * time.Second
+	authAPITokenKey    = "X-CH-Auth-API-Token"
+	authEmailKey       = "X-CH-Auth-Email"
+	defaultTimeout     = 100 * time.Second
+	defaultMaxAttempts = 4
+	defaultMinDelay    = 1 * time.Second
+	defaultMaxDelay    = 30 * time.Second
 )
 
 // Kentik API URLs.
@@ -57,73 +60,97 @@ type Client struct {
 	SyntheticsAdmin grpcsynthetics.SyntheticsAdminServiceClient
 	SyntheticsData  grpcsynthetics.SyntheticsDataServiceClient
 
-	config Config
+	config config
 }
 
-// Config holds configuration of the client.
-type Config struct {
-	// APIURL defaults to "https://api.kentik.com"
+type config struct {
 	APIURL string
 
 	AuthEmail string
 	AuthToken string
 	RetryCfg  RetryConfig
 
-	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
 	LogPayloads bool
-	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
-	// A Timeout of zero means no timeout.
-	// Default: 100 seconds.
-	Timeout *time.Duration
+
+	Timeout time.Duration
 }
 
 type RetryConfig = httputil.RetryConfig
 
-type ConfigOption func(*Config)
+// ClientOption defines an option for a Client.
+type ClientOption func(*config)
 
-func WithAPIURL(apiURL string) ConfigOption {
-	return func(c *Config) {
+// WithAPIURL defaults to "https://api.kentik.com".
+func WithAPIURL(apiURL string) ClientOption {
+	return func(c *config) {
 		c.APIURL = apiURL
 	}
 }
 
-func WithAuthEmail(authEmail string) ConfigOption {
-	return func(c *Config) {
+// WithCredentials specifies authorization email and token for a Client.
+func WithCredentials(authEmail, authToken string) ClientOption {
+	return func(c *config) {
 		c.AuthEmail = authEmail
-	}
-}
-
-func WithAuthToken(authToken string) ConfigOption {
-	return func(c *Config) {
 		c.AuthToken = authToken
 	}
 }
 
-func WithTimeout(timeout *time.Duration) ConfigOption {
-	return func(c *Config) {
-		if timeout != nil {
+// WithTimeout specifies a limit of a total time of a single client call, including redirects and retries.
+// A Timeout of zero means no timeout.
+// Default: 100 seconds.
+func WithTimeout(timeout time.Duration) ClientOption {
+	return func(c *config) {
+		if pointer.ToDurationOrNil(timeout) != nil {
 			c.Timeout = timeout
 		}
 	}
 }
 
-func WithRetryConfig(retryCfg RetryConfig) ConfigOption {
-	return func(c *Config) {
-		retryCfg.FillDefaults()
-		c.RetryCfg = retryCfg
+// WithRetryMaxAttempts specifies maximum number of request retry attempts. Set to 0 to disable retrying. Default: 4.
+func WithRetryMaxAttempts(maxAttempts uint) ClientOption {
+	return func(c *config) {
+		if pointer.ToUint(maxAttempts) != nil {
+			c.RetryCfg.MaxAttempts = &maxAttempts
+		}
 	}
 }
 
-func WithLogPayloads() ConfigOption {
-	return func(c *Config) {
+// WithRetryMinDelay specifies a minimum delay before request retry. Default: 1 second.
+func WithRetryMinDelay(minDelay time.Duration) ClientOption {
+	return func(c *config) {
+		if pointer.ToDuration(minDelay) != nil {
+			c.RetryCfg.MinDelay = &minDelay
+		}
+	}
+}
+
+// WithRetryMaxDelay specifies a maximum delay before request retry. Default: 30 seconds.
+func WithRetryMaxDelay(maxDelay time.Duration) ClientOption {
+	return func(c *config) {
+		if pointer.ToDuration(maxDelay) != nil {
+			c.RetryCfg.MaxDelay = &maxDelay
+		}
+	}
+}
+
+// WithLogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
+func WithLogPayloads() ClientOption {
+	return func(c *config) {
 		c.LogPayloads = true
 	}
 }
 
 // NewClient creates a new Kentik API client.
-func NewClient(opts ...ConfigOption) (*Client, error) {
-	c := Config{}
-	c.FillDefaults()
+func NewClient(opts ...ClientOption) (*Client, error) {
+	c := config{
+		APIURL:  APIURLUS,
+		Timeout: defaultTimeout,
+		RetryCfg: RetryConfig{
+			MaxAttempts: pointer.ToUint(defaultMaxAttempts),
+			MinDelay:    pointer.ToDuration(defaultMinDelay),
+			MaxDelay:    pointer.ToDuration(defaultMaxDelay),
+		},
+	}
 	for _, opt := range opts {
 		opt(&c)
 	}
@@ -142,7 +169,7 @@ func NewClient(opts ...ConfigOption) (*Client, error) {
 		AuthEmail: c.AuthEmail,
 		AuthToken: c.AuthToken,
 		RetryCfg:  c.RetryCfg,
-		Timeout:   c.Timeout,
+		Timeout:   &c.Timeout,
 	})
 	return &Client{
 		Alerting:           resources.NewAlertingAPI(rc),
@@ -166,18 +193,6 @@ func NewClient(opts ...ConfigOption) (*Client, error) {
 	}, nil
 }
 
-func (c *Config) FillDefaults() {
-	if c.APIURL == "" {
-		c.APIURL = APIURLUS
-	}
-
-	if c.Timeout == nil {
-		c.Timeout = pointer.ToDuration(defaultTimeout)
-	}
-
-	c.RetryCfg.FillDefaults()
-}
-
 func makeAPIV5URL(apiURL string) (string, error) {
 	u, err := url.Parse(apiURL)
 	if err != nil {
@@ -187,7 +202,7 @@ func makeAPIV5URL(apiURL string) (string, error) {
 	return u.String(), nil
 }
 
-func makeConnForGRPC(c Config) (grpc.ClientConnInterface, error) {
+func makeConnForGRPC(c config) (grpc.ClientConnInterface, error) {
 	grpcHostPort, tlsEnabled, err := makeGRPCHostPort(c.APIURL)
 	if err != nil {
 		return nil, err
@@ -238,17 +253,17 @@ func makeTLSOption(tlsEnabled bool) grpc.DialOption {
 	}))
 }
 
-func makeTimeoutInterceptor(c Config) grpc.UnaryClientInterceptor {
+func makeTimeoutInterceptor(c config) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
-		ctx, cancel := context.WithTimeout(ctx, *c.Timeout)
+		ctx, cancel := context.WithTimeout(ctx, c.Timeout)
 		defer cancel()
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
 
-func makeAuthInterceptor(c Config) grpc.UnaryClientInterceptor {
+func makeAuthInterceptor(c config) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
@@ -260,7 +275,7 @@ func makeAuthInterceptor(c Config) grpc.UnaryClientInterceptor {
 	}
 }
 
-func makeRetryInterceptor(c Config) grpc.UnaryClientInterceptor {
+func makeRetryInterceptor(c config) grpc.UnaryClientInterceptor {
 	return grpcretry.UnaryClientInterceptor(
 		grpcretry.WithBackoff(grpcretry.BackoffExponential(*c.RetryCfg.MinDelay)),
 		grpcretry.WithCodes(codes.Unavailable),
@@ -269,7 +284,7 @@ func makeRetryInterceptor(c Config) grpc.UnaryClientInterceptor {
 	)
 }
 
-func makeLoggerInterceptor(c Config) grpc.UnaryClientInterceptor {
+func makeLoggerInterceptor(c config) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
