@@ -69,7 +69,7 @@ type Config struct {
 	AuthToken string
 	RetryCfg  RetryConfig
 
-	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
+	// LogPayloads enables logging of request and response payloads.
 	LogPayloads bool
 	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
 	// A Timeout of zero means no timeout.
