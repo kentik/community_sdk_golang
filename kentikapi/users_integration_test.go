@@ -186,7 +186,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodGet, h.LastMethod)
-			assert.Equal(t, "/users", h.LastURL.Path)
+			assert.Equal(t, "/api/v5/users", h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 
@@ -283,7 +283,7 @@ func TestClient_GetUser(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodGet, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/user/%v", testUserID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 
@@ -505,7 +505,7 @@ func TestClient_CreateUser(t *testing.T) {
 			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
 			for _, r := range h.Requests {
 				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/user", r.URL.Path)
+				assert.Equal(t, "/api/v5/user", r.URL.Path)
 				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
 				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
 				assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, r.Body))
@@ -641,7 +641,7 @@ func TestClient_UpdateUser(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodPut, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/user/%v", user.ID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/user/%v", user.ID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 			assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, h.LastRequestBody))
@@ -700,7 +700,7 @@ func TestClient_DeleteUser(t *testing.T) {
 
 			assert.Equal(t, 1, h.RequestsCount)
 			assert.Equal(t, http.MethodDelete, h.LastMethod)
-			assert.Equal(t, fmt.Sprintf("/user/%v", testUserID), h.LastURL.Path)
+			assert.Equal(t, fmt.Sprintf("/api/v5/user/%v", testUserID), h.LastURL.Path)
 			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
 			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
 			assert.Equal(t, "", h.LastRequestBody)
