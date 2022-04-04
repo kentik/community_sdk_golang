@@ -3,7 +3,8 @@ package models
 import "time"
 
 type Populator struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	Value         string
 	Direction     PopulatorDirection
 	DeviceName    string
@@ -23,9 +24,10 @@ type Populator struct {
 	NextHopAsName *string
 	MAC           *string
 	Country       *string
-	VLans         *string
+	VLANs         *string
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	ID          ID
 	CompanyID   ID
 	DimensionID ID
@@ -36,7 +38,7 @@ type Populator struct {
 	UpdatedDate time.Time
 }
 
-// PopulatorRequiredFields is subset of Populator fields required to create a Populator.
+// PopulatorRequiredFields is a subset of Populator fields required to create a Populator.
 type PopulatorRequiredFields struct {
 	DimensionID ID
 	Value       string

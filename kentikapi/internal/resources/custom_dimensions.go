@@ -14,7 +14,7 @@ type CustomDimensionsAPI struct {
 	Populators *populatorsAPI
 }
 
-// NewCustomDimensionsAPI is constructor.
+// NewCustomDimensionsAPI creates new CustomDimensionsAPI.
 func NewCustomDimensionsAPI(transport api_connection.Transport, logPayloads bool) *CustomDimensionsAPI {
 	return &CustomDimensionsAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},

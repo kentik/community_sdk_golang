@@ -4,7 +4,8 @@ import "time"
 
 // Tag model.
 type Tag struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	FlowTag       string
 	DeviceName    *string
 	DeviceType    *string
@@ -15,17 +16,18 @@ type Tag struct {
 	TCPFlags      *string
 	Protocol      *string
 	ASN           *string
-	LasthopAsName *string
-	NexthopAsn    *string
-	NexthopAsName *string
-	Nexthop       *string
-	BGPAspath     *string
+	LastHopAsName *string
+	NextHopAsn    *string
+	NextHopAsName *string
+	NextHop       *string
+	BGPAsPath     *string
 	BGPCommunity  *string
 	MAC           *string
 	Country       *string
 	VLANs         *string
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	ID          ID
 	UserID      ID
 	CompanyID   ID

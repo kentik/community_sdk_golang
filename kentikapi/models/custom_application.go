@@ -3,7 +3,8 @@ package models
 import "time"
 
 type CustomApplication struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	Name        string
 	Description *string
 	IPRange     *string
@@ -11,7 +12,8 @@ type CustomApplication struct {
 	Port        *string
 	ASN         *string
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	ID          ID
 	CompanyID   ID
 	UserID      *ID

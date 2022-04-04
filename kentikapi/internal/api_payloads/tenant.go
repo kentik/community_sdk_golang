@@ -63,7 +63,7 @@ func (p TenantUserPayload) ToTenantUser() (models.TenantUser, error) {
 		ID:        p.ID,
 		Email:     p.Email,
 		Name:      p.Name,
-		Fullname:  p.Fullname,
+		FullName:  p.Fullname,
 		LastLogin: p.LastLogin,
 		TenantID:  p.TenantID,
 		CompanyID: p.CompanyID,

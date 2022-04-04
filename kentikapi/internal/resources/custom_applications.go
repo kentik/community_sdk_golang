@@ -13,7 +13,7 @@ type CustomApplicationsAPI struct {
 	BaseAPI
 }
 
-// NewCustomApplicationsAPI is constructor.
+// NewCustomApplicationsAPI creates new CustomApplicationsAPI.
 func NewCustomApplicationsAPI(transport api_connection.Transport, logPayloads bool) *CustomApplicationsAPI {
 	return &CustomApplicationsAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},

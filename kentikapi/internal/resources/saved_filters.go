@@ -61,6 +61,6 @@ func (a *SavedFiltersAPI) Update(ctx context.Context, savedFilter models.SavedFi
 	return &result, err
 }
 
-func (a *SavedFiltersAPI) Detete(ctx context.Context, id models.ID) error {
+func (a *SavedFiltersAPI) Delete(ctx context.Context, id models.ID) error {
 	return a.DeleteAndValidate(ctx, api_endpoints.GetSavedFilter(id), nil)
 }

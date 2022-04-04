@@ -3,13 +3,14 @@ package models
 import "time"
 
 type Device struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	PlanID              *ID
 	SiteID              *ID
 	DeviceDescription   *string
 	DeviceSampleRate    int
-	SendingIPS          []string
-	DeviceSNMNPIP       *string
+	SendingIPs          []string
+	DeviceSNMPIP        *string
 	DeviceSNMPCommunity *string
 	MinimizeSNMP        *bool
 	// Note: for DeviceBGPType = DeviceBGPTypeDevice, either DeviceBGPNeighborIP or DeviceBGPNeighborIPv6 is required
@@ -23,7 +24,8 @@ type Device struct {
 	DeviceSNMPv3Conf      *SNMPv3Conf
 	CDNAttr               *CDNAttribute
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	ID              ID
 	DeviceName      string
 	DeviceType      DeviceType
@@ -42,19 +44,19 @@ type Device struct {
 	AllInterfaces   []AllInterfaces
 }
 
-// DeviceRouterRequiredFields is subset of Device fields required to create a DeviceRouter.
+// DeviceRouterRequiredFields is a subset of Device fields required to create a DeviceRouter.
 type DeviceRouterRequiredFields struct {
 	DeviceName       string
 	DeviceSubType    DeviceSubtype
 	DeviceSampleRate int
 	PlanID           ID
-	SendingIPS       []string
+	SendingIPs       []string
 	MinimizeSNMP     bool
 }
 
 // NewDeviceRouter creates a new Router with all necessary fields set
-// Optional fields that can be set for router include:
-// - DeviceSNMNPIP
+// Optional fields that can be set for a router include:
+// - DeviceSNMPIP
 // - DeviceSNMPCommunity
 // - DeviceSNMPv3Conf  // when set, overwrites "device_snmp_community"
 // Optional fields that can be always set include:
@@ -70,18 +72,18 @@ func NewDeviceRouter(r DeviceRouterRequiredFields) *Device {
 		DeviceSampleRate: r.DeviceSampleRate,
 		PlanID:           &r.PlanID,
 		DeviceBGPType:    &bgpType,
-		SendingIPS:       r.SendingIPS,
+		SendingIPs:       r.SendingIPs,
 		MinimizeSNMP:     &r.MinimizeSNMP,
 	}
 }
 
-// DeviceDNSRequiredFields is subset of Device fields required to create a DeviceDNS.
+// DeviceDNSRequiredFields is a subset of Device fields required to create a DeviceDNS.
 type DeviceDNSRequiredFields struct {
 	DeviceName       string
 	DeviceSubType    DeviceSubtype
 	DeviceSampleRate int
 	PlanID           ID
-	CdnAttr          CDNAttribute
+	CDNAttr          CDNAttribute
 }
 
 // NewDeviceDNS creates a new DSN with all necessary fields set
@@ -98,7 +100,7 @@ func NewDeviceDNS(d DeviceDNSRequiredFields) *Device {
 		DeviceSampleRate: d.DeviceSampleRate,
 		PlanID:           &d.PlanID,
 		DeviceBGPType:    &bgpType,
-		CDNAttr:          &d.CdnAttr,
+		CDNAttr:          &d.CDNAttr,
 	}
 }
 
@@ -152,7 +154,7 @@ func (c *SNMPv3Conf) WithPrivacy(protocol PrivacyProtocol, pass string) *SNMPv3C
 	return c
 }
 
-// DeviceSite embedded under Device differs from regular Site in that all fields are optional.
+// DeviceSite embedded under Device differs from a regular Site in that all fields are optional.
 type DeviceSite struct {
 	ID        *ID
 	CompanyID *ID
@@ -161,7 +163,7 @@ type DeviceSite struct {
 	SiteName  *string
 }
 
-// DevicePlan embedded under Device differs from regular Plan in that all fields are optional.
+// DevicePlan embedded under Device differs from a regular Plan in that all fields are optional.
 type DevicePlan struct {
 	ID            *ID
 	CompanyID     *ID
@@ -181,7 +183,8 @@ type DevicePlan struct {
 }
 
 type AppliedLabels struct {
-	// read-only properties
+	// Read-only properties
+
 	ID         ID
 	DeviceName string
 	Labels     []DeviceLabel
@@ -196,33 +199,35 @@ const (
 
 type DeviceSubtype string
 
+// Device subtypes for type DeviceTypeRouter.
 const (
-	// for DeviceType = DeviceTypeRouter.
 	DeviceSubtypeRouter                 DeviceSubtype = "router"
-	DeviceSubtypeCiscoAsa               DeviceSubtype = "cisco_asa"
-	DeviceSubtypePaloalto               DeviceSubtype = "paloalto"
+	DeviceSubtypeCiscoASA               DeviceSubtype = "cisco_asa"
+	DeviceSubtypePaloAlto               DeviceSubtype = "paloalto"
 	DeviceSubtypeSilverpeak             DeviceSubtype = "silverpeak"
-	DeviceSubtypeMpls                   DeviceSubtype = "mpls"
+	DeviceSubtypeMPLS                   DeviceSubtype = "mpls"
 	DeviceSubtypeViptela                DeviceSubtype = "viptela"
-	DeviceSubtypePfeSyslog              DeviceSubtype = "pfe_syslog"
+	DeviceSubtypePFESyslog              DeviceSubtype = "pfe_syslog"
 	DeviceSubtypeSyslog                 DeviceSubtype = "syslog"
 	DeviceSubtypeMeraki                 DeviceSubtype = "meraki"
 	DeviceSubtypeIstio                  DeviceSubtype = "istio"
-	DeviceSubtypeIosxr                  DeviceSubtype = "ios_xr"
+	DeviceSubtypeIOSXR                  DeviceSubtype = "ios_xr"
 	DeviceSubtypeCiscoZoneBasedFirewall DeviceSubtype = "cisco_zone_based_firewall"
-	DeviceSubtypeCiscoNbar              DeviceSubtype = "cisco_nbar"
-	DeviceSubtypeCiscoAsaSyslog         DeviceSubtype = "cisco_asa_syslog"
-	DeviceSubtypeAdvancedSflow          DeviceSubtype = "advanced_sflow"
-	DeviceSubtypeA10Cgn                 DeviceSubtype = "a10_cgn"
+	DeviceSubtypeCiscoNBAR              DeviceSubtype = "cisco_nbar"
+	DeviceSubtypeCiscoASASyslog         DeviceSubtype = "cisco_asa_syslog"
+	DeviceSubtypeAdvancedSFlow          DeviceSubtype = "advanced_sflow"
+	DeviceSubtypeA10CGN                 DeviceSubtype = "a10_cgn"
+)
 
-	// for DeviceType = DeviceTypeHostNProbeDNSWWW.
-	DeviceSubtypeKprobe      DeviceSubtype = "kprobe"
-	DeviceSubtypeNprobe      DeviceSubtype = "nprobe"
-	DeviceSubtypeAwsSubnet   DeviceSubtype = "aws_subnet"
+// Device subtypes for type DeviceTypeHostNProbeDNSWWW.
+const (
+	DeviceSubtypeKProbe      DeviceSubtype = "kprobe"
+	DeviceSubtypeNProbe      DeviceSubtype = "nprobe"
+	DeviceSubtypeAWSSubnet   DeviceSubtype = "aws_subnet"
 	DeviceSubtypeAzureSubnet DeviceSubtype = "azure_subnet"
-	DeviceSubtypeGcpSubnet   DeviceSubtype = "gcp_subnet"
+	DeviceSubtypeGCPSubnet   DeviceSubtype = "gcp_subnet"
 	DeviceSubtypeKappa       DeviceSubtype = "kappa"      // not in the API documentation
-	DeviceSubtypeIbmSubnet   DeviceSubtype = "ibm_subnet" // not in the API documentation
+	DeviceSubtypeIBMSubnet   DeviceSubtype = "ibm_subnet" // not in the API documentation
 )
 
 type DeviceBGPType string

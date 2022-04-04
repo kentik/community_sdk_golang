@@ -13,7 +13,7 @@ type PlansAPI struct {
 	BaseAPI
 }
 
-// NewPlansAPI is constructor.
+// NewPlansAPI creates new PlansAPI.
 func NewPlansAPI(transport api_connection.Transport, logPayloads bool) *PlansAPI {
 	return &PlansAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},

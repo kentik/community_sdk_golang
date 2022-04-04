@@ -79,7 +79,7 @@ type DevicePayload struct {
 	DeviceBGPFlowSpec     *bool              `json:"device_bgp_flowspec,omitempty"`
 	DeviceBGPPassword     *string            `json:"device_bgp_password,omitempty"`
 	UseBGPDeviceID        *StringAsInt       `json:"use_bgp_device_id,omitempty"`
-	DeviceSNMPv3Conf      *snmpv3ConfPayload `json:"device_snmp_v3_conf,omitempty"`
+	DeviceSNMPv3Conf      *snmpV3ConfPayload `json:"device_snmp_v3_conf,omitempty"`
 	CDNAttr               *string            `json:"cdn_attr,omitempty"`
 
 	// following fields can appear in request: post, response: get/post/put
@@ -132,7 +132,7 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		DeviceSubType:         models.DeviceSubtype(*p.DeviceSubType),
 		DeviceSampleRate:      *p.DeviceSampleRate,
 		Plan:                  plan,
-		SendingIPS:            p.SendingIPS,
+		SendingIPs:            p.SendingIPS,
 		Site:                  payloadToDeviceSite(p.Site),
 		PlanID:                p.PlanID,
 		SiteID:                p.SiteID,
@@ -140,7 +140,7 @@ func payloadToDevice(p DevicePayload) (models.Device, error) {
 		AllInterfaces:         allInterfaces,
 		CDNAttr:               cdnAttributeFromStringPtr(p.CDNAttr),
 		DeviceDescription:     p.DeviceDescription,
-		DeviceSNMNPIP:         p.DeviceSNMNPIP,
+		DeviceSNMPIP:          p.DeviceSNMNPIP,
 		DeviceSNMPCommunity:   p.DeviceSNMPCommunity,
 		DeviceSNMPv3Conf:      payloadToSNMPv3Conf(p.DeviceSNMPv3Conf),
 		MinimizeSNMP:          p.MinimizeSNMP,
@@ -182,12 +182,12 @@ func DeviceToPayload(d models.Device) DevicePayload {
 		DeviceType:            stringPtr(string(d.DeviceType)),
 		DeviceSubType:         stringPtr(string(d.DeviceSubType)),
 		DeviceSampleRate:      &d.DeviceSampleRate,
-		SendingIPS:            d.SendingIPS,
+		SendingIPS:            d.SendingIPs,
 		PlanID:                d.PlanID,
 		SiteID:                d.SiteID,
 		CDNAttr:               cdnAttributeToStringPtr(d.CDNAttr),
 		DeviceDescription:     d.DeviceDescription,
-		DeviceSNMNPIP:         d.DeviceSNMNPIP,
+		DeviceSNMNPIP:         d.DeviceSNMPIP,
 		DeviceSNMPCommunity:   d.DeviceSNMPCommunity,
 		DeviceSNMPv3Conf:      snmp3ConfToPayload(d.DeviceSNMPv3Conf),
 		MinimizeSNMP:          d.MinimizeSNMP,
@@ -234,8 +234,8 @@ func payloadToAllInterfaces(p allInterfacesPayload) (models.AllInterfaces, error
 	}, nil
 }
 
-// snmpv3ConfPayload represents JSON Device.SNMPv3Conf payload as it is transmitted to and from KentikAPI.
-type snmpv3ConfPayload struct {
+// snmpV3ConfPayload represents JSON Device.SNMPv3Conf payload as it is transmitted to and from KentikAPI.
+type snmpV3ConfPayload struct {
 	UserName                 string  `json:"UserName,omitempty"`
 	AuthenticationProtocol   *string `json:"AuthenticationProtocol,omitempty"`
 	AuthenticationPassphrase *string `json:"AuthenticationPassphrase,omitempty"`
@@ -243,7 +243,7 @@ type snmpv3ConfPayload struct {
 	PrivacyPassphrase        *string `json:"PrivacyPassphrase,omitempty"`
 }
 
-func payloadToSNMPv3Conf(p *snmpv3ConfPayload) *models.SNMPv3Conf {
+func payloadToSNMPv3Conf(p *snmpV3ConfPayload) *models.SNMPv3Conf {
 	if p == nil {
 		return nil
 	}
@@ -273,7 +273,7 @@ func privacyProtocolFromStringPtr(s *string) *models.PrivacyProtocol {
 	return &result
 }
 
-func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
+func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpV3ConfPayload {
 	if d == nil {
 		return nil
 	}
@@ -289,7 +289,7 @@ func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
 		*priv = string(*d.PrivacyProtocol)
 	}
 
-	return &snmpv3ConfPayload{
+	return &snmpV3ConfPayload{
 		UserName:                 d.UserName,
 		AuthenticationProtocol:   auth,
 		AuthenticationPassphrase: d.AuthenticationPassphrase,
@@ -300,7 +300,7 @@ func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpv3ConfPayload {
 
 // deviceLabelPayload represents JSON Device.Label payload as it is transmitted from KentikAPI.
 // deviceLabelPayload embedded under Device differs from standalone LabelPayload in that it lacks devices list,
-// and differs in field names, eg. cdate vs created_date, edate vs updated_date.
+// and differs in field names, e.g. cdate vs created_date, edate vs updated_date.
 type deviceLabelPayload struct {
 	ID          int       `json:"id"`
 	Color       string    `json:"color"`
@@ -324,7 +324,7 @@ func payloadToDeviceLabel(p deviceLabelPayload) (models.DeviceLabel, error) {
 }
 
 // deviceSitePayload represents JSON Device.Site payload as it is transmitted from KentikAPI.
-// deviceSitePayload embeddedd under Device differs from regular SitePayload in that all fields are optional.
+// deviceSitePayload embedded under Device differs from regular SitePayload in that all fields are optional.
 type deviceSitePayload struct {
 	CompanyID *StringAsInt `json:"company_id,omitempty"`
 	ID        *StringAsInt `json:"id,omitempty"`

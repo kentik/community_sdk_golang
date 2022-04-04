@@ -13,7 +13,7 @@ type SitesAPI struct {
 	BaseAPI
 }
 
-// NewSitesAPI is constructor.
+// NewSitesAPI creates new SitesAPI.
 func NewSitesAPI(transport api_connection.Transport, logPayloads bool) *SitesAPI {
 	return &SitesAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},
@@ -41,7 +41,7 @@ func (a *SitesAPI) Get(ctx context.Context, id models.ID) (*models.Site, error) 
 	return &site, err
 }
 
-// Create new site.
+// Create a new site.
 func (a *SitesAPI) Create(ctx context.Context, site models.Site) (*models.Site, error) {
 	payload, err := api_payloads.SiteToPayload(site)
 	if err != nil {

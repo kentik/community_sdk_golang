@@ -1,4 +1,3 @@
-// Package models holds definitions of Kentik API resources
 package models
 
 import (
@@ -13,15 +12,15 @@ type ManualMitigation struct {
 	MinutesBeforeAutoStop string
 }
 
-// ManualMitigationRequiredFields is subset of ManualMitigation fields required to create a ManualMitigation.
+// ManualMitigationRequiredFields is a subset of ManualMitigation fields required to create a ManualMitigation.
 type ManualMitigationRequiredFields struct {
 	IPCidr     string
 	PlatformID string
 	MethodID   string
 }
 
-// NewUManualMitigation creates a new ManualMitigation with all required fields set.
-func NewUManualMitigation(u ManualMitigationRequiredFields) *ManualMitigation {
+// NewManualMitigation creates a new ManualMitigation with all required fields set.
+func NewManualMitigation(u ManualMitigationRequiredFields) *ManualMitigation {
 	return &ManualMitigation{
 		IPCidr:     u.IPCidr,
 		PlatformID: u.PlatformID,
@@ -30,35 +29,35 @@ func NewUManualMitigation(u ManualMitigationRequiredFields) *ManualMitigation {
 }
 
 type Alarm struct {
-	AlarmID         ID
-	RowType         string
-	AlarmState      string
-	AlertID         ID
-	MitigationID    *ID
-	TresholdID      ID
-	AlertKey        string
-	AlertDimension  string
-	AlertMetric     []string
-	AlertValue      float32
-	AlertValue2nd   float32
-	AlertValue3rd   float32
-	AlertMatchCount int
-	AlertBaseline   int
-	AlertSeverity   string
-	BaselineUsed    int
-	LearningMode    bool
-	DebugMode       bool
-	AlarmStart      time.Time
-	AlarmEnd        *string
-	AlarmLastComent *string
-	MitAlertID      ID
-	MitAlertIP      string
-	MitTresholdID   ID
-	Args            string
-	ID              ID
-	PolicyID        ID
-	PolicyName      string
-	AlertKeyLookup  string
+	AlarmID          ID
+	RowType          string
+	AlarmState       string
+	AlertID          ID
+	MitigationID     *ID
+	ThresholdID      ID
+	AlertKey         string
+	AlertDimension   string
+	AlertMetric      []string
+	AlertValue       float32
+	AlertValue2nd    float32
+	AlertValue3rd    float32
+	AlertMatchCount  int
+	AlertBaseline    int
+	AlertSeverity    string
+	BaselineUsed     int
+	LearningMode     bool
+	DebugMode        bool
+	AlarmStart       time.Time
+	AlarmEnd         *string
+	AlarmLastComment *string
+	MitAlertID       ID
+	MitAlertIP       string
+	MitThresholdID   ID
+	Args             string
+	ID               ID
+	PolicyID         ID
+	PolicyName       string
+	AlertKeyLookup   string
 }
 
 type HistoricalAlert struct {

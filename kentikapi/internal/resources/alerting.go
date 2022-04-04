@@ -14,7 +14,7 @@ type AlertingAPI struct {
 	BaseAPI
 }
 
-// NewAlertingAPI is constructor.
+// NewAlertingAPI creates new AlertingAPI.
 func NewAlertingAPI(transport api_connection.Transport, logPayloads bool) *AlertingAPI {
 	return &AlertingAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},

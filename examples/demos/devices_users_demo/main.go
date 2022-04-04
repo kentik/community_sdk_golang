@@ -40,10 +40,10 @@ func main() {
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
 		DeviceName:       "testapi_dns_awssubnet",
-		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSubType:    models.DeviceSubtypeAWSSubnet,
 		DeviceSampleRate: 1,
 		PlanID:           models.ID("11466"),
-		CdnAttr:          models.CDNAttributeYes,
+		CDNAttr:          models.CDNAttributeYes,
 	})
 	device.SiteID = models.IDPtr("8483")
 	device.DeviceBGPFlowSpec = pointer.ToBool(true)

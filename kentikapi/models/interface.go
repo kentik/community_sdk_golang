@@ -2,10 +2,11 @@ package models
 
 import "time"
 
-// Note: InterfacesAPI belongs under DevicesAPI but it is vast so it lives in a separate file
+// Note: InterfacesAPI belongs under DevicesAPI, but it is vast, so it lives in a separate file.
 
 type Interface struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	SNMPID               ID
 	SNMPSpeed            int
 	InterfaceDescription string // if fact, this is interface name, that's why not optional
@@ -16,7 +17,8 @@ type Interface struct {
 	VRFID                *ID
 	SecondaryIPS         []SecondaryIP
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	ID                          ID
 	CompanyID                   ID
 	DeviceID                    ID
@@ -29,7 +31,7 @@ type Interface struct {
 	TopNextHopASNs              []TopNextHopASN
 }
 
-// InterfaceRequiredFields is subset of Interface fields required to create an Interface.
+// InterfaceRequiredFields is a subset of Interface fields required to create an Interface.
 type InterfaceRequiredFields struct {
 	DeviceID             ID
 	SNMPID               ID
@@ -61,7 +63,7 @@ type VRFAttributes struct {
 	DeviceID  ID
 }
 
-// VRFAttributesRequiredFields is subset of VRFAttributes fields required to create a VRFAttributes.
+// VRFAttributesRequiredFields is a subset of VRFAttributes fields required to create a VRFAttributes.
 type VRFAttributesRequiredFields struct {
 	Name               string
 	RouteTarget        string

@@ -57,7 +57,7 @@ func runCreateManualMitigation() error {
 
 	fmt.Println("### CREATE MANUAL MITIGATION")
 	// This data is invalid and saved filter will not be created.
-	mm := models.NewUManualMitigation(models.ManualMitigationRequiredFields{
+	mm := models.NewManualMitigation(models.ManualMitigationRequiredFields{
 		IPCidr:     "192.168.0.0/24",
 		PlatformID: "1234",
 		MethodID:   "12345",

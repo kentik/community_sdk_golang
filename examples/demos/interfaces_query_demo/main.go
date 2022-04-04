@@ -51,10 +51,10 @@ func main() {
 func createDevice(client *kentikapi.Client) models.ID {
 	device := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
 		DeviceName:       "interfaces_query_demo_device",
-		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSubType:    models.DeviceSubtypeAWSSubnet,
 		DeviceSampleRate: 1,
 		PlanID:           models.ID("11466"),
-		CdnAttr:          models.CDNAttributeYes,
+		CDNAttr:          models.CDNAttributeYes,
 	})
 
 	createdDevice, err := client.Devices.Create(context.Background(), *device)
