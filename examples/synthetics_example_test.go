@@ -6,357 +6,83 @@ package examples
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestSyntheticsAPIExample(t *testing.T) {
+func TestDemonstrateSyntheticsAgentsAPI(t *testing.T) {
 	t.Parallel()
-	assert.NoError(t, runAdminServiceExamples())
-	assert.NoError(t, runDataServiceExamples())
+	err := demonstrateSyntheticsAgentAPI()
+	assert.NoError(t, err)
 }
 
-func runAdminServiceExamples() error {
-	ctx := context.Background()
-	client, err := NewClient()
-	if err != nil {
-		return err
-	}
-
-	if err = runCRUDTest(ctx, client); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	if err = runListTests(ctx, client); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	if err = runCRUDAgent(ctx, client); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	if err = runListAgents(ctx, client); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	return nil
+func TestDemonstrateSyntheticsTestAPI(t *testing.T) {
+	t.Parallel()
+	err := demonstrateSyntheticsTestAPI()
+	assert.NoError(t, err)
 }
 
-func runDataServiceExamples() error {
-	ctx := context.Background()
-
-	client, err := NewClient()
-	if err != nil {
-		return err
-	}
-
-	testID, err := pickTestID(ctx)
-	if err != nil {
-		return err
-	}
-
-	if err = runGetHealthForTest(ctx, client, testID); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	if err = runGetTraceForTest(ctx, client, testID); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	return nil
+func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
+	t.Parallel()
+	err := demonstrateSyntheticsDataServiceAPI()
+	assert.NoError(t, err)
 }
 
-func runCRUDTest(ctx context.Context, client *kentikapi.Client) error {
-	fmt.Println("### CREATE TEST")
-	test := makeExampleTest()
-	createReqPayload := &syntheticspb.CreateTestRequest{Test: test}
-	createResp, err := client.SyntheticsAdmin.CreateTest(ctx, createReqPayload)
-	if err != nil {
-		return err
-	}
-
-	PrettyPrint(createResp.Test)
-	fmt.Println("Created test")
-	testID := createResp.Test.Id
-
-	fmt.Println("### SET TEST STATUS")
-	setStatusReqPayload := &syntheticspb.SetTestStatusRequest{
-		Id:     testID,
-		Status: syntheticspb.TestStatus_TEST_STATUS_PAUSED,
-	}
-
-	_, err = client.SyntheticsAdmin.SetTestStatus(ctx, setStatusReqPayload)
-	if err != nil {
-		return err
-	}
-	fmt.Println("Success")
-	fmt.Println()
-
-	fmt.Println("### GET TEST")
-	getReqPayLoad := &syntheticspb.GetTestRequest{Id: testID}
-	getResp, err := client.SyntheticsAdmin.GetTest(ctx, getReqPayLoad)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(getResp.GetTest())
-	fmt.Println()
-
-	test = getResp.Test
-
-	fmt.Println("### PATCH TEST")
-	test.Name = "example-test-1 UPDATED"
-	patchReqPayload := &syntheticspb.PatchTestRequest{
-		Test: test,
-		Mask: &fieldmaskpb.FieldMask{Paths: []string{"test.name"}},
-	}
-
-	patchResp, err := client.SyntheticsAdmin.PatchTest(ctx, patchReqPayload)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(patchResp.GetTest())
-	fmt.Println()
-
-	fmt.Println("### DELETE TEST")
-	deleteReqPayLoad := &syntheticspb.DeleteTestRequest{Id: testID}
-	_, err = client.SyntheticsAdmin.DeleteTest(ctx, deleteReqPayLoad)
-	if err != nil {
-		return err
-	}
-	fmt.Println("Success")
-	fmt.Println()
-
-	return nil
-}
-
-func runListTests(ctx context.Context, client *kentikapi.Client) error {
-	fmt.Println("### LIST TESTS")
-
-	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
-	if err != nil {
-		return err
-	}
-
-	if getAllResp.Tests != nil {
-		tests := getAllResp.GetTests()
-		fmt.Println("Num tests:", len(tests))
-		if getAllResp.InvalidTestsCount != 0 {
-			fmt.Println("Num invalid tests:", getAllResp.InvalidTestsCount)
-		}
-		PrettyPrint(tests)
-	} else {
-		fmt.Println("[no tests received]")
-	}
-	fmt.Println()
-
-	return nil
-}
-
-func runGetHealthForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
-	fmt.Println("### GET HEALTH FOR TESTS")
-
-	healthPayLoad := &syntheticspb.GetHealthForTestsRequest{
-		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour)),
-		EndTime:   timestamppb.Now(),
-	}
-
-	getHealthResp, err := client.SyntheticsData.GetHealthForTests(ctx, healthPayLoad)
-	if err != nil {
-		return err
-	}
-
-	if getHealthResp.Health != nil {
-		healthItems := getHealthResp.GetHealth()
-		fmt.Println("Num health items:", len(healthItems))
-		PrettyPrint(healthItems)
-	} else {
-		fmt.Println("[no health items received]")
-	}
-	fmt.Println()
-
-	return nil
-}
-
-func runGetTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
-	fmt.Println("### GET TRACE FOR TEST")
-
-	tracePayLoad := &syntheticspb.GetTraceForTestRequest{
-		Id:        testID,
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour)),
-		EndTime:   timestamppb.Now(),
-	}
-
-	getTraceResp, err := client.SyntheticsData.GetTraceForTest(ctx, tracePayLoad)
-	if err != nil {
-		return err
-	}
-
-	if getTraceResp.Lookups != nil {
-		lookups := getTraceResp.Lookups
-		fmt.Println("Agents id by ip:")
-		PrettyPrint(lookups)
-	} else {
-		fmt.Println("[no agents received]")
-	}
-
-	if getTraceResp.TraceRoutes != nil {
-		results := getTraceResp.TraceRoutes
-		fmt.Println("Num trace routes:", len(results))
-		PrettyPrint(results)
-	} else {
-		fmt.Println("[no trace routes received]")
-	}
-
-	if getTraceResp.TraceRoutesInfo != nil {
-		results := getTraceResp.TraceRoutesInfo
-		fmt.Println("Trace routes info:")
-		PrettyPrint(results)
-	} else {
-		fmt.Println("[no trace routes info received]")
-	}
-
-	fmt.Println()
-
-	return nil
-}
-
-// runCRUDAgent demonstrates available methods of Agent API. Note that there is no create method in the API.
+// demonstrateSyntheticsAgentAPI demonstrates available methods of Agent API. Note that there is no create method in the API.
 // Delete method exists but is omitted here, because of lack of create method.
-// Currently, there is a bug involving agent.name in the API, so patch method is also omitted.
-func runCRUDAgent(ctx context.Context, client *kentikapi.Client) error {
-	agentID, err := pickAgentID()
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("### GET AGENT")
-	getReqPayLoad := &syntheticspb.GetAgentRequest{Id: agentID}
-	getResp, err := client.SyntheticsAdmin.GetAgent(ctx, getReqPayLoad)
-	if err != nil {
-		return err
-	}
-	PrettyPrint(getResp.GetAgent())
-	fmt.Println()
-
-	return nil
-}
-
-func runListAgents(ctx context.Context, client *kentikapi.Client) error {
-	fmt.Println("### LIST AGENTS")
-
-	getAllReq := &syntheticspb.ListAgentsRequest{}
-	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, getAllReq)
-	if err != nil {
-		return err
-	}
-
-	if getAllResp.Agents != nil {
-		agents := getAllResp.GetAgents()
-		fmt.Println("Num agents:", len(agents))
-		if getAllResp.InvalidAgentsCount != 0 {
-			fmt.Println("Num invalid agents:", getAllResp.InvalidAgentsCount)
-		}
-		PrettyPrint(agents)
-	} else {
-		fmt.Println("[no agents received]")
-	}
-	fmt.Println()
-
-	return nil
-}
-
-func makeExampleTest() *syntheticspb.Test {
-	healthSettings := &syntheticspb.HealthSettings{
-		LatencyCritical:     0,
-		LatencyWarning:      0,
-		PacketLossCritical:  0,
-		PacketLossWarning:   0,
-		JitterCritical:      0,
-		JitterWarning:       0,
-		HttpLatencyCritical: 0,
-		HttpLatencyWarning:  0,
-		HttpValidCodes:      []uint32{},
-		DnsValidCodes:       []uint32{},
-	}
-
-	monitorSettings := &syntheticspb.TestMonitoringSettings{
-		ActivationGracePeriod: "2",
-		ActivationTimeUnit:    "m",
-		ActivationTimeWindow:  "5",
-		ActivationTimes:       "3",
-		NotificationChannels:  []string{},
-	}
-
-	ping := &syntheticspb.TestPingSettings{
-		Period: 60,
-		Count:  5,
-		Expiry: 3000,
-	}
-
-	trace := &syntheticspb.TestTraceSettings{
-		Period:   60,
-		Protocol: "udp",
-		Port:     33434,
-		Expiry:   22500,
-		Limit:    30,
-		Count:    1,
-	}
-
-	settings := &syntheticspb.TestSettings{
-		Definition: &syntheticspb.TestSettings_Hostname{
-			Hostname: &syntheticspb.HostnameTest{Target: "example.com"},
-		},
-		AgentIds: []string{
-			"890",
-		},
-		Period: 0,
-		Count:  0,
-		Expiry: 0,
-		Limit:  0,
-		Tasks: []string{
-			"ping",
-			"traceroute",
-		},
-		HealthSettings:     healthSettings,
-		MonitoringSettings: monitorSettings,
-		Ping:               ping,
-		Trace:              trace,
-		Port:               443,
-		Protocol:           "icmp",
-		Family:             syntheticspb.IPFamily_IP_FAMILY_DUAL,
-		Servers:            []string{},
-		UseLocalIp:         false,
-		Reciprocal:         false,
-		RollupLevel:        1,
-	}
-
-	test := &syntheticspb.Test{
-		Name:     "example-test-1",
-		Type:     "hostname",
-		DeviceId: "0",
-		Status:   syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
-		Settings: settings,
-	}
-
-	return test
-}
-
-func pickAgentID() (string, error) {
+func demonstrateSyntheticsAgentAPI() error {
 	ctx := context.Background()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("### Getting all synthetics agents")
+	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
+	}
+
+	fmt.Println("Got all agents:", getAllResp)
+	fmt.Println("Number of agents:", len(getAllResp.GetAgents()))
+	fmt.Println("Number of invalid agents:", getAllResp.InvalidCount)
+	fmt.Println()
+
+	agentID, err := pickPrivateAgentID(ctx)
+	if err != nil {
+		return fmt.Errorf("pick agent ID: %w", err)
+	}
+
+	fmt.Printf("### Getting synthetics agent with ID %v\n", agentID)
+	getResp, err := client.SyntheticsAdmin.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: agentID})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.GetAgent: %w", err)
+	}
+	fmt.Println("Got agent:", getResp)
+
+	fmt.Println("### Updating synthetic agent")
+	agent := getResp.Agent
+	agent.Alias = "go-sdk-updated-alias"
+
+	updateResp, err := client.SyntheticsAdmin.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{Agent: agent})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.UpdateAgent: %w", err)
+	}
+	fmt.Println("Updated agent:", updateResp)
+	fmt.Println()
+
+	return nil
+}
+
+func pickPrivateAgentID(ctx context.Context) (string, error) {
 	client, err := NewClient()
 	if err != nil {
 		return "", err
@@ -364,7 +90,7 @@ func pickAgentID() (string, error) {
 
 	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
 	}
 
 	if getAllResp.GetAgents() != nil {
@@ -374,5 +100,235 @@ func pickAgentID() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("No private agent found: %v", err)
+	return "", fmt.Errorf("no private agent found: %w", err)
+}
+
+func demonstrateSyntheticsTestAPI() error {
+	ctx := context.Background()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("### Getting all synthetic tests")
+	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.ListTests: %w", err)
+	}
+
+	fmt.Println("Got all tests:", getAllResp)
+	fmt.Println("Number of tests:", len(getAllResp.GetTests()))
+	fmt.Println("Number of invalid tests:", getAllResp.InvalidCount)
+	fmt.Println()
+
+	fmt.Println("### Creating hostname synthetic test")
+	createResp, err := client.SyntheticsAdmin.CreateTest(ctx, &syntheticspb.CreateTestRequest{Test: makeHostnameTest()})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.CreateTest: %w", err)
+	}
+
+	fmt.Println("Created test:", createResp.String())
+	fmt.Println()
+
+	fmt.Println("### Setting synthetic test status to paused")
+	_, err = client.SyntheticsAdmin.SetTestStatus(ctx, &syntheticspb.SetTestStatusRequest{
+		Id:     createResp.Test.Id,
+		Status: syntheticspb.TestStatus_TEST_STATUS_PAUSED,
+	})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.SetTestStatus: %w", err)
+	}
+	fmt.Println("Set synthetic test status successfully")
+	fmt.Println()
+
+	fmt.Println("### Getting created synthetic test")
+	getReqPayLoad := &syntheticspb.GetTestRequest{Id: createResp.Test.Id}
+	getResp, err := client.SyntheticsAdmin.GetTest(ctx, getReqPayLoad)
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.GetTest: %w", err)
+	}
+	fmt.Println("Got test:", getResp)
+	fmt.Println()
+
+	fmt.Println("### Updating synthetic test")
+	test := getResp.Test
+	test.Name = "go-sdk-updated-hostname-test"
+
+	updateResp, err := client.SyntheticsAdmin.UpdateTest(ctx, &syntheticspb.UpdateTestRequest{Test: test})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.UpdateTest: %w", err)
+	}
+	fmt.Println("Updated test:", updateResp)
+	fmt.Println()
+
+	fmt.Println("### Deleting synthetic test")
+	_, err = client.SyntheticsAdmin.DeleteTest(ctx, &syntheticspb.DeleteTestRequest{Id: test.Id})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.DeleteTest: %w", err)
+	}
+	fmt.Println("Deleted synthetic test successfully")
+	fmt.Println()
+
+	return nil
+}
+
+func makeHostnameTest() *syntheticspb.Test {
+	return &syntheticspb.Test{
+		Name:   "go-sdk-example-hostname-test",
+		Type:   "hostname",
+		Status: syntheticspb.TestStatus_TEST_STATUS_ACTIVE,
+		Settings: &syntheticspb.TestSettings{
+			Definition: &syntheticspb.TestSettings_Hostname{
+				Hostname: &syntheticspb.HostnameTest{Target: "www.example.com"},
+			},
+			AgentIds: []string{"890"},
+			Tasks: []string{
+				"ping",
+				"traceroute",
+			},
+			HealthSettings: &syntheticspb.HealthSettings{
+				LatencyCritical:           1,
+				LatencyWarning:            2,
+				PacketLossCritical:        3,
+				PacketLossWarning:         4,
+				JitterCritical:            5,
+				JitterWarning:             6,
+				HttpLatencyCritical:       7,
+				HttpLatencyWarning:        8,
+				HttpValidCodes:            []uint32{200, 201},
+				DnsValidCodes:             []uint32{1, 2, 3},
+				LatencyCriticalStddev:     9,
+				LatencyWarningStddev:      10,
+				JitterCriticalStddev:      11,
+				JitterWarningStddev:       12,
+				HttpLatencyCriticalStddev: 13,
+				HttpLatencyWarningStddev:  14,
+				UnhealthySubtestThreshold: 15,
+				Activation: &syntheticspb.ActivationSettings{
+					GracePeriod: "2",
+					TimeUnit:    "m",
+					TimeWindow:  "5",
+					Times:       "3",
+				},
+			},
+			Ping: &syntheticspb.TestPingSettings{
+				Count:    10,
+				Protocol: "icmp",
+				Port:     0,
+				Timeout:  10000,
+				Delay:    100,
+			},
+			Trace: &syntheticspb.TestTraceSettings{
+				Count:    5,
+				Protocol: "tcp",
+				Port:     443,
+				Timeout:  59999,
+				Limit:    255,
+				Delay:    100,
+			},
+			Period: 60,
+			Family: syntheticspb.IPFamily_IP_FAMILY_DUAL,
+		},
+	}
+}
+
+func demonstrateSyntheticsDataServiceAPI() error {
+	ctx := context.Background()
+
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
+
+	testID, err := pickNetworkMeshTestID(ctx, client)
+	if err != nil {
+		return err
+	}
+
+	if err = getResultsForTest(ctx, client, testID); err != nil {
+		return err
+	}
+
+	if err = getTraceForTest(ctx, client, testID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func pickNetworkMeshTestID(ctx context.Context, c *kentikapi.Client) (string, error) {
+	getAllResp, err := c.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
+	if err != nil {
+		return "", fmt.Errorf("c.SyntheticsAdmin.ListTests: %w", err)
+	}
+
+	if getAllResp.Tests != nil {
+		for _, test := range getAllResp.GetTests() {
+			if test.GetType() == "network_mesh" {
+				fmt.Printf("Picked network_mesh test named %q with ID %v\n", test.GetName(), test.GetId())
+				return test.GetId(), nil
+			}
+		}
+	}
+	return "", errors.New("no network_mesh tests found")
+}
+
+func getResultsForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
+	fmt.Println("### Getting results for test with ID", testID)
+	resp, err := client.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
+		Ids:       []string{testID},
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 24000)), // last 1000 days
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsData.GetResultsForTests: %w", err)
+	}
+
+	fmt.Println("Got test results:", formatTestResultsSlice(resp.GetResults()))
+	fmt.Println("Number of test results:", len(resp.GetResults()))
+	fmt.Println()
+
+	return nil
+}
+
+func formatTestResultsSlice(trs []*syntheticspb.TestResults) string {
+	var s []string
+	for _, tr := range trs {
+		s = append(s, formatTestResults(tr))
+	}
+	return fmt.Sprintf("{\n%v\n}", strings.Join(s, ", "))
+}
+
+func formatTestResults(tr *syntheticspb.TestResults) string {
+	return fmt.Sprintf(
+		"{\n  test_id=%v\n  time=%v\n  health=%v\n  len(agents)=%v\n  agents=%v\n}",
+		tr.GetTestId(), tr.GetTime().AsTime(), tr.GetHealth(), len(tr.GetAgents()), formatAgentsResults(tr.GetAgents()),
+	)
+}
+
+func formatAgentsResults(ars []*syntheticspb.AgentResults) string {
+	var s []string
+	for _, ar := range ars {
+		s = append(s, fmt.Sprintf("{agent_id=%v health=%v len(tasks)=%v}", ar.GetAgentId(), ar.GetHealth(), len(ar.GetTasks())))
+	}
+	return fmt.Sprintf("{%v}", strings.Join(s, ", "))
+}
+
+func getTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
+	fmt.Println("### Getting trace for test with ID", testID)
+	resp, err := client.SyntheticsData.GetTraceForTest(ctx, &syntheticspb.GetTraceForTestRequest{
+		Id:        testID,
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 24000)), // last 1000 days
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsData.GetTraceForTest: %w", err)
+	}
+
+	fmt.Println("Got trace for test")
+	fmt.Println("Number of nodes:", len(resp.GetNodes()))
+	fmt.Println("Number of paths:", len(resp.GetPaths()))
+	fmt.Println()
+
+	return nil
 }

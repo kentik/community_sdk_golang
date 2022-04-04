@@ -7,7 +7,7 @@ require (
 	github.com/antchfx/jsonquery v1.1.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/hashicorp/go-retryablehttp v0.7.0
-	github.com/kentik/api-schema-public v0.0.0-20211011204132-acc22cb40b78
+	github.com/kentik/api-schema-public v0.0.0-20220322181339-896729e59945
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1

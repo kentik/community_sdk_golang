@@ -13,94 +13,167 @@ import (
 	"text/tabwriter"
 	"time"
 
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
+	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestGetMeshTestResultsExample(t *testing.T) {
+func TestDemonstrateSyntheticsNetworkMeshTestResults(t *testing.T) {
 	t.Parallel()
-	assert.NoError(t, runGetMeshTestResults())
+	err := demonstrateSyntheticsNetworkMeshTestResults()
+	assert.NoError(t, err)
 }
 
-func runGetMeshTestResults() error {
+func demonstrateSyntheticsNetworkMeshTestResults() error {
 	ctx := context.Background()
-
-	testID, err := pickTestID(ctx)
-	if err != nil {
-		return err
-	}
-
-	mesh, err := getMeshTestResults(testID)
-	if err != nil {
-		return err
-	}
-	if mesh == nil {
-		fmt.Println("Empty mesh test result received")
-	} else {
-		metricsMatrix := newMetricsMatrix(mesh)
-		err = printMetricsMatrix(metricsMatrix)
-	}
-
-	return err
-}
-
-func getMeshTestResults(testID string) ([]*syntheticspb.MeshResponse, error) {
 	client, err := NewClient()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	healthPayload := &syntheticspb.GetHealthForTestsRequest{
-		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Minute * 5)),
-		EndTime:   timestamppb.Now(),
-		Augment:   true, // if not set, returned Mesh pointer will be empty
-	}
-
-	getHealthResp, err := client.SyntheticsData.GetHealthForTests(context.Background(), healthPayload)
+	testID, err := pickNetworkMeshTestID(ctx, client)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if getHealthResp.Health != nil {
-		healthItems := getHealthResp.GetHealth()
-		fmt.Println("Num health items:", len(healthItems))
-		if len(healthItems) > 0 {
-			return healthItems[0].GetMesh(), nil
-		}
+	trs, err := getLastTenTestResults(ctx, client, testID)
+	if err != nil {
+		return err
+	}
+	if len(trs) == 0 {
+		fmt.Println("No mesh test results received - exiting example")
+		return nil
+	}
+
+	getAllAgentsResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
+	}
+
+	m, err := newMetricsMatrix(trs, getAllAgentsResp.GetAgents())
+	if err != nil {
+		return fmt.Errorf("new metrics matrix: %w", err)
+	}
+
+	return printMetricsMatrix(m)
+}
+
+func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]*syntheticspb.TestResults, error) {
+	resp, err := c.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
+		Ids:       []string{testID},
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240000)), // 1000 days
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("GetResultsForTests: %w", err)
+	}
+
+	trs := resp.GetResults()
+	if len(trs) == 0 {
 		return nil, nil
 	}
 
-	fmt.Println("[no health items received]")
-	return nil, nil
+	fmt.Println("Number of test results:", len(trs))
+	// latest test trs are returned first in the array
+	return trs[0:min(10, len(trs))], nil
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
+// metricsMatrix holds mesh test result data for single point of time.
+type metricsMatrix struct {
+	// agents hold agents data in the same order as cells.
+	agents []*syntheticspb.Agent
+	// cells hold all "fromAgent" -> "toAgent" connection metrics.
+	cells map[string]map[string]*syntheticspb.MetricData
+}
+
+func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb.Agent) (metricsMatrix, error) {
+	agents, err := prepareAgents(trs[0], allAgents)
+	if err != nil {
+		return metricsMatrix{}, fmt.Errorf("prepare agents: %w", err)
+	}
+	agentIPToAgentMap := makeAgentIPToAgentMap(agents)
+
+	cells := make(map[string]map[string]*syntheticspb.MetricData)
+	for _, tr := range trs {
+		for _, agentResults := range tr.GetAgents() {
+			fromAgentID := agentResults.GetAgentId()
+			if cells[fromAgentID] == nil {
+				cells[fromAgentID] = make(map[string]*syntheticspb.MetricData)
+			}
+
+			for _, taskResult := range agentResults.GetTasks() {
+				ping := taskResult.GetPing()
+				if ping == nil {
+					continue
+				}
+
+				toAgent, ok := agentIPToAgentMap[ping.Target]
+				if !ok {
+					return metricsMatrix{}, fmt.Errorf("agent with IP %q not found", ping.Target)
+				}
+
+				if cells[fromAgentID][toAgent.GetId()] == nil && ping.Latency != nil {
+					cells[fromAgentID][toAgent.GetId()] = ping.Latency
+				}
+			}
+		}
+	}
+
+	fmt.Println("Latest test results time:", trs[0].Time.AsTime())
+	return metricsMatrix{agents: agents, cells: cells}, nil
+}
+
+// prepareAgents prepares agents that are involved in test results.
+func prepareAgents(tr *syntheticspb.TestResults, allAgents []*syntheticspb.Agent) ([]*syntheticspb.Agent, error) {
+	agentIDToAgentMap := makeAgentIDToAgentMap(allAgents)
+
+	var agents []*syntheticspb.Agent
+	for _, ars := range tr.GetAgents() {
+		a, ok := agentIDToAgentMap[ars.GetAgentId()]
+		if !ok {
+			return nil, fmt.Errorf("agent with ID %v not found in listed agents", ars.GetAgentId())
+		}
+		agents = append(agents, a)
+	}
+	return agents, nil
+}
+
+func makeAgentIDToAgentMap(agents []*syntheticspb.Agent) map[string]*syntheticspb.Agent {
+	m := make(map[string]*syntheticspb.Agent)
+	for _, a := range agents {
+		m[a.GetId()] = a
+	}
+	return m
+}
+
+func makeAgentIPToAgentMap(agents []*syntheticspb.Agent) map[string]*syntheticspb.Agent {
+	m := make(map[string]*syntheticspb.Agent)
+	for _, a := range agents {
+		m[a.GetIp()] = a
+	}
+	return m
 }
 
 func printMetricsMatrix(matrix metricsMatrix) error {
 	w := makeTabWriter()
 
-	// print table header
-	header := ".\t"
-	for _, x := range matrix.agents {
-		header = header + x + "\t"
-	}
-	fmt.Fprintln(w, header)
-
-	// print table rows
-	for _, fromAgent := range matrix.agents {
-		row := fromAgent + "\t"
-		for _, toAgent := range matrix.agents {
-			if metrics, ok := matrix.getMetric(fromAgent, toAgent); ok {
-				row += formatLatency(metrics) + "\t"
-			} else {
-				row += "[X]\t"
-			}
-		}
-		fmt.Fprintln(w, row)
-	}
+	fmt.Println(
+		"Table cells contain ping latency and connection health in format: " +
+			"\"current [ms] / rolling avg. [ms] / rolling stddev. [ms] / health\"",
+	)
+	printMatrixHeader(matrix, w)
+	printMatrixRows(matrix, w)
 
 	if err := w.Flush(); err != nil {
-		return err
+		return fmt.Errorf("flush tab writer: %w", err)
 	}
 	return nil
 }
@@ -109,72 +182,68 @@ func makeTabWriter() *tabwriter.Writer {
 	const minWidth = 0  // minimal cell width including any padding
 	const tabWidth = 2  // width of tab characters (equivalent number of spaces)
 	const padding = 4   // distance between cells
-	const padchar = ' ' // ASCII char used for padding
+	const padChar = ' ' // ASCII char used for padding
 	const flags = 0     // formatting control
-	w := tabwriter.NewWriter(os.Stdout, minWidth, tabWidth, padding, padchar, flags)
-	return w
+	return tabwriter.NewWriter(os.Stdout, minWidth, tabWidth, padding, padChar, flags)
 }
 
-func formatLatency(metrics *syntheticspb.MeshMetrics) string {
-	// latency is returned in thousands of milliseconds, so need to divide by 1000
-	return strconv.FormatInt(metrics.GetLatency().Value/1000, 10) + "ms"
-}
-
-// metricsMatrix holds "fromAgent" -> "toAgent" connection metrics.
-type metricsMatrix struct {
-	agents []string
-	cells  map[string]map[string]*syntheticspb.MeshMetrics
-}
-
-func newMetricsMatrix(mesh []*syntheticspb.MeshResponse) metricsMatrix {
-	// fill agents
-	agents := []string{}
-	for _, agent := range mesh {
-		agents = append(agents, agent.GetAlias())
+func printMatrixHeader(matrix metricsMatrix, w *tabwriter.Writer) {
+	header := ".\t"
+	for _, x := range matrix.agents {
+		header = header + x.GetAlias() + "\t"
 	}
 
-	// fill matrix cells
-	cells := make(map[string]map[string]*syntheticspb.MeshMetrics)
-	for _, fromAgent := range mesh {
-		cells[fromAgent.GetAlias()] = make(map[string]*syntheticspb.MeshMetrics)
-		for _, toAgent := range fromAgent.Columns {
-			cells[fromAgent.GetAlias()][toAgent.GetAlias()] = toAgent.Metrics
+	if _, err := fmt.Fprintln(w, header); err != nil {
+		fmt.Printf("Warn: failed to print header: %v\n", err)
+	}
+}
+
+func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer) {
+	for _, fromAgent := range matrix.agents {
+		row := fromAgent.GetAlias() + "\t"
+		for _, toAgent := range matrix.agents {
+			row += formatCell(matrix.getMetric(fromAgent.GetId(), toAgent.GetId()))
+		}
+
+		_, err := fmt.Fprintln(w, row)
+		if err != nil {
+			fmt.Printf("Warn: failed to print row: %v\n", err)
 		}
 	}
-	return metricsMatrix{agents: agents, cells: cells}
 }
 
-func (m metricsMatrix) getMetric(fromAgent string, toAgent string) (*syntheticspb.MeshMetrics, bool) {
-	toAgents, ok := m.cells[fromAgent]
-	if !ok {
-		return nil, false
+func formatCell(metrics *syntheticspb.MetricData) string {
+	if metrics == nil {
+		return "[X]\t"
 	}
 
-	metric, ok := toAgents[toAgent]
-	if !ok {
-		return nil, false
-	}
-
-	return metric, true
+	return fmt.Sprintf(
+		"%v / %v / %v / %v\t",
+		formatMetricValue(metrics.GetCurrent()),
+		formatMetricValue(metrics.GetRollingAvg()),
+		formatMetricValue(metrics.GetRollingStddev()),
+		metrics.GetHealth(),
+	)
 }
 
-func pickTestID(ctx context.Context) (string, error) {
-	client, err := NewClient()
-	if err != nil {
-		return "", err
+// formatCell formats the value of metric given in nanosecond to millisecond value.
+func formatMetricValue(metricValue uint32) string {
+	if metricValue == 0 {
+		return "[X]"
+	}
+	return strconv.Itoa(int(metricValue) / 1000)
+}
+
+func (m metricsMatrix) getMetric(fromAgentID string, toAgentID string) *syntheticspb.MetricData {
+	toAgents, ok := m.cells[fromAgentID]
+	if !ok {
+		return nil
 	}
 
-	getAllResp, err := client.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
-	if err != nil {
-		return "", err
+	metric, ok := toAgents[toAgentID]
+	if !ok {
+		return nil
 	}
 
-	if getAllResp.Tests != nil {
-		for _, test := range getAllResp.GetTests() {
-			if test.GetType() == "application_mesh" {
-				return test.GetId(), nil
-			}
-		}
-	}
-	return "", fmt.Errorf("no tests with type application_mesh for requested Kentik account: %v", err)
+	return metric
 }
