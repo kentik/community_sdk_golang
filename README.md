@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/kentik/community_sdk_golang.svg)](https://pkg.go.dev/github.com/kentik/community_sdk_golang)
 
-This repository is the Kentik Go SDK for the community.
+This repository is the Kentik Go SDK for the community. It is distributed as _github.com/kentik/community_sdk_golang_ Go module.
 
 [kentikapi](kentikapi) package contains Go client library for [Kentik APIs](https://kb.kentik.com/v0/Ab09.htm).
 
@@ -20,12 +20,9 @@ go get github.com/kentik/community_sdk_golang/kentikapi
 
 ## Usage
 
-To use the SDK, import packages of _github.com/kentik/community_sdk_golang_ Go module.
+Library documentation published to [pkg.go.dev](https://pkg.go.dev/github.com/kentik/community_sdk_golang) describes the public API. Top level `kentikapi.Client` object contains multiple services that allow to manipulate corresponding Kentik resources, e.g. _Users_, _CloudExports_.
 
-Library documentation: <https://pkg.go.dev/github.com/kentik/community_sdk_golang>
-
-Usage examples: [examples](./examples)
-Note that examples are placed in Go test files (e.g. _users_example_test.go_) to be easily runnable.
+Usage examples are placed in the [examples](./examples) directory. Note that examples are placed in Go test files (e.g. _users_example_test.go_) to be easily runnable. Head over to [users_example_test.go](./examples/users_example_test.go) to view how to create and use the Client for simple CRUD use case.
 
 ### Running examples
 
@@ -40,7 +37,7 @@ export KTAPI_AUTH_TOKEN=<Kentik API authentication token>
 go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/community_sdk_golang/examples
 ```
 
-## Development
+## Contributing
 
 Anybody who wants to contribute to development is welcome to provide pull requests. To work on the SDK, install tools listed in [requirements section](#requirements).
 
@@ -53,6 +50,9 @@ Development steps:
 - Run all tests, including usage examples: `go test -tags examples ./...`
 - Run golangci-lint: `golangci-lint run ./...`
 - Format the code: `./tools/fmt.sh`
+- Check Go module consistency: `./tools/check-go-mod.sh`
+
+The project uses ADR to record the architectural decisions: [docs/adr/0001-record-architecture-decisions.md](docs/adr/0001-record-architecture-decisions.md)
 
 ### Release
 
