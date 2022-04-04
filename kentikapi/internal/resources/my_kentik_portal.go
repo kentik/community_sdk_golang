@@ -13,8 +13,8 @@ type MyKentikPortalAPI struct {
 	BaseAPI
 }
 
-func NewMyKentikPortalAPI(transport api_connection.Transport) *MyKentikPortalAPI {
-	return &MyKentikPortalAPI{BaseAPI{Transport: transport}}
+func NewMyKentikPortalAPI(transport api_connection.Transport, logPayloads bool) *MyKentikPortalAPI {
+	return &MyKentikPortalAPI{BaseAPI{Transport: transport, LogPayloads: logPayloads}}
 }
 
 // GetAll lists all tenants.

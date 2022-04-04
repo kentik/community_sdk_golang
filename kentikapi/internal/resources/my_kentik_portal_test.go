@@ -84,7 +84,7 @@ func TestTenantsList(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getAllResponse}
-	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport, true)
 
 	// act
 	tenants, err := myKentikPortalAPI.GetAll(context.Background())
@@ -150,7 +150,7 @@ func TestGetTenantInfo(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getTenantInfoResponse}
-	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport, true)
 
 	// act
 	tenant, err := myKentikPortalAPI.Get(context.Background(), "577")
@@ -182,7 +182,7 @@ func TestTenantUserCreate(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: createTenantUserResponse}
-	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport, true)
 
 	// act
 	tenantUser, err := myKentikPortalAPI.CreateTenantUser(context.Background(), "577", "test@test.test")
@@ -203,7 +203,7 @@ func TestTenantUserDelete(t *testing.T) {
 	// arrange
 	deleteResponsePayload := ""
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport)
+	myKentikPortalAPI := resources.NewMyKentikPortalAPI(transport, true)
 
 	// act
 	tenantID := models.ID("478")

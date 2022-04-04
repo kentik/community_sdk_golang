@@ -125,7 +125,7 @@ func TestSavedFiltersList(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getAllresponsePayload}
-	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	savedFilters, err := savedFiltersAPI.GetAll(context.Background())
 
@@ -189,7 +189,7 @@ func TestGetSavedFilterInfo(t *testing.T) {
 	}
 
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	savedFilter, err := savedFiltersAPI.Get(context.Background(), "8275")
 
@@ -257,7 +257,7 @@ func TestCreateSavedFilter(t *testing.T) {
 		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: postResponsePayload}
-	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	newSavedFilter := models.SavedFilter{
 		FilterName:        "test_filter1",
@@ -318,7 +318,7 @@ func TestUpdateSavedFilter(t *testing.T) {
 		"\"filterValue\":\"81\",\"operator\":\"=\"}]}]}}"
 
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	filterID := "8153"
 	toUpdate := models.SavedFilter{
@@ -354,7 +354,7 @@ func TestDeleteSavedFilter(t *testing.T) {
 	deleteResponsePayload := ""
 
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	savedFiltersAPI := resources.NewSavedFiltersAPI(transport)
+	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	filterID := "8153"
 	err := savedFiltersAPI.Detete(context.Background(), filterID)

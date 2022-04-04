@@ -69,7 +69,7 @@ type Config struct {
 	AuthToken string
 	RetryCfg  RetryConfig
 
-	// LogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
+	// LogPayloads enables logging of request and response payloads.
 	LogPayloads bool
 	// Timeout specifies a limit of a total time of a single client call, including redirects and retries.
 	// A Timeout of zero means no timeout.
@@ -100,19 +100,19 @@ func NewClient(c Config) (*Client, error) {
 		Timeout:   c.Timeout,
 	})
 	return &Client{
-		Alerting:           resources.NewAlertingAPI(rc),
+		Alerting:           resources.NewAlertingAPI(rc, c.LogPayloads),
 		CloudExports:       resources.NewCloudExportsAPI(grpcConnection),
-		CustomApplications: resources.NewCustomApplicationsAPI(rc),
-		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
-		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
-		Devices:            resources.NewDevicesAPI(rc),
-		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc),
-		Plans:              resources.NewPlansAPI(rc),
-		Query:              resources.NewQueryAPI(rc),
-		SavedFilters:       resources.NewSavedFiltersAPI(rc),
-		Sites:              resources.NewSitesAPI(rc),
-		Tags:               resources.NewTagsAPI(rc),
-		Users:              resources.NewUsersAPI(rc),
+		CustomApplications: resources.NewCustomApplicationsAPI(rc, c.LogPayloads),
+		CustomDimensions:   resources.NewCustomDimensionsAPI(rc, c.LogPayloads),
+		DeviceLabels:       resources.NewDeviceLabelsAPI(rc, c.LogPayloads),
+		Devices:            resources.NewDevicesAPI(rc, c.LogPayloads),
+		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc, c.LogPayloads),
+		Plans:              resources.NewPlansAPI(rc, c.LogPayloads),
+		Query:              resources.NewQueryAPI(rc, c.LogPayloads),
+		SavedFilters:       resources.NewSavedFiltersAPI(rc, c.LogPayloads),
+		Sites:              resources.NewSitesAPI(rc, c.LogPayloads),
+		Tags:               resources.NewTagsAPI(rc, c.LogPayloads),
+		Users:              resources.NewUsersAPI(rc, c.LogPayloads),
 
 		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(grpcConnection),
 		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(grpcConnection),

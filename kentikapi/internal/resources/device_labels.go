@@ -15,9 +15,9 @@ type DeviceLabelsAPI struct {
 }
 
 // NewDeviceLabelsAPI is constructor.
-func NewDeviceLabelsAPI(transport api_connection.Transport) *DeviceLabelsAPI {
+func NewDeviceLabelsAPI(transport api_connection.Transport, logPayloads bool) *DeviceLabelsAPI {
 	return &DeviceLabelsAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 

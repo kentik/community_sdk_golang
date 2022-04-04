@@ -14,9 +14,9 @@ type SitesAPI struct {
 }
 
 // NewSitesAPI is constructor.
-func NewSitesAPI(transport api_connection.Transport) *SitesAPI {
+func NewSitesAPI(transport api_connection.Transport, logPayloads bool) *SitesAPI {
 	return &SitesAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 
