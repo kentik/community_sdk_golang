@@ -91,9 +91,10 @@ func TestClient_GetAllTags(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -160,9 +161,10 @@ func TestClient_GetTag(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -338,9 +340,10 @@ func TestClient_CreateTag(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -507,9 +510,10 @@ func TestClient_UpdateTag(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -568,9 +572,10 @@ func TestClient_DeleteTag(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 

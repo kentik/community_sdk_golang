@@ -167,9 +167,10 @@ func TestClient_GetAllUsers(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -264,9 +265,10 @@ func TestClient_GetUser(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -487,6 +489,7 @@ func TestClient_CreateUser(t *testing.T) {
 					MinDelay:    pointer.ToDuration(1 * time.Microsecond),
 					MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
 				},
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -621,9 +624,10 @@ func TestClient_UpdateUser(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -682,9 +686,10 @@ func TestClient_DeleteUser(t *testing.T) {
 			defer s.Close()
 
 			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
+				APIURL:      s.URL,
+				AuthEmail:   dummyAuthEmail,
+				AuthToken:   dummyAuthToken,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 

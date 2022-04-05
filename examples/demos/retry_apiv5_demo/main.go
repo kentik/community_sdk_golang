@@ -51,6 +51,7 @@ func showRetryingOnMultipleCodes() error {
 			MinDelay:    pointer.ToDuration(1 * time.Second),
 			MaxDelay:    pointer.ToDuration(2 * time.Second),
 		},
+		LogPayloads: true,
 	})
 	if err != nil {
 		return err
