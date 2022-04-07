@@ -56,7 +56,22 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 		return fmt.Errorf("new metrics matrix: %w", err)
 	}
 
-	return printMetricsMatrix(m)
+	err = printPingLatencyMatrix(m)
+	if err != nil {
+		return fmt.Errorf("print ping latency matrix: %w", err)
+	}
+
+	err = printPingJitterMatrix(m)
+	if err != nil {
+		return fmt.Errorf("print ping jitter matrix: %w", err)
+	}
+
+	err = printPingPacketLossMatrix(m)
+	if err != nil {
+		return fmt.Errorf("print ping packet loss matrix: %w", err)
+	}
+
+	return nil
 }
 
 func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]*syntheticspb.TestResults, error) {
@@ -86,12 +101,12 @@ func min(x, y int) int {
 	return y
 }
 
-// metricsMatrix holds mesh test result data for single point of time.
+// metricsMatrix holds mesh test results for ping task.
 type metricsMatrix struct {
 	// agents hold agents data in the same order as cells.
 	agents []*syntheticspb.Agent
 	// cells hold all "fromAgent" -> "toAgent" connection metrics.
-	cells map[string]map[string]*syntheticspb.MetricData
+	cells map[string]map[string]*syntheticspb.PingResults
 }
 
 func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb.Agent) (metricsMatrix, error) {
@@ -101,12 +116,12 @@ func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb
 	}
 	agentIPToAgentMap := makeAgentIPToAgentMap(agents)
 
-	cells := make(map[string]map[string]*syntheticspb.MetricData)
+	cells := make(map[string]map[string]*syntheticspb.PingResults)
 	for _, tr := range trs {
 		for _, agentResults := range tr.GetAgents() {
 			fromAgentID := agentResults.GetAgentId()
 			if cells[fromAgentID] == nil {
-				cells[fromAgentID] = make(map[string]*syntheticspb.MetricData)
+				cells[fromAgentID] = make(map[string]*syntheticspb.PingResults)
 			}
 
 			for _, taskResult := range agentResults.GetTasks() {
@@ -120,8 +135,8 @@ func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb
 					return metricsMatrix{}, fmt.Errorf("agent with IP %q not found", ping.Target)
 				}
 
-				if cells[fromAgentID][toAgent.GetId()] == nil && ping.Latency != nil {
-					cells[fromAgentID][toAgent.GetId()] = ping.Latency
+				if cells[fromAgentID][toAgent.GetId()] == nil {
+					cells[fromAgentID][toAgent.GetId()] = ping
 				}
 			}
 		}
@@ -162,20 +177,57 @@ func makeAgentIPToAgentMap(agents []*syntheticspb.Agent) map[string]*syntheticsp
 	return m
 }
 
-func printMetricsMatrix(matrix metricsMatrix) error {
+func (m metricsMatrix) GetPingResults(fromAgentID string, toAgentID string) *syntheticspb.PingResults {
+	toAgents, ok := m.cells[fromAgentID]
+	if !ok {
+		return nil
+	}
+
+	pingResults, ok := toAgents[toAgentID]
+	if !ok {
+		return nil
+	}
+
+	return pingResults
+}
+
+func printPingLatencyMatrix(matrix metricsMatrix) error {
 	w := makeTabWriter()
 
 	fmt.Println(
-		"Table cells contain ping latency and connection health in format: " +
+		"Table cells contain ping latency and its health in format: " +
 			"\"current [ms] / rolling avg. [ms] / rolling stddev. [ms] / health\"",
 	)
 	printMatrixHeader(matrix, w)
-	printMatrixRows(matrix, w)
+	printMatrixRows(matrix, w, formatPingLatency)
+	_, _ = fmt.Fprintln(w)
+	return w.Flush()
+}
 
-	if err := w.Flush(); err != nil {
-		return fmt.Errorf("flush tab writer: %w", err)
-	}
-	return nil
+func printPingJitterMatrix(matrix metricsMatrix) error {
+	w := makeTabWriter()
+
+	fmt.Println(
+		"Table cells contain ping jitter and its health in format: " +
+			"\"current [ms] / rolling avg. [ms] / rolling stddev. [ms] / health\"",
+	)
+	printMatrixHeader(matrix, w)
+	printMatrixRows(matrix, w, formatPingJitter)
+	_, _ = fmt.Fprintln(w)
+	return w.Flush()
+}
+
+func printPingPacketLossMatrix(matrix metricsMatrix) error {
+	w := makeTabWriter()
+
+	fmt.Println(
+		"Table cells contain ping packet loss and its health in format: " +
+			"\"current [%] / health\"",
+	)
+	printMatrixHeader(matrix, w)
+	printMatrixRows(matrix, w, formatPingPacketLoss)
+	_, _ = fmt.Fprintln(w)
+	return w.Flush()
 }
 
 func makeTabWriter() *tabwriter.Writer {
@@ -198,11 +250,14 @@ func printMatrixHeader(matrix metricsMatrix, w *tabwriter.Writer) {
 	}
 }
 
-func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer) {
+type formatCellFunc = func(*syntheticspb.PingResults) string
+
+func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer, formatCell formatCellFunc) {
 	for _, fromAgent := range matrix.agents {
 		row := fromAgent.GetAlias() + "\t"
 		for _, toAgent := range matrix.agents {
-			row += formatCell(matrix.getMetric(fromAgent.GetId(), toAgent.GetId()))
+			pr := matrix.GetPingResults(fromAgent.GetId(), toAgent.GetId())
+			row += formatCell(pr)
 		}
 
 		_, err := fmt.Fprintln(w, row)
@@ -212,38 +267,45 @@ func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer) {
 	}
 }
 
-func formatCell(metrics *syntheticspb.MetricData) string {
-	if metrics == nil {
+func formatPingLatency(pr *syntheticspb.PingResults) string {
+	return formatMetricData(pr.GetLatency())
+}
+
+func formatPingJitter(pr *syntheticspb.PingResults) string {
+	return formatMetricData(pr.GetJitter())
+}
+
+func formatPingPacketLoss(pr *syntheticspb.PingResults) string {
+	pl := pr.GetPacketLoss()
+	if pl == nil {
+		return "[X]\t"
+	}
+
+	return fmt.Sprintf("%.2f %% / %v\t", toPercent(pl.GetCurrent()), pl.GetHealth())
+}
+
+func toPercent(v float64) float64 {
+	return v * 100
+}
+
+func formatMetricData(md *syntheticspb.MetricData) string {
+	if md == nil {
 		return "[X]\t"
 	}
 
 	return fmt.Sprintf(
 		"%v / %v / %v / %v\t",
-		formatMetricValue(metrics.GetCurrent()),
-		formatMetricValue(metrics.GetRollingAvg()),
-		formatMetricValue(metrics.GetRollingStddev()),
-		metrics.GetHealth(),
+		formatMetricValue(md.GetCurrent()),
+		formatMetricValue(md.GetRollingAvg()),
+		formatMetricValue(md.GetRollingStddev()),
+		md.GetHealth(),
 	)
 }
 
-// formatCell formats the value of metric given in nanosecond to millisecond value.
+// formatMetricValue formats the value of metric given in nanoseconds to milliseconds.
 func formatMetricValue(metricValue uint32) string {
 	if metricValue == 0 {
 		return "[X]"
 	}
 	return strconv.Itoa(int(metricValue) / 1000)
-}
-
-func (m metricsMatrix) getMetric(fromAgentID string, toAgentID string) *syntheticspb.MetricData {
-	toAgents, ok := m.cells[fromAgentID]
-	if !ok {
-		return nil
-	}
-
-	metric, ok := toAgents[toAgentID]
-	if !ok {
-		return nil
-	}
-
-	return metric
 }
