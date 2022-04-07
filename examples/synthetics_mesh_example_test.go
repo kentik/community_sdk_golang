@@ -268,11 +268,11 @@ func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer, formatCell forma
 }
 
 func formatPingLatency(pr *syntheticspb.PingResults) string {
-	return formatMetricData(pr.GetLatency())
+	return formatMetricData(pr.GetLatency(), isCurrentMeasurementValid(pr))
 }
 
 func formatPingJitter(pr *syntheticspb.PingResults) string {
-	return formatMetricData(pr.GetJitter())
+	return formatMetricData(pr.GetJitter(), isCurrentMeasurementValid(pr))
 }
 
 func formatPingPacketLoss(pr *syntheticspb.PingResults) string {
@@ -288,24 +288,29 @@ func toPercent(v float64) float64 {
 	return v * 100
 }
 
-func formatMetricData(md *syntheticspb.MetricData) string {
+func formatMetricData(md *syntheticspb.MetricData, isCurrentMeasurementValid bool) string {
 	if md == nil {
 		return "[X]\t"
 	}
 
 	return fmt.Sprintf(
 		"%v / %v / %v / %v\t",
-		formatMetricValue(md.GetCurrent()),
-		formatMetricValue(md.GetRollingAvg()),
-		formatMetricValue(md.GetRollingStddev()),
+		formatMetricValue(md.GetCurrent(), isCurrentMeasurementValid),
+		formatMetricValue(md.GetRollingAvg(), isCurrentMeasurementValid),
+		formatMetricValue(md.GetRollingStddev(), isCurrentMeasurementValid),
 		md.GetHealth(),
 	)
 }
 
 // formatMetricValue formats the value of metric given in nanoseconds to milliseconds.
-func formatMetricValue(metricValue uint32) string {
-	if metricValue == 0 {
+func formatMetricValue(metricValue uint32, isCurrentMeasurementValid bool) string {
+	if metricValue == 0 && !isCurrentMeasurementValid {
 		return "[X]"
 	}
 	return strconv.Itoa(int(metricValue) / 1000)
+}
+
+// isCurrentMeasurementValid returns true if current ping packet loss is less than 100%.
+func isCurrentMeasurementValid(pr *syntheticspb.PingResults) bool {
+	return !(pr.GetPacketLoss().GetCurrent() == 1)
 }
