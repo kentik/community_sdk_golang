@@ -17,7 +17,7 @@ var (
 	time2 = time.Date(2021, time.March, 19, 13, 50, 0, 0, time.Local)
 )
 
-func TestCrerateManualMitigation(t *testing.T) {
+func TestCreateManualMitigation(t *testing.T) {
 	createResponsePayload := `
 	{
 		"response": {

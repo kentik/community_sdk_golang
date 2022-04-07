@@ -136,7 +136,8 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 					MinDelay: pointer.ToDuration(1 * time.Microsecond),
 					MaxDelay: pointer.ToDuration(10 * time.Microsecond),
 				},
-				Timeout: tt.timeout,
+				Timeout:     tt.timeout,
+				LogPayloads: true,
 			})
 			assert.NoError(t, err)
 
@@ -292,7 +293,8 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 					MaxAttempts: tt.retryMax,
 					MinDelay:    pointer.ToDuration(10 * time.Microsecond),
 				},
-				Timeout: tt.timeout,
+				Timeout:     tt.timeout,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 

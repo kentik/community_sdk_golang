@@ -229,14 +229,30 @@ func makeLoggerInterceptor(c Config) grpc.UnaryClientInterceptor {
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
 		if c.LogPayloads {
-			log.Printf("Kentik API request: target=%s method=%s payload=%+v", cc.Target(), method, req)
+			log.Printf(
+				"Kentik API request: target=%s method=%s payload=%v",
+				cc.Target(), method, sanitizePayload(fmt.Sprint(req)),
+			)
 		}
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		if c.LogPayloads {
 			log.Printf(
-				"Kentik API response: target=%s method=%s payload=%+v error=%v", cc.Target(), method, reply, err,
+				"Kentik API response: target=%s method=%s payload=%v error=%v",
+				cc.Target(), method, sanitizePayload(fmt.Sprint(reply)), err,
 			)
 		}
 		return err
 	}
+}
+
+func sanitizePayload(payload string) string {
+	if payload == "" {
+		return "<empty>"
+	}
+
+	const maxLoggedPayloadSize = 10000
+	if len(payload) > maxLoggedPayloadSize {
+		return fmt.Sprintf("<size: %v bytes>", len(payload))
+	}
+	return payload
 }

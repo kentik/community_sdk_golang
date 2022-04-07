@@ -108,9 +108,10 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			server.Start()
 			defer server.Stop()
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
+				APIURL:      "http://" + server.url,
+				AuthToken:   dummyAuthToken,
+				AuthEmail:   dummyAuthEmail,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 
@@ -276,9 +277,10 @@ func TestClient_GetCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
+				APIURL:      "http://" + server.url,
+				AuthToken:   dummyAuthToken,
+				AuthEmail:   dummyAuthEmail,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 
@@ -498,9 +500,10 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
+				APIURL:      "http://" + server.url,
+				AuthToken:   dummyAuthToken,
+				AuthEmail:   dummyAuthEmail,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 
@@ -599,9 +602,10 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
+				APIURL:      "http://" + server.url,
+				AuthToken:   dummyAuthToken,
+				AuthEmail:   dummyAuthEmail,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 
@@ -671,9 +675,10 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			defer server.Stop()
 
 			client, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    "http://" + server.url,
-				AuthToken: dummyAuthToken,
-				AuthEmail: dummyAuthEmail,
+				APIURL:      "http://" + server.url,
+				AuthToken:   dummyAuthToken,
+				AuthEmail:   dummyAuthEmail,
+				LogPayloads: true,
 			})
 			require.NoError(t, err)
 
