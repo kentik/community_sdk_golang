@@ -312,5 +312,5 @@ func formatMetricValue(metricValue uint32, isCurrentMeasurementValid bool) strin
 
 // isCurrentMeasurementValid returns true if current ping packet loss is less than 100%.
 func isCurrentMeasurementValid(pr *syntheticspb.PingResults) bool {
-	return !(pr.GetPacketLoss().GetCurrent() == 1)
+	return pr.GetPacketLoss().GetCurrent() < 1
 }
