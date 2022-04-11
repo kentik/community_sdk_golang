@@ -295,18 +295,26 @@ func formatMetricData(md *syntheticspb.MetricData, isCurrentMeasurementValid boo
 
 	return fmt.Sprintf(
 		"%v / %v / %v / %v\t",
-		formatMetricValue(md.GetCurrent(), isCurrentMeasurementValid),
-		formatMetricValue(md.GetRollingAvg(), isCurrentMeasurementValid),
-		formatMetricValue(md.GetRollingStddev(), isCurrentMeasurementValid),
+		formatCurrentMetricValue(md.GetCurrent(), isCurrentMeasurementValid),
+		formatRollingMetricValue(md.GetRollingAvg()),
+		formatRollingMetricValue(md.GetRollingStddev()),
 		md.GetHealth(),
 	)
 }
 
-// formatMetricValue formats the value of metric given in nanoseconds to milliseconds.
-func formatMetricValue(metricValue uint32, isCurrentMeasurementValid bool) string {
-	if metricValue == 0 && !isCurrentMeasurementValid {
+func formatCurrentMetricValue(metricValue uint32, isCurrentMeasurementValid bool) string {
+	if !isCurrentMeasurementValid {
 		return "[X]"
 	}
+	return formatMetricValue(metricValue)
+}
+
+func formatRollingMetricValue(metricValue uint32) string {
+	return formatMetricValue(metricValue)
+}
+
+// formatMetric formats the value of metric given in nanoseconds to milliseconds.
+func formatMetricValue(metricValue uint32) string {
 	return strconv.Itoa(int(metricValue) / 1000)
 }
 
