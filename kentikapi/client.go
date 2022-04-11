@@ -80,14 +80,14 @@ type RetryConfig = httputil.RetryConfig
 // ClientOption defines an option for a Client.
 type ClientOption func(*config)
 
-// WithAPIURL defaults to "https://api.kentik.com".
+// WithAPIURL sets the Kentik API URL. Default: "https://api.kentik.com".
 func WithAPIURL(apiURL string) ClientOption {
 	return func(c *config) {
 		c.APIURL = apiURL
 	}
 }
 
-// WithCredentials specifies authorization email and token for a Client.
+// WithCredentials specifies authentication email and token for the Client.
 func WithCredentials(authEmail, authToken string) ClientOption {
 	return func(c *config) {
 		c.AuthEmail = authEmail
@@ -100,36 +100,28 @@ func WithCredentials(authEmail, authToken string) ClientOption {
 // Default: 100 seconds.
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(c *config) {
-		if pointer.ToDurationOrNil(timeout) != nil {
-			c.Timeout = timeout
-		}
+		c.Timeout = timeout
 	}
 }
 
 // WithRetryMaxAttempts specifies maximum number of request retry attempts. Set to 0 to disable retrying. Default: 4.
 func WithRetryMaxAttempts(maxAttempts uint) ClientOption {
 	return func(c *config) {
-		if pointer.ToUint(maxAttempts) != nil {
-			c.RetryCfg.MaxAttempts = &maxAttempts
-		}
+		c.RetryCfg.MaxAttempts = &maxAttempts
 	}
 }
 
 // WithRetryMinDelay specifies a minimum delay before request retry. Default: 1 second.
 func WithRetryMinDelay(minDelay time.Duration) ClientOption {
 	return func(c *config) {
-		if pointer.ToDuration(minDelay) != nil {
-			c.RetryCfg.MinDelay = &minDelay
-		}
+		c.RetryCfg.MinDelay = &minDelay
 	}
 }
 
 // WithRetryMaxDelay specifies a maximum delay before request retry. Default: 30 seconds.
 func WithRetryMaxDelay(maxDelay time.Duration) ClientOption {
 	return func(c *config) {
-		if pointer.ToDuration(maxDelay) != nil {
-			c.RetryCfg.MaxDelay = &maxDelay
-		}
+		c.RetryCfg.MaxDelay = &maxDelay
 	}
 }
 
