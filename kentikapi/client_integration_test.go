@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
@@ -134,6 +134,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 				kentikapi.WithTimeout(tt.timeout),
 				kentikapi.WithRetryMinDelay(1*time.Microsecond),
 				kentikapi.WithRetryMaxDelay(10*time.Microsecond),
+				kentikapi.WithLogPayloads(),
 			)
 			assert.NoError(t, err)
 
@@ -284,6 +285,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				kentikapi.WithAPIURL("http://" + server.url),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 				kentikapi.WithRetryMinDelay(10 * time.Microsecond),
+				kentikapi.WithLogPayloads(),
 			}
 			client, err := kentikapi.NewClient(append(options, tt.options...)...)
 			require.NoError(t, err)
@@ -398,34 +400,28 @@ func (s *spySyntheticsServerWithDelays) response() gRPCGetAgentResponse {
 
 func newDummyAgent() *syntheticspb.Agent {
 	return &syntheticspb.Agent{
-		Id:     testAgentID,
-		Name:   "dummy-agent",
-		Status: syntheticspb.AgentStatus_AGENT_STATUS_WAIT,
-		Alias:  "probe-4-ams-1",
-		Type:   "global",
-		Os:     "I use Manjaro BTW",
-		Ip:     "95.179.136.58",
-		Lat:    52.374031,
-		Long:   4.88969,
-		LastAuthed: timestamppb.New(time.Date(2020,
-			time.July,
-			9,
-			21,
-			37,
-			0,
-			826*1000000,
-			time.UTC,
-		)),
-		Family:    syntheticspb.IPFamily_IP_FAMILY_DUAL,
-		Asn:       20473,
-		SiteId:    "2137",
-		Version:   "0.0.2",
-		Challenge: "dummy-challenge",
-		City:      "Amsterdam",
-		Region:    "Noord-Holland",
-		Country:   "Netherlands",
-		TestIds:   []string{"13", "133", "1337"},
-		LocalIp:   "10.10.10.10",
+		Id:            testAgentID,
+		SiteName:      "dummy-site-name",
+		Status:        syntheticspb.AgentStatus_AGENT_STATUS_WAIT,
+		Alias:         "probe-4-ams-1",
+		Type:          "global",
+		Os:            "I use Manjaro BTW",
+		Ip:            "95.179.136.58",
+		Lat:           52.374031,
+		Long:          4.88969,
+		LastAuthed:    timestamppb.New(time.Date(2020, time.July, 9, 21, 37, 0, 826*1000000, time.UTC)),
+		Family:        syntheticspb.IPFamily_IP_FAMILY_DUAL,
+		Asn:           20473,
+		SiteId:        "2137",
+		Version:       "0.0.2",
+		City:          "Amsterdam",
+		Region:        "Noord-Holland",
+		Country:       "Netherlands",
+		TestIds:       []string{"13", "133", "1337"},
+		LocalIp:       "10.10.10.10",
+		CloudRegion:   "dummy-region",
+		CloudProvider: "dummy-cloud-provider",
+		AgentImpl:     syntheticspb.ImplementType_IMPLEMENT_TYPE_RUST,
 	}
 }
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	synthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/examples/demos"
 )
 
@@ -25,7 +25,7 @@ func showGRPCClient() error {
 	}
 
 	demos.Step("List synthetic agents")
-	result, err := client.SyntheticsAdmin.ListAgents(ctx, &synthetics.ListAgentsRequest{})
+	result, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 
 	fmt.Println("Received result:")
 	demos.PrettyPrint(result.GetAgents())

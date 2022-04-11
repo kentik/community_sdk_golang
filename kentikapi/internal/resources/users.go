@@ -16,8 +16,8 @@ type UsersAPI struct {
 }
 
 // NewUsersAPI creates new UsersAPI.
-func NewUsersAPI(transport api_connection.Transport) *UsersAPI {
-	return &UsersAPI{BaseAPI{Transport: transport}}
+func NewUsersAPI(transport api_connection.Transport, logPayloads bool) *UsersAPI {
+	return &UsersAPI{BaseAPI{Transport: transport, LogPayloads: logPayloads}}
 }
 
 // GetAll lists users.

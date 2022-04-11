@@ -15,9 +15,9 @@ type DevicesAPI struct {
 }
 
 // NewDevicesAPI is constructor.
-func NewDevicesAPI(transport api_connection.Transport) *DevicesAPI {
+func NewDevicesAPI(transport api_connection.Transport, logPayloads bool) *DevicesAPI {
 	return &DevicesAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 		&interfacesAPI{BaseAPI{Transport: transport}},
 	}
 }
@@ -120,7 +120,6 @@ func (a *interfacesAPI) Create(ctx context.Context, intf models.Interface) (*mod
 	if err != nil {
 		return nil, err
 	}
-
 	request := api_payloads.CreateInterfaceRequest(payload)
 	var response api_payloads.CreateInterfaceResponse
 	if err = a.PostAndValidate(ctx, api_endpoints.CreateInterface(intf.DeviceID), request, &response); err != nil {
@@ -147,6 +146,7 @@ func (a *interfacesAPI) Update(ctx context.Context, intf models.Interface) (*mod
 	if err = a.UpdateAndValidate(ctx, api_endpoints.UpdateInterface(intf.DeviceID, intf.ID), request, &response); err != nil {
 		return nil, err
 	}
+
 	result, err := response.ToInterface()
 	return &result, err
 }

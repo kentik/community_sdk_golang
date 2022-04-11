@@ -169,6 +169,7 @@ func TestClient_GetAllUsers(t *testing.T) {
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
 			)
 			assert.NoError(t, err)
 
@@ -265,6 +266,7 @@ func TestClient_GetUser(t *testing.T) {
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
 			)
 			assert.NoError(t, err)
 
@@ -481,6 +483,7 @@ func TestClient_CreateUser(t *testing.T) {
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
 				kentikapi.WithRetryMinDelay(1 * time.Microsecond),
 				kentikapi.WithRetryMaxDelay(10 * time.Microsecond),
+				kentikapi.WithLogPayloads(),
 			}
 			c, err := kentikapi.NewClient(append(options, tt.options...)...)
 			assert.NoError(t, err)
@@ -618,6 +621,7 @@ func TestClient_UpdateUser(t *testing.T) {
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
 			)
 			assert.NoError(t, err)
 
@@ -678,6 +682,7 @@ func TestClient_DeleteUser(t *testing.T) {
 			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
 			)
 			assert.NoError(t, err)
 

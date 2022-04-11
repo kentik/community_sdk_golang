@@ -14,9 +14,9 @@ type QueryAPI struct {
 }
 
 // NewQueryAPI is constructor.
-func NewQueryAPI(transport api_connection.Transport) *QueryAPI {
+func NewQueryAPI(transport api_connection.Transport, logPayloads bool) *QueryAPI {
 	return &QueryAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 

@@ -148,8 +148,8 @@ github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=
-github.com/kentik/api-schema-public v0.0.0-20211011204132-acc22cb40b78 h1:7OfbiKWgQA7Z7MLTcRL/LOrr9MjTcDDZSTRst2+mhjo=
-github.com/kentik/api-schema-public v0.0.0-20211011204132-acc22cb40b78/go.mod h1:3eRiIiOwdOkInkMptcgaG5q4AvDjQd7zvQYGM7KeSzc=
+github.com/kentik/api-schema-public v0.0.0-20220322181339-896729e59945 h1:PCi9E7y4j28fqFMjjAVn97jZ90FpbavvbhKa/FGiDZA=
+github.com/kentik/api-schema-public v0.0.0-20220322181339-896729e59945/go.mod h1:3eRiIiOwdOkInkMptcgaG5q4AvDjQd7zvQYGM7KeSzc=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=

@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/stretchr/testify/assert"
@@ -71,6 +71,7 @@ func TestClient_GetAgent(t *testing.T) {
 			client, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL("http://"+server.url),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
 			)
 			require.NoError(t, err)
 

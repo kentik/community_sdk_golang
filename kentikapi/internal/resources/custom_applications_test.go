@@ -46,7 +46,7 @@ func TestGetAll(t *testing.T) {
 		}
 	]`
 	transport := &api_connection.StubTransport{ResponseBody: getResponsePayload}
-	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport, true)
 
 	// act
 	applications, err := applicationsAPI.GetAll(context.Background())
@@ -90,7 +90,7 @@ func TestCreateCustomApplication(t *testing.T) {
 		"company_id": "74333"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: createResponsePayload}
-	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport, true)
 
 	app := models.NewCustomApplication("apitest-customapp-1")
 	app.Description = pointer.ToString("Testing custom application api")
@@ -146,7 +146,7 @@ func TestUpdateCustomApplication(t *testing.T) {
 		"edate": "2020-12-11T07:07:20.968Z"
 	}`
 	transport := &api_connection.StubTransport{ResponseBody: updateResponsePayload}
-	applicationsAPI := resources.NewCustomApplicationsAPI(transport)
+	applicationsAPI := resources.NewCustomApplicationsAPI(transport, true)
 
 	appID := models.ID("207")
 	app := models.CustomApplication{
@@ -192,7 +192,7 @@ func TestDeleteCustomApplication(t *testing.T) {
 	// arrange
 	deleteResponsePayload := "" // deleting custom application responds with empty body
 	transport := &api_connection.StubTransport{ResponseBody: deleteResponsePayload}
-	appliationsAPI := resources.NewCustomApplicationsAPI(transport)
+	appliationsAPI := resources.NewCustomApplicationsAPI(transport, true)
 
 	// act
 	appID := models.ID("42")

@@ -13,8 +13,8 @@ type SavedFiltersAPI struct {
 	BaseAPI
 }
 
-func NewSavedFiltersAPI(transport api_connection.Transport) *SavedFiltersAPI {
-	return &SavedFiltersAPI{BaseAPI{Transport: transport}}
+func NewSavedFiltersAPI(transport api_connection.Transport, logPayloads bool) *SavedFiltersAPI {
+	return &SavedFiltersAPI{BaseAPI{Transport: transport, LogPayloads: logPayloads}}
 }
 
 func (a *SavedFiltersAPI) GetAll(ctx context.Context) ([]models.SavedFilter, error) {
@@ -34,7 +34,6 @@ func (a *SavedFiltersAPI) Get(ctx context.Context, filterID models.ID) (*models.
 	}
 
 	savedFilter, err := response.ToSavedFilter()
-
 	return &savedFilter, err
 }
 

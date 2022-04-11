@@ -16,8 +16,8 @@ type TagsAPI struct {
 }
 
 // NewTagsAPI creates new TagsAPI.
-func NewTagsAPI(transport api_connection.Transport) *TagsAPI {
-	return &TagsAPI{BaseAPI{Transport: transport}}
+func NewTagsAPI(transport api_connection.Transport, logPayloads bool) *TagsAPI {
+	return &TagsAPI{BaseAPI{Transport: transport, LogPayloads: logPayloads}}
 }
 
 // GetAll lists tags.

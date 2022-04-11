@@ -12,7 +12,7 @@ import (
 	"github.com/AlekSi/pointer"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	grpcsynthetics "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202101beta1"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
@@ -57,8 +57,8 @@ type Client struct {
 
 	// SyntheticsAdmin and SyntheticsData are gRPC clients
 	// for Kentik API Cloud Export and Synthetics services.
-	SyntheticsAdmin grpcsynthetics.SyntheticsAdminServiceClient
-	SyntheticsData  grpcsynthetics.SyntheticsDataServiceClient
+	SyntheticsAdmin syntheticspb.SyntheticsAdminServiceClient
+	SyntheticsData  syntheticspb.SyntheticsDataServiceClient
 
 	config config
 }
@@ -172,22 +172,22 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		Timeout:   &c.Timeout,
 	})
 	return &Client{
-		Alerting:           resources.NewAlertingAPI(rc),
+		Alerting:           resources.NewAlertingAPI(rc, c.LogPayloads),
 		CloudExports:       resources.NewCloudExportsAPI(grpcConnection),
-		CustomApplications: resources.NewCustomApplicationsAPI(rc),
-		CustomDimensions:   resources.NewCustomDimensionsAPI(rc),
-		DeviceLabels:       resources.NewDeviceLabelsAPI(rc),
-		Devices:            resources.NewDevicesAPI(rc),
-		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc),
-		Plans:              resources.NewPlansAPI(rc),
-		Query:              resources.NewQueryAPI(rc),
-		SavedFilters:       resources.NewSavedFiltersAPI(rc),
-		Sites:              resources.NewSitesAPI(rc),
-		Tags:               resources.NewTagsAPI(rc),
-		Users:              resources.NewUsersAPI(rc),
+		CustomApplications: resources.NewCustomApplicationsAPI(rc, c.LogPayloads),
+		CustomDimensions:   resources.NewCustomDimensionsAPI(rc, c.LogPayloads),
+		DeviceLabels:       resources.NewDeviceLabelsAPI(rc, c.LogPayloads),
+		Devices:            resources.NewDevicesAPI(rc, c.LogPayloads),
+		MyKentikPortal:     resources.NewMyKentikPortalAPI(rc, c.LogPayloads),
+		Plans:              resources.NewPlansAPI(rc, c.LogPayloads),
+		Query:              resources.NewQueryAPI(rc, c.LogPayloads),
+		SavedFilters:       resources.NewSavedFiltersAPI(rc, c.LogPayloads),
+		Sites:              resources.NewSitesAPI(rc, c.LogPayloads),
+		Tags:               resources.NewTagsAPI(rc, c.LogPayloads),
+		Users:              resources.NewUsersAPI(rc, c.LogPayloads),
 
-		SyntheticsAdmin: grpcsynthetics.NewSyntheticsAdminServiceClient(grpcConnection),
-		SyntheticsData:  grpcsynthetics.NewSyntheticsDataServiceClient(grpcConnection),
+		SyntheticsAdmin: syntheticspb.NewSyntheticsAdminServiceClient(grpcConnection),
+		SyntheticsData:  syntheticspb.NewSyntheticsDataServiceClient(grpcConnection),
 
 		config: c,
 	}, nil
@@ -289,12 +289,30 @@ func makeLoggerInterceptor(c config) grpc.UnaryClientInterceptor {
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption,
 	) error {
 		if c.LogPayloads {
-			log.Printf("Kentik API request - %s - %+v\n", method, req)
+			log.Printf(
+				"Kentik API request: target=%s method=%s payload=%v",
+				cc.Target(), method, sanitizePayload(fmt.Sprint(req)),
+			)
 		}
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		if c.LogPayloads {
-			log.Printf("Kentik API response - %s - %+v\n", method, reply)
+			log.Printf(
+				"Kentik API response: target=%s method=%s payload=%v error=%v",
+				cc.Target(), method, sanitizePayload(fmt.Sprint(reply)), err,
+			)
 		}
 		return err
 	}
+}
+
+func sanitizePayload(payload string) string {
+	if payload == "" {
+		return "<empty>"
+	}
+
+	const maxLoggedPayloadSize = 10000
+	if len(payload) > maxLoggedPayloadSize {
+		return fmt.Sprintf("<size: %v bytes>", len(payload))
+	}
+	return payload
 }

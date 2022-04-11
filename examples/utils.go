@@ -3,6 +3,7 @@ package examples
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/kentik/community_sdk_golang/kentikapi"
@@ -17,6 +18,7 @@ func NewClient() (*kentikapi.Client, error) {
 
 	client, err := kentikapi.NewClient(
 		kentikapi.WithCredentials(email, token),
+		kentikapi.WithLogPayloads(),
 	)
 	if err != nil {
 		return nil, err
@@ -31,6 +33,12 @@ func PrettyPrint(resource interface{}) {
 
 //nolint:gocyclo
 func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
+	const maxDepth = 20
+	if level > maxDepth {
+		log.Printf("Pretty print depth level exceeded %v - omitting\n", maxDepth)
+		return
+	}
+
 	switch v.Kind() {
 	case reflect.Struct:
 		if _, hasStringer := t.MethodByName("String"); hasStringer {

@@ -15,9 +15,9 @@ type AlertingAPI struct {
 }
 
 // NewAlertingAPI is constructor.
-func NewAlertingAPI(transport api_connection.Transport) *AlertingAPI {
+func NewAlertingAPI(transport api_connection.Transport, logPayloads bool) *AlertingAPI {
 	return &AlertingAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 
@@ -38,7 +38,6 @@ func (a *AlertingAPI) CreateManualMitigation(ctx context.Context, mm models.Manu
 
 func (a *AlertingAPI) GetActiveAlerts(ctx context.Context, params models.AlertsQueryParams) ([]models.Alarm, error) {
 	var response api_payloads.GetActiveAlertsResponse
-
 	path := api_endpoints.GetActiveAlertsPath(params.StartTime, params.EndTime, params.FilterBy, params.FilterVal,
 		params.ShowMitigations, params.ShowAlarms, params.ShowMatches, params.LearningMode)
 

@@ -48,6 +48,7 @@ func showRetryingOnMultipleCodes() error {
 		kentikapi.WithRetryMaxAttempts(42),
 		kentikapi.WithRetryMinDelay(1*time.Second),
 		kentikapi.WithRetryMaxDelay(2*time.Second),
+		kentikapi.WithLogPayloads(),
 	)
 	if err != nil {
 		return err

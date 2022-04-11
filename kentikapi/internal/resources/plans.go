@@ -14,9 +14,9 @@ type PlansAPI struct {
 }
 
 // NewPlansAPI is constructor.
-func NewPlansAPI(transport api_connection.Transport) *PlansAPI {
+func NewPlansAPI(transport api_connection.Transport, logPayloads bool) *PlansAPI {
 	return &PlansAPI{
-		BaseAPI{Transport: transport},
+		BaseAPI{Transport: transport, LogPayloads: logPayloads},
 	}
 }
 
