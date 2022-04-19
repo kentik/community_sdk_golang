@@ -16,14 +16,9 @@ func NewClient() (*kentikapi.Client, error) {
 		return nil, err
 	}
 
-	client, err := kentikapi.NewClient(
+	return kentikapi.NewClient(
 		kentikapi.WithCredentials(email, token),
-		kentikapi.WithLogPayloads(),
 	)
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
 }
 
 // PrettyPrint prints an object recursively in an indented way.

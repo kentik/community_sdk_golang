@@ -64,15 +64,13 @@ type Client struct {
 }
 
 type config struct {
-	APIURL string
-
+	APIURL    string
 	AuthEmail string
 	AuthToken string
 	RetryCfg  RetryConfig
 
 	LogPayloads bool
-
-	Timeout time.Duration
+	Timeout     time.Duration
 }
 
 type RetryConfig = httputil.RetryConfig
@@ -96,11 +94,12 @@ func WithCredentials(authEmail, authToken string) ClientOption {
 }
 
 // WithTimeout specifies a limit of a total time of a single client call, including redirects and retries.
-// A Timeout of zero means no timeout.
 // Default: 100 seconds.
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(c *config) {
-		c.Timeout = timeout
+		if timeout != 0 {
+			c.Timeout = timeout
+		}
 	}
 }
 
@@ -146,7 +145,6 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	for _, opt := range opts {
 		opt(&c)
 	}
-
 	apiV5URL, err := makeAPIV5URL(c.APIURL)
 	if err != nil {
 		return nil, fmt.Errorf("make API v5 URL: %v", err)

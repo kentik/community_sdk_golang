@@ -45,8 +45,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				{StatusCode: http.StatusOK, Body: "invalid JSON"},
 			},
-			expectedError:   true,
-			expectedTimeout: true,
+			expectedError: true,
 		}, {
 			name: "retry till success when status 429 Too Many Requests received",
 			responses: []testutil.HTTPResponse{
@@ -87,7 +86,6 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 				CompanyID:    "74333",
 				UserAPIToken: pointer.ToString("****************************a997"),
 			},
-			timeout: 5 * time.Millisecond,
 		}, {
 			name: "default timeout is longer than 30 ms",
 			responses: []testutil.HTTPResponse{
@@ -96,7 +94,6 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
 			},
 			serverHandlingDelay: 10 * time.Millisecond,
-			timeout:             10 * time.Second,
 			expectedError:       true,
 			expectedTimeout:     false,
 		}, {
