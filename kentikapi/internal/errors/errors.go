@@ -12,6 +12,8 @@ import (
 
 type Code int
 
+//go:generate stringer -type=Code
+
 const (
 	Unknown Code = iota
 	AuthError
@@ -35,12 +37,12 @@ func New(code Code, msg string) StatusError {
 	}
 }
 
-func (ke StatusError) Error() string {
-	return fmt.Sprintf("code: %v, message: %s", ke.code, ke.msg)
+func (e StatusError) Error() string {
+	return fmt.Sprintf("code: %v, message: %s", e.code, e.msg)
 }
 
-func (ke StatusError) Code() Code {
-	return ke.code
+func (e StatusError) Code() Code {
+	return e.code
 }
 
 func StatusErrorFromHTTP(response *http.Response, err error) error {

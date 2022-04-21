@@ -18,6 +18,7 @@ func NewClient() (*kentikapi.Client, error) {
 
 	return kentikapi.NewClient(
 		kentikapi.WithCredentials(email, token),
+		kentikapi.WithLogPayloads(),
 	)
 }
 

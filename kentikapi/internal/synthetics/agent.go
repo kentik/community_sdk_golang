@@ -1,11 +1,11 @@
 package synthetics
 
 import (
+	"errors"
 	"fmt"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
-	kentikerrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
@@ -13,7 +13,7 @@ type listAgentsResponse syntheticspb.ListAgentsResponse
 
 func (r *listAgentsResponse) ToModel() (*synthetics.GetAllAgentsResponse, error) {
 	if r == nil {
-		return nil, nil
+		return nil, errors.New("response payload is nil")
 	}
 
 	agents, err := agentsFromPayload(r.Agents)
@@ -42,11 +42,11 @@ func agentsFromPayload(agents []*syntheticspb.Agent) ([]synthetics.Agent, error)
 // agentFromPayload converts synthetics agent payload to model.
 func agentFromPayload(a *syntheticspb.Agent) (*synthetics.Agent, error) {
 	if a == nil {
-		return nil, kentikerrors.New(kentikerrors.InvalidResponse, "agent response payload is nil")
+		return nil, errors.New("response payload is nil")
 	}
 
 	if a.Id == "" {
-		return nil, kentikerrors.New(kentikerrors.InvalidResponse, "empty agent ID in response payload")
+		return nil, errors.New("empty agent ID in response payload")
 	}
 
 	return &synthetics.Agent{
@@ -85,10 +85,9 @@ func cloudProviderFromPayload(cp string) cloud.Provider {
 
 // agentToPayload converts synthetics agent from model to payload. It sets only ID, SiteName and
 // read-write fields.
-//nolint:unparam // TODO: return InvalidRequest error on empty request
 func agentToPayload(a *synthetics.Agent) (*syntheticspb.Agent, error) {
 	if a == nil {
-		return nil, nil
+		return nil, errors.New("agent object is nil")
 	}
 
 	return &syntheticspb.Agent{

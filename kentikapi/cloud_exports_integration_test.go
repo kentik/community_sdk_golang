@@ -87,7 +87,7 @@ func TestClient_Cloud_GetAllExports(t *testing.T) {
 				InvalidExportsCount: 1,
 			},
 		}, {
-			name: "2 exports received - one empty",
+			name: "2 exports received - one nil",
 			response: listCEResponse{
 				data: &cloudexportpb.ListCloudExportResponse{
 					Exports: []*cloudexportpb.CloudExport{
@@ -97,8 +97,7 @@ func TestClient_Cloud_GetAllExports(t *testing.T) {
 					InvalidExportsCount: 0,
 				},
 			},
-			// empty response fails validation
-			expectedError: true,
+			expectedError: true, // InvalidResponse
 		},
 	}
 	//nolint:dupl
@@ -178,7 +177,7 @@ func TestClient_Cloud_GetExport(t *testing.T) {
 			response: getCEResponse{
 				data: &cloudexportpb.GetCloudExportResponse{},
 			},
-			expectedError: true,
+			expectedError: true, // InvalidResponse
 		}, {
 			name:            "minimal AWS cloud export received",
 			requestID:       "58192",
@@ -341,7 +340,7 @@ func TestClient_Cloud_CreateExport(t *testing.T) {
 				data: &cloudexportpb.CreateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
-			expectedError:  true,
+			expectedError:  true, // InvalidResponse
 		}, {
 			name: "minimal AWS export created",
 			request: cloud.NewAWSExport(cloud.AWSExportRequiredFields{
@@ -481,7 +480,7 @@ func TestClient_Cloud_CreateExport(t *testing.T) {
 			},
 			expectedResult: newIBMExport(),
 		}, {
-			name: "create request validation, missing AWS.BUCKET",
+			name: "AWS export with missing AWSProperties.Bucket field",
 			request: cloud.NewAWSExport(cloud.AWSExportRequiredFields{
 				Name:          "invalid-aws-export",
 				PlanID:        "11467",
@@ -513,7 +512,7 @@ func TestClient_Cloud_CreateExport(t *testing.T) {
 			result, err := client.Cloud.CreateExport(context.Background(), tt.request)
 
 			// assert
-			t.Logf("Got err: %v", err)
+			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
 				for _, isErr := range tt.errorPredicates {
@@ -523,7 +522,9 @@ func TestClient_Cloud_CreateExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if tt.expectedRequest != nil && assert.Equal(t, 1, len(server.requests.createCERequests), "invalid number of requests") {
+			if tt.expectedRequest != nil && assert.Equal(
+				t, 1, len(server.requests.createCERequests), "invalid number of requests",
+			) {
 				r := server.requests.createCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
@@ -566,7 +567,7 @@ func TestClient_Cloud_UpdateExport(t *testing.T) {
 				data: &cloudexportpb.UpdateCloudExportResponse{Export: nil},
 			},
 			expectedResult: nil,
-			expectedError:  true,
+			expectedError:  true, // InvalidResponse
 		}, {
 			name:    "AWS export updated",
 			request: newAWSExport(),
@@ -585,8 +586,12 @@ func TestClient_Cloud_UpdateExport(t *testing.T) {
 			},
 			expectedResult: newAWSExport(),
 		}, {
-			name:            "update request validation, missing AWS.BUCKET",
-			request:         newInvalidAWSExport(),
+			name: "AWS export with missing AWSProperties.Bucket field",
+			request: cloud.NewAWSExport(cloud.AWSExportRequiredFields{
+				Name:          "invalid-aws-export",
+				PlanID:        "11467",
+				AWSProperties: cloud.AWSPropertiesRequiredFields{},
+			}),
 			expectedResult:  nil,
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
@@ -613,7 +618,7 @@ func TestClient_Cloud_UpdateExport(t *testing.T) {
 			result, err := client.Cloud.UpdateExport(context.Background(), tt.request)
 
 			// assert
-			t.Logf("Got err: %v", err)
+			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
 				for _, isErr := range tt.errorPredicates {
@@ -623,7 +628,9 @@ func TestClient_Cloud_UpdateExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if tt.expectedRequest != nil && assert.Equal(t, 1, len(server.requests.updateCERequests), "invalid number of requests") {
+			if tt.expectedRequest != nil && assert.Equal(
+				t, 1, len(server.requests.updateCERequests), "invalid number of requests",
+			) {
 				r := server.requests.updateCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
@@ -635,7 +642,6 @@ func TestClient_Cloud_UpdateExport(t *testing.T) {
 	}
 }
 
-//nolint:dupl
 func TestClient_Cloud_DeleteExport(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -886,14 +892,6 @@ func newAWSExport() *cloud.Export {
 		DeleteAfterRead: pointer.ToBool(true),
 		MultipleBuckets: pointer.ToBool(false),
 	}
-	return ce
-}
-
-func newInvalidAWSExport() *cloud.Export {
-	ce := newExport()
-	ce.ID = awsExportID
-	ce.Provider = cloud.ProviderAWS
-	ce.Properties = &cloud.AWSProperties{}
 	return ce
 }
 

@@ -2,7 +2,6 @@ package kentikapi_test
 
 import (
 	"context"
-	"net"
 	"testing"
 	"time"
 
@@ -14,9 +13,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -76,7 +73,7 @@ func TestClient_Synthetics_GetAllAgents(t *testing.T) {
 				InvalidAgentsCount: 1,
 			},
 		}, {
-			name: "2 exports received - one empty",
+			name: "2 agents received - one nil",
 			response: listAgentsResponse{
 				data: &syntheticspb.ListAgentsResponse{
 					Agents: []*syntheticspb.Agent{
@@ -86,8 +83,7 @@ func TestClient_Synthetics_GetAllAgents(t *testing.T) {
 					InvalidCount: 0,
 				},
 			},
-			// empty response fails validation
-			expectedError: true,
+			expectedError: true, // InvalidResponse
 		},
 	}
 	//nolint:dupl
@@ -168,7 +164,7 @@ func TestClient_Synthetics_GetAgent(t *testing.T) {
 			response: getAgentResponse{
 				data: &syntheticspb.GetAgentResponse{},
 			},
-			expectedError: true,
+			expectedError: true, // InvalidResponse
 		}, {
 			name:            "agent returned",
 			requestID:       warsawAgentID,
@@ -233,12 +229,9 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 		errorPredicates []func(error) bool
 	}{
 		{
-			name:            "nil request, status InvalidArgument received",
+			name:            "nil request",
 			request:         nil,
-			expectedRequest: &syntheticspb.UpdateAgentRequest{Agent: nil},
-			response: updateAgentResponse{
-				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
-			},
+			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
@@ -252,7 +245,7 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 				data: &syntheticspb.UpdateAgentResponse{Agent: nil},
 			},
 			expectedResult: nil,
-			expectedError:  true,
+			expectedError:  true, // InvalidResponse
 		}, {
 			name:    "agent updated",
 			request: newWarsawAgent(),
@@ -267,6 +260,7 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 			expectedResult: newWarsawAgent(),
 		},
 	}
+	// nolint: dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -287,7 +281,7 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 			result, err := client.Synthetics.UpdateAgent(context.Background(), tt.request)
 
 			// assert
-			t.Logf("Got err: %v", err)
+			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
 				for _, isErr := range tt.errorPredicates {
@@ -297,7 +291,9 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if assert.Equal(t, 1, len(server.requests.updateAgentRequests), "invalid number of requests") {
+			if tt.expectedRequest != nil && assert.Equal(
+				t, 1, len(server.requests.updateAgentRequests), "invalid number of requests",
+			) {
 				r := server.requests.updateAgentRequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
@@ -309,7 +305,6 @@ func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 	}
 }
 
-//nolint:dupl
 func TestClient_Synthetics_DeleteAgent(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -461,7 +456,7 @@ func TestClient_Synthetics_ActivateAgent(t *testing.T) {
 			result, err := client.Synthetics.ActivateAgent(context.Background(), tt.requestID)
 
 			// assert
-			t.Logf("Got err: %v", err)
+			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
 				for _, isErr := range tt.errorPredicates {
@@ -566,7 +561,7 @@ func TestClient_Synthetics_DeactivateAgent(t *testing.T) {
 			result, err := client.Synthetics.DeactivateAgent(context.Background(), tt.requestID)
 
 			// assert
-			t.Logf("Got err: %v", err)
+			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
 				for _, isErr := range tt.errorPredicates {
@@ -586,151 +581,6 @@ func TestClient_Synthetics_DeactivateAgent(t *testing.T) {
 			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
-}
-
-type spySyntheticsServer struct {
-	syntheticspb.UnimplementedSyntheticsAdminServiceServer
-	server *grpc.Server
-
-	url  string
-	done chan struct{}
-	t    testing.TB
-	// responses to return to the client
-	responses syntheticsResponses
-
-	// requests spied by the server
-	requests syntheticsRequests
-}
-
-type syntheticsRequests struct {
-	listAgentsRequests  []listAgentsRequest
-	getAgentRequests    []getAgentRequest
-	updateAgentRequests []updateAgentRequest
-	deleteAgentRequests []deleteAgentRequest
-}
-
-type listAgentsRequest struct {
-	metadata metadata.MD
-	data     *syntheticspb.ListAgentsRequest
-}
-
-type getAgentRequest struct {
-	metadata metadata.MD
-	data     *syntheticspb.GetAgentRequest
-}
-
-type updateAgentRequest struct {
-	metadata metadata.MD
-	data     *syntheticspb.UpdateAgentRequest
-}
-
-type deleteAgentRequest struct {
-	metadata metadata.MD
-	data     *syntheticspb.DeleteAgentRequest
-}
-
-type syntheticsResponses struct {
-	listAgentsResponse  listAgentsResponse
-	getAgentResponse    getAgentResponse
-	updateAgentResponse updateAgentResponse
-	deleteAgentResponse deleteAgentResponse
-}
-
-type listAgentsResponse struct {
-	data *syntheticspb.ListAgentsResponse
-	err  error
-}
-
-type getAgentResponse struct {
-	data *syntheticspb.GetAgentResponse
-	err  error
-}
-
-type updateAgentResponse struct {
-	data *syntheticspb.UpdateAgentResponse
-	err  error
-}
-
-type deleteAgentResponse struct {
-	data *syntheticspb.DeleteAgentResponse
-	err  error
-}
-
-func newSpySyntheticsServer(t testing.TB, r syntheticsResponses) *spySyntheticsServer {
-	return &spySyntheticsServer{
-		done:      make(chan struct{}),
-		t:         t,
-		responses: r,
-	}
-}
-
-func (s *spySyntheticsServer) Start() {
-	l, err := net.Listen("tcp", "localhost:0")
-	require.NoError(s.t, err)
-
-	s.url = l.Addr().String()
-	s.server = grpc.NewServer()
-	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
-
-	go func() {
-		err = s.server.Serve(l)
-		assert.NoError(s.t, err)
-		s.done <- struct{}{}
-	}()
-}
-
-// Stop blocks until the server is stopped.
-func (s *spySyntheticsServer) Stop() {
-	s.server.GracefulStop()
-	<-s.done
-}
-
-func (s *spySyntheticsServer) ListAgents(
-	ctx context.Context, req *syntheticspb.ListAgentsRequest,
-) (*syntheticspb.ListAgentsResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	s.requests.listAgentsRequests = append(s.requests.listAgentsRequests, listAgentsRequest{
-		metadata: md,
-		data:     req,
-	})
-
-	return s.responses.listAgentsResponse.data, s.responses.listAgentsResponse.err
-}
-
-func (s *spySyntheticsServer) GetAgent(
-	ctx context.Context, req *syntheticspb.GetAgentRequest,
-) (*syntheticspb.GetAgentResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	s.requests.getAgentRequests = append(s.requests.getAgentRequests, getAgentRequest{
-		metadata: md,
-		data:     req,
-	})
-
-	return s.responses.getAgentResponse.data, s.responses.getAgentResponse.err
-}
-
-func (s *spySyntheticsServer) UpdateAgent(
-	ctx context.Context, req *syntheticspb.UpdateAgentRequest,
-) (*syntheticspb.UpdateAgentResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	s.requests.updateAgentRequests = append(s.requests.updateAgentRequests, updateAgentRequest{
-		metadata: md,
-		data:     req,
-	})
-
-	return s.responses.updateAgentResponse.data, s.responses.updateAgentResponse.err
-}
-
-func (s *spySyntheticsServer) DeleteAgent(
-	ctx context.Context, req *syntheticspb.DeleteAgentRequest,
-) (*syntheticspb.DeleteAgentResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	s.requests.deleteAgentRequests = append(s.requests.deleteAgentRequests, deleteAgentRequest{
-		metadata: md,
-		data:     req,
-	})
-
-	return s.responses.deleteAgentResponse.data, s.responses.deleteAgentResponse.err
 }
 
 func agentWithStatus(agent *synthetics.Agent, status synthetics.AgentStatus) *synthetics.Agent {

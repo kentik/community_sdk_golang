@@ -114,6 +114,11 @@ linters-settings:
     default-signifies-exhaustive: true
   gocyclo:
     min-complexity: 10
+  gomnd:
+    settings:
+      mnd:
+        # 10 is usually obvious, e.g. strconv.FormatInt(n, 10)
+        ignored-numbers: "10"
   govet:
     disable:
       # Reordering struct fields may decrease readability

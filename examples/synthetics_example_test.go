@@ -23,9 +23,9 @@ func TestDemonstrateSyntheticsAgentsAPI(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestDemonstrateSyntheticsTestAPI(t *testing.T) {
+func TestDemonstrateSyntheticsTestsAPI(t *testing.T) {
 	t.Parallel()
-	err := demonstrateSyntheticsTestAPI()
+	err := demonstrateSyntheticsTestsAPI()
 	assert.NoError(t, err)
 }
 
@@ -71,7 +71,7 @@ func demonstrateSyntheticsAgentAPI() error {
 
 	fmt.Println("### Updating synthetic agent")
 	originalAlias := agent.Alias
-	agent.Alias = "go-sdk-updated-alias"
+	agent.Alias = "go-sdk-example-updated-alias"
 
 	agent, err = client.Synthetics.UpdateAgent(ctx, agent)
 	if err != nil {
@@ -135,7 +135,7 @@ func pickPrivateAgentID(ctx context.Context) (string, error) {
 	return "", fmt.Errorf("no private agent found: %w", err)
 }
 
-func demonstrateSyntheticsTestAPI() error {
+func demonstrateSyntheticsTestsAPI() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
