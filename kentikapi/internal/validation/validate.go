@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
 type Direction string
@@ -82,4 +84,82 @@ func validate(method string, direction string, path string, v reflect.Value) []s
 		// primitive value has no field tags so nothing to validate
 	}
 	return missing
+}
+
+// ValidateCECreateRequest checks if CloudExport create request contains all required fields.
+//nolint:gocyclo
+func ValidateCECreateRequest(ce *models.CloudExport) error {
+	if ce == nil {
+		return nil
+	}
+	if ce.Name == "" {
+		return ceFieldError("Name")
+	}
+	if ce.PlanID == "" {
+		return ceFieldError("PlanID")
+	}
+	switch ce.CloudProvider {
+	case "":
+		{
+			return ceFieldError("CloudProvider")
+		}
+	case "aws":
+		{
+			if ce.GetAWSProperties().Bucket == "" {
+				return ceFieldError("Properties.Bucket")
+			}
+		}
+	case "azure":
+		{
+			if ce.GetAzureProperties().Location == "" {
+				return ceFieldError("Properties.Location")
+			}
+			if ce.GetAzureProperties().ResourceGroup == "" {
+				return ceFieldError("Properties.ResourceGroup")
+			}
+			if ce.GetAzureProperties().StorageAccount == "" {
+				return ceFieldError("Properties.StorageAccount")
+			}
+			if ce.GetAzureProperties().SubscriptionID == "" {
+				return ceFieldError("Properties.SubscriptionID")
+			}
+		}
+	case "gce":
+		{
+			if ce.GetGCEProperties().Project == "" {
+				return ceFieldError("Properties.Project")
+			}
+			if ce.GetGCEProperties().Subscription == "" {
+				return ceFieldError("Properties.Subscription")
+			}
+		}
+	case "ibm":
+		{
+			if ce.GetIBMProperties().Bucket == "" {
+				return ceFieldError("Properties.Bucket")
+			}
+		}
+	}
+	return nil
+}
+
+// ValidateCEUpdateRequest checks if CloudExport update request contains all required fields.
+func ValidateCEUpdateRequest(ce *models.CloudExport) error {
+	if ce == nil {
+		return nil
+	}
+	if ce.ID == "" {
+		return ceFieldError("ID")
+	}
+	if ce.CloudProvider == "" {
+		return ceFieldError("CloudProvider")
+	}
+	if ce.Properties == nil {
+		return ceFieldError("Properties")
+	}
+	return nil
+}
+
+func ceFieldError(field string) error {
+	return fmt.Errorf("CloudExport '%s' field is required but not provided", field)
 }
