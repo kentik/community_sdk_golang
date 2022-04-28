@@ -8,6 +8,7 @@ import (
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +33,7 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 		response          listCEResponse
 		expectedResult    *models.GetAllCloudExportsResponse
 		expectedError     bool
-		expectedErrorCode *codes.Code
+		expectedErrorCode []kentikErrors.Code
 	}{
 		{
 			name: "status InvalidArgument received",
@@ -40,7 +41,7 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.InvalidRequest},
 		}, {
 			name: "empty response received",
 			response: listCEResponse{
@@ -123,9 +124,9 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			if tt.expectedError {
 				assert.Error(t, err)
 				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
+					c, ok := kentikErrors.GetCodes(err)
 					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+					assert.Equal(t, tt.expectedErrorCode, c)
 				}
 			} else {
 				assert.NoError(t, err)
@@ -151,7 +152,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 		response          getCEResponse
 		expectedResult    *models.CloudExport
 		expectedError     bool
-		expectedErrorCode *codes.Code
+		expectedErrorCode []kentikErrors.Code
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -161,7 +162,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.InvalidRequest},
 		}, {
 			name:            "status NotFound received",
 			requestID:       "13",
@@ -170,7 +171,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 				err: status.Errorf(codes.NotFound, codes.NotFound.String()),
 			},
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.NotFound),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.NotFound},
 		}, {
 			name:            "empty response received",
 			requestID:       "13",
@@ -266,7 +267,6 @@ func TestClient_GetCloudExport(t *testing.T) {
 			expectedResult: newFullIBMCloudExport(),
 		},
 	}
-	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -292,9 +292,9 @@ func TestClient_GetCloudExport(t *testing.T) {
 			if tt.expectedError {
 				assert.Error(t, err)
 				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
+					c, ok := kentikErrors.GetCodes(err)
 					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+					assert.Equal(t, tt.expectedErrorCode, c)
 				}
 			} else {
 				assert.NoError(t, err)
@@ -320,7 +320,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 		response          createCEResponse
 		expectedResult    *models.CloudExport
 		expectedError     bool
-		expectedErrorCode *codes.Code
+		expectedErrorCode []kentikErrors.Code
 	}{
 		{
 			name:            "nil request, status InvalidArgument received",
@@ -332,7 +332,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			},
 			expectedResult:    nil,
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.InvalidRequest},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -515,9 +515,9 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			if tt.expectedError {
 				assert.Error(t, err)
 				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
+					c, ok := kentikErrors.GetCodes(err)
 					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+					assert.Equal(t, tt.expectedErrorCode, c)
 				}
 			} else {
 				assert.NoError(t, err)
@@ -543,7 +543,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 		response          updateCEResponse
 		expectedResult    *models.CloudExport
 		expectedError     bool
-		expectedErrorCode *codes.Code
+		expectedErrorCode []kentikErrors.Code
 	}{
 		{
 			name:            "nil request, status InvalidArgument received",
@@ -555,7 +555,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			},
 			expectedResult:    nil,
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.InvalidRequest},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -617,9 +617,9 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			if tt.expectedError {
 				assert.Error(t, err)
 				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
+					c, ok := kentikErrors.GetCodes(err)
 					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+					assert.Equal(t, tt.expectedErrorCode, c)
 				}
 			} else {
 				assert.NoError(t, err)
@@ -644,7 +644,7 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 		expectedRequest   *cloudexportpb.DeleteCloudExportRequest
 		response          deleteCEResponse
 		expectedError     bool
-		expectedErrorCode *codes.Code
+		expectedErrorCode []kentikErrors.Code
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -655,7 +655,7 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
 			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedErrorCode: []kentikErrors.Code{kentikErrors.InvalidRequest},
 		}, {
 			name:            "resource deleted",
 			requestID:       "13",
@@ -690,9 +690,9 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			if tt.expectedError {
 				assert.Error(t, err)
 				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
+					c, ok := kentikErrors.GetCodes(err)
 					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+					assert.Equal(t, tt.expectedErrorCode, c)
 				}
 			} else {
 				assert.NoError(t, err)

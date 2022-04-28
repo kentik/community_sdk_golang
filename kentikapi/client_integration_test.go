@@ -2,7 +2,6 @@ package kentikapi_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 	"github.com/AlekSi/pointer"
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -153,9 +153,9 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			}
 
 			if tt.expectedTimeout {
-				assert.True(t, errors.Is(err, context.DeadlineExceeded))
+				assert.True(t, kentikErrors.IsTimeoutError(err))
 			} else {
-				assert.False(t, errors.Is(err, context.DeadlineExceeded))
+				assert.False(t, kentikErrors.IsTimeoutError(err))
 			}
 
 			if !tt.expectedTimeout {

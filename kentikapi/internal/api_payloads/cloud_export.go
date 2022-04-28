@@ -6,6 +6,7 @@ import (
 
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -33,7 +34,8 @@ func cloudExportsFromPayload(exports []*cloudexportpb.CloudExport) ([]models.Clo
 	for i, e := range exports {
 		ce, err := CloudExportFromPayload(e)
 		if err != nil {
-			return nil, fmt.Errorf("cloud export with index %v: %w", i, err)
+			return nil, kentikErrors.KentikErrorUpdateMsg(
+				fmt.Sprintf("cloud export with index %v: %s", i, err), err)
 		}
 		result = append(result, *ce)
 	}
@@ -43,12 +45,18 @@ func cloudExportsFromPayload(exports []*cloudexportpb.CloudExport) ([]models.Clo
 // CloudExportFromPayload converts cloud export payload to model.
 func CloudExportFromPayload(ce *cloudexportpb.CloudExport) (*models.CloudExport, error) {
 	if ce == nil {
-		return nil, fmt.Errorf("cloud export response payload is nil")
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.NotFound},
+			Msg:   "cloud export response payload is nil",
+		}
 	}
 
 	properties, err := propertiesFromPayload(ce)
 	if err != nil {
-		return nil, err
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.NotFound},
+			Msg:   err.Error(),
+		}
 	}
 
 	return &models.CloudExport{
@@ -199,7 +207,10 @@ func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *models.Clou
 	case "ibm":
 		payload.Properties = ibmPropertiesToPayload(ce)
 	default:
-		return nil, fmt.Errorf("invalid cloud provider: %v", ce.CloudProvider)
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.NotFound},
+			Msg:   fmt.Sprintf("invalid cloud provider: %v", ce.CloudProvider),
+		}
 	}
 	return payload, nil
 }

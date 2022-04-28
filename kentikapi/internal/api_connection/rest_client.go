@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 )
 
@@ -51,12 +52,15 @@ func (c *RestClient) Get(ctx context.Context, path string) (responseBody json.Ra
 
 	request, err := c.newRequest(ctx, http.MethodGet, path, json.RawMessage{})
 	if err != nil {
-		return nil, fmt.Errorf("new request: %v", err)
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.InvalidRequest},
+			Msg:   fmt.Sprintf("new request: %v", err),
+		}
 	}
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %w", err)
+		return nil, kentikErrors.KentikErrorFromHTTP(response, fmt.Errorf("do request: %w", err))
 	}
 
 	defer func() {
@@ -84,12 +88,15 @@ func (c *RestClient) Post(
 
 	request, err := c.newRequest(ctx, http.MethodPost, path, payload)
 	if err != nil {
-		return nil, fmt.Errorf("new request: %v", err)
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.InvalidRequest},
+			Msg:   fmt.Sprintf("new request: %v", err),
+		}
 	}
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %w", err)
+		return nil, kentikErrors.KentikErrorFromHTTP(response, fmt.Errorf("do request: %w", err))
 	}
 	defer func() {
 		cErr := response.Body.Close()
@@ -116,12 +123,15 @@ func (c *RestClient) Put(
 
 	request, err := c.newRequest(ctx, http.MethodPut, path, payload)
 	if err != nil {
-		return nil, fmt.Errorf("new request: %v", err)
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.InvalidRequest},
+			Msg:   fmt.Sprintf("new request: %v", err),
+		}
 	}
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %w", err)
+		return nil, kentikErrors.KentikErrorFromHTTP(response, fmt.Errorf("do request: %w", err))
 	}
 	defer func() {
 		cErr := response.Body.Close()
@@ -146,12 +156,15 @@ func (c *RestClient) Delete(ctx context.Context, path string) (responseBody json
 
 	request, err := c.newRequest(ctx, http.MethodDelete, path, json.RawMessage{})
 	if err != nil {
-		return nil, fmt.Errorf("new request: %v", err)
+		return nil, kentikErrors.KentikError{
+			Codes: []kentikErrors.Code{kentikErrors.InvalidRequest},
+			Msg:   fmt.Sprintf("new request: %v", err),
+		}
 	}
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %w", err)
+		return nil, kentikErrors.KentikErrorFromHTTP(response, fmt.Errorf("do request: %w", err))
 	}
 
 	defer func() {
@@ -172,7 +185,8 @@ func (c *RestClient) Delete(ctx context.Context, path string) (responseBody json
 func errorFromResponseStatus(r *http.Response, responseBody string) error {
 	// TODO(dfurman): return more specific errors
 	if r.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("API response error, status: %v, response body: %v", r.Status, responseBody)
+		return kentikErrors.KentikErrorFromHTTP(r,
+			fmt.Errorf("API response error, status: %v, response body: %v", r.Status, responseBody))
 	}
 	return nil
 }
