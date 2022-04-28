@@ -26,17 +26,17 @@ type KentikError struct {
 }
 
 func (ke KentikError) Error() string {
-	return fmt.Sprintf("category: %v, message: %s \n", ke.Codes, ke.Msg)
+	return fmt.Sprintf("category: %v, message: %s", ke.Codes, ke.Msg)
 }
 
-func (ke KentikError) IsKentikError() *KentikError { return &ke }
+func (ke KentikError) GetKentikError() *KentikError { return &ke }
 
 func GetCodes(err error) ([]Code, bool) {
 	var tErr interface {
-		IsKentikError() *KentikError
+		GetKentikError() *KentikError
 	}
 	if ok := errors.As(err, &tErr); ok {
-		ktError := tErr.IsKentikError()
+		ktError := tErr.GetKentikError()
 		return ktError.Codes, true
 	}
 	return []Code{}, false
@@ -44,10 +44,10 @@ func GetCodes(err error) ([]Code, bool) {
 
 func KentikErrorUpdateMsg(msg string, err error) error {
 	var tErr interface {
-		IsKentikError() *KentikError
+		GetKentikError() *KentikError
 	}
 	if ok := errors.As(err, &tErr); ok {
-		ktError := tErr.IsKentikError()
+		ktError := tErr.GetKentikError()
 		ktError.Msg = msg
 		return ktError
 	}
@@ -59,9 +59,7 @@ func KentikErrorFromHTTP(response *http.Response, err error) error {
 		return nil
 	}
 	ke := KentikError{Msg: err.Error()}
-	if response == nil {
-		ke.Codes = []Code{Timeout}
-	} else {
+	if response != nil {
 		switch response.StatusCode {
 		case http.StatusUnauthorized, http.StatusForbidden:
 			ke.Codes = []Code{AuthError}
@@ -76,6 +74,8 @@ func KentikErrorFromHTTP(response *http.Response, err error) error {
 		default:
 			ke.Codes = []Code{InvalidRequest}
 		}
+	} else {
+		ke.Codes = []Code{Timeout}
 	}
 	return ke
 }
