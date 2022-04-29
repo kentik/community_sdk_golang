@@ -5,7 +5,6 @@ import (
 
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
-	"github.com/kentik/community_sdk_golang/kentikapi/internal/validation"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"google.golang.org/grpc"
 )
@@ -44,7 +43,7 @@ func (a *CloudExportsAPI) Get(ctx context.Context, id models.ID) (*models.CloudE
 
 // Create creates new Cloud Export.
 func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*models.CloudExport, error) {
-	if err := validation.ValidateCECreateRequest(ce); err != nil {
+	if err := api_payloads.ValidateCECreateRequest(ce); err != nil {
 		return nil, err
 	}
 	payload, err := api_payloads.CloudExportToPayload(ce)
@@ -64,7 +63,7 @@ func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*
 
 // Update updates the Cloud Export.
 func (a *CloudExportsAPI) Update(ctx context.Context, ce *models.CloudExport) (*models.CloudExport, error) {
-	if err := validation.ValidateCEUpdateRequest(ce); err != nil {
+	if err := api_payloads.ValidateCEUpdateRequest(ce); err != nil {
 		return nil, err
 	}
 	payload, err := api_payloads.CloudExportToPayload(ce)

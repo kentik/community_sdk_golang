@@ -330,9 +330,8 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				data: &cloudexportpb.CreateCloudExportResponse{},
 				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedResult:    nil,
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -523,13 +522,12 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if assert.Equal(t, 1, len(server.requests.createCERequests), "invalid number of requests") {
+			if tt.request != nil && assert.Equal(t, 1, len(server.requests.createCERequests), "invalid number of requests") {
 				r := server.requests.createCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
 				testutil.AssertProtoEqual(t, tt.expectedRequest, r.data)
 			}
-
 			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
@@ -553,9 +551,8 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				data: &cloudexportpb.UpdateCloudExportResponse{},
 				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedResult:    nil,
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -625,7 +622,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if assert.Equal(t, 1, len(server.requests.updateCERequests), "invalid number of requests") {
+			if tt.request != nil && assert.Equal(t, 1, len(server.requests.updateCERequests), "invalid number of requests") {
 				r := server.requests.updateCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
