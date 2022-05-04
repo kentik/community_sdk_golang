@@ -90,12 +90,11 @@ func TestClient_GetAllTags(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -160,12 +159,11 @@ func TestClient_GetTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -339,12 +337,11 @@ func TestClient_CreateTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -509,12 +506,11 @@ func TestClient_UpdateTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -571,12 +567,11 @@ func TestClient_DeleteTag(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
