@@ -81,7 +81,8 @@ func cloudProviderFromPayload(cp string) models.CloudProvider {
 	return models.CloudProvider(cp)
 }
 
-// SyntheticsAgentToPayload converts synthetics agent from model to payload. It sets only ID and read-write fields.
+// SyntheticsAgentToPayload converts synthetics agent from model to payload. It sets only ID, SiteName and
+// read-write fields.
 func SyntheticsAgentToPayload(a *models.SyntheticsAgent) (*syntheticspb.Agent, error) {
 	if a == nil {
 		return nil, nil
@@ -89,6 +90,7 @@ func SyntheticsAgentToPayload(a *models.SyntheticsAgent) (*syntheticspb.Agent, e
 
 	return &syntheticspb.Agent{
 		Id:            a.ID,
+		SiteName:      a.SiteName, // read-only, but required for update to work
 		Status:        syntheticspb.AgentStatus(syntheticspb.AgentStatus_value[string(a.Status)]),
 		Alias:         a.Alias,
 		SiteId:        a.SiteID,

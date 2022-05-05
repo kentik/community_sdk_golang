@@ -808,6 +808,7 @@ func agentPayloadWithStatus(a *syntheticspb.Agent, s syntheticspb.AgentStatus) *
 func newWarsawAgentUpdatePayload() *syntheticspb.Agent {
 	return &syntheticspb.Agent{
 		Id:            warsawAgentID,
+		SiteName:      "gce-europe-central2",
 		Status:        syntheticspb.AgentStatus_AGENT_STATUS_OK,
 		Alias:         "Warsaw, Poland",
 		Family:        syntheticspb.IPFamily_IP_FAMILY_DUAL,
