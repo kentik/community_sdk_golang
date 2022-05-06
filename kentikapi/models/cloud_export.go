@@ -12,7 +12,7 @@ func NewAWSCloudExport(obj CloudExportAWSRequiredFields) *CloudExport {
 	}
 }
 
-// NewAzureCloudExport creates a new AZURE CloudExport with all required fields set.
+// NewAzureCloudExport creates a new Azure CloudExport with all required fields set.
 func NewAzureCloudExport(obj CloudExportAzureRequiredFields) *CloudExport {
 	return &CloudExport{
 		Name:          obj.Name,
@@ -83,9 +83,9 @@ type CloudExport struct {
 
 	// Read-only properties
 
-	// ID is the internal cloud export identifier. This is read-only and assigned by Kentik.
+	// ID is unique cloud export identification. It is read-only.
 	ID ID
-	// CurrentStatus is the most current status Kentik has about this export. This is read-only and assigned by Kentik.
+	// CurrentStatus is the most current status Kentik has about this export. It is read-only.
 	CurrentStatus *CloudExportStatus
 }
 
@@ -241,20 +241,21 @@ type CloudExportType string
 
 const (
 	// CloudExportTypeUnspecified is invalid or incomplete cloud export.
-	CloudExportTypeUnspecified = "CLOUD_EXPORT_TYPE_UNSPECIFIED"
+	CloudExportTypeUnspecified CloudExportType = "CLOUD_EXPORT_TYPE_UNSPECIFIED"
 	// CloudExportTypeKentikManaged is for cloud exports that are managed by Kentik.
-	CloudExportTypeKentikManaged = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
+	CloudExportTypeKentikManaged CloudExportType = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
 	// CloudExportTypeCustomerManaged is for cloud exports that are managed by Kentik customers,
 	// e.g. by running an agent.
-	CloudExportTypeCustomerManaged = "CLOUD_EXPORT_TYPE_CUSTOMER_MANAGED"
+	CloudExportTypeCustomerManaged CloudExportType = "CLOUD_EXPORT_TYPE_CUSTOMER_MANAGED"
 )
 
-// CloudProvider is the cloud provider name.
+// CloudProvider is the name of cloud provider.
 type CloudProvider string
 
 const (
-	CloudProviderAWS   = "aws"
-	CloudProviderAzure = "azure"
-	CloudProviderGCE   = "gce"
-	CloudProviderIBM   = "ibm"
+	CloudProviderAlibaba CloudProvider = "alibaba"
+	CloudProviderAWS     CloudProvider = "aws"
+	CloudProviderAzure   CloudProvider = "azure"
+	CloudProviderGCE     CloudProvider = "gce" // gcp value in Agents API
+	CloudProviderIBM     CloudProvider = "ibm"
 )

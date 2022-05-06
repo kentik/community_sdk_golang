@@ -36,7 +36,8 @@ func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-// demonstrateSyntheticsAgentAPI demonstrates available methods of Agent API. Note that there is no create method in the API.
+// demonstrateSyntheticsAgentAPI demonstrates available methods of Agent API.
+// Note that there is no create method in the API.
 // Delete method exists but is omitted here, because of lack of create method.
 func demonstrateSyntheticsAgentAPI() error {
 	ctx := context.Background()
@@ -46,38 +47,70 @@ func demonstrateSyntheticsAgentAPI() error {
 	}
 
 	fmt.Println("### Getting all synthetics agents")
-	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	getAllResp, err := client.Synthetics.Agents.GetAll(ctx)
 	if err != nil {
-		return fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
+		return fmt.Errorf("client.Synthetics.Agents.GetAll: %w", err)
 	}
 
-	fmt.Println("Got all agents:", getAllResp)
-	fmt.Println("Number of agents:", len(getAllResp.GetAgents()))
-	fmt.Println("Number of invalid agents:", getAllResp.InvalidCount)
-	fmt.Println()
+	fmt.Printf("Got all agents: %v\n", getAllResp)
+	fmt.Println("Number of agents:", len(getAllResp.Agents))
+	fmt.Println("Number of invalid agents:", getAllResp.InvalidAgentsCount)
 
 	agentID, err := pickPrivateAgentID(ctx)
 	if err != nil {
 		return fmt.Errorf("pick agent ID: %w", err)
 	}
 
-	fmt.Printf("### Getting synthetics agent with ID %v\n", agentID)
-	getResp, err := client.SyntheticsAdmin.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: agentID})
+	fmt.Println("### Getting synthetics agent with ID", agentID)
+	agent, err := client.Synthetics.Agents.Get(ctx, agentID)
 	if err != nil {
-		return fmt.Errorf("client.SyntheticsAdmin.GetAgent: %w", err)
+		return fmt.Errorf("client.Synthetics.Agents.Get: %w", err)
 	}
-	fmt.Println("Got agent:", getResp)
+
+	fmt.Println("Got agent:")
+	PrettyPrint(agent)
 
 	fmt.Println("### Updating synthetic agent")
-	agent := getResp.Agent
+	originalAlias := agent.Alias
 	agent.Alias = "go-sdk-updated-alias"
 
-	updateResp, err := client.SyntheticsAdmin.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{Agent: agent})
+	agent, err = client.Synthetics.Agents.Update(ctx, agent)
 	if err != nil {
 		return fmt.Errorf("client.SyntheticsAdmin.UpdateAgent: %w", err)
 	}
-	fmt.Println("Updated agent:", updateResp)
-	fmt.Println()
+
+	fmt.Println("Updated agent:", agent)
+	PrettyPrint(agent)
+
+	fmt.Println("### Activating the synthetics agent")
+	originalStatus := agent.Status
+	agent, err = client.Synthetics.Agents.Activate(ctx, agentID)
+	if err != nil {
+		return fmt.Errorf("client.Synthetics.Agents.Activate: %w", err)
+	}
+
+	fmt.Println("Activated agent:")
+	PrettyPrint(agent)
+
+	fmt.Println("### Deactivating the synthetics agent")
+	agent, err = client.Synthetics.Agents.Deactivate(ctx, agentID)
+	if err != nil {
+		return fmt.Errorf("client.Synthetics.Agents.Deactivate: %w", err)
+	}
+
+	fmt.Println("Deactivated agent:")
+	PrettyPrint(agent)
+
+	fmt.Println("### Updating synthetic agent to revert changes")
+	agent.Alias = originalAlias
+	agent.Status = originalStatus
+
+	agent, err = client.Synthetics.Agents.Update(ctx, agent)
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsAdmin.UpdateAgent (revert): %w", err)
+	}
+	fmt.Println("Updated agent:")
+	PrettyPrint(agent)
 
 	return nil
 }

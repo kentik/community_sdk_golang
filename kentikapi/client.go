@@ -52,6 +52,7 @@ type Client struct {
 	Query              *resources.QueryAPI
 	SavedFilters       *resources.SavedFiltersAPI
 	Sites              *resources.SitesAPI
+	Synthetics         *resources.SyntheticsAPI
 	Tags               *resources.TagsAPI
 	Users              *resources.UsersAPI
 
@@ -173,6 +174,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		Query:              resources.NewQueryAPI(rc, c.LogPayloads),
 		SavedFilters:       resources.NewSavedFiltersAPI(rc, c.LogPayloads),
 		Sites:              resources.NewSitesAPI(rc, c.LogPayloads),
+		Synthetics:         resources.NewSyntheticsAPI(grpcConnection),
 		Tags:               resources.NewTagsAPI(rc, c.LogPayloads),
 		Users:              resources.NewUsersAPI(rc, c.LogPayloads),
 

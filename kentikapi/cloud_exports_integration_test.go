@@ -265,8 +265,6 @@ func TestClient_GetCloudExport(t *testing.T) {
 			expectedResult: newFullIBMCloudExport(),
 		},
 	}
-
-	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -548,8 +546,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			request:         nil,
 			expectedRequest: &cloudexportpb.UpdateCloudExportRequest{Export: nil},
 			response: updateCEResponse{
-				data: &cloudexportpb.UpdateCloudExportResponse{},
-				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
+				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
 			expectedResult:    nil,
 			expectedError:     true,

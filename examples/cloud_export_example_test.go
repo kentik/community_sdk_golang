@@ -51,9 +51,10 @@ func demonstrateCloudExportAPIWithAWS() error {
 		return fmt.Errorf("client.CloudExports.GetAll: %w", err)
 	}
 
-	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidCloudExportsCount)
 	fmt.Println("Got all cloud exports:")
 	PrettyPrint(getAllResp.CloudExports)
+	fmt.Println("Number of cloud exports:", len(getAllResp.CloudExports))
+	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidCloudExportsCount)
 
 	fmt.Println("### Creating AWS cloud export")
 	ce := models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
