@@ -290,39 +290,71 @@ func ValidateCEUpdateRequest(ce *models.CloudExport) error {
 	return validateCEProvider(ce)
 }
 
-//nolint:gocyclo
 func validateCEProvider(ce *models.CloudExport) error {
 	switch ce.CloudProvider {
 	case "":
 		return ceFieldError("CloudProvider")
 	case awsProvider:
-		if ce.GetAWSProperties().Bucket == "" {
-			return ceFieldError("Properties.Bucket")
+		if err := validateAWSProvider(ce); err != nil {
+			return err
 		}
 	case azureProvider:
-		if ce.GetAzureProperties().Location == "" {
-			return ceFieldError("Properties.Location")
-		}
-		if ce.GetAzureProperties().ResourceGroup == "" {
-			return ceFieldError("Properties.ResourceGroup")
-		}
-		if ce.GetAzureProperties().StorageAccount == "" {
-			return ceFieldError("Properties.StorageAccount")
-		}
-		if ce.GetAzureProperties().SubscriptionID == "" {
-			return ceFieldError("Properties.SubscriptionID")
+		if err := validateAzureProvider(ce); err != nil {
+			return err
 		}
 	case gceProvider:
-		if ce.GetGCEProperties().Project == "" {
-			return ceFieldError("Properties.Project")
-		}
-		if ce.GetGCEProperties().Subscription == "" {
-			return ceFieldError("Properties.Subscription")
+		if err := validateGCEProvider(ce); err != nil {
+			return err
 		}
 	case ibmProvider:
-		if ce.GetIBMProperties().Bucket == "" {
-			return ceFieldError("Properties.Bucket")
+		if err := validateIBMProvider(ce); err != nil {
+			return err
 		}
+	default:
+		return fmt.Errorf("CloudExport provider '%s' is not supported", ce.CloudProvider)
+	}
+	return nil
+}
+
+func validateAWSProvider(ce *models.CloudExport) error {
+	if ce.GetAWSProperties() == nil {
+		return ceFieldError("Properties")
+	}
+	if ce.GetAWSProperties().Bucket == "" {
+		return ceFieldError("Properties.Bucket")
+	}
+	return nil
+}
+
+func validateAzureProvider(ce *models.CloudExport) error {
+	if ce.GetAzureProperties().Location == "" {
+		return ceFieldError("Properties.Location")
+	}
+	if ce.GetAzureProperties().ResourceGroup == "" {
+		return ceFieldError("Properties.ResourceGroup")
+	}
+	if ce.GetAzureProperties().StorageAccount == "" {
+		return ceFieldError("Properties.StorageAccount")
+	}
+	if ce.GetAzureProperties().SubscriptionID == "" {
+		return ceFieldError("Properties.SubscriptionID")
+	}
+	return nil
+}
+
+func validateGCEProvider(ce *models.CloudExport) error {
+	if ce.GetGCEProperties().Project == "" {
+		return ceFieldError("Properties.Project")
+	}
+	if ce.GetGCEProperties().Subscription == "" {
+		return ceFieldError("Properties.Subscription")
+	}
+	return nil
+}
+
+func validateIBMProvider(ce *models.CloudExport) error {
+	if ce.GetIBMProperties().Bucket == "" {
+		return ceFieldError("Properties.Bucket")
 	}
 	return nil
 }
