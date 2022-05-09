@@ -162,7 +162,7 @@ func currentStatusFromPayload(cs *cloudexportpb.Status, id string) *models.Cloud
 	}
 }
 
-// CloudExportToPayload converts cloud export from model to payload.
+// CloudExportToPayload converts cloud export from model to payload. It sets only ID and read-write fields.
 func CloudExportToPayload(ce *models.CloudExport) (*cloudexportpb.CloudExport, error) {
 	if ce == nil {
 		return nil, fmt.Errorf("cloud export object is nil")

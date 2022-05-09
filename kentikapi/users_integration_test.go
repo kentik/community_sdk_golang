@@ -166,12 +166,11 @@ func TestClient_GetAllUsers(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -264,12 +263,11 @@ func TestClient_GetUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -296,9 +294,9 @@ func TestClient_GetUser(t *testing.T) {
 
 func TestClient_CreateUser(t *testing.T) {
 	tests := []struct {
-		name     string
-		retryMax *uint
-		user     models.User
+		name    string
+		options []kentikapi.ClientOption
+		user    models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
 		responses           []testutil.HTTPResponse
@@ -402,7 +400,7 @@ func TestClient_CreateUser(t *testing.T) {
 			name:                "retry 5 times when status 429, 502, 503, 504 received and last status is 502",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			retryMax:            pointer.ToUint(5),
+			options:             []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(5)},
 			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
 				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
@@ -480,17 +478,14 @@ func TestClient_CreateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:    s.URL,
-				AuthEmail: dummyAuthEmail,
-				AuthToken: dummyAuthToken,
-				RetryCfg: kentikapi.RetryConfig{
-					MaxAttempts: tt.retryMax,
-					MinDelay:    pointer.ToDuration(1 * time.Microsecond),
-					MaxDelay:    pointer.ToDuration(10 * time.Microsecond),
-				},
-				LogPayloads: true,
-			})
+			options := []kentikapi.ClientOption{
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithRetryMinDelay(1 * time.Microsecond),
+				kentikapi.WithRetryMaxDelay(10 * time.Microsecond),
+				kentikapi.WithLogPayloads(),
+			}
+			c, err := kentikapi.NewClient(append(options, tt.options...)...)
 			assert.NoError(t, err)
 
 			// act
@@ -623,12 +618,11 @@ func TestClient_UpdateUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
@@ -685,12 +679,11 @@ func TestClient_DeleteUser(t *testing.T) {
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			c, err := kentikapi.NewClient(kentikapi.Config{
-				APIURL:      s.URL,
-				AuthEmail:   dummyAuthEmail,
-				AuthToken:   dummyAuthToken,
-				LogPayloads: true,
-			})
+			c, err := kentikapi.NewClient(
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithLogPayloads(),
+			)
 			assert.NoError(t, err)
 
 			// act
