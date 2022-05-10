@@ -24,13 +24,14 @@ func NewClient() (*kentikapi.Client, error) {
 // PrettyPrint prints an object recursively in an indented way.
 func PrettyPrint(resource interface{}) {
 	prettyPrintRecursively(reflect.TypeOf(resource), reflect.ValueOf(resource), 0)
+	fmt.Println()
 }
 
 //nolint:gocyclo
 func prettyPrintRecursively(t reflect.Type, v reflect.Value, level int) {
 	const maxDepth = 20
 	if level > maxDepth {
-		log.Printf("Pretty print depth level exceeded %v - omitting\n", maxDepth)
+		log.Printf("Pretty print depth level exceeded %v - omitting", maxDepth)
 		return
 	}
 
