@@ -2,8 +2,6 @@ package utils
 
 import (
 	"reflect"
-
-	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 )
 
 // ConvertFunc signature like: func IntToString(source int) (string, error).
@@ -36,7 +34,7 @@ func ConvertList(input interface{}, convertFunc ConvertFunc, output interface{})
 		results := vConvertFunc.Call(args)
 
 		if err, ok := results[1].Interface().(error); ok {
-			return kentikErrors.KentikError{Codes: []kentikErrors.Code{kentikErrors.NotFound}, Msg: err.Error()}
+			return err
 		}
 
 		vOutput.Index(i).Set(results[0])

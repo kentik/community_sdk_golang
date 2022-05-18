@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 )
 
@@ -40,11 +41,11 @@ func syntheticsAgentsFromPayload(agents []*syntheticspb.Agent) ([]models.Synthet
 // SyntheticsAgentFromPayload converts synthetics agent payload to model.
 func SyntheticsAgentFromPayload(a *syntheticspb.Agent) (*models.SyntheticsAgent, error) {
 	if a == nil {
-		return nil, fmt.Errorf("agent response payload is nil")
+		return nil, kentikErrors.New(kentikErrors.InvalidResponse, "agent response payload is nil")
 	}
 
 	if a.Id == "" {
-		return nil, fmt.Errorf("empty agent ID in response payload")
+		return nil, kentikErrors.New(kentikErrors.InvalidResponse, "empty agent ID in response payload")
 	}
 
 	return &models.SyntheticsAgent{

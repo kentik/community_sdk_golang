@@ -21,19 +21,19 @@ import (
 
 func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 	tests := []struct {
-		name              string
-		response          listAgentsResponse
-		expectedResult    *models.GetAllSyntheticsAgentsResponse
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		response        listAgentsResponse
+		expectedResult  *models.GetAllSyntheticsAgentsResponse
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name: "status InvalidArgument received",
 			response: listAgentsResponse{
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name: "empty response received",
 			response: listAgentsResponse{
@@ -111,10 +111,8 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -134,13 +132,13 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 
 func TestClient_GetSyntheticsAgent(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         models.ID
-		expectedRequest   *syntheticspb.GetAgentRequest
-		response          getAgentResponse
-		expectedResult    *models.SyntheticsAgent
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       models.ID
+		expectedRequest *syntheticspb.GetAgentRequest
+		response        getAgentResponse
+		expectedResult  *models.SyntheticsAgent
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -149,8 +147,8 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 			response: getAgentResponse{
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:            "status NotFound received",
 			requestID:       "13",
@@ -158,8 +156,8 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 			response: getAgentResponse{
 				err: status.Errorf(codes.NotFound, codes.NotFound.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.NotFound),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsNotFoundError},
 		}, {
 			name:            "empty response received",
 			requestID:       "13",
@@ -201,10 +199,8 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -224,13 +220,13 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 
 func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 	tests := []struct {
-		name              string
-		request           *models.SyntheticsAgent
-		expectedRequest   *syntheticspb.UpdateAgentRequest
-		response          updateAgentResponse
-		expectedResult    *models.SyntheticsAgent
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		request         *models.SyntheticsAgent
+		expectedRequest *syntheticspb.UpdateAgentRequest
+		response        updateAgentResponse
+		expectedResult  *models.SyntheticsAgent
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "nil request, status InvalidArgument received",
@@ -239,9 +235,9 @@ func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 			response: updateAgentResponse{
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedResult:    nil,
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newWarsawAgent(),
@@ -290,10 +286,8 @@ func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -313,12 +307,12 @@ func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 
 func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         string
-		expectedRequest   *syntheticspb.DeleteAgentRequest
-		response          deleteAgentResponse
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       string
+		expectedRequest *syntheticspb.DeleteAgentRequest
+		response        deleteAgentResponse
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -328,8 +322,8 @@ func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 				data: &syntheticspb.DeleteAgentResponse{},
 				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:            "resource deleted",
 			requestID:       "13",
@@ -362,10 +356,8 @@ func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -384,13 +376,13 @@ func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 //nolint:dupl
 func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         models.ID
-		expectedRequest   *syntheticspb.UpdateAgentRequest
-		responses         syntheticsResponses
-		expectedResult    *models.SyntheticsAgent
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       models.ID
+		expectedRequest *syntheticspb.UpdateAgentRequest
+		responses       syntheticsResponses
+		expectedResult  *models.SyntheticsAgent
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:      "pending agent activated",
@@ -467,10 +459,8 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -491,13 +481,13 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 //nolint:dupl
 func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         models.ID
-		expectedRequest   *syntheticspb.UpdateAgentRequest
-		responses         syntheticsResponses
-		expectedResult    *models.SyntheticsAgent
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       models.ID
+		expectedRequest *syntheticspb.UpdateAgentRequest
+		responses       syntheticsResponses
+		expectedResult  *models.SyntheticsAgent
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:      "active agent deactivated",
@@ -574,10 +564,8 @@ func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)

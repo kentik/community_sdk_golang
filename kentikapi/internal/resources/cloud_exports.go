@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
-	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
+	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"google.golang.org/grpc"
 )
