@@ -295,25 +295,16 @@ func validateCEProvider(ce *models.CloudExport) error {
 	case "":
 		return ceFieldError("CloudProvider")
 	case awsProvider:
-		if err := validateAWSProvider(ce); err != nil {
-			return err
-		}
+		return validateAWSProvider(ce)
 	case azureProvider:
-		if err := validateAzureProvider(ce); err != nil {
-			return err
-		}
+		return validateAzureProvider(ce)
 	case gceProvider:
-		if err := validateGCEProvider(ce); err != nil {
-			return err
-		}
+		return validateGCEProvider(ce)
 	case ibmProvider:
-		if err := validateIBMProvider(ce); err != nil {
-			return err
-		}
+		return validateIBMProvider(ce)
 	default:
-		return fmt.Errorf("CloudExport provider '%s' is not supported", ce.CloudProvider)
+		return fmt.Errorf("cloud provider '%s' is not supported", ce.CloudProvider)
 	}
-	return nil
 }
 
 func validateAWSProvider(ce *models.CloudExport) error {
@@ -327,6 +318,9 @@ func validateAWSProvider(ce *models.CloudExport) error {
 }
 
 func validateAzureProvider(ce *models.CloudExport) error {
+	if ce.GetAzureProperties() == nil {
+		return ceFieldError("Properties")
+	}
 	if ce.GetAzureProperties().Location == "" {
 		return ceFieldError("Properties.Location")
 	}
@@ -343,6 +337,9 @@ func validateAzureProvider(ce *models.CloudExport) error {
 }
 
 func validateGCEProvider(ce *models.CloudExport) error {
+	if ce.GetGCEProperties() == nil {
+		return ceFieldError("Properties")
+	}
 	if ce.GetGCEProperties().Project == "" {
 		return ceFieldError("Properties.Project")
 	}
@@ -353,6 +350,9 @@ func validateGCEProvider(ce *models.CloudExport) error {
 }
 
 func validateIBMProvider(ce *models.CloudExport) error {
+	if ce.GetIBMProperties() == nil {
+		return ceFieldError("Properties")
+	}
 	if ce.GetIBMProperties().Bucket == "" {
 		return ceFieldError("Properties.Bucket")
 	}
