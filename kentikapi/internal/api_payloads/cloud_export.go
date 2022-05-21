@@ -10,6 +10,13 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+const (
+	awsProvider   = "aws"
+	azureProvider = "azure"
+	gceProvider   = "gce"
+	ibmProvider   = "ibm"
+)
+
 type ListCloudExportsResponse cloudexportpb.ListCloudExportResponse
 
 func (r *ListCloudExportsResponse) ToModel() (*models.GetAllCloudExportsResponse, error) {
@@ -67,13 +74,13 @@ func CloudExportFromPayload(ce *cloudexportpb.CloudExport) (*models.CloudExport,
 
 func propertiesFromPayload(ce *cloudexportpb.CloudExport) (models.CloudExportProperties, error) {
 	switch ce.CloudProvider {
-	case "aws":
+	case awsProvider:
 		return awsPropertiesFromPayload(ce.GetAws())
-	case "azure":
+	case azureProvider:
 		return azurePropertiesFromPayload(ce.GetAzure())
-	case "gce":
+	case gceProvider:
 		return gcePropertiesFromPayload(ce.GetGce())
-	case "ibm":
+	case ibmProvider:
 		return ibmPropertiesFromPayload(ce.GetIbm())
 	default:
 		return nil, fmt.Errorf("invalid cloud provider in response payload: %v", ce.CloudProvider)
@@ -158,7 +165,7 @@ func currentStatusFromPayload(cs *cloudexportpb.Status, id string) *models.Cloud
 // CloudExportToPayload converts cloud export from model to payload. It sets only ID and read-write fields.
 func CloudExportToPayload(ce *models.CloudExport) (*cloudexportpb.CloudExport, error) {
 	if ce == nil {
-		return nil, nil
+		return nil, fmt.Errorf("cloud export object is nil")
 	}
 
 	payload := &cloudexportpb.CloudExport{
@@ -190,13 +197,13 @@ func bgpPropertiesToPayload(bgp *models.BGPProperties) *cloudexportpb.BgpPropert
 
 func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *models.CloudExport) (*cloudexportpb.CloudExport, error) {
 	switch ce.CloudProvider {
-	case "aws":
+	case awsProvider:
 		payload.Properties = awsPropertiesToPayload(ce)
-	case "azure":
+	case azureProvider:
 		payload.Properties = azurePropertiesToPayload(ce)
-	case "gce":
+	case gceProvider:
 		payload.Properties = gcePropertiesToPayload(ce)
-	case "ibm":
+	case ibmProvider:
 		payload.Properties = ibmPropertiesToPayload(ce)
 	default:
 		return nil, fmt.Errorf("invalid cloud provider: %v", ce.CloudProvider)
@@ -250,4 +257,108 @@ func boolProtoPtrToBoolPtr(v *wrapperspb.BoolValue) *bool {
 		return nil
 	}
 	return pointer.ToBool(v.GetValue())
+}
+
+// ValidateCECreateRequest checks if CloudExport create request contains all required fields.
+func ValidateCECreateRequest(ce *models.CloudExport) error {
+	if ce == nil {
+		return fmt.Errorf("cloud export object is nil")
+	}
+	if ce.Name == "" {
+		return ceFieldError("Name")
+	}
+	if ce.PlanID == "" {
+		return ceFieldError("PlanID")
+	}
+	return validateCEProvider(ce)
+}
+
+// ValidateCEUpdateRequest checks if CloudExport update request contains all required fields.
+func ValidateCEUpdateRequest(ce *models.CloudExport) error {
+	if ce == nil {
+		return fmt.Errorf("cloud export object is nil")
+	}
+	if ce.ID == "" {
+		return ceFieldError("ID")
+	}
+	if ce.Name == "" {
+		return ceFieldError("Name")
+	}
+	if ce.PlanID == "" {
+		return ceFieldError("PlanID")
+	}
+	return validateCEProvider(ce)
+}
+
+func validateCEProvider(ce *models.CloudExport) error {
+	switch ce.CloudProvider {
+	case "":
+		return ceFieldError("CloudProvider")
+	case awsProvider:
+		return validateAWSProvider(ce)
+	case azureProvider:
+		return validateAzureProvider(ce)
+	case gceProvider:
+		return validateGCEProvider(ce)
+	case ibmProvider:
+		return validateIBMProvider(ce)
+	default:
+		return fmt.Errorf("cloud provider '%s' is not supported", ce.CloudProvider)
+	}
+}
+
+func validateAWSProvider(ce *models.CloudExport) error {
+	if ce.GetAWSProperties() == nil {
+		return ceFieldError("Properties")
+	}
+	if ce.GetAWSProperties().Bucket == "" {
+		return ceFieldError("Properties.Bucket")
+	}
+	return nil
+}
+
+func validateAzureProvider(ce *models.CloudExport) error {
+	if ce.GetAzureProperties() == nil {
+		return ceFieldError("Properties")
+	}
+	if ce.GetAzureProperties().Location == "" {
+		return ceFieldError("Properties.Location")
+	}
+	if ce.GetAzureProperties().ResourceGroup == "" {
+		return ceFieldError("Properties.ResourceGroup")
+	}
+	if ce.GetAzureProperties().StorageAccount == "" {
+		return ceFieldError("Properties.StorageAccount")
+	}
+	if ce.GetAzureProperties().SubscriptionID == "" {
+		return ceFieldError("Properties.SubscriptionID")
+	}
+	return nil
+}
+
+func validateGCEProvider(ce *models.CloudExport) error {
+	if ce.GetGCEProperties() == nil {
+		return ceFieldError("Properties")
+	}
+	if ce.GetGCEProperties().Project == "" {
+		return ceFieldError("Properties.Project")
+	}
+	if ce.GetGCEProperties().Subscription == "" {
+		return ceFieldError("Properties.Subscription")
+	}
+	return nil
+}
+
+func validateIBMProvider(ce *models.CloudExport) error {
+	if ce.GetIBMProperties() == nil {
+		return ceFieldError("Properties")
+	}
+	if ce.GetIBMProperties().Bucket == "" {
+		return ceFieldError("Properties.Bucket")
+	}
+	return nil
+}
+
+func ceFieldError(field string) error {
+	return fmt.Errorf("CloudExport '%s' field is required but not provided", field)
 }

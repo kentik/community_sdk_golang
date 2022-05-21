@@ -43,7 +43,9 @@ func (a *CloudExportsAPI) Get(ctx context.Context, id models.ID) (*models.CloudE
 
 // Create creates new Cloud Export.
 func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*models.CloudExport, error) {
-	// TODO(dfurman): add request validation
+	if err := api_payloads.ValidateCECreateRequest(ce); err != nil {
+		return nil, err
+	}
 	payload, err := api_payloads.CloudExportToPayload(ce)
 	if err != nil {
 		return nil, err
@@ -61,7 +63,9 @@ func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*
 
 // Update updates the Cloud Export.
 func (a *CloudExportsAPI) Update(ctx context.Context, ce *models.CloudExport) (*models.CloudExport, error) {
-	// TODO(dfurman): add request validation
+	if err := api_payloads.ValidateCEUpdateRequest(ce); err != nil {
+		return nil, err
+	}
 	payload, err := api_payloads.CloudExportToPayload(ce)
 	if err != nil {
 		return nil, err
