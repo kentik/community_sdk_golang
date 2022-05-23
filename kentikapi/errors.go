@@ -3,97 +3,67 @@ package kentikapi
 import (
 	"errors"
 
-	kentikError "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
+	kentikerrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 )
 
-// IsAuthError checks if passed error is Authorization error, if yes return true.
+// IsAuthError returns true if passed error is an authentication/authorization error.
 func IsAuthError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.AuthError
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		return ke.Code() == kentikerrors.AuthError
 	}
 	return false
 }
 
-// IsInvalidRequestError checks if passed error is invalid request error, if yes return true.
+// IsInvalidRequestError returns true if passed error is due to invalid request.
+// It might be returned if user passed invalid data or there is a resource conflict.
 func IsInvalidRequestError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.InvalidRequest
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		return ke.Code() == kentikerrors.InvalidRequest
 	}
 	return false
 }
 
-// IsNotFoundError checks if passed error is not found error, if yes return true.
+// IsNotFoundError returns true if passed error indicates that resource was not found.
 func IsNotFoundError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.NotFound
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		return ke.Code() == kentikerrors.NotFound
 	}
 	return false
 }
 
-// IsRateLimitExhaustedError checks if passed error is rate limit exhausted error, if yes return true.
+// IsRateLimitExhaustedError returns true if passed error indicates that the rate limit for a resource
+// has been exhausted.
 func IsRateLimitExhaustedError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.RateLimitExhausted
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		return ke.Code() == kentikerrors.RateLimitExhausted
 	}
 	return false
 }
 
-// IsTemporaryError checks if passed error is temporary error, if yes return true.
+// IsTemporaryError returns true if passed error is temporary, e.g. it is due to a timeout,
+// rate limit exhaustion or service unavailability.
 func IsTemporaryError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		if ktErr.Code() == kentikError.Temporary ||
-			ktErr.Code() == kentikError.Timeout ||
-			ktErr.Code() == kentikError.RateLimitExhausted {
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		if ke.Code() == kentikerrors.Temporary ||
+			ke.Code() == kentikerrors.Timeout ||
+			ke.Code() == kentikerrors.Unavailable ||
+			ke.Code() == kentikerrors.RateLimitExhausted {
 			return true
 		}
 	}
 	return false
 }
 
-// IsTimeoutError checks if passed error is timeout error, if yes return true.
+// IsTimeoutError returns true if passed error is a timeout error.
 func IsTimeoutError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.Timeout
+	var ke kentikerrors.StatusError
+	if ok := errors.As(err, &ke); ok {
+		return ke.Code() == kentikerrors.Timeout
 	}
 	return false
-}
-
-// IsUnavailableError checks if passed error is unavailable error, if yes return true.
-func IsUnavailableError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.Unavailable
-	}
-	return false
-}
-
-// IsUnknownError checks if passed error is unknown error, if yes return true.
-func IsUnknownError(err error) bool {
-	var ktErr interface {
-		Code() kentikError.Code
-	}
-	if ok := errors.As(err, &ktErr); ok {
-		return ktErr.Code() == kentikError.Unknown
-	}
-	return true
 }

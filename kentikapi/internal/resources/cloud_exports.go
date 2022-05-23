@@ -5,7 +5,7 @@ import (
 
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_payloads"
-	kentikErrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
+	kentikerrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"google.golang.org/grpc"
 )
@@ -26,7 +26,7 @@ func NewCloudExportsAPI(cc grpc.ClientConnInterface) *CloudExportsAPI {
 func (a *CloudExportsAPI) GetAll(ctx context.Context) (*models.GetAllCloudExportsResponse, error) {
 	response, err := a.client.ListCloudExport(ctx, &cloudexportpb.ListCloudExportRequest{})
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	return (*api_payloads.ListCloudExportsResponse)(response).ToModel()
@@ -36,7 +36,7 @@ func (a *CloudExportsAPI) GetAll(ctx context.Context) (*models.GetAllCloudExport
 func (a *CloudExportsAPI) Get(ctx context.Context, id models.ID) (*models.CloudExport, error) {
 	response, err := a.client.GetCloudExport(ctx, &cloudexportpb.GetCloudExportRequest{Id: id})
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	return api_payloads.CloudExportFromPayload(response.GetExport())
@@ -49,14 +49,14 @@ func (a *CloudExportsAPI) Create(ctx context.Context, ce *models.CloudExport) (*
 	}
 	payload, err := api_payloads.CloudExportToPayload(ce)
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	response, err := a.client.CreateCloudExport(ctx, &cloudexportpb.CreateCloudExportRequest{
 		Export: payload,
 	})
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	return api_payloads.CloudExportFromPayload(response.GetExport())
@@ -69,14 +69,14 @@ func (a *CloudExportsAPI) Update(ctx context.Context, ce *models.CloudExport) (*
 	}
 	payload, err := api_payloads.CloudExportToPayload(ce)
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	response, err := a.client.UpdateCloudExport(ctx, &cloudexportpb.UpdateCloudExportRequest{
 		Export: payload,
 	})
 	if err != nil {
-		return nil, kentikErrors.KentikErrorFromGRPC(err)
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
 	return api_payloads.CloudExportFromPayload(response.GetExport())
@@ -85,5 +85,5 @@ func (a *CloudExportsAPI) Update(ctx context.Context, ce *models.CloudExport) (*
 // Delete removes Cloud Export with given ID.
 func (a *CloudExportsAPI) Delete(ctx context.Context, id models.ID) error {
 	_, err := a.client.DeleteCloudExport(ctx, &cloudexportpb.DeleteCloudExportRequest{Id: id})
-	return kentikErrors.KentikErrorFromGRPC(err)
+	return kentikerrors.StatusErrorFromGRPC(err)
 }

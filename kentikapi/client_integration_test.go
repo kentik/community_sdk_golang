@@ -35,6 +35,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 		expectedResult      *models.User
 		expectedError       bool
 		expectedTimeout     bool
+		errorPredicates     []func(error) bool
 	}{
 		{
 			name: "retry on status 502 Bad Gateway until invalid response format received",
@@ -94,6 +95,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			serverHandlingDelay: 10 * time.Millisecond,
 			expectedError:       true,
 			expectedTimeout:     false,
+			errorPredicates:     []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name: "timeout is longer than the wait for response with retries",
 			responses: []testutil.HTTPResponse{
@@ -105,6 +107,7 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			timeout:             10 * time.Second,
 			expectedError:       true,
 			expectedTimeout:     false,
+			errorPredicates:     []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name: "timeout during first request",
 			responses: []testutil.HTTPResponse{
@@ -116,6 +119,29 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			timeout:             5 * time.Millisecond,
 			expectedError:       true,
 			expectedTimeout:     true,
+			errorPredicates:     []func(error) bool{kentikapi.IsTimeoutError, kentikapi.IsTemporaryError},
+		}, {
+			name: "authorization error",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusUnauthorized),
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			expectedError:       true,
+			expectedTimeout:     false,
+			errorPredicates:     []func(error) bool{kentikapi.IsAuthError},
+		}, {
+			name: "too many requests error",
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+			},
+			serverHandlingDelay: 10 * time.Millisecond,
+			expectedError:       true,
+			expectedTimeout:     false,
+			errorPredicates:     []func(error) bool{kentikapi.IsRateLimitExhaustedError, kentikapi.IsTemporaryError},
 		},
 	}
 
@@ -143,6 +169,9 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			t.Logf("Got result: %v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
+				}
 			} else {
 				assert.NoError(t, err)
 			}
@@ -202,7 +231,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			},
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsUnavailableError},
+			errorPredicates: []func(error) bool{kentikapi.IsTemporaryError},
 		}, {
 			name: "retry 4 times when code Unavailable received and last code is Unknown",
 			responses: []gRPCGetAgentResponse{
@@ -212,17 +241,15 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				newErrorGRPCGetAgentResponse(codes.Unavailable),
 				newErrorGRPCGetAgentResponse(codes.Unknown),
 			},
-			expectedResult:  nil,
-			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsUnknownError},
+			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name: "do not retry when code Unknown received",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unknown),
 			},
-			expectedResult:  nil,
-			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsUnknownError},
+			expectedResult: nil,
+			expectedError:  true,
 		}, {
 			name:    "do not retry when retries disabled and code Unavailable received",
 			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(0)},
@@ -231,7 +258,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			},
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsUnavailableError},
+			errorPredicates: []func(error) bool{kentikapi.IsTemporaryError},
 		}, {
 			name:    "retry specified number of times when code Unavailable received",
 			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(2)},
@@ -242,7 +269,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			},
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsUnavailableError},
+			errorPredicates: []func(error) bool{kentikapi.IsTemporaryError},
 		}, {
 			name:            "timeout during first request",
 			options:         []kentikapi.ClientOption{kentikapi.WithTimeout(5 * time.Millisecond)},
@@ -250,7 +277,27 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			handlingDelay:   1 * time.Second,
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsTimeoutError},
+			errorPredicates: []func(error) bool{kentikapi.IsTimeoutError, kentikapi.IsTemporaryError},
+		}, {
+			name: "authorization error",
+			responses: []gRPCGetAgentResponse{
+				newErrorGRPCGetAgentResponse(codes.Unauthenticated),
+			},
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsAuthError},
+		}, {
+			name:    "too many requests error",
+			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(3)},
+			responses: []gRPCGetAgentResponse{
+				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
+				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
+				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
+				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
+			},
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsRateLimitExhaustedError, kentikapi.IsTemporaryError},
 		},
 	}
 

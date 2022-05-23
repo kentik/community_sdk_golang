@@ -37,6 +37,10 @@ export KTAPI_AUTH_TOKEN=<Kentik API authentication token>
 go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/community_sdk_golang/examples
 ```
 
+### Errors
+
+Library provide a set of [functions](./kentikapi/errors.go) to check error type returned by the client.
+
 ## Contributing
 
 Anybody who wants to contribute to development is welcome to provide pull requests. To work on the SDK, install tools listed in [requirements section](#requirements).

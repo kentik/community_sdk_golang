@@ -483,8 +483,9 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				PlanID:        "11467",
 				AWSProperties: models.AWSPropertiesRequiredFields{},
 			}),
-			expectedResult: nil,
-			expectedError:  true,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -579,10 +580,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			},
 			expectedResult: newFullAWSCloudExport(),
 		}, {
-			name:           "update request validation, missing AWS.BUCKET",
-			request:        newInvalidAWSCloudExport(),
-			expectedResult: nil,
-			expectedError:  true,
+			name:            "update request validation, missing AWS.BUCKET",
+			request:         newInvalidAWSCloudExport(),
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -1025,8 +1027,4 @@ func newFullCloudExportPayload() *cloudexportpb.CloudExport {
 			StorageAccountAccess: &wrapperspb.BoolValue{Value: false},
 		},
 	}
-}
-
-func codePtr(c codes.Code) *codes.Code {
-	return &c
 }

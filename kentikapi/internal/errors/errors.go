@@ -13,45 +13,42 @@ import (
 type Code int
 
 const (
-	AuthError          Code = 1
-	InvalidRequest     Code = 2
-	NotFound           Code = 3
-	RateLimitExhausted Code = 4
-	Temporary          Code = 5
-	Timeout            Code = 6
-	Unavailable        Code = 7
-	Unknown            Code = 8
-	InvalidResponse    Code = 9
+	Unknown Code = iota
+	AuthError
+	InvalidRequest
+	Timeout
+	Unavailable
+	InvalidResponse
+	NotFound
+	RateLimitExhausted
+	Temporary
 )
 
-type KentikError struct {
+type StatusError struct {
 	code Code
 	msg  string
 }
 
-func New(code Code, msg string) KentikError {
-	return KentikError{
+func New(code Code, msg string) StatusError {
+	return StatusError{
 		code: code,
 		msg:  msg,
 	}
 }
 
-func (ke KentikError) Error() string {
+func (ke StatusError) Error() string {
 	return fmt.Sprintf("code: %v, message: %s", ke.code, ke.msg)
 }
 
-func (ke KentikError) Code() Code {
-	if ke.code == 0 {
-		return 0
-	}
+func (ke StatusError) Code() Code {
 	return ke.code
 }
 
-func KentikErrorFromHTTP(response *http.Response, err error) error {
+func StatusErrorFromHTTP(response *http.Response, err error) error {
 	if err == nil {
 		return nil
 	}
-	ke := KentikError{msg: err.Error()}
+	ke := StatusError{msg: err.Error()}
 	if response != nil {
 		switch response.StatusCode {
 		case http.StatusUnauthorized, http.StatusForbidden:
@@ -69,17 +66,14 @@ func KentikErrorFromHTTP(response *http.Response, err error) error {
 	if errors.Is(err, context.DeadlineExceeded) {
 		ke.code = Timeout
 	}
-	if ke.code == 0 {
-		ke.code = Unknown
-	}
 	return ke
 }
 
-func KentikErrorFromGRPC(err error) error {
+func StatusErrorFromGRPC(err error) error {
 	if err == nil {
 		return nil
 	}
-	ke := KentikError{msg: err.Error()}
+	ke := StatusError{msg: err.Error()}
 	if e, ok := status.FromError(err); ok {
 		switch e.Code() {
 		case codes.DeadlineExceeded:
@@ -97,8 +91,6 @@ func KentikErrorFromGRPC(err error) error {
 		default:
 			ke.code = Unknown
 		}
-	} else {
-		ke.code = Unknown
 	}
 	return ke
 }
