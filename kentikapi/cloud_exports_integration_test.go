@@ -2,6 +2,7 @@ package kentikapi_test
 
 import (
 	"context"
+	"errors"
 	"net"
 	"testing"
 
@@ -316,16 +317,11 @@ func TestClient_CreateCloudExport(t *testing.T) {
 		errorPredicates []func(error) bool
 	}{
 		{
-			name:            "nil request, status InvalidArgument received",
+			name:            "nil request",
 			request:         nil,
-			expectedRequest: &cloudexportpb.CreateCloudExportRequest{Export: nil},
-			response: createCEResponse{
-				data: &cloudexportpb.CreateCloudExportResponse{},
-				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
-			},
+			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -480,6 +476,15 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: newFullIBMCloudExport(),
+		}, {
+			name: "create request validation, missing AWS.BUCKET",
+			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
+				Name:          "invalid-aws-export",
+				PlanID:        "11467",
+				AWSProperties: models.AWSPropertiesRequiredFields{},
+			}),
+			expectedResult: nil,
+			expectedError:  true,
 		},
 	}
 	//nolint:dupl
@@ -513,13 +518,12 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if assert.Equal(t, 1, len(server.requests.createCERequests), "invalid number of requests") {
+			if tt.expectedRequest != nil && assert.Equal(t, 1, len(server.requests.createCERequests), "invalid number of requests") {
 				r := server.requests.createCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
 				testutil.AssertProtoEqual(t, tt.expectedRequest, r.data)
 			}
-
 			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
@@ -536,15 +540,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 		errorPredicates []func(error) bool
 	}{
 		{
-			name:            "nil request, status InvalidArgument received",
+			name:            "nil request",
 			request:         nil,
-			expectedRequest: &cloudexportpb.UpdateCloudExportRequest{Export: nil},
-			response: updateCEResponse{
-				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
-			},
+			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -578,6 +578,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				},
 			},
 			expectedResult: newFullAWSCloudExport(),
+		}, {
+			name:           "update request validation, missing AWS.BUCKET",
+			request:        newInvalidAWSCloudExport(),
+			expectedResult: nil,
+			expectedError:  true,
 		},
 	}
 	//nolint:dupl
@@ -611,7 +616,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			if assert.Equal(t, 1, len(server.requests.updateCERequests), "invalid number of requests") {
+			if tt.expectedRequest != nil && assert.Equal(t, 1, len(server.requests.updateCERequests), "invalid number of requests") {
 				r := server.requests.updateCERequests[0]
 				assert.Equal(t, dummyAuthEmail, r.metadata.Get(authEmailKey)[0])
 				assert.Equal(t, dummyAuthToken, r.metadata.Get(authAPITokenKey)[0])
@@ -789,7 +794,9 @@ func (s *spyCloudExportServer) Start() {
 
 	go func() {
 		err = s.server.Serve(l)
-		assert.NoError(s.t, err)
+		if !errors.Is(err, grpc.ErrServerStopped) {
+			assert.NoError(s.t, err)
+		}
 		s.done <- struct{}{}
 	}()
 }
@@ -871,6 +878,14 @@ func newFullAWSCloudExport() *models.CloudExport {
 		DeleteAfterRead: pointer.ToBool(true),
 		MultipleBuckets: pointer.ToBool(false),
 	}
+	return ce
+}
+
+func newInvalidAWSCloudExport() *models.CloudExport {
+	ce := newFullCloudExport()
+	ce.ID = awsCloudExportID
+	ce.CloudProvider = models.CloudProviderAWS
+	ce.Properties = &models.AWSProperties{}
 	return ce
 }
 
@@ -1010,4 +1025,8 @@ func newFullCloudExportPayload() *cloudexportpb.CloudExport {
 			StorageAccountAccess: &wrapperspb.BoolValue{Value: false},
 		},
 	}
+}
+
+func codePtr(c codes.Code) *codes.Code {
+	return &c
 }

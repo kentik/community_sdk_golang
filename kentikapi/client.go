@@ -270,7 +270,12 @@ func makeAuthInterceptor(c config) grpc.UnaryClientInterceptor {
 func makeRetryInterceptor(c config) grpc.UnaryClientInterceptor {
 	return grpcretry.UnaryClientInterceptor(
 		grpcretry.WithBackoff(grpcretry.BackoffExponential(*c.RetryCfg.MinDelay)),
-		grpcretry.WithCodes(codes.Unavailable),
+		grpcretry.WithCodes(
+			codes.Unavailable,
+			codes.ResourceExhausted,
+			codes.FailedPrecondition,
+			codes.Aborted,
+		),
 		// grpcretry.WithMax specifies the number of total requests sent and not retries
 		grpcretry.WithMax(*c.RetryCfg.MaxAttempts+1),
 	)
