@@ -263,7 +263,7 @@ func boolProtoPtrToBoolPtr(v *wrapperspb.BoolValue) *bool {
 // ValidateCECreateRequest checks if CloudExport create request contains all required fields.
 func ValidateCECreateRequest(ce *models.CloudExport) error {
 	if ce == nil {
-		return fmt.Errorf("cloud export object is nil")
+		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
 	}
 	if ce.Name == "" {
 		return ceFieldError("Name")
@@ -277,7 +277,7 @@ func ValidateCECreateRequest(ce *models.CloudExport) error {
 // ValidateCEUpdateRequest checks if CloudExport update request contains all required fields.
 func ValidateCEUpdateRequest(ce *models.CloudExport) error {
 	if ce == nil {
-		return fmt.Errorf("cloud export object is nil")
+		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
 	}
 	if ce.ID == "" {
 		return ceFieldError("ID")
@@ -304,7 +304,9 @@ func validateCEProvider(ce *models.CloudExport) error {
 	case ibmProvider:
 		return validateIBMProvider(ce)
 	default:
-		return fmt.Errorf("cloud provider '%s' is not supported", ce.CloudProvider)
+		return kentikerrors.New(
+			kentikerrors.InvalidRequest,
+			fmt.Sprintf("cloud provider '%s' is not supported", ce.CloudProvider))
 	}
 }
 

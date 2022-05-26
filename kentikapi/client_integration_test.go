@@ -125,10 +125,9 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 			responses: []testutil.HTTPResponse{
 				testutil.NewErrorHTTPResponse(http.StatusUnauthorized),
 			},
-			serverHandlingDelay: 10 * time.Millisecond,
-			expectedError:       true,
-			expectedTimeout:     false,
-			errorPredicates:     []func(error) bool{kentikapi.IsAuthError},
+			expectedError:   true,
+			expectedTimeout: false,
+			errorPredicates: []func(error) bool{kentikapi.IsAuthError},
 		}, {
 			name: "too many requests error",
 			responses: []testutil.HTTPResponse{
@@ -138,10 +137,9 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
 			},
-			serverHandlingDelay: 10 * time.Millisecond,
-			expectedError:       true,
-			expectedTimeout:     false,
-			errorPredicates:     []func(error) bool{kentikapi.IsRateLimitExhaustedError, kentikapi.IsTemporaryError},
+			expectedError:   true,
+			expectedTimeout: false,
+			errorPredicates: []func(error) bool{kentikapi.IsRateLimitExhaustedError, kentikapi.IsTemporaryError},
 		},
 	}
 
@@ -279,7 +277,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsTimeoutError, kentikapi.IsTemporaryError},
 		}, {
-			name: "authorization error",
+			name: "Unauthenticated error",
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.Unauthenticated),
 			},
@@ -287,7 +285,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsAuthError},
 		}, {
-			name:    "too many requests error",
+			name:    "ResourceExhausted error",
 			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(3)},
 			responses: []gRPCGetAgentResponse{
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
@@ -295,9 +293,8 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 			},
-			expectedResult:  nil,
-			expectedError:   true,
-			errorPredicates: []func(error) bool{kentikapi.IsRateLimitExhaustedError, kentikapi.IsTemporaryError},
+			expectedResult: nil,
+			expectedError:  true,
 		},
 	}
 

@@ -322,6 +322,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -546,6 +547,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),

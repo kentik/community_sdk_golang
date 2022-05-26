@@ -49,8 +49,7 @@ func IsRateLimitExhaustedError(err error) bool {
 func IsTemporaryError(err error) bool {
 	var ke kentikerrors.StatusError
 	if ok := errors.As(err, &ke); ok {
-		if ke.Code() == kentikerrors.Temporary ||
-			ke.Code() == kentikerrors.Timeout ||
+		if ke.Code() == kentikerrors.Timeout ||
 			ke.Code() == kentikerrors.Unavailable ||
 			ke.Code() == kentikerrors.RateLimitExhausted {
 			return true

@@ -21,7 +21,6 @@ const (
 	InvalidResponse
 	NotFound
 	RateLimitExhausted
-	Temporary
 )
 
 type StatusError struct {

@@ -39,7 +39,7 @@ go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/comm
 
 ### Errors
 
-Library provide a set of [functions](./kentikapi/errors.go) to check error type returned by the client.
+Library provides a set of [functions](./kentikapi/errors.go) to check error type returned by the client.
 
 ## Contributing
 
