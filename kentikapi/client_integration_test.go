@@ -285,9 +285,9 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsAuthError},
 		}, {
-			name:    "ResourceExhausted error",
-			options: []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(3)},
+			name: "ResourceExhausted error",
 			responses: []gRPCGetAgentResponse{
+				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
