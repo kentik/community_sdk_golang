@@ -16,11 +16,11 @@ const (
 	Unknown Code = iota
 	AuthError
 	InvalidRequest
-	Timeout
-	Unavailable
 	InvalidResponse
 	NotFound
 	RateLimitExhausted
+	Timeout
+	Unavailable
 )
 
 type StatusError struct {

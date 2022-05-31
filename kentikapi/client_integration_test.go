@@ -293,8 +293,9 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 				newErrorGRPCGetAgentResponse(codes.ResourceExhausted),
 			},
-			expectedResult: nil,
-			expectedError:  true,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsRateLimitExhaustedError},
 		},
 	}
 
