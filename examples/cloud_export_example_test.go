@@ -10,35 +10,35 @@ import (
 	"testing"
 
 	"github.com/AlekSi/pointer"
-	"github.com/kentik/community_sdk_golang/kentikapi/models"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDemonstrateCloudExportAPIWithAWS(t *testing.T) {
+func TestDemonstrateCloudAPIWithAWSExport(t *testing.T) {
 	t.Parallel()
-	err := demonstrateCloudExportAPIWithAWS()
+	err := demonstrateCloudAPIWithAWSExport()
 	assert.NoError(t, err)
 }
 
-func TestDemonstrateCloudExportAPIWithAzure(t *testing.T) {
+func TestDemonstrateCloudAPIWithAzureExport(t *testing.T) {
 	t.Parallel()
-	err := demonstrateCloudExportAPIWithAzure()
+	err := demonstrateCloudAPIWithAzureExport()
 	assert.NoError(t, err)
 }
 
-func TestDemonstrateCloudExportAPIWithGCE(t *testing.T) {
+func TestDemonstrateCloudAPIWithGCEExport(t *testing.T) {
 	t.Parallel()
-	err := demonstrateCloudExportAPIWithGCE()
+	err := demonstrateCloudAPIWithGCEExport()
 	assert.NoError(t, err)
 }
 
-func TestDemonstrateCloudExportAPIWithIBM(t *testing.T) {
+func TestDemonstrateCloudAPIWithIBMExport(t *testing.T) {
 	t.Parallel()
-	err := demonstrateCloudExportAPIWithIBM()
+	err := demonstrateCloudAPIWithIBMExport()
 	assert.NoError(t, err)
 }
 
-func demonstrateCloudExportAPIWithAWS() error {
+func demonstrateCloudAPIWithAWSExport() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
@@ -46,49 +46,49 @@ func demonstrateCloudExportAPIWithAWS() error {
 	}
 
 	fmt.Println("### Getting all cloud exports")
-	getAllResp, err := client.CloudExports.GetAll(ctx)
+	getAllResp, err := client.Cloud.GetAllExports(ctx)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.GetAll: %w", err)
+		return fmt.Errorf("client.Cloud.GetAll: %w", err)
 	}
 
 	fmt.Println("Got all cloud exports:")
-	PrettyPrint(getAllResp.CloudExports)
-	fmt.Println("Number of cloud exports:", len(getAllResp.CloudExports))
-	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidCloudExportsCount)
+	PrettyPrint(getAllResp.Exports)
+	fmt.Println("Number of cloud exports:", len(getAllResp.Exports))
+	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidExportsCount)
 
 	fmt.Println("### Creating AWS cloud export")
-	ce := models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
+	ce := cloud.NewAWSExport(cloud.AWSExportRequiredFields{
 		Name:   "go-sdk-example-aws-export",
 		PlanID: "11467",
-		AWSProperties: models.AWSPropertiesRequiredFields{
+		AWSProperties: cloud.AWSPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
 		},
 	})
-	ce.Type = models.CloudExportTypeKentikManaged
+	ce.Type = cloud.ExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy AWS description"
 	ce.GetAWSProperties().IAMRoleARN = "dummy-iam-role-arn"
 	ce.GetAWSProperties().Region = "dummy-region"
 	ce.GetAWSProperties().DeleteAfterRead = pointer.ToBool(true)
 	ce.GetAWSProperties().MultipleBuckets = pointer.ToBool(true)
-	ce.BGP = &models.BGPProperties{
+	ce.BGP = &cloud.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
 		DeviceBGPType:  "dummy-device-bgp-type",
 	}
 
-	ce, err = client.CloudExports.Create(ctx, ce)
+	ce, err = client.Cloud.CreateExport(ctx, ce)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Create: %w", err)
+		return fmt.Errorf("client.Cloud.Create: %w", err)
 	}
 
 	fmt.Println("Created AWS cloud export:")
 	PrettyPrint(ce)
 
 	fmt.Println("### Getting AWS cloud export")
-	ce, err = client.CloudExports.Get(ctx, ce.ID)
+	ce, err = client.Cloud.GetExport(ctx, ce.ID)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Get: %w", err)
+		return fmt.Errorf("client.Cloud.Get: %w", err)
 	}
 
 	fmt.Println("Got AWS cloud export:")
@@ -99,25 +99,25 @@ func demonstrateCloudExportAPIWithAWS() error {
 	ce.Description = "Updated description"
 	ce.GetAWSProperties().Bucket = "updated-bucket"
 	ce.BGP.UseBGPDeviceID = "updated-bgp-device-id"
-	ce, err = client.CloudExports.Update(ctx, ce)
+	ce, err = client.Cloud.UpdateExport(ctx, ce)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Update: %w", err)
+		return fmt.Errorf("client.Cloud.Update: %w", err)
 	}
 
 	fmt.Println("Updated cloud export:")
 	PrettyPrint(ce)
 
 	fmt.Println("### Deleting AWS cloud export")
-	err = client.CloudExports.Delete(ctx, ce.ID)
+	err = client.Cloud.DeleteExport(ctx, ce.ID)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Delete: %w", err)
+		return fmt.Errorf("client.Cloud.Delete: %w", err)
 	}
 
 	fmt.Println("Deleted AWS cloud export")
 	return nil
 }
 
-func demonstrateCloudExportAPIWithAzure() error {
+func demonstrateCloudAPIWithAzureExport() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
@@ -125,44 +125,44 @@ func demonstrateCloudExportAPIWithAzure() error {
 	}
 
 	fmt.Println("### Creating Azure cloud export")
-	ce := models.NewAzureCloudExport(models.CloudExportAzureRequiredFields{
+	ce := cloud.NewAzureExport(cloud.AzureExportRequiredFields{
 		Name:   "go-sdk-example-azure-export",
 		PlanID: "11467",
-		AzureProperties: models.AzurePropertiesRequiredFields{
+		AzureProperties: cloud.AzurePropertiesRequiredFields{
 			Location:       "dummy-location",
 			ResourceGroup:  "dummy-rg",
 			StorageAccount: "dummy-sa",
 			SubscriptionID: "dummy-sid",
 		},
 	})
-	ce.Type = models.CloudExportTypeKentikManaged
+	ce.Type = cloud.ExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy Azure description"
 	ce.GetAzureProperties().SecurityPrincipalEnabled = pointer.ToBool(true)
-	ce.BGP = &models.BGPProperties{
+	ce.BGP = &cloud.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
 		DeviceBGPType:  "dummy-device-bgp-type",
 	}
-	ce, err = client.CloudExports.Create(ctx, ce)
+	ce, err = client.Cloud.CreateExport(ctx, ce)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Create: %w", err)
+		return fmt.Errorf("client.Cloud.Create: %w", err)
 	}
 
 	fmt.Println("Created Azure cloud export:")
 	PrettyPrint(ce)
 
 	fmt.Println("### Deleting Azure cloud export")
-	err = client.CloudExports.Delete(ctx, ce.ID)
+	err = client.Cloud.DeleteExport(ctx, ce.ID)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Delete: %w", err)
+		return fmt.Errorf("client.Cloud.Delete: %w", err)
 	}
 
 	fmt.Println("Deleted Azure cloud export")
 	return nil
 }
 
-func demonstrateCloudExportAPIWithGCE() error {
+func demonstrateCloudAPIWithGCEExport() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
@@ -170,42 +170,42 @@ func demonstrateCloudExportAPIWithGCE() error {
 	}
 
 	fmt.Println("### Creating GCE cloud export")
-	ce := models.NewGCECloudExport(models.CloudExportGCERequiredFields{
+	ce := cloud.NewGCEExport(cloud.GCEExportRequiredFields{
 		Name:   "go-sdk-example-gce-export",
 		PlanID: "11467",
-		GCEProperties: models.GCEPropertiesRequiredFields{
+		GCEProperties: cloud.GCEPropertiesRequiredFields{
 			Project:      "dummy-project",
 			Subscription: "dummy-subscription",
 		},
 	})
-	ce.Type = models.CloudExportTypeKentikManaged
+	ce.Type = cloud.ExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy GCE description"
-	ce.BGP = &models.BGPProperties{
+	ce.BGP = &cloud.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
 		DeviceBGPType:  "dummy-device-bgp-type",
 	}
 
-	ce, err = client.CloudExports.Create(ctx, ce)
+	ce, err = client.Cloud.CreateExport(ctx, ce)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Create: %w", err)
+		return fmt.Errorf("client.Cloud.Create: %w", err)
 	}
 
 	fmt.Println("Created GCE cloud export:")
 	PrettyPrint(ce)
 
 	fmt.Println("### Deleting GCE cloud export")
-	err = client.CloudExports.Delete(ctx, ce.ID)
+	err = client.Cloud.DeleteExport(ctx, ce.ID)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Delete: %w", err)
+		return fmt.Errorf("client.Cloud.Delete: %w", err)
 	}
 
 	fmt.Println("Deleted GCE cloud export")
 	return nil
 }
 
-func demonstrateCloudExportAPIWithIBM() error {
+func demonstrateCloudAPIWithIBMExport() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
@@ -213,34 +213,34 @@ func demonstrateCloudExportAPIWithIBM() error {
 	}
 
 	fmt.Println("### Creating IBM cloud export")
-	ce := models.NewIBMCloudExport(models.CloudExportIBMRequiredFields{
+	ce := cloud.NewIBMExport(cloud.IBMExportRequiredFields{
 		Name:   "go-sdk-example-ibm-export",
 		PlanID: "11467",
-		IBMProperties: models.IBMPropertiesRequiredFields{
+		IBMProperties: cloud.IBMPropertiesRequiredFields{
 			Bucket: "dummy-bucket",
 		},
 	})
-	ce.Type = models.CloudExportTypeKentikManaged
+	ce.Type = cloud.ExportTypeKentikManaged
 	ce.Enabled = pointer.ToBool(true)
 	ce.Description = "Dummy IBM description"
-	ce.BGP = &models.BGPProperties{
+	ce.BGP = &cloud.BGPProperties{
 		ApplyBGP:       pointer.ToBool(true),
 		UseBGPDeviceID: "dummy-device-id",
 		DeviceBGPType:  "dummy-device-bgp-type",
 	}
 
-	ce, err = client.CloudExports.Create(ctx, ce)
+	ce, err = client.Cloud.CreateExport(ctx, ce)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Create: %w", err)
+		return fmt.Errorf("client.Cloud.Create: %w", err)
 	}
 
 	fmt.Println("Created IBM cloud export:")
 	PrettyPrint(ce)
 
 	fmt.Println("### Deleting IBM cloud export")
-	err = client.CloudExports.Delete(ctx, ce.ID)
+	err = client.Cloud.DeleteExport(ctx, ce.ID)
 	if err != nil {
-		return fmt.Errorf("client.CloudExports.Delete: %w", err)
+		return fmt.Errorf("client.Cloud.Delete: %w", err)
 	}
 
 	fmt.Println("Deleted IBM cloud export")

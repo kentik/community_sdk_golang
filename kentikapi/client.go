@@ -14,8 +14,10 @@ import (
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/cloud"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/resources"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/synthetics"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -42,7 +44,7 @@ const (
 // Client is the root object for manipulating all the Kentik API resources.
 type Client struct {
 	Alerting           *resources.AlertingAPI
-	CloudExports       *resources.CloudExportsAPI
+	Cloud              *cloud.API
 	CustomApplications *resources.CustomApplicationsAPI
 	CustomDimensions   *resources.CustomDimensionsAPI
 	DeviceLabels       *resources.DeviceLabelsAPI
@@ -52,12 +54,11 @@ type Client struct {
 	Query              *resources.QueryAPI
 	SavedFilters       *resources.SavedFiltersAPI
 	Sites              *resources.SitesAPI
-	Synthetics         *resources.SyntheticsAPI
+	Synthetics         *synthetics.API
 	Tags               *resources.TagsAPI
 	Users              *resources.UsersAPI
 
-	// SyntheticsAdmin and SyntheticsData are gRPC clients
-	// for Kentik API Cloud Export and Synthetics services.
+	// SyntheticsAdmin and SyntheticsData are legacy gRPC clients for Kentik API Synthetics services.
 	SyntheticsAdmin syntheticspb.SyntheticsAdminServiceClient
 	SyntheticsData  syntheticspb.SyntheticsDataServiceClient
 
@@ -125,7 +126,7 @@ func WithRetryMaxDelay(maxDelay time.Duration) ClientOption {
 	}
 }
 
-// WithLogPayloads enables logging of request and response payloads to Cloud Export and Synthetics APIs.
+// WithLogPayloads enables logging of request and response payloads.
 func WithLogPayloads() ClientOption {
 	return func(c *config) {
 		c.LogPayloads = true
@@ -164,7 +165,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	})
 	return &Client{
 		Alerting:           resources.NewAlertingAPI(rc, c.LogPayloads),
-		CloudExports:       resources.NewCloudExportsAPI(grpcConnection),
+		Cloud:              cloud.NewAPI(grpcConnection),
 		CustomApplications: resources.NewCustomApplicationsAPI(rc, c.LogPayloads),
 		CustomDimensions:   resources.NewCustomDimensionsAPI(rc, c.LogPayloads),
 		DeviceLabels:       resources.NewDeviceLabelsAPI(rc, c.LogPayloads),
@@ -174,7 +175,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		Query:              resources.NewQueryAPI(rc, c.LogPayloads),
 		SavedFilters:       resources.NewSavedFiltersAPI(rc, c.LogPayloads),
 		Sites:              resources.NewSitesAPI(rc, c.LogPayloads),
-		Synthetics:         resources.NewSyntheticsAPI(grpcConnection),
+		Synthetics:         synthetics.NewAPI(grpcConnection),
 		Tags:               resources.NewTagsAPI(rc, c.LogPayloads),
 		Users:              resources.NewUsersAPI(rc, c.LogPayloads),
 

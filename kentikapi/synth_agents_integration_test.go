@@ -8,8 +8,10 @@ import (
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -19,11 +21,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestClient_GetAllSyntheticsAgents(t *testing.T) {
+func TestClient_Synthetics_GetAllAgents(t *testing.T) {
 	tests := []struct {
 		name            string
 		response        listAgentsResponse
-		expectedResult  *models.GetAllSyntheticsAgentsResponse
+		expectedResult  *synthetics.GetAllAgentsResponse
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -39,7 +41,7 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 			response: listAgentsResponse{
 				data: &syntheticspb.ListAgentsResponse{},
 			},
-			expectedResult: &models.GetAllSyntheticsAgentsResponse{
+			expectedResult: &synthetics.GetAllAgentsResponse{
 				Agents:             nil,
 				InvalidAgentsCount: 0,
 			},
@@ -51,7 +53,7 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 					InvalidCount: 0,
 				},
 			},
-			expectedResult: &models.GetAllSyntheticsAgentsResponse{
+			expectedResult: &synthetics.GetAllAgentsResponse{
 				Agents:             nil,
 				InvalidAgentsCount: 0,
 			},
@@ -66,8 +68,8 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 					InvalidCount: 1,
 				},
 			},
-			expectedResult: &models.GetAllSyntheticsAgentsResponse{
-				Agents: []models.SyntheticsAgent{
+			expectedResult: &synthetics.GetAllAgentsResponse{
+				Agents: []synthetics.Agent{
 					*newWarsawAgent(),
 					*newMoscowAgent(),
 				},
@@ -88,6 +90,7 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 			expectedError: true,
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -105,7 +108,7 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.GetAll(context.Background())
+			result, err := client.Synthetics.GetAllAgents(context.Background())
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -130,13 +133,13 @@ func TestClient_GetAllSyntheticsAgents(t *testing.T) {
 	}
 }
 
-func TestClient_GetSyntheticsAgent(t *testing.T) {
+func TestClient_Synthetics_GetAgent(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       models.ID
 		expectedRequest *syntheticspb.GetAgentRequest
 		response        getAgentResponse
-		expectedResult  *models.SyntheticsAgent
+		expectedResult  *synthetics.Agent
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -176,6 +179,7 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 			expectedResult: newWarsawAgent(),
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -193,7 +197,7 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.Get(context.Background(), tt.requestID)
+			result, err := client.Synthetics.GetAgent(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -218,13 +222,13 @@ func TestClient_GetSyntheticsAgent(t *testing.T) {
 	}
 }
 
-func TestClient_UpdateSyntheticsAgent(t *testing.T) {
+func TestClient_Synthetics_UpdateAgent(t *testing.T) {
 	tests := []struct {
 		name            string
-		request         *models.SyntheticsAgent
+		request         *synthetics.Agent
 		expectedRequest *syntheticspb.UpdateAgentRequest
 		response        updateAgentResponse
-		expectedResult  *models.SyntheticsAgent
+		expectedResult  *synthetics.Agent
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -280,7 +284,7 @@ func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.Update(context.Background(), tt.request)
+			result, err := client.Synthetics.UpdateAgent(context.Background(), tt.request)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -305,7 +309,8 @@ func TestClient_UpdateSyntheticsAgent(t *testing.T) {
 	}
 }
 
-func TestClient_DeleteSyntheticsAgent(t *testing.T) {
+//nolint:dupl
+func TestClient_Synthetics_DeleteAgent(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       string
@@ -350,7 +355,7 @@ func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			err = client.Synthetics.Agents.Delete(context.Background(), tt.requestID)
+			err = client.Synthetics.DeleteAgent(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -374,13 +379,13 @@ func TestClient_DeleteSyntheticsAgent(t *testing.T) {
 }
 
 //nolint:dupl
-func TestClient_ActivateSyntheticsAgent(t *testing.T) {
+func TestClient_Synthetics_ActivateAgent(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       models.ID
 		expectedRequest *syntheticspb.UpdateAgentRequest
 		responses       syntheticsResponses
-		expectedResult  *models.SyntheticsAgent
+		expectedResult  *synthetics.Agent
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -402,7 +407,7 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: agentWithStatus(newWarsawAgent(), models.AgentStatusOK),
+			expectedResult: agentWithStatus(newWarsawAgent(), synthetics.AgentStatusOK),
 		}, {
 			name:      "return error when status not active after activation",
 			requestID: warsawAgentID,
@@ -435,7 +440,7 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: agentWithStatus(newWarsawAgent(), models.AgentStatusOK),
+			expectedResult: agentWithStatus(newWarsawAgent(), synthetics.AgentStatusOK),
 		},
 	}
 	for _, tt := range tests {
@@ -453,7 +458,7 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.Activate(context.Background(), tt.requestID)
+			result, err := client.Synthetics.ActivateAgent(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -479,13 +484,13 @@ func TestClient_ActivateSyntheticsAgent(t *testing.T) {
 }
 
 //nolint:dupl
-func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
+func TestClient_Synthetics_DeactivateAgent(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       models.ID
 		expectedRequest *syntheticspb.UpdateAgentRequest
 		responses       syntheticsResponses
-		expectedResult  *models.SyntheticsAgent
+		expectedResult  *synthetics.Agent
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -507,7 +512,7 @@ func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: agentWithStatus(newWarsawAgent(), models.AgentStatusWait),
+			expectedResult: agentWithStatus(newWarsawAgent(), synthetics.AgentStatusWait),
 		}, {
 			name:      "return error when status not pending (waiting) after deactivation",
 			requestID: warsawAgentID,
@@ -540,7 +545,7 @@ func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: agentWithStatus(newWarsawAgent(), models.AgentStatusWait),
+			expectedResult: agentWithStatus(newWarsawAgent(), synthetics.AgentStatusWait),
 		},
 	}
 	for _, tt := range tests {
@@ -558,7 +563,7 @@ func TestClient_DeactivateSyntheticsAgent(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.Deactivate(context.Background(), tt.requestID)
+			result, err := client.Synthetics.DeactivateAgent(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -728,22 +733,22 @@ func (s *spySyntheticsServer) DeleteAgent(
 	return s.responses.deleteAgentResponse.data, s.responses.deleteAgentResponse.err
 }
 
-func agentWithStatus(agent *models.SyntheticsAgent, status models.AgentStatus) *models.SyntheticsAgent {
+func agentWithStatus(agent *synthetics.Agent, status synthetics.AgentStatus) *synthetics.Agent {
 	agent.Status = status
 	return agent
 }
 
-func newWarsawAgent() *models.SyntheticsAgent {
-	return &models.SyntheticsAgent{
-		Status:             models.AgentStatusOK,
+func newWarsawAgent() *synthetics.Agent {
+	return &synthetics.Agent{
+		Status:             synthetics.AgentStatusOK,
 		Alias:              "Warsaw, Poland",
 		SiteID:             "2137",
 		LocalIP:            "10.10.10.10",
-		IPFamily:           models.IPFamilyDual,
-		CloudProvider:      models.CloudProviderGCE,
+		IPFamily:           synthetics.IPFamilyDual,
+		CloudProvider:      cloud.ProviderGCE,
 		CloudRegion:        "europe-central2",
 		ID:                 warsawAgentID,
-		Type:               models.AgentTypeGlobal,
+		Type:               synthetics.AgentTypeGlobal,
 		SiteName:           "gce-europe-central2",
 		IP:                 "34.118.69.79",
 		ASN:                396982,
@@ -754,23 +759,23 @@ func newWarsawAgent() *models.SyntheticsAgent {
 		Country:            "PL",
 		Version:            "1.2.0",
 		OS:                 "Linux probe-1-waw-1 4.9.0-18-amd64 #1 SMP Debian 4.9.303-1 (2022-03-07) x86_64",
-		ImplementationType: models.AgentImplementationTypeRust,
+		ImplementationType: synthetics.AgentImplementationTypeRust,
 		LastAuthed:         time.Date(2020, time.July, 9, 21, 37, 0, 826*1000000, time.UTC),
 		TestIDs:            []string{"13", "133", "1337"},
 	}
 }
 
-func newMoscowAgent() *models.SyntheticsAgent {
-	return &models.SyntheticsAgent{
-		Status:             models.AgentStatusOK,
+func newMoscowAgent() *synthetics.Agent {
+	return &synthetics.Agent{
+		Status:             synthetics.AgentStatusOK,
 		Alias:              "Moscow, Russia",
 		SiteID:             "0",
 		LocalIP:            "",
-		IPFamily:           models.IPFamilyV4,
+		IPFamily:           synthetics.IPFamilyV4,
 		CloudProvider:      "",
 		CloudRegion:        "",
 		ID:                 "7667",
-		Type:               models.AgentTypePrivate,
+		Type:               synthetics.AgentTypePrivate,
 		SiteName:           "Tencent,CN (132203)",
 		IP:                 "162.62.11.117",
 		ASN:                132203,
@@ -781,7 +786,7 @@ func newMoscowAgent() *models.SyntheticsAgent {
 		Country:            "RU",
 		Version:            "0.3.9",
 		OS:                 "",
-		ImplementationType: models.AgentImplementationTypeNode,
+		ImplementationType: synthetics.AgentImplementationTypeNode,
 		LastAuthed:         time.Date(2022, time.February, 24, 6, 48, 0, 0, time.UTC),
 		TestIDs:            nil,
 	}

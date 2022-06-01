@@ -14,6 +14,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -196,13 +197,13 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 	}
 }
 
-func TestClient_GetAgentWithRetries(t *testing.T) {
+func TestClient_Synthetics_GetAgentWithRetries(t *testing.T) {
 	tests := []struct {
 		name            string
 		options         []kentikapi.ClientOption
 		responses       []gRPCGetAgentResponse
 		handlingDelay   time.Duration
-		expectedResult  *models.SyntheticsAgent
+		expectedResult  *synthetics.Agent
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -316,7 +317,7 @@ func TestClient_GetAgentWithRetries(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.Agents.Get(context.Background(), warsawAgentID)
+			result, err := client.Synthetics.GetAgent(context.Background(), warsawAgentID)
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
