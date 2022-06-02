@@ -29,19 +29,19 @@ const (
 
 func TestClient_GetAllCloudExports(t *testing.T) {
 	tests := []struct {
-		name              string
-		response          listCEResponse
-		expectedResult    *models.GetAllCloudExportsResponse
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		response        listCEResponse
+		expectedResult  *models.GetAllCloudExportsResponse
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name: "status InvalidArgument received",
 			response: listCEResponse{
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name: "empty response received",
 			response: listCEResponse{
@@ -122,10 +122,8 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -145,13 +143,13 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 
 func TestClient_GetCloudExport(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         models.ID
-		expectedRequest   *cloudexportpb.GetCloudExportRequest
-		response          getCEResponse
-		expectedResult    *models.CloudExport
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       models.ID
+		expectedRequest *cloudexportpb.GetCloudExportRequest
+		response        getCEResponse
+		expectedResult  *models.CloudExport
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -160,8 +158,8 @@ func TestClient_GetCloudExport(t *testing.T) {
 			response: getCEResponse{
 				err: status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:            "status NotFound received",
 			requestID:       "13",
@@ -169,8 +167,8 @@ func TestClient_GetCloudExport(t *testing.T) {
 			response: getCEResponse{
 				err: status.Errorf(codes.NotFound, codes.NotFound.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.NotFound),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsNotFoundError},
 		}, {
 			name:            "empty response received",
 			requestID:       "13",
@@ -289,10 +287,8 @@ func TestClient_GetCloudExport(t *testing.T) {
 			t.Logf("Got result: %+v, err: %v", result, err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -312,13 +308,13 @@ func TestClient_GetCloudExport(t *testing.T) {
 
 func TestClient_CreateCloudExport(t *testing.T) {
 	tests := []struct {
-		name              string
-		request           *models.CloudExport
-		expectedRequest   *cloudexportpb.CreateCloudExportRequest
-		response          createCEResponse
-		expectedResult    *models.CloudExport
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		request         *models.CloudExport
+		expectedRequest *cloudexportpb.CreateCloudExportRequest
+		response        createCEResponse
+		expectedResult  *models.CloudExport
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "nil request",
@@ -326,6 +322,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -487,8 +484,9 @@ func TestClient_CreateCloudExport(t *testing.T) {
 				PlanID:        "11467",
 				AWSProperties: models.AWSPropertiesRequiredFields{},
 			}),
-			expectedResult: nil,
-			expectedError:  true,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -515,10 +513,8 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -537,13 +533,13 @@ func TestClient_CreateCloudExport(t *testing.T) {
 
 func TestClient_UpdateCloudExport(t *testing.T) {
 	tests := []struct {
-		name              string
-		request           *models.CloudExport
-		expectedRequest   *cloudexportpb.UpdateCloudExportRequest
-		response          updateCEResponse
-		expectedResult    *models.CloudExport
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		request         *models.CloudExport
+		expectedRequest *cloudexportpb.UpdateCloudExportRequest
+		response        updateCEResponse
+		expectedResult  *models.CloudExport
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "nil request",
@@ -551,6 +547,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
 			request: newFullAWSCloudExport(),
@@ -585,10 +582,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			},
 			expectedResult: newFullAWSCloudExport(),
 		}, {
-			name:           "update request validation, missing AWS.BUCKET",
-			request:        newInvalidAWSCloudExport(),
-			expectedResult: nil,
-			expectedError:  true,
+			name:            "update request validation, missing AWS.BUCKET",
+			request:         newInvalidAWSCloudExport(),
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -615,10 +613,8 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -638,12 +634,12 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 
 func TestClient_DeleteCloudExport(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestID         string
-		expectedRequest   *cloudexportpb.DeleteCloudExportRequest
-		response          deleteCEResponse
-		expectedError     bool
-		expectedErrorCode *codes.Code
+		name            string
+		requestID       string
+		expectedRequest *cloudexportpb.DeleteCloudExportRequest
+		response        deleteCEResponse
+		expectedError   bool
+		errorPredicates []func(error) bool
 	}{
 		{
 			name:            "status InvalidArgument received",
@@ -653,8 +649,8 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 				data: &cloudexportpb.DeleteCloudExportResponse{},
 				err:  status.Errorf(codes.InvalidArgument, codes.InvalidArgument.String()),
 			},
-			expectedError:     true,
-			expectedErrorCode: codePtr(codes.InvalidArgument),
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:            "resource deleted",
 			requestID:       "13",
@@ -687,10 +683,8 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			t.Logf("Got err: %v", err)
 			if tt.expectedError {
 				assert.Error(t, err)
-				if tt.expectedErrorCode != nil {
-					s, ok := status.FromError(err)
-					assert.True(t, ok)
-					assert.Equal(t, *tt.expectedErrorCode, s.Code())
+				for _, isErr := range tt.errorPredicates {
+					assert.True(t, isErr(err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -1035,8 +1029,4 @@ func newFullCloudExportPayload() *cloudexportpb.CloudExport {
 			StorageAccountAccess: &wrapperspb.BoolValue{Value: false},
 		},
 	}
-}
-
-func codePtr(c codes.Code) *codes.Code {
-	return &c
 }

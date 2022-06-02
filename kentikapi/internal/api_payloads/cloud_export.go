@@ -6,6 +6,7 @@ import (
 
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
+	kentikerrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -50,12 +51,12 @@ func cloudExportsFromPayload(exports []*cloudexportpb.CloudExport) ([]models.Clo
 // CloudExportFromPayload converts cloud export payload to model.
 func CloudExportFromPayload(ce *cloudexportpb.CloudExport) (*models.CloudExport, error) {
 	if ce == nil {
-		return nil, fmt.Errorf("cloud export response payload is nil")
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, "cloud export response payload is nil")
 	}
 
 	properties, err := propertiesFromPayload(ce)
 	if err != nil {
-		return nil, err
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
 	}
 
 	return &models.CloudExport{
@@ -206,7 +207,7 @@ func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *models.Clou
 	case ibmProvider:
 		payload.Properties = ibmPropertiesToPayload(ce)
 	default:
-		return nil, fmt.Errorf("invalid cloud provider: %v", ce.CloudProvider)
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, fmt.Sprintf("invalid cloud provider: %v", ce.CloudProvider))
 	}
 	return payload, nil
 }
@@ -262,7 +263,7 @@ func boolProtoPtrToBoolPtr(v *wrapperspb.BoolValue) *bool {
 // ValidateCECreateRequest checks if CloudExport create request contains all required fields.
 func ValidateCECreateRequest(ce *models.CloudExport) error {
 	if ce == nil {
-		return fmt.Errorf("cloud export object is nil")
+		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
 	}
 	if ce.Name == "" {
 		return ceFieldError("Name")
@@ -276,7 +277,7 @@ func ValidateCECreateRequest(ce *models.CloudExport) error {
 // ValidateCEUpdateRequest checks if CloudExport update request contains all required fields.
 func ValidateCEUpdateRequest(ce *models.CloudExport) error {
 	if ce == nil {
-		return fmt.Errorf("cloud export object is nil")
+		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
 	}
 	if ce.ID == "" {
 		return ceFieldError("ID")
@@ -303,7 +304,9 @@ func validateCEProvider(ce *models.CloudExport) error {
 	case ibmProvider:
 		return validateIBMProvider(ce)
 	default:
-		return fmt.Errorf("cloud provider '%s' is not supported", ce.CloudProvider)
+		return kentikerrors.New(
+			kentikerrors.InvalidRequest,
+			fmt.Sprintf("cloud provider '%s' is not supported", ce.CloudProvider))
 	}
 }
 
@@ -360,5 +363,7 @@ func validateIBMProvider(ce *models.CloudExport) error {
 }
 
 func ceFieldError(field string) error {
-	return fmt.Errorf("CloudExport '%s' field is required but not provided", field)
+	return kentikerrors.New(
+		kentikerrors.InvalidRequest,
+		fmt.Sprintf("CloudExport '%s' field is required but not provided", field))
 }
