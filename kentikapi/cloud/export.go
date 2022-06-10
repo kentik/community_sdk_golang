@@ -1,23 +1,25 @@
-package models
+package cloud
 
-// NewAWSCloudExport creates a new AWS CloudExport with all required fields set.
-func NewAWSCloudExport(obj CloudExportAWSRequiredFields) *CloudExport {
-	return &CloudExport{
-		Name:          obj.Name,
-		PlanID:        obj.PlanID,
-		CloudProvider: CloudProviderAWS,
+import "github.com/kentik/community_sdk_golang/kentikapi/models"
+
+// NewAWSExport creates a new AWS Export with all required fields set.
+func NewAWSExport(obj AWSExportRequiredFields) *Export {
+	return &Export{
+		Name:     obj.Name,
+		PlanID:   obj.PlanID,
+		Provider: ProviderAWS,
 		Properties: &AWSProperties{
 			Bucket: obj.AWSProperties.Bucket,
 		},
 	}
 }
 
-// NewAzureCloudExport creates a new Azure CloudExport with all required fields set.
-func NewAzureCloudExport(obj CloudExportAzureRequiredFields) *CloudExport {
-	return &CloudExport{
-		Name:          obj.Name,
-		PlanID:        obj.PlanID,
-		CloudProvider: CloudProviderAzure,
+// NewAzureExport creates a new Azure Export with all required fields set.
+func NewAzureExport(obj AzureExportRequiredFields) *Export {
+	return &Export{
+		Name:     obj.Name,
+		PlanID:   obj.PlanID,
+		Provider: ProviderAzure,
 		Properties: &AzureProperties{
 			Location:       obj.AzureProperties.Location,
 			ResourceGroup:  obj.AzureProperties.ResourceGroup,
@@ -27,12 +29,12 @@ func NewAzureCloudExport(obj CloudExportAzureRequiredFields) *CloudExport {
 	}
 }
 
-// NewGCECloudExport creates a new GCE CloudExport with all required fields set.
-func NewGCECloudExport(obj CloudExportGCERequiredFields) *CloudExport {
-	return &CloudExport{
-		Name:          obj.Name,
-		PlanID:        obj.PlanID,
-		CloudProvider: CloudProviderGCE,
+// NewGCEExport creates a new GCE Export with all required fields set.
+func NewGCEExport(obj GCEExportRequiredFields) *Export {
+	return &Export{
+		Name:     obj.Name,
+		PlanID:   obj.PlanID,
+		Provider: ProviderGCE,
 		Properties: &GCEProperties{
 			Project:      obj.GCEProperties.Project,
 			Subscription: obj.GCEProperties.Subscription,
@@ -40,32 +42,32 @@ func NewGCECloudExport(obj CloudExportGCERequiredFields) *CloudExport {
 	}
 }
 
-// NewIBMCloudExport creates a new IBM CloudExport with all required fields set.
-func NewIBMCloudExport(obj CloudExportIBMRequiredFields) *CloudExport {
-	return &CloudExport{
-		Name:          obj.Name,
-		PlanID:        obj.PlanID,
-		CloudProvider: CloudProviderIBM,
+// NewIBMExport creates a new IBM Export with all required fields set.
+func NewIBMExport(obj IBMExportRequiredFields) *Export {
+	return &Export{
+		Name:     obj.Name,
+		PlanID:   obj.PlanID,
+		Provider: ProviderIBM,
 		Properties: &IBMProperties{
 			Bucket: obj.IBMProperties.Bucket,
 		},
 	}
 }
 
-// GetAllCloudExportsResponse model.
-type GetAllCloudExportsResponse struct {
-	// CloudExports holds all cloud export tasks.
-	CloudExports []CloudExport
-	// InvalidCloudExportsCount is a number of invalid cloud export tasks.
-	InvalidCloudExportsCount uint32
+// GetAllExportsResponse model.
+type GetAllExportsResponse struct {
+	// Exports holds all cloud export tasks.
+	Exports []Export
+	// InvalidExportsCount is a number of invalid cloud export tasks.
+	InvalidExportsCount uint32
 }
 
-// CloudExport defines a cloud export task.
-type CloudExport struct {
+// Export defines a cloud export task.
+type Export struct {
 	// Read-write properties
 
 	// Type of export task.
-	Type CloudExportType
+	Type ExportType
 	// Enabled specifies whether this task is enabled and intended to run or disabled.
 	Enabled *bool
 	// Name is a short name for this export task.
@@ -74,44 +76,44 @@ type CloudExport struct {
 	Description string
 	// PlanID is the identifier of the Kentik plan associated with this export.
 	PlanID string
-	// CloudProvider is the cloud provider targeted by this export, e.g. AWS, Azure, GCE, IBM.
-	CloudProvider CloudProvider
+	// Provider is the cloud provider targeted by this export, e.g. AWS, Azure, GCE, IBM.
+	Provider Provider
 	// / Properties specific to the cloud provider (AWS, Azure, GCE, IBM).
-	Properties CloudExportProperties
+	Properties ExportProperties
 	// BGPProperties are optional BGP related settings.
 	BGP *BGPProperties
 
 	// Read-only properties
 
 	// ID is unique cloud export identification. It is read-only.
-	ID ID
+	ID models.ID
 	// CurrentStatus is the most current status Kentik has about this export. It is read-only.
-	CurrentStatus *CloudExportStatus
+	CurrentStatus *ExportStatus
 }
 
-func (ce *CloudExport) GetAWSProperties() *AWSProperties {
+func (ce *Export) GetAWSProperties() *AWSProperties {
 	p, _ := ce.Properties.(*AWSProperties) //nolint:errcheck // user can check the pointer
 	return p
 }
 
-func (ce *CloudExport) GetAzureProperties() *AzureProperties {
+func (ce *Export) GetAzureProperties() *AzureProperties {
 	p, _ := ce.Properties.(*AzureProperties) //nolint:errcheck // user can check the pointer
 	return p
 }
 
-func (ce *CloudExport) GetGCEProperties() *GCEProperties {
+func (ce *Export) GetGCEProperties() *GCEProperties {
 	p, _ := ce.Properties.(*GCEProperties) //nolint:errcheck // user can check the pointer
 	return p
 }
 
-func (ce *CloudExport) GetIBMProperties() *IBMProperties {
+func (ce *Export) GetIBMProperties() *IBMProperties {
 	p, _ := ce.Properties.(*IBMProperties) //nolint:errcheck // user can check the pointer
 	return p
 }
 
-// CloudExportProperties emulates a union of AWSProperties, AzureProperties, GCEProperties and IBMProperties.
-type CloudExportProperties interface {
-	isCloudExportProperties()
+// ExportProperties emulates a union of AWSProperties, AzureProperties, GCEProperties and IBMProperties.
+type ExportProperties interface {
+	isExportProperties()
 }
 
 // AWSProperties are specific to Amazon Web Services VPC flow logs exports.
@@ -128,7 +130,7 @@ type AWSProperties struct {
 	MultipleBuckets *bool
 }
 
-func (p *AWSProperties) isCloudExportProperties() {}
+func (p *AWSProperties) isExportProperties() {}
 
 // AzureProperties are specific to Azure exports.
 type AzureProperties struct {
@@ -144,7 +146,7 @@ type AzureProperties struct {
 	SecurityPrincipalEnabled *bool
 }
 
-func (p *AzureProperties) isCloudExportProperties() {}
+func (p *AzureProperties) isExportProperties() {}
 
 // GCEProperties are specific to Google Cloud export.
 type GCEProperties struct {
@@ -154,7 +156,7 @@ type GCEProperties struct {
 	Subscription string
 }
 
-func (p *GCEProperties) isCloudExportProperties() {}
+func (p *GCEProperties) isExportProperties() {}
 
 // IBMProperties are specific to IBM Cloud exports.
 type IBMProperties struct {
@@ -162,7 +164,7 @@ type IBMProperties struct {
 	Bucket string
 }
 
-func (p *IBMProperties) isCloudExportProperties() {}
+func (p *IBMProperties) isExportProperties() {}
 
 // BGPProperties are optional BGP related settings.
 type BGPProperties struct {
@@ -173,8 +175,8 @@ type BGPProperties struct {
 	DeviceBGPType  string
 }
 
-// CloudExportStatus is export task status.
-type CloudExportStatus struct {
+// ExportStatus is export task status.
+type ExportStatus struct {
 	Status string
 	// ErrorMessage holds current error information.
 	ErrorMessage string
@@ -184,26 +186,26 @@ type CloudExportStatus struct {
 	StorageAccountAccess *bool
 }
 
-// CloudExportAWSRequiredFields is subset of fields required to create an AWS CloudExport.
-type CloudExportAWSRequiredFields struct {
+// AWSExportRequiredFields is subset of fields required to create an AWS Export.
+type AWSExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	AWSProperties AWSPropertiesRequiredFields
 }
 
-// AWSPropertiesRequiredFields is subset of AWSProperties required to create an AWS CloudExport.
+// AWSPropertiesRequiredFields is subset of AWSProperties required to create an AWS Export.
 type AWSPropertiesRequiredFields struct {
 	Bucket string
 }
 
-// CloudExportAzureRequiredFields is subset of fields required to create an Azure CloudExport.
-type CloudExportAzureRequiredFields struct {
+// AzureExportRequiredFields is subset of fields required to create an Azure Export.
+type AzureExportRequiredFields struct {
 	Name            string
 	PlanID          string
 	AzureProperties AzurePropertiesRequiredFields
 }
 
-// AzurePropertiesRequiredFields is subset of AzureProperties required to create an Azure CloudExport.
+// AzurePropertiesRequiredFields is subset of AzureProperties required to create an Azure Export.
 type AzurePropertiesRequiredFields struct {
 	Location       string
 	ResourceGroup  string
@@ -211,51 +213,51 @@ type AzurePropertiesRequiredFields struct {
 	SubscriptionID string
 }
 
-// CloudExportGCERequiredFields is subset of fields required to create a GCE CloudExport.
-type CloudExportGCERequiredFields struct {
+// GCEExportRequiredFields is subset of fields required to create a GCE Export.
+type GCEExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	GCEProperties GCEPropertiesRequiredFields
 }
 
-// GCEPropertiesRequiredFields is subset of GCEProperties required to create a GCE CloudExport.
+// GCEPropertiesRequiredFields is subset of GCEProperties required to create a GCE Export.
 type GCEPropertiesRequiredFields struct {
 	Project      string
 	Subscription string
 }
 
-// CloudExportIBMRequiredFields is subset of fields required to create an IBM CloudExport.
-type CloudExportIBMRequiredFields struct {
+// IBMExportRequiredFields is subset of fields required to create an IBM Export.
+type IBMExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	IBMProperties IBMPropertiesRequiredFields
 }
 
-// IBMPropertiesRequiredFields is subset of IBMProperties required to create an IBM CloudExport.
+// IBMPropertiesRequiredFields is subset of IBMProperties required to create an IBM Export.
 type IBMPropertiesRequiredFields struct {
 	Bucket string
 }
 
-// CloudExportType is the type of export task.
-type CloudExportType string
+// ExportType is the type of export task.
+type ExportType string
 
 const (
-	// CloudExportTypeUnspecified is invalid or incomplete cloud export.
-	CloudExportTypeUnspecified CloudExportType = "CLOUD_EXPORT_TYPE_UNSPECIFIED"
-	// CloudExportTypeKentikManaged is for cloud exports that are managed by Kentik.
-	CloudExportTypeKentikManaged CloudExportType = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
-	// CloudExportTypeCustomerManaged is for cloud exports that are managed by Kentik customers,
+	// ExportTypeUnspecified is invalid or incomplete cloud export.
+	ExportTypeUnspecified ExportType = "CLOUD_EXPORT_TYPE_UNSPECIFIED"
+	// ExportTypeKentikManaged is for cloud exports that are managed by Kentik.
+	ExportTypeKentikManaged ExportType = "CLOUD_EXPORT_TYPE_KENTIK_MANAGED"
+	// ExportTypeCustomerManaged is for cloud exports that are managed by Kentik customers,
 	// e.g. by running an agent.
-	CloudExportTypeCustomerManaged CloudExportType = "CLOUD_EXPORT_TYPE_CUSTOMER_MANAGED"
+	ExportTypeCustomerManaged ExportType = "CLOUD_EXPORT_TYPE_CUSTOMER_MANAGED"
 )
 
-// CloudProvider is the name of cloud provider.
-type CloudProvider string
+// Provider is the name of cloud provider.
+type Provider string
 
 const (
-	CloudProviderAlibaba CloudProvider = "alibaba"
-	CloudProviderAWS     CloudProvider = "aws"
-	CloudProviderAzure   CloudProvider = "azure"
-	CloudProviderGCE     CloudProvider = "gce" // gcp value in Agents API
-	CloudProviderIBM     CloudProvider = "ibm"
+	ProviderAlibaba Provider = "alibaba"
+	ProviderAWS     Provider = "aws"
+	ProviderAzure   Provider = "azure"
+	ProviderGCE     Provider = "gce" // gcp value in Agents API
+	ProviderIBM     Provider = "ibm"
 )

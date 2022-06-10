@@ -9,6 +9,7 @@ import (
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/stretchr/testify/assert"
@@ -21,17 +22,17 @@ import (
 )
 
 const (
-	awsCloudExportID   = "1001"
-	azureCloudExportID = "1002"
-	gceCloudExportID   = "1003"
-	ibmCloudExportID   = "1004"
+	awsExportID   = "1001"
+	azureExportID = "1002"
+	gceExportID   = "1003"
+	ibmExportID   = "1004"
 )
 
-func TestClient_GetAllCloudExports(t *testing.T) {
+func TestClient_Cloud_GetAllExports(t *testing.T) {
 	tests := []struct {
 		name            string
 		response        listCEResponse
-		expectedResult  *models.GetAllCloudExportsResponse
+		expectedResult  *cloud.GetAllExportsResponse
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -47,9 +48,9 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			response: listCEResponse{
 				data: &cloudexportpb.ListCloudExportResponse{},
 			},
-			expectedResult: &models.GetAllCloudExportsResponse{
-				CloudExports:             nil,
-				InvalidCloudExportsCount: 0,
+			expectedResult: &cloud.GetAllExportsResponse{
+				Exports:             nil,
+				InvalidExportsCount: 0,
 			},
 		}, {
 			name: "no exports received",
@@ -59,38 +60,38 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 					InvalidExportsCount: 0,
 				},
 			},
-			expectedResult: &models.GetAllCloudExportsResponse{
-				CloudExports:             nil,
-				InvalidCloudExportsCount: 0,
+			expectedResult: &cloud.GetAllExportsResponse{
+				Exports:             nil,
+				InvalidExportsCount: 0,
 			},
 		}, {
 			name: "4 exports received",
 			response: listCEResponse{
 				data: &cloudexportpb.ListCloudExportResponse{
 					Exports: []*cloudexportpb.CloudExport{
-						newFullAWSCloudExportPayload(),
-						newFullAzureCloudExportPayload(),
-						newFullGCECloudExportPayload(),
-						newFullIBMCloudExportPayload(),
+						newAWSExportPayload(),
+						newAzureExportPayload(),
+						newGCEExportPayload(),
+						newIBMExportPayload(),
 					},
 					InvalidExportsCount: 1,
 				},
 			},
-			expectedResult: &models.GetAllCloudExportsResponse{
-				CloudExports: []models.CloudExport{
-					*newFullAWSCloudExport(),
-					*newFullAzureCloudExport(),
-					*newFullGCECloudExport(),
-					*newFullIBMCloudExport(),
+			expectedResult: &cloud.GetAllExportsResponse{
+				Exports: []cloud.Export{
+					*newAWSExport(),
+					*newAzureExport(),
+					*newGCEExport(),
+					*newIBMExport(),
 				},
-				InvalidCloudExportsCount: 1,
+				InvalidExportsCount: 1,
 			},
 		}, {
 			name: "2 exports received - one empty",
 			response: listCEResponse{
 				data: &cloudexportpb.ListCloudExportResponse{
 					Exports: []*cloudexportpb.CloudExport{
-						newFullAWSCloudExportPayload(),
+						newAWSExportPayload(),
 						nil,
 					},
 					InvalidExportsCount: 0,
@@ -100,6 +101,7 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			expectedError: true,
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -116,7 +118,7 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.CloudExports.GetAll(context.Background())
+			result, err := client.Cloud.GetAllExports(context.Background())
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -141,13 +143,13 @@ func TestClient_GetAllCloudExports(t *testing.T) {
 	}
 }
 
-func TestClient_GetCloudExport(t *testing.T) {
+func TestClient_Cloud_GetExport(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       models.ID
 		expectedRequest *cloudexportpb.GetCloudExportRequest
 		response        getCEResponse
-		expectedResult  *models.CloudExport
+		expectedResult  *cloud.Export
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -210,60 +212,61 @@ func TestClient_GetCloudExport(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: &models.CloudExport{
-				ID:            "58192",
-				Type:          models.CloudExportTypeKentikManaged,
-				Enabled:       pointer.ToBool(true),
-				Name:          "minimal-aws-export",
-				Description:   "",
-				PlanID:        "11467",
-				CloudProvider: models.CloudProviderAWS,
-				Properties: &models.AWSProperties{
+			expectedResult: &cloud.Export{
+				ID:          "58192",
+				Type:        cloud.ExportTypeKentikManaged,
+				Enabled:     pointer.ToBool(true),
+				Name:        "minimal-aws-export",
+				Description: "",
+				PlanID:      "11467",
+				Provider:    cloud.ProviderAWS,
+				Properties: &cloud.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
 					Region:          "",
 					DeleteAfterRead: pointer.ToBool(false),
 					MultipleBuckets: pointer.ToBool(false),
 				},
-				CurrentStatus: &models.CloudExportStatus{
+				CurrentStatus: &cloud.ExportStatus{
 					Status:       "",
 					ErrorMessage: "",
 				},
 			},
 		}, {
 			name:            "AWS cloud export received",
-			requestID:       awsCloudExportID,
-			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: awsCloudExportID},
+			requestID:       awsExportID,
+			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: awsExportID},
 			response: getCEResponse{
-				data: &cloudexportpb.GetCloudExportResponse{Export: newFullAWSCloudExportPayload()},
+				data: &cloudexportpb.GetCloudExportResponse{Export: newAWSExportPayload()},
 			},
-			expectedResult: newFullAWSCloudExport(),
+			expectedResult: newAWSExport(),
 		}, {
 			name:            "Azure cloud export received",
-			requestID:       azureCloudExportID,
-			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: azureCloudExportID},
+			requestID:       azureExportID,
+			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: azureExportID},
 			response: getCEResponse{
-				data: &cloudexportpb.GetCloudExportResponse{Export: newFullAzureCloudExportPayload()},
+				data: &cloudexportpb.GetCloudExportResponse{Export: newAzureExportPayload()},
 			},
-			expectedResult: newFullAzureCloudExport(),
+			expectedResult: newAzureExport(),
 		}, {
 			name:            "GCE cloud export received",
-			requestID:       gceCloudExportID,
-			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: gceCloudExportID},
+			requestID:       gceExportID,
+			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: gceExportID},
 			response: getCEResponse{
-				data: &cloudexportpb.GetCloudExportResponse{Export: newFullGCECloudExportPayload()},
+				data: &cloudexportpb.GetCloudExportResponse{Export: newGCEExportPayload()},
 			},
-			expectedResult: newFullGCECloudExport(),
+			expectedResult: newGCEExport(),
 		}, {
 			name:            "IBM cloud export received",
-			requestID:       ibmCloudExportID,
-			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: ibmCloudExportID},
+			requestID:       ibmExportID,
+			expectedRequest: &cloudexportpb.GetCloudExportRequest{Id: ibmExportID},
 			response: getCEResponse{
-				data: &cloudexportpb.GetCloudExportResponse{Export: newFullIBMCloudExportPayload()},
+				data: &cloudexportpb.GetCloudExportResponse{Export: newIBMExportPayload()},
 			},
-			expectedResult: newFullIBMCloudExport(),
+			expectedResult: newIBMExport(),
 		},
 	}
+	//nolint:dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
@@ -281,7 +284,7 @@ func TestClient_GetCloudExport(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.CloudExports.Get(context.Background(), tt.requestID)
+			result, err := client.Cloud.GetExport(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -306,13 +309,13 @@ func TestClient_GetCloudExport(t *testing.T) {
 	}
 }
 
-func TestClient_CreateCloudExport(t *testing.T) {
+func TestClient_Cloud_CreateExport(t *testing.T) {
 	tests := []struct {
 		name            string
-		request         *models.CloudExport
+		request         *cloud.Export
 		expectedRequest *cloudexportpb.CreateCloudExportRequest
 		response        createCEResponse
-		expectedResult  *models.CloudExport
+		expectedResult  *cloud.Export
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -325,10 +328,10 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
-			request: newFullAWSCloudExport(),
+			request: newAWSExport(),
 			expectedRequest: func() *cloudexportpb.CreateCloudExportRequest {
 				r := &cloudexportpb.CreateCloudExportRequest{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -341,10 +344,10 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			expectedError:  true,
 		}, {
 			name: "minimal AWS export created",
-			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
+			request: cloud.NewAWSExport(cloud.AWSExportRequiredFields{
 				Name:   "minimal-aws-export",
 				PlanID: "11467",
-				AWSProperties: models.AWSPropertiesRequiredFields{
+				AWSProperties: cloud.AWSPropertiesRequiredFields{
 					Bucket: "dummy-bucket",
 				},
 			}),
@@ -389,32 +392,32 @@ func TestClient_CreateCloudExport(t *testing.T) {
 					},
 				},
 			},
-			expectedResult: &models.CloudExport{
-				ID:            "58192",
-				Type:          models.CloudExportTypeKentikManaged,
-				Enabled:       pointer.ToBool(true),
-				Name:          "minimal-aws-export",
-				Description:   "",
-				PlanID:        "11467",
-				CloudProvider: models.CloudProviderAWS,
-				Properties: &models.AWSProperties{
+			expectedResult: &cloud.Export{
+				ID:          "58192",
+				Type:        cloud.ExportTypeKentikManaged,
+				Enabled:     pointer.ToBool(true),
+				Name:        "minimal-aws-export",
+				Description: "",
+				PlanID:      "11467",
+				Provider:    cloud.ProviderAWS,
+				Properties: &cloud.AWSProperties{
 					Bucket:          "dummy-bucket",
 					IAMRoleARN:      "",
 					Region:          "",
 					DeleteAfterRead: pointer.ToBool(false),
 					MultipleBuckets: pointer.ToBool(false),
 				},
-				CurrentStatus: &models.CloudExportStatus{
+				CurrentStatus: &cloud.ExportStatus{
 					Status:       "",
 					ErrorMessage: "",
 				},
 			},
 		}, {
-			name:    "full AWS export created",
-			request: newFullAWSCloudExport(),
+			name:    "AWS export created",
+			request: newAWSExport(),
 			expectedRequest: func() *cloudexportpb.CreateCloudExportRequest {
 				r := &cloudexportpb.CreateCloudExportRequest{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -422,16 +425,16 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			}(),
 			response: createCEResponse{
 				data: &cloudexportpb.CreateCloudExportResponse{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				},
 			},
-			expectedResult: newFullAWSCloudExport(),
+			expectedResult: newAWSExport(),
 		}, {
-			name:    "full Azure export created",
-			request: newFullAzureCloudExport(),
+			name:    "Azure export created",
+			request: newAzureExport(),
 			expectedRequest: func() *cloudexportpb.CreateCloudExportRequest {
 				r := &cloudexportpb.CreateCloudExportRequest{
-					Export: newFullAzureCloudExportPayload(),
+					Export: newAzureExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -439,16 +442,16 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			}(),
 			response: createCEResponse{
 				data: &cloudexportpb.CreateCloudExportResponse{
-					Export: newFullAzureCloudExportPayload(),
+					Export: newAzureExportPayload(),
 				},
 			},
-			expectedResult: newFullAzureCloudExport(),
+			expectedResult: newAzureExport(),
 		}, {
-			name:    "full GCE export created",
-			request: newFullGCECloudExport(),
+			name:    "GCE export created",
+			request: newGCEExport(),
 			expectedRequest: func() *cloudexportpb.CreateCloudExportRequest {
 				r := &cloudexportpb.CreateCloudExportRequest{
-					Export: newFullGCECloudExportPayload(),
+					Export: newGCEExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -456,16 +459,16 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			}(),
 			response: createCEResponse{
 				data: &cloudexportpb.CreateCloudExportResponse{
-					Export: newFullGCECloudExportPayload(),
+					Export: newGCEExportPayload(),
 				},
 			},
-			expectedResult: newFullGCECloudExport(),
+			expectedResult: newGCEExport(),
 		}, {
-			name:    "full IBM export created",
-			request: newFullIBMCloudExport(),
+			name:    "IBM export created",
+			request: newIBMExport(),
 			expectedRequest: func() *cloudexportpb.CreateCloudExportRequest {
 				r := &cloudexportpb.CreateCloudExportRequest{
-					Export: newFullIBMCloudExportPayload(),
+					Export: newIBMExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -473,16 +476,16 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			}(),
 			response: createCEResponse{
 				data: &cloudexportpb.CreateCloudExportResponse{
-					Export: newFullIBMCloudExportPayload(),
+					Export: newIBMExportPayload(),
 				},
 			},
-			expectedResult: newFullIBMCloudExport(),
+			expectedResult: newIBMExport(),
 		}, {
 			name: "create request validation, missing AWS.BUCKET",
-			request: models.NewAWSCloudExport(models.CloudExportAWSRequiredFields{
+			request: cloud.NewAWSExport(cloud.AWSExportRequiredFields{
 				Name:          "invalid-aws-export",
 				PlanID:        "11467",
-				AWSProperties: models.AWSPropertiesRequiredFields{},
+				AWSProperties: cloud.AWSPropertiesRequiredFields{},
 			}),
 			expectedResult:  nil,
 			expectedError:   true,
@@ -507,7 +510,7 @@ func TestClient_CreateCloudExport(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.CloudExports.Create(context.Background(), tt.request)
+			result, err := client.Cloud.CreateExport(context.Background(), tt.request)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -531,13 +534,13 @@ func TestClient_CreateCloudExport(t *testing.T) {
 	}
 }
 
-func TestClient_UpdateCloudExport(t *testing.T) {
+func TestClient_Cloud_UpdateExport(t *testing.T) {
 	tests := []struct {
 		name            string
-		request         *models.CloudExport
+		request         *cloud.Export
 		expectedRequest *cloudexportpb.UpdateCloudExportRequest
 		response        updateCEResponse
-		expectedResult  *models.CloudExport
+		expectedResult  *cloud.Export
 		expectedError   bool
 		errorPredicates []func(error) bool
 	}{
@@ -550,10 +553,10 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		}, {
 			name:    "empty response received",
-			request: newFullAWSCloudExport(),
+			request: newAWSExport(),
 			expectedRequest: func() *cloudexportpb.UpdateCloudExportRequest {
 				r := &cloudexportpb.UpdateCloudExportRequest{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -565,11 +568,11 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			expectedResult: nil,
 			expectedError:  true,
 		}, {
-			name:    "full AWS export updated",
-			request: newFullAWSCloudExport(),
+			name:    "AWS export updated",
+			request: newAWSExport(),
 			expectedRequest: func() *cloudexportpb.UpdateCloudExportRequest {
 				r := &cloudexportpb.UpdateCloudExportRequest{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				}
 				// read-only fields should be omitted
 				r.Export.CurrentStatus = nil
@@ -577,13 +580,13 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			}(),
 			response: updateCEResponse{
 				data: &cloudexportpb.UpdateCloudExportResponse{
-					Export: newFullAWSCloudExportPayload(),
+					Export: newAWSExportPayload(),
 				},
 			},
-			expectedResult: newFullAWSCloudExport(),
+			expectedResult: newAWSExport(),
 		}, {
 			name:            "update request validation, missing AWS.BUCKET",
-			request:         newInvalidAWSCloudExport(),
+			request:         newInvalidAWSExport(),
 			expectedResult:  nil,
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
@@ -607,7 +610,7 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.CloudExports.Update(context.Background(), tt.request)
+			result, err := client.Cloud.UpdateExport(context.Background(), tt.request)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -632,7 +635,8 @@ func TestClient_UpdateCloudExport(t *testing.T) {
 	}
 }
 
-func TestClient_DeleteCloudExport(t *testing.T) {
+//nolint:dupl
+func TestClient_Cloud_DeleteExport(t *testing.T) {
 	tests := []struct {
 		name            string
 		requestID       string
@@ -677,7 +681,7 @@ func TestClient_DeleteCloudExport(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			err = client.CloudExports.Delete(context.Background(), tt.requestID)
+			err = client.Cloud.DeleteExport(context.Background(), tt.requestID)
 
 			// assert
 			t.Logf("Got err: %v", err)
@@ -871,11 +875,11 @@ func (s *spyCloudExportServer) DeleteCloudExport(
 	return s.responses.deleteCEResponse.data, s.responses.deleteCEResponse.err
 }
 
-func newFullAWSCloudExport() *models.CloudExport {
-	ce := newFullCloudExport()
-	ce.ID = awsCloudExportID
-	ce.CloudProvider = models.CloudProviderAWS
-	ce.Properties = &models.AWSProperties{
+func newAWSExport() *cloud.Export {
+	ce := newExport()
+	ce.ID = awsExportID
+	ce.Provider = cloud.ProviderAWS
+	ce.Properties = &cloud.AWSProperties{
 		Bucket:          "dummy-bucket",
 		IAMRoleARN:      "arn:aws:iam::003740049406:role/trafficTerraformIngestRole",
 		Region:          "us-east-2",
@@ -885,19 +889,19 @@ func newFullAWSCloudExport() *models.CloudExport {
 	return ce
 }
 
-func newInvalidAWSCloudExport() *models.CloudExport {
-	ce := newFullCloudExport()
-	ce.ID = awsCloudExportID
-	ce.CloudProvider = models.CloudProviderAWS
-	ce.Properties = &models.AWSProperties{}
+func newInvalidAWSExport() *cloud.Export {
+	ce := newExport()
+	ce.ID = awsExportID
+	ce.Provider = cloud.ProviderAWS
+	ce.Properties = &cloud.AWSProperties{}
 	return ce
 }
 
-func newFullAzureCloudExport() *models.CloudExport {
-	ce := newFullCloudExport()
-	ce.ID = azureCloudExportID
-	ce.CloudProvider = models.CloudProviderAzure
-	ce.Properties = &models.AzureProperties{
+func newAzureExport() *cloud.Export {
+	ce := newExport()
+	ce.ID = azureExportID
+	ce.Provider = cloud.ProviderAzure
+	ce.Properties = &cloud.AzureProperties{
 		Location:                 "dummy-location",
 		ResourceGroup:            "dummy-rg",
 		StorageAccount:           "dummy-sa",
@@ -907,40 +911,40 @@ func newFullAzureCloudExport() *models.CloudExport {
 	return ce
 }
 
-func newFullGCECloudExport() *models.CloudExport {
-	ce := newFullCloudExport()
-	ce.ID = gceCloudExportID
-	ce.CloudProvider = models.CloudProviderGCE
-	ce.Properties = &models.GCEProperties{
+func newGCEExport() *cloud.Export {
+	ce := newExport()
+	ce.ID = gceExportID
+	ce.Provider = cloud.ProviderGCE
+	ce.Properties = &cloud.GCEProperties{
 		Project:      "dummy-project",
 		Subscription: "dummy-subscription",
 	}
 	return ce
 }
 
-func newFullIBMCloudExport() *models.CloudExport {
-	ce := newFullCloudExport()
-	ce.ID = ibmCloudExportID
-	ce.CloudProvider = models.CloudProviderIBM
-	ce.Properties = &models.IBMProperties{
+func newIBMExport() *cloud.Export {
+	ce := newExport()
+	ce.ID = ibmExportID
+	ce.Provider = cloud.ProviderIBM
+	ce.Properties = &cloud.IBMProperties{
 		Bucket: "dummy-bucket",
 	}
 	return ce
 }
 
-func newFullCloudExport() *models.CloudExport {
-	return &models.CloudExport{
-		Type:        models.CloudExportTypeKentikManaged,
+func newExport() *cloud.Export {
+	return &cloud.Export{
+		Type:        cloud.ExportTypeKentikManaged,
 		Enabled:     pointer.ToBool(true),
 		Name:        "full-export",
 		Description: "Export with all fields set", // including read-only fields
 		PlanID:      "11467",
-		BGP: &models.BGPProperties{
+		BGP: &cloud.BGPProperties{
 			ApplyBGP:       pointer.ToBool(true),
 			UseBGPDeviceID: "dummy-device-id",
 			DeviceBGPType:  "dummy-device-bgp-type",
 		},
-		CurrentStatus: &models.CloudExportStatus{
+		CurrentStatus: &cloud.ExportStatus{
 			Status:               "ERROR",
 			ErrorMessage:         "BucketRegionError: incorrect region ...",
 			FlowFound:            pointer.ToBool(false),
@@ -950,9 +954,9 @@ func newFullCloudExport() *models.CloudExport {
 	}
 }
 
-func newFullAWSCloudExportPayload() *cloudexportpb.CloudExport {
-	ce := newFullCloudExportPayload()
-	ce.Id = awsCloudExportID
+func newAWSExportPayload() *cloudexportpb.CloudExport {
+	ce := newExportPayload()
+	ce.Id = awsExportID
 	ce.CloudProvider = "aws"
 	ce.Properties = &cloudexportpb.CloudExport_Aws{
 		Aws: &cloudexportpb.AwsProperties{
@@ -966,9 +970,9 @@ func newFullAWSCloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
-func newFullAzureCloudExportPayload() *cloudexportpb.CloudExport {
-	ce := newFullCloudExportPayload()
-	ce.Id = azureCloudExportID
+func newAzureExportPayload() *cloudexportpb.CloudExport {
+	ce := newExportPayload()
+	ce.Id = azureExportID
 	ce.CloudProvider = "azure"
 	ce.Properties = &cloudexportpb.CloudExport_Azure{
 		Azure: &cloudexportpb.AzureProperties{
@@ -982,9 +986,9 @@ func newFullAzureCloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
-func newFullGCECloudExportPayload() *cloudexportpb.CloudExport {
-	ce := newFullCloudExportPayload()
-	ce.Id = gceCloudExportID
+func newGCEExportPayload() *cloudexportpb.CloudExport {
+	ce := newExportPayload()
+	ce.Id = gceExportID
 	ce.CloudProvider = "gce"
 	ce.Properties = &cloudexportpb.CloudExport_Gce{
 		Gce: &cloudexportpb.GceProperties{
@@ -995,9 +999,9 @@ func newFullGCECloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
-func newFullIBMCloudExportPayload() *cloudexportpb.CloudExport {
-	ce := newFullCloudExportPayload()
-	ce.Id = ibmCloudExportID
+func newIBMExportPayload() *cloudexportpb.CloudExport {
+	ce := newExportPayload()
+	ce.Id = ibmExportID
 	ce.CloudProvider = "ibm"
 	ce.Properties = &cloudexportpb.CloudExport_Ibm{
 		Ibm: &cloudexportpb.IbmProperties{
@@ -1007,9 +1011,9 @@ func newFullIBMCloudExportPayload() *cloudexportpb.CloudExport {
 	return ce
 }
 
-// newFullCloudExportPayload returns payload with all fields set.
+// newExportPayload returns payload with all fields set.
 // ApiRoot and FlowDest are going to be removed from the API and are omitted.
-func newFullCloudExportPayload() *cloudexportpb.CloudExport {
+func newExportPayload() *cloudexportpb.CloudExport {
 	return &cloudexportpb.CloudExport{
 		Type:        cloudexportpb.CloudExportType_CLOUD_EXPORT_TYPE_KENTIK_MANAGED,
 		Enabled:     true,

@@ -1,21 +1,25 @@
-package models
+package synthetics
 
-import "time"
+import (
+	"time"
 
-// GetAllSyntheticsAgentsResponse model.
-type GetAllSyntheticsAgentsResponse struct {
-	// Agents holds all agents.
-	Agents []SyntheticsAgent
+	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
+)
+
+// GetAllAgentsResponse model.
+type GetAllAgentsResponse struct {
+	// Agents holds all synthetics agents.
+	Agents []Agent
 	// InvalidAgentsCount is a number of invalid agents.
 	InvalidAgentsCount uint32
 }
 
-// SyntheticsAgent is synthetics agent model.
+// Agent is synthetics agent model.
 // The Kentik synthetics monitoring system allows customers to deploy private test agents in
 // their infrastructure and/or use one of the global agents maintained by Kentik. All
 // information provided by the API for global agents is read-only, so the read-write status below
 // applies only to private agents.
-type SyntheticsAgent struct {
+type Agent struct {
 	// Read-write properties (for private agents)
 
 	// Status is a life-cycle status of the agent. Only AgentStatusOK and AgentStatusWait can be set via the API.
@@ -23,7 +27,7 @@ type SyntheticsAgent struct {
 	// Alias is user selected name of the agent.
 	Alias string
 	// SiteID is unique identification of the site where the agent is located.
-	// Allowed values: valid identifier of existing site (in Kentik configuration).
+	// Allowed values: a valid identifier of existing site (in Kentik configuration).
 	// The field is ignored if CloudProvider and CloudRegion are set.
 	SiteID string
 	// LocalIP is a private/internal address of an agent behind address translation.
@@ -32,7 +36,7 @@ type SyntheticsAgent struct {
 	// IPFamily is the IP address family the agent supports (for running tests).
 	IPFamily IPFamily
 	// CloudProvider is the name of the cloud provider for agents hosted in a public cloud (otherwise an empty string).
-	CloudProvider CloudProvider
+	CloudProvider cloud.Provider
 	// CloudRegion is the name of the cloud region for agents hosted in a public cloud (otherwise an empty string).
 	// Allowed values: valid name of a region for the cloud provider.
 	CloudRegion string

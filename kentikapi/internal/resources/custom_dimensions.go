@@ -44,9 +44,8 @@ func (a *CustomDimensionsAPI) Get(ctx context.Context, id models.ID) (*models.Cu
 }
 
 // Create new custom dimension.
-func (a *CustomDimensionsAPI) Create(ctx context.Context,
-	customDimension models.CustomDimension) (*models.CustomDimension, error) {
-	payload := api_payloads.CustomDimensionToPayload(customDimension)
+func (a *CustomDimensionsAPI) Create(ctx context.Context, cd models.CustomDimension) (*models.CustomDimension, error) {
+	payload := api_payloads.CustomDimensionToPayload(cd)
 
 	request := api_payloads.CreateCustomDimensionRequest(payload)
 	var response api_payloads.CreateCustomDimensionResponse
@@ -59,13 +58,12 @@ func (a *CustomDimensionsAPI) Create(ctx context.Context,
 }
 
 // Update custom dimension.
-func (a *CustomDimensionsAPI) Update(ctx context.Context,
-	customDimension models.CustomDimension) (*models.CustomDimension, error) {
-	payload := api_payloads.CustomDimensionToPayload(customDimension)
+func (a *CustomDimensionsAPI) Update(ctx context.Context, cd models.CustomDimension) (*models.CustomDimension, error) {
+	payload := api_payloads.CustomDimensionToPayload(cd)
 
 	request := api_payloads.UpdateCustomDimensionRequest(payload)
 	var response api_payloads.UpdateCustomDimensionResponse
-	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateCustomDimension(customDimension.ID), request, &response); err != nil {
+	if err := a.UpdateAndValidate(ctx, api_endpoints.UpdateCustomDimension(cd.ID), request, &response); err != nil {
 		return nil, err
 	}
 
