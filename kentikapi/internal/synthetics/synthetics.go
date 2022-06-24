@@ -17,7 +17,7 @@ type API struct {
 	client syntheticspb.SyntheticsAdminServiceClient
 }
 
-// NewAPI creates new API.
+// NewAPI creates new synthetics API.
 func NewAPI(cc grpc.ClientConnInterface) *API {
 	return &API{
 		client: syntheticspb.NewSyntheticsAdminServiceClient(cc),
@@ -26,39 +26,52 @@ func NewAPI(cc grpc.ClientConnInterface) *API {
 
 // GetAllAgents lists synthetics agents.
 func (a *API) GetAllAgents(ctx context.Context) (*synthetics.GetAllAgentsResponse, error) {
-	response, err := a.client.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	respPayload, err := a.client.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return (*listAgentsResponse)(response).ToModel()
+	resp, err := (*listAgentsResponse)(respPayload).ToModel()
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, err
 }
 
 // GetAgent retrieves synthetics agent with given ID.
 func (a *API) GetAgent(ctx context.Context, id models.ID) (*synthetics.Agent, error) {
-	response, err := a.client.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: id})
+	respPayload, err := a.client.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: id})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return agentFromPayload(response.GetAgent())
+	resp, err := agentFromPayload(respPayload.GetAgent())
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, err
 }
 
 // UpdateAgent updates the synthetics agent.
 func (a *API) UpdateAgent(ctx context.Context, agent *synthetics.Agent) (*synthetics.Agent, error) {
-	payload, err := agentToPayload(agent)
+	reqPayload, err := agentToPayload(agent)
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
+	}
+
+	respPayload, err := a.client.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{Agent: reqPayload})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	response, err := a.client.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{
-		Agent: payload,
-	})
+	resp, err := agentFromPayload(respPayload.GetAgent())
 	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
 	}
 
-	return agentFromPayload(response.GetAgent())
+	return resp, nil
 }
 
 // DeleteAgent removes synthetics agent with given ID.
@@ -71,7 +84,7 @@ func (a *API) DeleteAgent(ctx context.Context, id models.ID) error {
 func (a *API) ActivateAgent(ctx context.Context, id models.ID) (*synthetics.Agent, error) {
 	agent, err := a.GetAgent(ctx, id)
 	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, err
 	}
 
 	if agent.Status != synthetics.AgentStatusWait {
@@ -82,7 +95,7 @@ func (a *API) ActivateAgent(ctx context.Context, id models.ID) (*synthetics.Agen
 	agent.Status = synthetics.AgentStatusOK
 	agent, err = a.UpdateAgent(ctx, agent)
 	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, err
 	}
 
 	if agent.Status != synthetics.AgentStatusOK {
@@ -96,7 +109,7 @@ func (a *API) ActivateAgent(ctx context.Context, id models.ID) (*synthetics.Agen
 func (a *API) DeactivateAgent(ctx context.Context, id models.ID) (*synthetics.Agent, error) {
 	agent, err := a.GetAgent(ctx, id)
 	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, err
 	}
 
 	if agent.Status != synthetics.AgentStatusOK {
@@ -107,7 +120,7 @@ func (a *API) DeactivateAgent(ctx context.Context, id models.ID) (*synthetics.Ag
 	agent.Status = synthetics.AgentStatusWait
 	agent, err = a.UpdateAgent(ctx, agent)
 	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, err
 	}
 
 	if agent.Status != synthetics.AgentStatusWait {

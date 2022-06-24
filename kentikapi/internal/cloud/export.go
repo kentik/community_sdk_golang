@@ -1,13 +1,13 @@
 package cloud
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/AlekSi/pointer"
 	cloudexportpb "github.com/kentik/api-schema-public/gen/go/kentik/cloud_export/v202101beta1"
 	"github.com/kentik/community_sdk_golang/kentikapi/cloud"
-	kentikerrors "github.com/kentik/community_sdk_golang/kentikapi/internal/errors"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -22,7 +22,7 @@ type listExportsResponse cloudexportpb.ListCloudExportResponse
 
 func (r *listExportsResponse) ToModel() (*cloud.GetAllExportsResponse, error) {
 	if r == nil {
-		return nil, nil
+		return nil, errors.New("response payload is nil")
 	}
 
 	ces, err := exportsFromPayload(r.Exports)
@@ -51,12 +51,16 @@ func exportsFromPayload(exports []*cloudexportpb.CloudExport) ([]cloud.Export, e
 // exportFromPayload converts cloud export payload to model.
 func exportFromPayload(ce *cloudexportpb.CloudExport) (*cloud.Export, error) {
 	if ce == nil {
-		return nil, kentikerrors.New(kentikerrors.InvalidResponse, "cloud export response payload is nil")
+		return nil, errors.New("response payload is nil")
+	}
+
+	if ce.Id == "" {
+		return nil, errors.New("empty export ID in response payload")
 	}
 
 	properties, err := propertiesFromPayload(ce)
 	if err != nil {
-		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+		return nil, err
 	}
 
 	return &cloud.Export{
@@ -207,7 +211,7 @@ func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *cloud.Expor
 	case ibmProvider:
 		payload.Properties = ibmPropertiesToPayload(ce)
 	default:
-		return nil, kentikerrors.New(kentikerrors.InvalidRequest, fmt.Sprintf("invalid cloud provider: %v", ce.Provider))
+		return nil, fmt.Errorf("invalid cloud provider: %v", ce.Provider)
 	}
 	return payload, nil
 }
@@ -263,13 +267,13 @@ func boolProtoPtrToBoolPtr(v *wrapperspb.BoolValue) *bool {
 // validateCreateExportRequest checks if Export create request contains all required fields.
 func validateCreateExportRequest(ce *cloud.Export) error {
 	if ce == nil {
-		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
+		return errors.New("cloud export object is nil")
 	}
 	if ce.Name == "" {
-		return ceFieldError("Name")
+		return missingExportFieldError("Name")
 	}
 	if ce.PlanID == "" {
-		return ceFieldError("PlanID")
+		return missingExportFieldError("PlanID")
 	}
 	return validateCEProvider(ce)
 }
@@ -277,16 +281,16 @@ func validateCreateExportRequest(ce *cloud.Export) error {
 // validateExportUpdateRequest checks if Export update request contains all required fields.
 func validateExportUpdateRequest(ce *cloud.Export) error {
 	if ce == nil {
-		return kentikerrors.New(kentikerrors.InvalidRequest, "cloud export object is nil")
+		return errors.New("cloud export object is nil")
 	}
 	if ce.ID == "" {
-		return ceFieldError("ID")
+		return missingExportFieldError("ID")
 	}
 	if ce.Name == "" {
-		return ceFieldError("Name")
+		return missingExportFieldError("Name")
 	}
 	if ce.PlanID == "" {
-		return ceFieldError("PlanID")
+		return missingExportFieldError("PlanID")
 	}
 	return validateCEProvider(ce)
 }
@@ -294,7 +298,7 @@ func validateExportUpdateRequest(ce *cloud.Export) error {
 func validateCEProvider(ce *cloud.Export) error {
 	switch ce.Provider {
 	case "":
-		return ceFieldError("Provider")
+		return missingExportFieldError("Provider")
 	case awsProvider:
 		return validateAWSProvider(ce)
 	case azureProvider:
@@ -304,66 +308,62 @@ func validateCEProvider(ce *cloud.Export) error {
 	case ibmProvider:
 		return validateIBMProvider(ce)
 	default:
-		return kentikerrors.New(
-			kentikerrors.InvalidRequest,
-			fmt.Sprintf("cloud provider '%s' is not supported", ce.Provider))
+		return fmt.Errorf("cloud provider '%s' is not supported", ce.Provider)
 	}
 }
 
 func validateAWSProvider(ce *cloud.Export) error {
 	if ce.GetAWSProperties() == nil {
-		return ceFieldError("Properties")
+		return missingExportFieldError("Properties")
 	}
 	if ce.GetAWSProperties().Bucket == "" {
-		return ceFieldError("Properties.Bucket")
+		return missingExportFieldError("Properties.Bucket")
 	}
 	return nil
 }
 
 func validateAzureProvider(ce *cloud.Export) error {
 	if ce.GetAzureProperties() == nil {
-		return ceFieldError("Properties")
+		return missingExportFieldError("Properties")
 	}
 	if ce.GetAzureProperties().Location == "" {
-		return ceFieldError("Properties.Location")
+		return missingExportFieldError("Properties.Location")
 	}
 	if ce.GetAzureProperties().ResourceGroup == "" {
-		return ceFieldError("Properties.ResourceGroup")
+		return missingExportFieldError("Properties.ResourceGroup")
 	}
 	if ce.GetAzureProperties().StorageAccount == "" {
-		return ceFieldError("Properties.StorageAccount")
+		return missingExportFieldError("Properties.StorageAccount")
 	}
 	if ce.GetAzureProperties().SubscriptionID == "" {
-		return ceFieldError("Properties.SubscriptionID")
+		return missingExportFieldError("Properties.SubscriptionID")
 	}
 	return nil
 }
 
 func validateGCEProvider(ce *cloud.Export) error {
 	if ce.GetGCEProperties() == nil {
-		return ceFieldError("Properties")
+		return missingExportFieldError("Properties")
 	}
 	if ce.GetGCEProperties().Project == "" {
-		return ceFieldError("Properties.Project")
+		return missingExportFieldError("Properties.Project")
 	}
 	if ce.GetGCEProperties().Subscription == "" {
-		return ceFieldError("Properties.Subscription")
+		return missingExportFieldError("Properties.Subscription")
 	}
 	return nil
 }
 
 func validateIBMProvider(ce *cloud.Export) error {
 	if ce.GetIBMProperties() == nil {
-		return ceFieldError("Properties")
+		return missingExportFieldError("Properties")
 	}
 	if ce.GetIBMProperties().Bucket == "" {
-		return ceFieldError("Properties.Bucket")
+		return missingExportFieldError("Properties.Bucket")
 	}
 	return nil
 }
 
-func ceFieldError(field string) error {
-	return kentikerrors.New(
-		kentikerrors.InvalidRequest,
-		fmt.Sprintf("Export '%s' field is required but not provided", field))
+func missingExportFieldError(field string) error {
+	return fmt.Errorf("export's %q field is missing", field)
 }

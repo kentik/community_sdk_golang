@@ -95,7 +95,7 @@ func demonstrateCloudAPIWithAWSExport() error {
 	PrettyPrint(ce)
 
 	fmt.Println("### Updating AWS cloud export")
-	ce.Name = "go-sdk-updated-aws-export"
+	ce.Name = "go-sdk-example-updated-aws-export"
 	ce.Description = "Updated description"
 	ce.GetAWSProperties().Bucket = "updated-bucket"
 	ce.BGP.UseBGPDeviceID = "updated-bgp-device-id"

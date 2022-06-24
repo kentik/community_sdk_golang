@@ -15,7 +15,7 @@ type API struct {
 	client cloudexportpb.CloudExportAdminServiceClient
 }
 
-// NewAPI creates new API.
+// NewAPI creates new cloud API.
 func NewAPI(cc grpc.ClientConnInterface) *API {
 	return &API{
 		client: cloudexportpb.NewCloudExportAdminServiceClient(cc),
@@ -24,62 +24,84 @@ func NewAPI(cc grpc.ClientConnInterface) *API {
 
 // GetAllExports lists cloud exports.
 func (a *API) GetAllExports(ctx context.Context) (*cloud.GetAllExportsResponse, error) {
-	response, err := a.client.ListCloudExport(ctx, &cloudexportpb.ListCloudExportRequest{})
+	respPayload, err := a.client.ListCloudExport(ctx, &cloudexportpb.ListCloudExportRequest{})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return (*listExportsResponse)(response).ToModel()
+	resp, err := (*listExportsResponse)(respPayload).ToModel()
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, nil
 }
 
 // GetExport retrieves cloud export with given ID.
 func (a *API) GetExport(ctx context.Context, id models.ID) (*cloud.Export, error) {
-	response, err := a.client.GetCloudExport(ctx, &cloudexportpb.GetCloudExportRequest{Id: id})
+	respPayload, err := a.client.GetCloudExport(ctx, &cloudexportpb.GetCloudExportRequest{Id: id})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return exportFromPayload(response.GetExport())
+	resp, err := exportFromPayload(respPayload.GetExport())
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, nil
 }
 
 // CreateExport creates new cloud export.
 func (a *API) CreateExport(ctx context.Context, ce *cloud.Export) (*cloud.Export, error) {
 	if err := validateCreateExportRequest(ce); err != nil {
-		return nil, err
-	}
-	payload, err := exportToPayload(ce)
-	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
 	}
 
-	response, err := a.client.CreateCloudExport(ctx, &cloudexportpb.CreateCloudExportRequest{
-		Export: payload,
+	reqPayload, err := exportToPayload(ce)
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
+	}
+
+	respPayload, err := a.client.CreateCloudExport(ctx, &cloudexportpb.CreateCloudExportRequest{
+		Export: reqPayload,
 	})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return exportFromPayload(response.GetExport())
+	resp, err := exportFromPayload(respPayload.GetExport())
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, err
 }
 
 // UpdateExport updates the cloud export.
 func (a *API) UpdateExport(ctx context.Context, ce *cloud.Export) (*cloud.Export, error) {
 	if err := validateExportUpdateRequest(ce); err != nil {
-		return nil, err
-	}
-	payload, err := exportToPayload(ce)
-	if err != nil {
-		return nil, kentikerrors.StatusErrorFromGRPC(err)
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
 	}
 
-	response, err := a.client.UpdateCloudExport(ctx, &cloudexportpb.UpdateCloudExportRequest{
-		Export: payload,
+	reqPayload, err := exportToPayload(ce)
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
+	}
+
+	respPayload, err := a.client.UpdateCloudExport(ctx, &cloudexportpb.UpdateCloudExportRequest{
+		Export: reqPayload,
 	})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
 
-	return exportFromPayload(response.GetExport())
+	resp, err := exportFromPayload(respPayload.GetExport())
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, nil
 }
 
 // DeleteExport removes cloud export with given ID.

@@ -186,26 +186,26 @@ type ExportStatus struct {
 	StorageAccountAccess *bool
 }
 
-// AWSExportRequiredFields is subset of fields required to create an AWS Export.
+// AWSExportRequiredFields is a subset of fields required to create an AWS Export.
 type AWSExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	AWSProperties AWSPropertiesRequiredFields
 }
 
-// AWSPropertiesRequiredFields is subset of AWSProperties required to create an AWS Export.
+// AWSPropertiesRequiredFields is a subset of AWSProperties required to create an AWS Export.
 type AWSPropertiesRequiredFields struct {
 	Bucket string
 }
 
-// AzureExportRequiredFields is subset of fields required to create an Azure Export.
+// AzureExportRequiredFields is a subset of fields required to create an Azure Export.
 type AzureExportRequiredFields struct {
 	Name            string
 	PlanID          string
 	AzureProperties AzurePropertiesRequiredFields
 }
 
-// AzurePropertiesRequiredFields is subset of AzureProperties required to create an Azure Export.
+// AzurePropertiesRequiredFields is a subset of AzureProperties required to create an Azure Export.
 type AzurePropertiesRequiredFields struct {
 	Location       string
 	ResourceGroup  string
@@ -213,27 +213,27 @@ type AzurePropertiesRequiredFields struct {
 	SubscriptionID string
 }
 
-// GCEExportRequiredFields is subset of fields required to create a GCE Export.
+// GCEExportRequiredFields is a subset of fields required to create a GCE Export.
 type GCEExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	GCEProperties GCEPropertiesRequiredFields
 }
 
-// GCEPropertiesRequiredFields is subset of GCEProperties required to create a GCE Export.
+// GCEPropertiesRequiredFields is a subset of GCEProperties required to create a GCE Export.
 type GCEPropertiesRequiredFields struct {
 	Project      string
 	Subscription string
 }
 
-// IBMExportRequiredFields is subset of fields required to create an IBM Export.
+// IBMExportRequiredFields is a subset of fields required to create an IBM Export.
 type IBMExportRequiredFields struct {
 	Name          string
 	PlanID        string
 	IBMProperties IBMPropertiesRequiredFields
 }
 
-// IBMPropertiesRequiredFields is subset of IBMProperties required to create an IBM Export.
+// IBMPropertiesRequiredFields is a subset of IBMProperties required to create an IBM Export.
 type IBMPropertiesRequiredFields struct {
 	Bucket string
 }
@@ -255,9 +255,8 @@ const (
 type Provider string
 
 const (
-	ProviderAlibaba Provider = "alibaba"
-	ProviderAWS     Provider = "aws"
-	ProviderAzure   Provider = "azure"
-	ProviderGCE     Provider = "gce" // gcp value in Agents API
-	ProviderIBM     Provider = "ibm"
+	ProviderAWS   Provider = "aws"
+	ProviderAzure Provider = "azure"
+	ProviderGCE   Provider = "gce" // gcp value in Agents API
+	ProviderIBM   Provider = "ibm"
 )
