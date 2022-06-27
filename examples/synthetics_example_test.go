@@ -544,7 +544,7 @@ func newMinimalDNSTest(agentIDs []models.ID) *synthetics.Test {
 			Timeout:    time.Minute,
 			RecordType: synthetics.DNSRecordAAAA,
 			Servers:    []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
-			Port:       443,
+			Port:       53,
 		},
 	})
 }
@@ -560,7 +560,7 @@ func newMinimalDNSGridTest(agentIDs []models.ID) *synthetics.Test {
 			Timeout:    time.Minute,
 			RecordType: synthetics.DNSRecordAAAA,
 			Servers:    []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
-			Port:       443,
+			Port:       53,
 		},
 	})
 }

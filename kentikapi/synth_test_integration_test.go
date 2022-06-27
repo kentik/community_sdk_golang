@@ -1177,7 +1177,7 @@ func newDNSTest() *synthetics.Test {
 		Timeout:    time.Minute,
 		RecordType: synthetics.DNSRecordAAAA,
 		Servers:    []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
-		Port:       443,
+		Port:       53,
 	}
 	return t
 }
@@ -1193,7 +1193,7 @@ func newDNSTestPayload() *syntheticspb.Test {
 			Timeout:    60000,
 			RecordType: syntheticspb.DNSRecord_DNS_RECORD_AAAA,
 			Servers:    []string{"192.0.2.213", "2001:db8:dead:beef:dead:beef:dead:beef"},
-			Port:       443,
+			Port:       53,
 		},
 	}
 	return t
@@ -1209,7 +1209,7 @@ func newDNSGridTest() *synthetics.Test {
 		Timeout:    time.Minute,
 		RecordType: synthetics.DNSRecordAAAA,
 		Servers:    []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
-		Port:       443,
+		Port:       53,
 	}
 	return t
 }
@@ -1225,7 +1225,7 @@ func newDNSGridTestPayload() *syntheticspb.Test {
 			Timeout:    60000,
 			RecordType: syntheticspb.DNSRecord_DNS_RECORD_AAAA,
 			Servers:    []string{"192.0.2.213", "2001:db8:dead:beef:dead:beef:dead:beef"},
-			Port:       443,
+			Port:       53,
 		},
 	}
 	return t
