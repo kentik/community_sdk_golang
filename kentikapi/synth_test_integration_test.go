@@ -361,6 +361,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 						Timeout:  10 * time.Second,
 						Count:    10,
 						Protocol: synthetics.PingProtocolTCP,
+						Port:     65535,
 					},
 					Traceroute: synthetics.TracerouteSettingsRequiredFields{
 						Timeout:  59999 * time.Millisecond,
@@ -393,7 +394,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 						Ping: &syntheticspb.TestPingSettings{
 							Count:    10,
 							Protocol: "tcp",
-							Port:     0,
+							Port:     65535,
 							Timeout:  10000,
 							Delay:    0,
 						},
@@ -437,7 +438,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 							Ping: &syntheticspb.TestPingSettings{
 								Count:    10,
 								Protocol: "tcp",
-								Port:     0,
+								Port:     65535,
 								Timeout:  10000,
 								Delay:    0,
 							},
@@ -488,7 +489,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 						Count:    10,
 						Delay:    0,
 						Protocol: synthetics.PingProtocolTCP,
-						Port:     0,
+						Port:     65535,
 					},
 					Traceroute: &synthetics.TracerouteSettings{
 						Timeout:  59999 * time.Millisecond,

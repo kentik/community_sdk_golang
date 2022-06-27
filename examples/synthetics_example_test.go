@@ -223,6 +223,7 @@ func newHostnameTest(ctx context.Context, client *kentikapi.Client) (*synthetics
 				Timeout:  10 * time.Second,
 				Count:    10,
 				Protocol: synthetics.PingProtocolTCP,
+				Port:     65535,
 			},
 			Traceroute: synthetics.TracerouteSettingsRequiredFields{
 				Timeout:  59999 * time.Millisecond,
@@ -350,6 +351,7 @@ func newMinimalIPTest(agentIDs []models.ID) *synthetics.Test {
 				Timeout:  10 * time.Second,
 				Count:    10,
 				Protocol: synthetics.PingProtocolTCP,
+				Port:     65535,
 			},
 			Traceroute: synthetics.TracerouteSettingsRequiredFields{
 				Timeout:  59999 * time.Millisecond,
@@ -376,6 +378,7 @@ func newMinimalNetworkGridTest(agentIDs []models.ID) *synthetics.Test {
 				Timeout:  10 * time.Second,
 				Count:    10,
 				Protocol: synthetics.PingProtocolTCP,
+				Port:     65535,
 			},
 			Traceroute: synthetics.TracerouteSettingsRequiredFields{
 				Timeout:  59999 * time.Millisecond,
@@ -402,6 +405,7 @@ func newMinimalHostnameTest(agentIDs []models.ID) *synthetics.Test {
 				Timeout:  10 * time.Second,
 				Count:    10,
 				Protocol: synthetics.PingProtocolTCP,
+				Port:     65535,
 			},
 			Traceroute: synthetics.TracerouteSettingsRequiredFields{
 				Timeout:  59999 * time.Millisecond,

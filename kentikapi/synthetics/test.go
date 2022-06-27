@@ -117,6 +117,7 @@ func newBasePingTraceTest(obj BasePingTraceTestRequiredFields) *Test {
 		Timeout:  obj.Ping.Timeout,
 		Count:    obj.Ping.Count,
 		Protocol: obj.Ping.Protocol,
+		Port:     obj.Ping.Port,
 	}
 	t.Settings.Traceroute = &TracerouteSettings{
 		Timeout:  obj.Traceroute.Timeout,
@@ -635,6 +636,7 @@ type PingSettingsRequiredFields struct {
 	Timeout  time.Duration
 	Count    uint32
 	Protocol PingProtocol
+	Port     uint32
 }
 
 // TracerouteSettingsRequiredFields is a subset of TracerouteSettings fields required for create.
