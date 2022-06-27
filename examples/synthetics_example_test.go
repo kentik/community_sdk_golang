@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -16,6 +18,7 @@ import (
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -67,9 +70,10 @@ func demonstrateSyntheticsAgentAPI() error {
 	fmt.Println("Number of agents:", len(getAllResp.Agents))
 	fmt.Println("Number of invalid agents:", getAllResp.InvalidAgentsCount)
 
-	agentID, err := pickPrivateAgentID(ctx)
+	// Pick a private agent, so it is possible to modify it
+	agentID, err := pickPrivateAgentID(getAllResp.Agents)
 	if err != nil {
-		return fmt.Errorf("pick agent ID: %w", err)
+		return fmt.Errorf("pick private agent ID: %w", err)
 	}
 
 	fmt.Println("### Getting synthetics agent with ID", agentID)
@@ -126,27 +130,6 @@ func demonstrateSyntheticsAgentAPI() error {
 	return nil
 }
 
-func pickPrivateAgentID(ctx context.Context) (string, error) {
-	client, err := NewClient()
-	if err != nil {
-		return "", err
-	}
-
-	getAllResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
-	if err != nil {
-		return "", fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
-	}
-
-	if getAllResp.GetAgents() != nil {
-		for _, agent := range getAllResp.GetAgents() {
-			if agent.GetType() == "private" {
-				return agent.GetId(), nil
-			}
-		}
-	}
-	return "", fmt.Errorf("no private agent found: %w", err)
-}
-
 func demonstrateSyntheticsTestsAPI() error {
 	ctx := context.Background()
 	client, err := NewClient()
@@ -165,7 +148,11 @@ func demonstrateSyntheticsTestsAPI() error {
 	fmt.Println("Number of invalid tests:", getAllResp.InvalidTestsCount)
 
 	fmt.Println("### Creating hostname synthetic test")
-	test := newHostnameTest()
+	test, err := newHostnameTest(ctx, client)
+	if err != nil {
+		return fmt.Errorf("new hostname test: %w", err)
+	}
+
 	test, err = client.Synthetics.CreateTest(ctx, test)
 	if err != nil {
 		return fmt.Errorf("client.SyntheticsAdmin.CreateTest: %w", err)
@@ -215,12 +202,22 @@ func demonstrateSyntheticsTestsAPI() error {
 	return nil
 }
 
-func newHostnameTest() *synthetics.Test {
+func newHostnameTest(ctx context.Context, client *kentikapi.Client) (*synthetics.Test, error) {
+	getAllResp, err := client.Synthetics.GetAllAgents(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
+	}
+
+	agentID, err := pickDualIPRustAgentID(getAllResp.Agents)
+	if err != nil {
+		return nil, fmt.Errorf("pick agent ID for hostname test: %w", err)
+	}
+
 	test := synthetics.NewHostnameTest(synthetics.HostnameTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-hostname-test",
-				AgentIDs: []string{"2592"},
+				AgentIDs: []string{agentID},
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -271,7 +268,7 @@ func newHostnameTest() *synthetics.Test {
 	test.Settings.Ping.Port = 65535
 	test.Settings.Traceroute.Port = 1
 
-	return test
+	return test, nil
 }
 
 func createMinimalTests() error {
@@ -281,17 +278,37 @@ func createMinimalTests() error {
 		return err
 	}
 
+	getAllResp, err := client.Synthetics.GetAllAgents(ctx)
+	if err != nil {
+		return fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
+	}
+
+	dualIPRustAgentID, err := pickDualIPRustAgentID(getAllResp.Agents)
+	if err != nil {
+		return err
+	}
+
+	ipV4RustAgentID, err := pickIPV4RustAgentID(getAllResp.Agents)
+	if err != nil {
+		return err
+	}
+
+	nodeAgentID, err := pickNodeAgentID(getAllResp.Agents)
+	if err != nil {
+		return err
+	}
+
 	for _, t := range []*synthetics.Test{
-		newMinimalIPTest(),
-		newMinimalNetworkGridTest(),
-		newMinimalHostnameTest(),
-		newMinimalAgentTest(),
-		newMinimalNetworkMeshTest(),
-		newMinimalFlowTest(),
-		newMinimalURLTest(),
-		newMinimalPageLoadTest(),
-		newMinimalDNSTest(),
-		newMinimalDNSGridTest(),
+		newMinimalIPTest([]models.ID{dualIPRustAgentID}),
+		newMinimalNetworkGridTest([]models.ID{dualIPRustAgentID}),
+		newMinimalHostnameTest([]models.ID{dualIPRustAgentID}),
+		newMinimalAgentTest([]models.ID{dualIPRustAgentID}),
+		newMinimalNetworkMeshTest([]models.ID{dualIPRustAgentID, ipV4RustAgentID}), // multiple agents required
+		newMinimalFlowTest([]models.ID{dualIPRustAgentID}),
+		newMinimalURLTest([]models.ID{dualIPRustAgentID}),
+		newMinimalPageLoadTest([]models.ID{nodeAgentID}), // agent with implementation type Node required
+		newMinimalDNSTest([]models.ID{dualIPRustAgentID}),
+		newMinimalDNSGridTest([]models.ID{dualIPRustAgentID}),
 	} {
 		err = createAndDeleteTest(ctx, client, t)
 		if err != nil {
@@ -304,9 +321,10 @@ func createMinimalTests() error {
 
 func createAndDeleteTest(ctx context.Context, client *kentikapi.Client, test *synthetics.Test) error {
 	fmt.Println("### Creating synthetic test", test.Name)
+	tName := test.Name // test object is nil on error
 	test, err := client.Synthetics.CreateTest(ctx, test)
 	if err != nil {
-		return fmt.Errorf("client.Synthetics.CreateTest: %w", err)
+		return fmt.Errorf("create test %q: %w", tName, err)
 	}
 
 	fmt.Println("Created synthetic test:")
@@ -315,18 +333,18 @@ func createAndDeleteTest(ctx context.Context, client *kentikapi.Client, test *sy
 	fmt.Println("### Deleting synthetic test", test.Name)
 	err = client.Synthetics.DeleteTest(ctx, test.ID)
 	if err != nil {
-		return fmt.Errorf("client.Synthetics.DeleteTest: %w", err)
+		return fmt.Errorf("delete test %q: %w", test.Name, err)
 	}
 	fmt.Printf("Deleted synthetic test %q successfully\n", test.Name)
 	return nil
 }
 
-func newMinimalIPTest() *synthetics.Test {
+func newMinimalIPTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewIPTest(synthetics.IPTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-ip-test",
-				AgentIDs: []string{"2592"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -347,12 +365,12 @@ func newMinimalIPTest() *synthetics.Test {
 	})
 }
 
-func newMinimalNetworkGridTest() *synthetics.Test {
+func newMinimalNetworkGridTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewNetworkGridTest(synthetics.NetworkGridTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-network-grid-test",
-				AgentIDs: []string{"2592"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -373,12 +391,12 @@ func newMinimalNetworkGridTest() *synthetics.Test {
 	})
 }
 
-func newMinimalHostnameTest() *synthetics.Test {
+func newMinimalHostnameTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewHostnameTest(synthetics.HostnameTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-hostname-test",
-				AgentIDs: []string{"2592"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -399,12 +417,12 @@ func newMinimalHostnameTest() *synthetics.Test {
 	})
 }
 
-func newMinimalAgentTest() *synthetics.Test {
+func newMinimalAgentTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewAgentTest(synthetics.AgentTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-agent-test",
-				AgentIDs: []string{"2592"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -420,17 +438,17 @@ func newMinimalAgentTest() *synthetics.Test {
 			},
 		},
 		Definition: synthetics.TestDefinitionAgentRequiredFields{
-			Target: "2592",
+			Target: agentIDs[0],
 		},
 	})
 }
 
-func newMinimalNetworkMeshTest() *synthetics.Test {
+func newMinimalNetworkMeshTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewNetworkMeshTest(synthetics.NetworkMeshTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-network-mesh-test",
-				AgentIDs: []string{"2592", "64389"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -448,12 +466,12 @@ func newMinimalNetworkMeshTest() *synthetics.Test {
 	})
 }
 
-func newMinimalFlowTest() *synthetics.Test {
+func newMinimalFlowTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewFlowTest(synthetics.FlowTestRequiredFields{
 		BasePingTraceTestRequiredFields: synthetics.BasePingTraceTestRequiredFields{
 			BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 				Name:     "go-sdk-example-minimal-flow-test",
-				AgentIDs: []string{"2592", "64389"},
+				AgentIDs: agentIDs,
 			},
 			Ping: synthetics.PingSettingsRequiredFields{
 				Timeout:  10 * time.Second,
@@ -477,11 +495,11 @@ func newMinimalFlowTest() *synthetics.Test {
 	})
 }
 
-func newMinimalURLTest() *synthetics.Test {
+func newMinimalURLTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewURLTest(synthetics.URLTestRequiredFields{
 		BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 			Name:     "go-sdk-example-minimal-url-test",
-			AgentIDs: []string{"2592"},
+			AgentIDs: agentIDs,
 		},
 		Definition: synthetics.TestDefinitionURLRequiredFields{
 			Target: url.URL{
@@ -494,11 +512,11 @@ func newMinimalURLTest() *synthetics.Test {
 	})
 }
 
-func newMinimalPageLoadTest() *synthetics.Test {
+func newMinimalPageLoadTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewPageLoadTest(synthetics.PageLoadTestRequiredFields{
 		BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 			Name:     "go-sdk-example-minimal-page-load-test",
-			AgentIDs: []string{"2602"},
+			AgentIDs: agentIDs,
 		},
 		Definition: synthetics.TestDefinitionPageLoadRequiredFields{
 			Target: url.URL{
@@ -511,11 +529,11 @@ func newMinimalPageLoadTest() *synthetics.Test {
 	})
 }
 
-func newMinimalDNSTest() *synthetics.Test {
+func newMinimalDNSTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewDNSTest(synthetics.DNSTestRequiredFields{
 		BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 			Name:     "go-sdk-example-minimal-page-load-test",
-			AgentIDs: []string{"2666"},
+			AgentIDs: agentIDs,
 		},
 		Definition: synthetics.TestDefinitionDNSRequiredFields{
 			Target:     "www.example.com",
@@ -527,11 +545,11 @@ func newMinimalDNSTest() *synthetics.Test {
 	})
 }
 
-func newMinimalDNSGridTest() *synthetics.Test {
+func newMinimalDNSGridTest(agentIDs []models.ID) *synthetics.Test {
 	return synthetics.NewDNSGridTest(synthetics.DNSGridTestRequiredFields{
 		BaseTestRequiredFields: synthetics.BaseTestRequiredFields{
 			Name:     "go-sdk-example-minimal-page-load-test",
-			AgentIDs: []string{"2666"},
+			AgentIDs: agentIDs,
 		},
 		Definition: synthetics.TestDefinitionDNSGridRequiredFields{
 			Target:     "www.example.com",
@@ -541,6 +559,94 @@ func newMinimalDNSGridTest() *synthetics.Test {
 			Port:       443,
 		},
 	})
+}
+
+func pickPrivateAgentID(agents []synthetics.Agent) (models.ID, error) {
+	var matchedIDs []models.ID
+	for _, a := range agents {
+		if a.Type == synthetics.AgentTypePrivate {
+			matchedIDs = append(matchedIDs, a.ID)
+		}
+	}
+
+	if len(matchedIDs) == 0 {
+		return "", fmt.Errorf("no agent meeting criteria (AgentTypePrivate) found")
+	}
+
+	// Randomizing picked ID helps to verify that criteria above are sufficient
+	rand.Seed(time.Now().UnixNano())
+	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	log.Printf(
+		"Found %v agents meeting criteria (AgentTypePrivate), picked agent with ID %v\n",
+		len(matchedIDs), agentID,
+	)
+	return agentID, nil
+}
+
+func pickDualIPRustAgentID(agents []synthetics.Agent) (models.ID, error) {
+	var matchedIDs []models.ID
+	for _, a := range agents {
+		if a.IPFamily == synthetics.IPFamilyDual && a.ImplementationType == synthetics.AgentImplementationTypeRust {
+			matchedIDs = append(matchedIDs, a.ID)
+		}
+	}
+
+	if len(matchedIDs) == 0 {
+		return "", fmt.Errorf("no agent meeting criteria (IPFamilyDual, AgentImplementationTypeRust) found")
+	}
+
+	// Randomizing picked ID helps to verify that criteria above are sufficient
+	rand.Seed(time.Now().UnixNano())
+	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	log.Printf(
+		"Found %v agents meeting criteria (IPFamilyDual, AgentImplementationTypeRust), picked a with ID %v\n",
+		len(matchedIDs), agentID,
+	)
+	return agentID, nil
+}
+
+func pickIPV4RustAgentID(agents []synthetics.Agent) (models.ID, error) {
+	var matchedIDs []models.ID
+	for _, a := range agents {
+		if a.IPFamily == synthetics.IPFamilyV4 && a.ImplementationType == synthetics.AgentImplementationTypeRust {
+			matchedIDs = append(matchedIDs, a.ID)
+		}
+	}
+
+	if len(matchedIDs) == 0 {
+		return "", fmt.Errorf("no agent meeting criteria (IPFamilyV4, AgentImplementationTypeRust) found")
+	}
+
+	// Randomizing picked ID helps to verify that criteria above are sufficient
+	rand.Seed(time.Now().UnixNano())
+	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	log.Printf(
+		"Found %v agents meeting criteria (IPFamilyV4, AgentImplementationTypeRust), picked a with ID %v\n",
+		len(matchedIDs), agentID,
+	)
+	return agentID, nil
+}
+
+func pickNodeAgentID(agents []synthetics.Agent) (models.ID, error) {
+	var matchedIDs []models.ID
+	for _, a := range agents {
+		if a.ImplementationType == synthetics.AgentImplementationTypeNode {
+			matchedIDs = append(matchedIDs, a.ID)
+		}
+	}
+
+	if len(matchedIDs) == 0 {
+		return "", fmt.Errorf("no agent meeting criteria (AgentImplementationTypeNode) found")
+	}
+
+	// Randomizing picked ID helps to verify that criteria above are sufficient
+	rand.Seed(time.Now().UnixNano())
+	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	log.Printf(
+		"Found %v agents meeting criteria (AgentImplementationTypeNode), picked a with ID %v\n",
+		len(matchedIDs), agentID,
+	)
+	return agentID, nil
 }
 
 func demonstrateSyntheticsDataServiceAPI() error {

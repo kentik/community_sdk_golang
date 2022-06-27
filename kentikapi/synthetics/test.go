@@ -178,7 +178,7 @@ type TestSettings struct {
 	Definition TestDefinition
 	// AgentIDs contains IDs of agents that shall execute tasks for this test. Only existing agents in the account
 	// are allowed.
-	AgentIDs []string
+	AgentIDs []models.ID
 	// Period is a test execution period. Default: 60s. Allowed values range: [1 s, 900 s].
 	Period time.Duration
 	// Family selects which type of DNS resource is queried for resolving hostname to target address.
@@ -627,7 +627,7 @@ type BasePingTraceTestRequiredFields struct {
 // BaseTestRequiredFields is a subset of Test fields required to create any test.
 type BaseTestRequiredFields struct {
 	Name     string
-	AgentIDs []string
+	AgentIDs []models.ID
 }
 
 // PingSettingsRequiredFields is a subset of PingSettings fields required for create.
