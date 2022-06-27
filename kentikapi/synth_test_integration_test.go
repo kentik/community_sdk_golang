@@ -32,6 +32,7 @@ const (
 	dnsTestID         = "1009"
 	dnsGridTestID     = "1010"
 	bgpMonitorTestID  = "1011"
+	transactionTestID = "1012"
 )
 
 func TestClient_Synthetics_GetAllTests(t *testing.T) {
@@ -86,6 +87,7 @@ func TestClient_Synthetics_GetAllTests(t *testing.T) {
 						newDNSTestPayload(),
 						newDNSGridTestPayload(),
 						newBGPMonitorTestPayload(),
+						newTransactionTestPayload(),
 					},
 					InvalidCount: 1,
 				},
@@ -103,6 +105,7 @@ func TestClient_Synthetics_GetAllTests(t *testing.T) {
 					*newDNSTest(),
 					*newDNSGridTest(),
 					// BGP monitor test should be silently ignored
+					// transaction test should be silently ignored
 				},
 				InvalidTestsCount: 1,
 			},
@@ -285,6 +288,15 @@ func TestClient_Synthetics_GetTest(t *testing.T) {
 			expectedRequest: &syntheticspb.GetTestRequest{Id: bgpMonitorTestID},
 			response: getTestResponse{
 				data: &syntheticspb.GetTestResponse{Test: newBGPMonitorTestPayload()},
+			},
+			expectedResult: nil,
+			expectedError:  true, // InvalidResponse
+		}, {
+			name:            "transaction test returned",
+			requestID:       transactionTestID,
+			expectedRequest: &syntheticspb.GetTestRequest{Id: transactionTestID},
+			response: getTestResponse{
+				data: &syntheticspb.GetTestResponse{Test: newTransactionTestPayload()},
 			},
 			expectedResult: nil,
 			expectedError:  true, // InvalidResponse
@@ -650,6 +662,13 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 			expectedResult:  nil,
 			expectedError:   true,
 			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
+		}, {
+			name:            "transaction test passed",
+			request:         newTransactionTest(),
+			expectedRequest: nil,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -739,6 +758,13 @@ func TestClient_Synthetics_UpdateTest(t *testing.T) {
 		}, {
 			name:            "BGP monitor test passed",
 			request:         newBGPMonitorTest(),
+			expectedRequest: nil,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
+		}, {
+			name:            "transaction test passed",
+			request:         newTransactionTest(),
 			expectedRequest: nil,
 			expectedResult:  nil,
 			expectedError:   true,
@@ -1270,6 +1296,22 @@ func newBGPMonitorTestPayload() *syntheticspb.Test {
 	t.Name = "bgp-monitor-test"
 	t.Type = "bgp_monitor"
 	t.Id = bgpMonitorTestID
+	return t
+}
+
+func newTransactionTest() *synthetics.Test {
+	t := newTest()
+	t.Name = "transaction-test"
+	t.Type = "transaction"
+	t.ID = transactionTestID
+	return t
+}
+
+func newTransactionTestPayload() *syntheticspb.Test {
+	t := newTestPayload()
+	t.Name = "transaction-test"
+	t.Type = "transaction"
+	t.Id = transactionTestID
 	return t
 }
 

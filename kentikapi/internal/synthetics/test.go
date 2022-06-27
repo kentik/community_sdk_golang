@@ -12,9 +12,10 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
+// Test types hidden from SDK users (not included in public enum)
 const (
-	// testTypeBGPMonitor is hidden from SDK users (not included in public enum)
-	testTypeBGPMonitor = "bgp_monitor"
+	testTypeBGPMonitor  = "bgp_monitor"
+	testTypeTransaction = "transaction"
 )
 
 type listTestsResponse syntheticspb.ListTestsResponse
@@ -38,8 +39,9 @@ func (r *listTestsResponse) ToModel() (*synthetics.GetAllTestsResponse, error) {
 func testsFromPayload(tests []*syntheticspb.Test) ([]synthetics.Test, error) {
 	var result []synthetics.Test
 	for i, t := range tests {
-		if t.Type == testTypeBGPMonitor {
-			// silently ignore BGP monitor test, as they are going to be handled in separate BGP monitoring API
+		if t.Type == testTypeBGPMonitor || t.Type == testTypeTransaction {
+			// Silently ignore BGP monitor tests, as they are going to be handled in separate BGP monitoring API
+			// Silently ignore transaction tests, as they cannot yet provide actual configuration or results
 			continue
 		}
 
