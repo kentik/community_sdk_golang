@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// API aggregates Synthetics API methods.
+// API aggregates synthetics API methods.
 type API struct {
 	client syntheticspb.SyntheticsAdminServiceClient
 }
