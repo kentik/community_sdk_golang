@@ -12,6 +12,11 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
+const (
+	// testTypeBGPMonitor is hidden from SDK users (not included in public enum)
+	testTypeBGPMonitor = "bgp_monitor"
+)
+
 type listTestsResponse syntheticspb.ListTestsResponse
 
 func (r *listTestsResponse) ToModel() (*synthetics.GetAllTestsResponse, error) {
@@ -32,8 +37,13 @@ func (r *listTestsResponse) ToModel() (*synthetics.GetAllTestsResponse, error) {
 
 func testsFromPayload(tests []*syntheticspb.Test) ([]synthetics.Test, error) {
 	var result []synthetics.Test
-	for i, a := range tests {
-		test, err := testFromPayload(a)
+	for i, t := range tests {
+		if t.Type == testTypeBGPMonitor {
+			// silently ignore BGP monitor test, as they are going to be handled in separate BGP monitoring API
+			continue
+		}
+
+		test, err := testFromPayload(t)
 		if err != nil {
 			return nil, fmt.Errorf("test with index %v: %w", i, err)
 		}
@@ -128,7 +138,7 @@ func testDefinitionFromPayload(t *syntheticspb.Test) (synthetics.TestDefinition,
 	case synthetics.TestTypeDNSGrid:
 		return dnsGridTestDefinitionFromPayload(t.Settings)
 	default:
-		return nil, fmt.Errorf("invalid test type: %v", t.Type)
+		return nil, fmt.Errorf("unsupported test type: %v", t.Type)
 	}
 }
 
@@ -540,7 +550,7 @@ func testSettingsPayloadWithDefinition(
 	case synthetics.TestTypeDNSGrid:
 		tsPayload.Definition = dnsGridTestDefinitionToPayload(ts)
 	default:
-		return nil, fmt.Errorf("invalid test type: %v", testType)
+		return nil, fmt.Errorf("unsupported test type: %v", testType)
 	}
 
 	return tsPayload, nil

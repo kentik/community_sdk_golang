@@ -31,6 +31,7 @@ const (
 	pageLoadTestID    = "1008"
 	dnsTestID         = "1009"
 	dnsGridTestID     = "1010"
+	bgpMonitorTestID  = "1011"
 )
 
 func TestClient_Synthetics_GetAllTests(t *testing.T) {
@@ -84,6 +85,7 @@ func TestClient_Synthetics_GetAllTests(t *testing.T) {
 						newPageLoadTestPayload(),
 						newDNSTestPayload(),
 						newDNSGridTestPayload(),
+						newBGPMonitorTestPayload(),
 					},
 					InvalidCount: 1,
 				},
@@ -100,6 +102,7 @@ func TestClient_Synthetics_GetAllTests(t *testing.T) {
 					*newPageLoadTest(),
 					*newDNSTest(),
 					*newDNSGridTest(),
+					// BGP monitor test should be silently ignored
 				},
 				InvalidTestsCount: 1,
 			},
@@ -276,6 +279,15 @@ func TestClient_Synthetics_GetTest(t *testing.T) {
 				data: &syntheticspb.GetTestResponse{Test: newDNSGridTestPayload()},
 			},
 			expectedResult: newDNSGridTest(),
+		}, {
+			name:            "BGP monitor test returned",
+			requestID:       bgpMonitorTestID,
+			expectedRequest: &syntheticspb.GetTestRequest{Id: bgpMonitorTestID},
+			response: getTestResponse{
+				data: &syntheticspb.GetTestResponse{Test: newBGPMonitorTestPayload()},
+			},
+			expectedResult: nil,
+			expectedError:  true, // InvalidResponse
 		},
 	}
 	//nolint:dupl
@@ -631,6 +643,13 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 				},
 			},
 			expectedResult: newDNSGridTest(),
+		}, {
+			name:            "BGP monitor test passed",
+			request:         newBGPMonitorTest(),
+			expectedRequest: nil,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	//nolint:dupl
@@ -717,6 +736,13 @@ func TestClient_Synthetics_UpdateTest(t *testing.T) {
 				},
 			},
 			expectedResult: newHostnameTest(),
+		}, {
+			name:            "BGP monitor test passed",
+			request:         newBGPMonitorTest(),
+			expectedRequest: nil,
+			expectedResult:  nil,
+			expectedError:   true,
+			errorPredicates: []func(error) bool{kentikapi.IsInvalidRequestError},
 		},
 	}
 	// nolint: dupl
@@ -1228,6 +1254,22 @@ func newDNSGridTestPayload() *syntheticspb.Test {
 			Port:       53,
 		},
 	}
+	return t
+}
+
+func newBGPMonitorTest() *synthetics.Test {
+	t := newTest()
+	t.Name = "bgp-monitor-test"
+	t.Type = "bgp_monitor"
+	t.ID = bgpMonitorTestID
+	return t
+}
+
+func newBGPMonitorTestPayload() *syntheticspb.Test {
+	t := newTestPayload()
+	t.Name = "bgp-monitor-test"
+	t.Type = "bgp_monitor"
+	t.Id = bgpMonitorTestID
 	return t
 }
 
