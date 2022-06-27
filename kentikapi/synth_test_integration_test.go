@@ -401,7 +401,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 						Trace: &syntheticspb.TestTraceSettings{
 							Count:    5,
 							Protocol: "udp",
-							Port:     0,
+							Port:     33434,
 							Timeout:  59999,
 							Limit:    255,
 							Delay:    100,
@@ -445,7 +445,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 							Trace: &syntheticspb.TestTraceSettings{
 								Count:    5,
 								Protocol: "udp",
-								Port:     0,
+								Port:     33434,
 								Timeout:  59999,
 								Limit:    255,
 								Delay:    100,
@@ -496,7 +496,7 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 						Count:    5,
 						Delay:    100 * time.Millisecond,
 						Protocol: synthetics.TracerouteProtocolUDP,
-						Port:     0,
+						Port:     33434,
 						Limit:    255,
 					},
 					Tasks: []synthetics.TaskType{synthetics.TaskTypePing, synthetics.TaskTypeTraceroute},

@@ -210,6 +210,10 @@ func testWithDefaultFields(t *synthetics.Test) (*synthetics.Test, error) {
 		t.Settings.Health.UnhealthySubtestThreshold = 1 // field required by the server
 	}
 
+	if t.Settings.Traceroute != nil && t.Settings.Traceroute.Protocol != synthetics.TracerouteProtocolICMP {
+		t.Settings.Traceroute.Port = 33434
+	}
+
 	return t, nil
 }
 

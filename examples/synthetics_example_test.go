@@ -603,7 +603,7 @@ func pickDualIPRustAgentID(agents []synthetics.Agent) (models.ID, error) {
 	rand.Seed(time.Now().UnixNano())
 	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
 	log.Printf(
-		"Found %v agents meeting criteria (IPFamilyDual, AgentImplementationTypeRust), picked a with ID %v\n",
+		"Found %v agents meeting criteria (IPFamilyDual, AgentImplementationTypeRust), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
 	)
 	return agentID, nil
@@ -625,7 +625,7 @@ func pickIPV4RustAgentID(agents []synthetics.Agent) (models.ID, error) {
 	rand.Seed(time.Now().UnixNano())
 	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
 	log.Printf(
-		"Found %v agents meeting criteria (IPFamilyV4, AgentImplementationTypeRust), picked a with ID %v\n",
+		"Found %v agents meeting criteria (IPFamilyV4, AgentImplementationTypeRust), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
 	)
 	return agentID, nil
@@ -647,7 +647,7 @@ func pickNodeAgentID(agents []synthetics.Agent) (models.ID, error) {
 	rand.Seed(time.Now().UnixNano())
 	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
 	log.Printf(
-		"Found %v agents meeting criteria (AgentImplementationTypeNode), picked a with ID %v\n",
+		"Found %v agents meeting criteria (AgentImplementationTypeNode), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
 	)
 	return agentID, nil
