@@ -26,7 +26,7 @@ import (
 
 func TestDemonstrateSyntheticsAgentsAPI(t *testing.T) {
 	t.Parallel()
-	err := demonstrateSyntheticsAgentAPI()
+	err := demonstrateSyntheticsAgentsAPI()
 	assert.NoError(t, err)
 }
 
@@ -50,10 +50,10 @@ func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-// demonstrateSyntheticsAgentAPI demonstrates available methods of Synthetics Agent API.
+// demonstrateSyntheticsAgentsAPI demonstrates available methods of Synthetics Agent API.
 // Note that there is no create method in the API.
 // Delete method exists but is omitted here, because of lack of create method.
-func demonstrateSyntheticsAgentAPI() error {
+func demonstrateSyntheticsAgentsAPI() error {
 	ctx := context.Background()
 	client, err := NewClient()
 	if err != nil {
@@ -68,7 +68,12 @@ func demonstrateSyntheticsAgentAPI() error {
 
 	fmt.Printf("Got all agents: %v\n", getAllResp)
 	fmt.Println("Number of agents:", len(getAllResp.Agents))
-	fmt.Println("Number of invalid agents:", getAllResp.InvalidAgentsCount)
+	if getAllResp.InvalidAgentsCount == 0 {
+		fmt.Printf(
+			"Kentik API returned %v invalid agents. Please, contact Kentik support.\n",
+			getAllResp.InvalidAgentsCount,
+		)
+	}
 
 	// Pick a private agent, so it is possible to modify it
 	agentID, err := pickPrivateAgentID(getAllResp.Agents)
