@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -52,8 +51,8 @@ func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
 
 // demonstrateSyntheticsAgentsAPI demonstrates available methods of Synthetics Agent API.
 // Delete method exists but is omitted here, because of lack of create method in the API.
-// If you have no private agent at your environment, you can replace pickPrivateAgentID function call with
-// pickDualIPRustAgentID. However, it is not possible to modify (update/activate/deactivate) global agent,
+// If you have no private agent at your environment, you can replace pickPrivateAgentID function call with e.g.
+// pickIPV4RustAgentID. However, it is not possible to modify (update/activate/deactivate) global agent,
 // so those pieces of code need to be commented out in such case.
 func demonstrateSyntheticsAgentsAPI() error {
 	ctx := context.Background()
@@ -220,7 +219,7 @@ func newHostnameTest(ctx context.Context, client *kentikapi.Client) (*synthetics
 		return nil, fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
 	}
 
-	agentID, err := pickDualIPRustAgentID(getAllResp.Agents)
+	agentID, err := pickIPV4RustAgentID(getAllResp.Agents)
 	if err != nil {
 		return nil, fmt.Errorf("pick agent ID for hostname test: %w", err)
 	}
@@ -296,32 +295,27 @@ func createMinimalTests() error {
 		return fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
 	}
 
-	dualIPRustAgentID, err := pickDualIPRustAgentID(getAllResp.Agents)
-	if err != nil {
-		return err
+	rustAgentIDs := filterIPV4RustAgentIDs(getAllResp.Agents)
+	if len(rustAgentIDs) < 2 {
+		return fmt.Errorf("insufficient number of IPv4 Rust agents found: %v", len(rustAgentIDs))
 	}
 
-	ipV4RustAgentID, err := pickIPV4RustAgentID(getAllResp.Agents)
-	if err != nil {
-		return err
-	}
-
-	nodeAgentID, err := pickNodeAgentID(getAllResp.Agents)
+	nodeAgentID, err := pickIPV4NodeAgentID(getAllResp.Agents)
 	if err != nil {
 		return err
 	}
 
 	for _, t := range []*synthetics.Test{
-		newMinimalIPTest([]models.ID{dualIPRustAgentID}),
-		newMinimalNetworkGridTest([]models.ID{dualIPRustAgentID}),
-		newMinimalHostnameTest([]models.ID{dualIPRustAgentID}),
-		newMinimalAgentTest([]models.ID{dualIPRustAgentID}),
-		newMinimalNetworkMeshTest([]models.ID{dualIPRustAgentID, ipV4RustAgentID}), // multiple agents required
-		newMinimalFlowTest([]models.ID{dualIPRustAgentID}),
-		newMinimalURLTest([]models.ID{dualIPRustAgentID}),
+		newMinimalIPTest(rustAgentIDs[0:1]),
+		newMinimalNetworkGridTest(rustAgentIDs[0:1]),
+		newMinimalHostnameTest(rustAgentIDs[0:1]),
+		newMinimalAgentTest(rustAgentIDs[0:1]),
+		newMinimalNetworkMeshTest(rustAgentIDs[0:2]), // multiple agents required
+		newMinimalFlowTest(rustAgentIDs[0:1]),
+		newMinimalURLTest(rustAgentIDs[0:1]),
 		newMinimalPageLoadTest([]models.ID{nodeAgentID}), // agent with implementation type Node required
-		newMinimalDNSTest([]models.ID{dualIPRustAgentID}),
-		newMinimalDNSGridTest([]models.ID{dualIPRustAgentID}),
+		newMinimalDNSTest(rustAgentIDs[0:1]),
+		newMinimalDNSGridTest(rustAgentIDs[0:1]),
 	} {
 		err = createAndDeleteTest(ctx, client, t)
 		if err != nil {
@@ -374,7 +368,7 @@ func newMinimalIPTest(agentIDs []models.ID) *synthetics.Test {
 			},
 		},
 		Definition: synthetics.TestDefinitionIPRequiredFields{
-			Targets: []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
+			Targets: []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("192.0.2.214")},
 		},
 	})
 }
@@ -401,7 +395,7 @@ func newMinimalNetworkGridTest(agentIDs []models.ID) *synthetics.Test {
 			},
 		},
 		Definition: synthetics.TestDefinitionNetworkGridRequiredFields{
-			Targets: []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("2001:db8:dead:beef:dead:beef:dead:beef")},
+			Targets: []net.IP{net.ParseIP("192.0.2.213"), net.ParseIP("192.0.2.214")},
 		},
 	})
 }
@@ -589,9 +583,7 @@ func pickPrivateAgentID(agents []synthetics.Agent) (models.ID, error) {
 		return "", fmt.Errorf("no agent meeting criteria (AgentTypePrivate) found")
 	}
 
-	// Randomizing picked ID helps to verify that criteria above are sufficient
-	rand.Seed(time.Now().UnixNano())
-	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	agentID := matchedIDs[0]
 	log.Printf(
 		"Found %v agents meeting criteria (AgentTypePrivate), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
@@ -599,43 +591,13 @@ func pickPrivateAgentID(agents []synthetics.Agent) (models.ID, error) {
 	return agentID, nil
 }
 
-func pickDualIPRustAgentID(agents []synthetics.Agent) (models.ID, error) {
-	var matchedIDs []models.ID
-	for _, a := range agents {
-		if a.IPFamily == synthetics.IPFamilyDual && a.ImplementationType == synthetics.AgentImplementationTypeRust {
-			matchedIDs = append(matchedIDs, a.ID)
-		}
-	}
-
-	if len(matchedIDs) == 0 {
-		return "", fmt.Errorf("no agent meeting criteria (IPFamilyDual, AgentImplementationTypeRust) found")
-	}
-
-	// Randomizing picked ID helps to verify that criteria above are sufficient
-	rand.Seed(time.Now().UnixNano())
-	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
-	log.Printf(
-		"Found %v agents meeting criteria (IPFamilyDual, AgentImplementationTypeRust), picked agent with ID %v\n",
-		len(matchedIDs), agentID,
-	)
-	return agentID, nil
-}
-
 func pickIPV4RustAgentID(agents []synthetics.Agent) (models.ID, error) {
-	var matchedIDs []models.ID
-	for _, a := range agents {
-		if a.IPFamily == synthetics.IPFamilyV4 && a.ImplementationType == synthetics.AgentImplementationTypeRust {
-			matchedIDs = append(matchedIDs, a.ID)
-		}
-	}
-
+	matchedIDs := filterIPV4RustAgentIDs(agents)
 	if len(matchedIDs) == 0 {
 		return "", fmt.Errorf("no agent meeting criteria (IPFamilyV4, AgentImplementationTypeRust) found")
 	}
 
-	// Randomizing picked ID helps to verify that criteria above are sufficient
-	rand.Seed(time.Now().UnixNano())
-	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	agentID := matchedIDs[0]
 	log.Printf(
 		"Found %v agents meeting criteria (IPFamilyV4, AgentImplementationTypeRust), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
@@ -643,23 +605,31 @@ func pickIPV4RustAgentID(agents []synthetics.Agent) (models.ID, error) {
 	return agentID, nil
 }
 
-func pickNodeAgentID(agents []synthetics.Agent) (models.ID, error) {
+func filterIPV4RustAgentIDs(agents []synthetics.Agent) []models.ID {
 	var matchedIDs []models.ID
 	for _, a := range agents {
-		if a.ImplementationType == synthetics.AgentImplementationTypeNode {
+		if a.IPFamily == synthetics.IPFamilyV4 && a.ImplementationType == synthetics.AgentImplementationTypeRust {
+			matchedIDs = append(matchedIDs, a.ID)
+		}
+	}
+	return matchedIDs
+}
+
+func pickIPV4NodeAgentID(agents []synthetics.Agent) (models.ID, error) {
+	var matchedIDs []models.ID
+	for _, a := range agents {
+		if a.IPFamily == synthetics.IPFamilyV4 && a.ImplementationType == synthetics.AgentImplementationTypeNode {
 			matchedIDs = append(matchedIDs, a.ID)
 		}
 	}
 
 	if len(matchedIDs) == 0 {
-		return "", fmt.Errorf("no agent meeting criteria (AgentImplementationTypeNode) found")
+		return "", fmt.Errorf("no agent meeting criteria (IPFamilyV4, AgentImplementationTypeNode) found")
 	}
 
-	// Randomizing picked ID helps to verify that criteria above are sufficient
-	rand.Seed(time.Now().UnixNano())
-	agentID := matchedIDs[rand.Intn(len(matchedIDs))] // nolint: gosec // no security concerns here
+	agentID := matchedIDs[0]
 	log.Printf(
-		"Found %v agents meeting criteria (AgentImplementationTypeNode), picked agent with ID %v\n",
+		"Found %v agents meeting criteria (IPFamilyV4, AgentImplementationTypeNode), picked agent with ID %v\n",
 		len(matchedIDs), agentID,
 	)
 	return agentID, nil
