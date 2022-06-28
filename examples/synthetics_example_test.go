@@ -51,8 +51,10 @@ func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
 }
 
 // demonstrateSyntheticsAgentsAPI demonstrates available methods of Synthetics Agent API.
-// Note that there is no create method in the API.
-// Delete method exists but is omitted here, because of lack of create method.
+// Delete method exists but is omitted here, because of lack of create method in the API.
+// If you have no private agent at your environment, you can replace pickPrivateAgentID function call with
+// pickDualIPRustAgentID. However, it is not possible to modify (update/activate/deactivate) global agent,
+// so those pieces of code need to be commented out in such case.
 func demonstrateSyntheticsAgentsAPI() error {
 	ctx := context.Background()
 	client, err := NewClient()
