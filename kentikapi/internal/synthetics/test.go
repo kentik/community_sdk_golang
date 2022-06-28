@@ -12,7 +12,7 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 )
 
-// Test types hidden from SDK users (not included in public enum)
+// Test types hidden from SDK users (not included in public enum).
 const (
 	testTypeBGPMonitor  = "bgp_monitor"
 	testTypeTransaction = "transaction"
