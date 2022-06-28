@@ -10,12 +10,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-// API aggregates Cloud Exports API methods.
+// API aggregates cloudexports API methods.
 type API struct {
 	client cloudexportpb.CloudExportAdminServiceClient
 }
 
-// NewAPI creates new cloud API.
+// NewAPI creates new cloudexports API.
 func NewAPI(cc grpc.ClientConnInterface) *API {
 	return &API{
 		client: cloudexportpb.NewCloudExportAdminServiceClient(cc),

@@ -54,7 +54,12 @@ func demonstrateCloudAPIWithAWSExport() error {
 	fmt.Println("Got all cloud exports:")
 	PrettyPrint(getAllResp.Exports)
 	fmt.Println("Number of cloud exports:", len(getAllResp.Exports))
-	fmt.Println("Invalid cloud exports count:", getAllResp.InvalidExportsCount)
+	if getAllResp.InvalidExportsCount > 0 {
+		fmt.Printf(
+			"Kentik API returned %v invalid cloud exports. Please, contact Kentik support.\n",
+			getAllResp.InvalidExportsCount,
+		)
+	}
 
 	fmt.Println("### Creating AWS cloud export")
 	ce := cloud.NewAWSExport(cloud.AWSExportRequiredFields{

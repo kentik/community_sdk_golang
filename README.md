@@ -26,6 +26,8 @@ Usage examples are placed in the [examples](./examples) directory. Note that exa
 
 ### Running examples
 
+Note that examples are run against production Kentik API server, so Kentik production resources might be modified.
+
 Run an example:
 
 ```bash
@@ -33,7 +35,7 @@ export KTAPI_AUTH_EMAIL=<Kentik API authentication email>
 export KTAPI_AUTH_TOKEN=<Kentik API authentication token>
 
 # Run from a Go module, e.g. the root of this repository
-# Adjust -run parameter to filter example names
+# Adjust -run parameter to filter example names, e.g. "Users", "Synthetics", "SyntheticsTestsAPI"
 go test -tags examples -count 1 -parallel 1 -v -run Users github.com/kentik/community_sdk_golang/examples
 ```
 

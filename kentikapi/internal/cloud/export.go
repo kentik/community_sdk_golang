@@ -88,7 +88,7 @@ func propertiesFromPayload(ce *cloudexportpb.CloudExport) (cloud.ExportPropertie
 	case ibmProvider:
 		return ibmPropertiesFromPayload(ce.GetIbm())
 	default:
-		return nil, fmt.Errorf("invalid cloud provider in response payload: %v", ce.CloudProvider)
+		return nil, fmt.Errorf("unsupported cloud provider in response payload: %v", ce.CloudProvider)
 	}
 }
 
@@ -211,7 +211,7 @@ func cePayloadWithProperties(payload *cloudexportpb.CloudExport, ce *cloud.Expor
 	case ibmProvider:
 		payload.Properties = ibmPropertiesToPayload(ce)
 	default:
-		return nil, fmt.Errorf("invalid cloud provider: %v", ce.Provider)
+		return nil, fmt.Errorf("unsupported cloud provider: %v", ce.Provider)
 	}
 	return payload, nil
 }

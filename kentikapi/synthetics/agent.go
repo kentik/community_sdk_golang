@@ -38,7 +38,7 @@ type Agent struct {
 	// CloudProvider is the name of the cloud provider for agents hosted in a public cloud (otherwise an empty string).
 	CloudProvider cloud.Provider
 	// CloudRegion is the name of the cloud region for agents hosted in a public cloud (otherwise an empty string).
-	// Allowed values: valid name of a region for the cloud provider.
+	// Allowed values: a valid name of a region for the cloud provider.
 	CloudRegion string
 
 	// Read-only properties
