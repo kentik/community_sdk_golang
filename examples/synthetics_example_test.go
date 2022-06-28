@@ -70,7 +70,7 @@ func demonstrateSyntheticsAgentsAPI() error {
 
 	fmt.Printf("Got all agents: %v\n", getAllResp)
 	fmt.Println("Number of agents:", len(getAllResp.Agents))
-	if getAllResp.InvalidAgentsCount == 0 {
+	if getAllResp.InvalidAgentsCount > 0 {
 		fmt.Printf(
 			"Kentik API returned %v invalid agents. Please, contact Kentik support.\n",
 			getAllResp.InvalidAgentsCount,
@@ -152,7 +152,12 @@ func demonstrateSyntheticsTestsAPI() error {
 
 	fmt.Println("Got all tests:", getAllResp)
 	fmt.Println("Number of tests:", len(getAllResp.Tests))
-	fmt.Println("Number of invalid tests:", getAllResp.InvalidTestsCount)
+	if getAllResp.InvalidTestsCount > 0 {
+		fmt.Printf(
+			"Kentik API returned %v invalid tests. Please, contact Kentik support.\n",
+			getAllResp.InvalidTestsCount,
+		)
+	}
 
 	fmt.Println("### Creating hostname synthetic test")
 	test, err := newHostnameTest(ctx, client)
