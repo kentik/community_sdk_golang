@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"net"
 	"time"
+
+	"github.com/AlekSi/pointer"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func MillisecondsF32ToDuration(ms float32) time.Duration {
 	// scale to nanoseconds before conversion to duration to minimise conversion loss
-	const nanosPerMicro = 1e6
-	return time.Duration(nanosPerMicro*ms) * time.Nanosecond
+	const nanosPerMilli = 1e6
+	return time.Duration(nanosPerMilli*ms) * time.Nanosecond
 }
 
 func StringsToIPs(ips []string) ([]net.IP, error) {
@@ -31,4 +34,20 @@ func IPsToStrings(ips []net.IP) []string {
 		result = append(result, ip.String())
 	}
 	return result
+}
+
+func TimestampPtrToTime(ts *timestamppb.Timestamp) *time.Time {
+	if ts == nil {
+		return nil
+	}
+
+	return pointer.ToTime(ts.AsTime())
+}
+
+func TimePtrToTimestamp(t *time.Time) *timestamppb.Timestamp {
+	if t == nil {
+		return nil
+	}
+
+	return timestamppb.New(*t)
 }

@@ -156,17 +156,19 @@ type Test struct {
 	Type TestType
 	// Status is the life-cycle status of the test.
 	Status TestStatus
-	// Settings contains test configuration attributes.
-	Settings TestSettings
+	// UpdateDate is the last modification timestamp. If provided in update request, the API returns error
+	// if the object to be modified has been modified in the DB after the UpdateDate timestamp. This allows
+	// to guard against concurrent modifications.
+	UpdateDate *time.Time
 
 	// Read-only properties
 
+	// Settings contains test configuration attributes.
+	Settings TestSettings
 	// ID is unique test identification. It is read-only.
 	ID models.ID
 	// CreateDate is the creation timestamp. It is read-only.
 	CreateDate time.Time
-	// UpdateDate is the lst modification timestamp. It is read-only.
-	UpdateDate time.Time
 	// CreatedBy is an identity of the user that has created the test. It is read-only.
 	CreatedBy UserInfo
 	// LastUpdatedBy is the identity of the user that has modified the test last. It is read-only.

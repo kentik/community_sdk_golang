@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/testutil"
@@ -490,9 +491,10 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 				},
 			},
 			expectedResult: &synthetics.Test{
-				Name:   "minimal-hostname-test",
-				Type:   synthetics.TestTypeHostname,
-				Status: synthetics.TestStatusActive,
+				Name:       "minimal-hostname-test",
+				Type:       synthetics.TestTypeHostname,
+				Status:     synthetics.TestStatusActive,
+				UpdateDate: pointer.ToTime(time.Date(2022, time.April, 6, 9, 43, 39, 835*1000000, time.UTC)),
 				Settings: synthetics.TestSettings{
 					Definition: &synthetics.TestDefinitionHostname{
 						Target: "www.example.com",
@@ -527,7 +529,6 @@ func TestClient_Synthetics_CreateTest(t *testing.T) {
 				},
 				ID:         hostnameTestID,
 				CreateDate: time.Date(2022, time.April, 6, 9, 43, 39, 324*1000000, time.UTC),
-				UpdateDate: time.Date(2022, time.April, 6, 9, 43, 39, 835*1000000, time.UTC),
 				CreatedBy: synthetics.UserInfo{
 					ID:       "4321",
 					Email:    "joe.doe@example.com",
@@ -963,7 +964,6 @@ func TestClient_Synthetics_SetTestStatus(t *testing.T) {
 
 func testWithoutReadOnlyFields(test *syntheticspb.Test) *syntheticspb.Test {
 	test.Cdate = nil
-	test.Edate = nil
 	test.CreatedBy = nil
 	test.LastUpdatedBy = nil
 	return test
@@ -1317,9 +1317,10 @@ func newTransactionTestPayload() *syntheticspb.Test {
 
 func newTest() *synthetics.Test {
 	return &synthetics.Test{
-		Name:   "dummy-test",
-		Type:   "unknown-type",
-		Status: synthetics.TestStatusActive,
+		Name:       "dummy-test",
+		Type:       "unknown-type",
+		Status:     synthetics.TestStatusActive,
+		UpdateDate: pointer.ToTime(time.Date(2022, time.April, 8, 7, 26, 51, 505*1000000, time.UTC)),
 		Settings: synthetics.TestSettings{
 			Definition:           nil,
 			AgentIDs:             []string{"817", "818", "819"},
@@ -1369,7 +1370,6 @@ func newTest() *synthetics.Test {
 		},
 		ID:         "dummy-id",
 		CreateDate: time.Date(2022, time.April, 6, 9, 43, 39, 324*1000000, time.UTC),
-		UpdateDate: time.Date(2022, time.April, 8, 7, 26, 51, 505*1000000, time.UTC),
 		CreatedBy: synthetics.UserInfo{
 			ID:       "4321",
 			Email:    "joe.doe@example.com",

@@ -77,11 +77,11 @@ func testFromPayload(t *syntheticspb.Test) (*synthetics.Test, error) {
 	return &synthetics.Test{
 		Name:          t.Name,
 		Status:        synthetics.TestStatus(t.Status.String()),
+		UpdateDate:    convert.TimestampPtrToTime(t.Edate),
 		Settings:      settings,
 		ID:            t.Id,
 		Type:          synthetics.TestType(t.Type),
 		CreateDate:    t.Cdate.AsTime(),
-		UpdateDate:    t.Edate.AsTime(),
 		CreatedBy:     *createdBy,
 		LastUpdatedBy: userInfoPtrFromPayload(t.LastUpdatedBy),
 	}, nil
@@ -432,7 +432,7 @@ func testToPayload(t *synthetics.Test) (*syntheticspb.Test, error) {
 		Status:        syntheticspb.TestStatus(syntheticspb.TestStatus_value[string(t.Status)]),
 		Settings:      ts,
 		Cdate:         nil, // read-only
-		Edate:         nil, // read-only
+		Edate:         convert.TimePtrToTimestamp(t.UpdateDate),
 		CreatedBy:     nil, // read-only
 		LastUpdatedBy: nil, // read-only
 	}, nil
