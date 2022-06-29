@@ -1,28 +1,115 @@
 //go:build examples
-// +build examples
 
 //nolint:testpackage,forbidigo
 package examples
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 	"text/tabwriter"
 	"time"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestDemonstrateSyntheticsNetworkMeshTestResults(t *testing.T) {
+func TestDemonstrateSyntheticsTestResultsAPI(t *testing.T) {
+	t.Parallel()
+	err := demonstrateSyntheticsTestResultsAPI()
+	assert.NoError(t, err)
+}
+
+func TestDemonstrateSyntheticsTestResultsAPI_NetworkMesh(t *testing.T) {
 	t.Parallel()
 	err := demonstrateSyntheticsNetworkMeshTestResults()
 	assert.NoError(t, err)
+}
+
+func demonstrateSyntheticsTestResultsAPI() error {
+	ctx := context.Background()
+	client, err := NewClient()
+	if err != nil {
+		return err
+	}
+
+	testID, err := pickNetworkMeshTestID(ctx, client)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("### Getting results for test with ID", testID)
+	resultsResp, err := client.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
+		Ids:       []string{testID},
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsData.GetResultsForTests: %w", err)
+	}
+
+	fmt.Println("Got test results:", formatTestResultsSlice(resultsResp.GetResults()))
+	fmt.Println("Number of test results:", len(resultsResp.GetResults()))
+
+	fmt.Println("### Getting trace for test with ID", testID)
+	traceResp, err := client.SyntheticsData.GetTraceForTest(ctx, &syntheticspb.GetTraceForTestRequest{
+		Id:        testID,
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("client.SyntheticsData.GetTraceForTest: %w", err)
+	}
+
+	fmt.Println("Got trace for test")
+	fmt.Println("Number of nodes:", len(traceResp.GetNodes()))
+	fmt.Println("Number of paths:", len(traceResp.GetPaths()))
+	return nil
+}
+
+func pickNetworkMeshTestID(ctx context.Context, c *kentikapi.Client) (string, error) {
+	getAllResp, err := c.Synthetics.GetAllTests(ctx)
+	if err != nil {
+		return "", fmt.Errorf("c.Synthetics.GetAllTests: %w", err)
+	}
+
+	for _, test := range getAllResp.Tests {
+		if test.Type == synthetics.TestTypeNetworkMesh {
+			fmt.Printf("Picked network_mesh test named %q with ID %v\n", test.Name, test.ID)
+			return test.ID, nil
+		}
+	}
+	return "", errors.New("no network_mesh tests found")
+}
+
+func formatTestResultsSlice(trs []*syntheticspb.TestResults) string {
+	var s []string
+	for _, tr := range trs {
+		s = append(s, formatTestResults(tr))
+	}
+	return fmt.Sprintf("{\n%v\n}", strings.Join(s, ", "))
+}
+
+func formatTestResults(tr *syntheticspb.TestResults) string {
+	return fmt.Sprintf(
+		"{\n  test_id=%v\n  time=%v\n  health=%v\n  len(agents)=%v\n  agents=%v\n}",
+		tr.GetTestId(), tr.GetTime().AsTime(), tr.GetHealth(), len(tr.GetAgents()), formatAgentsResults(tr.GetAgents()),
+	)
+}
+
+func formatAgentsResults(ars []*syntheticspb.AgentResults) string {
+	var s []string
+	for _, ar := range ars {
+		s = append(s, fmt.Sprintf("{agent_id=%v health=%v len(tasks)=%v}", ar.GetAgentId(), ar.GetHealth(), len(ar.GetTasks())))
+	}
+	return fmt.Sprintf("{%v}", strings.Join(s, ", "))
 }
 
 func demonstrateSyntheticsNetworkMeshTestResults() error {
@@ -77,7 +164,7 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]*syntheticspb.TestResults, error) {
 	resp, err := c.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
 		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240000)), // 1000 days
+		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
 		EndTime:   timestamppb.Now(),
 	})
 	if err != nil {
