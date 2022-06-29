@@ -5,6 +5,7 @@ package examples
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -14,11 +15,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
+	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestDemonstrateSyntheticsTestResultsAPI(t *testing.T) {
@@ -46,31 +46,34 @@ func demonstrateSyntheticsTestResultsAPI() error {
 	}
 
 	fmt.Println("### Getting results for test with ID", testID)
-	resultsResp, err := client.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
-		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
-		EndTime:   timestamppb.Now(),
+	results, err := client.Synthetics.GetResultsForTests(ctx, synthetics.GetResultsForTestsRequest{
+		TestIDs:   []string{testID},
+		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
+		EndTime:   time.Now(),
 	})
 	if err != nil {
-		return fmt.Errorf("client.SyntheticsData.GetResultsForTests: %w", err)
+		return fmt.Errorf("client.Synthetics.GetResultsForTests: %w", err)
 	}
 
-	fmt.Println("Got test results:", formatTestResultsSlice(resultsResp.GetResults()))
-	fmt.Println("Number of test results:", len(resultsResp.GetResults()))
+	resultsJSON, _ := json.Marshal(results) // nolint:errcheck
+	fmt.Println("Got test results (JSON-formatted):", string(resultsJSON))
+	fmt.Println("Got test results (simplified):", formatTestResultsSlice(results))
+	fmt.Println("Number of test results:", len(results))
 
-	fmt.Println("### Getting trace for test with ID", testID)
-	traceResp, err := client.SyntheticsData.GetTraceForTest(ctx, &syntheticspb.GetTraceForTestRequest{
-		Id:        testID,
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
-		EndTime:   timestamppb.Now(),
+	fmt.Println("### Getting traceroute results for test with ID", testID)
+	traceResp, err := client.Synthetics.GetTraceForTest(ctx, synthetics.GetTraceForTestRequest{
+		TestID:    testID,
+		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
+		EndTime:   time.Now(),
 	})
 	if err != nil {
-		return fmt.Errorf("client.SyntheticsData.GetTraceForTest: %w", err)
+		return fmt.Errorf("client.Synthetics.GetTraceForTest: %w", err)
 	}
 
-	fmt.Println("Got trace for test")
-	fmt.Println("Number of nodes:", len(traceResp.GetNodes()))
-	fmt.Println("Number of paths:", len(traceResp.GetPaths()))
+	traceRespJSON, _ := json.Marshal(traceResp) // nolint:errcheck
+	fmt.Println("Got traceroute results for test (in JSON format):", string(traceRespJSON))
+	fmt.Println("Number of nodes:", len(traceResp.Nodes))
+	fmt.Println("Number of paths:", len(traceResp.Paths))
 	return nil
 }
 
@@ -89,7 +92,7 @@ func pickNetworkMeshTestID(ctx context.Context, c *kentikapi.Client) (string, er
 	return "", errors.New("no network_mesh tests found")
 }
 
-func formatTestResultsSlice(trs []*syntheticspb.TestResults) string {
+func formatTestResultsSlice(trs []synthetics.TestResults) string {
 	var s []string
 	for _, tr := range trs {
 		s = append(s, formatTestResults(tr))
@@ -97,17 +100,17 @@ func formatTestResultsSlice(trs []*syntheticspb.TestResults) string {
 	return fmt.Sprintf("{\n%v\n}", strings.Join(s, ", "))
 }
 
-func formatTestResults(tr *syntheticspb.TestResults) string {
+func formatTestResults(tr synthetics.TestResults) string {
 	return fmt.Sprintf(
 		"{\n  test_id=%v\n  time=%v\n  health=%v\n  len(agents)=%v\n  agents=%v\n}",
-		tr.GetTestId(), tr.GetTime().AsTime(), tr.GetHealth(), len(tr.GetAgents()), formatAgentsResults(tr.GetAgents()),
+		tr.TestID, tr.Time, tr.Health, len(tr.Agents), formatAgentsResults(tr.Agents),
 	)
 }
 
-func formatAgentsResults(ars []*syntheticspb.AgentResults) string {
+func formatAgentsResults(ars []synthetics.AgentResults) string {
 	var s []string
 	for _, ar := range ars {
-		s = append(s, fmt.Sprintf("{agent_id=%v health=%v len(tasks)=%v}", ar.GetAgentId(), ar.GetHealth(), len(ar.GetTasks())))
+		s = append(s, fmt.Sprintf("{agent_id=%v health=%v len(tasks)=%v}", ar.AgentID, ar.Health, len(ar.Tasks)))
 	}
 	return fmt.Sprintf("{%v}", strings.Join(s, ", "))
 }
@@ -133,12 +136,12 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 		return nil
 	}
 
-	getAllAgentsResp, err := client.SyntheticsAdmin.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	getAllAgentsResp, err := client.Synthetics.GetAllAgents(ctx)
 	if err != nil {
-		return fmt.Errorf("client.SyntheticsAdmin.ListAgents: %w", err)
+		return fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
 	}
 
-	m, err := newMetricsMatrix(trs, getAllAgentsResp.GetAgents())
+	m, err := newMetricsMatrix(trs, getAllAgentsResp.Agents)
 	if err != nil {
 		return fmt.Errorf("new metrics matrix: %w", err)
 	}
@@ -161,17 +164,16 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 	return nil
 }
 
-func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]*syntheticspb.TestResults, error) {
-	resp, err := c.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
-		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 240)), // last 10 days
-		EndTime:   timestamppb.Now(),
+func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]synthetics.TestResults, error) {
+	trs, err := c.Synthetics.GetResultsForTests(ctx, synthetics.GetResultsForTestsRequest{
+		TestIDs:   []models.ID{testID},
+		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
+		EndTime:   time.Now(),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("GetResultsForTests: %w", err)
 	}
 
-	trs := resp.GetResults()
 	if len(trs) == 0 {
 		return nil, nil
 	}
@@ -191,30 +193,34 @@ func min(x, y int) int {
 // metricsMatrix holds mesh test results for ping task.
 type metricsMatrix struct {
 	// agents hold agents data in the same order as cells.
-	agents []*syntheticspb.Agent
+	agents []synthetics.Agent
 	// cells hold all "fromAgent" -> "toAgent" connection metrics.
-	cells map[string]map[string]*syntheticspb.PingResults
+	cells map[string]map[string]*synthetics.PingResults
 }
 
-func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb.Agent) (metricsMatrix, error) {
+func newMetricsMatrix(trs []synthetics.TestResults, allAgents []synthetics.Agent) (metricsMatrix, error) {
 	agents, err := prepareAgents(trs[0], allAgents)
 	if err != nil {
 		return metricsMatrix{}, fmt.Errorf("prepare agents: %w", err)
 	}
 	agentIPToAgentMap := makeAgentIPToAgentMap(agents)
 
-	cells := make(map[string]map[string]*syntheticspb.PingResults)
+	cells := make(map[string]map[string]*synthetics.PingResults)
 	for _, tr := range trs {
-		for _, agentResults := range tr.GetAgents() {
-			fromAgentID := agentResults.GetAgentId()
+		for _, agentResults := range tr.Agents {
+			fromAgentID := agentResults.AgentID
 			if cells[fromAgentID] == nil {
-				cells[fromAgentID] = make(map[string]*syntheticspb.PingResults)
+				cells[fromAgentID] = make(map[string]*synthetics.PingResults)
 			}
 
-			for _, taskResult := range agentResults.GetTasks() {
-				ping := taskResult.GetPing()
-				if ping == nil {
+			for _, taskResult := range agentResults.Tasks {
+				if taskResult.TaskType != synthetics.TaskTypePing {
 					continue
+				}
+
+				ping := taskResult.GetPingResults()
+				if ping == nil {
+					return metricsMatrix{}, errors.New("ping results is nil and should not be")
 				}
 
 				toAgent, ok := agentIPToAgentMap[ping.Target]
@@ -222,49 +228,49 @@ func newMetricsMatrix(trs []*syntheticspb.TestResults, allAgents []*syntheticspb
 					return metricsMatrix{}, fmt.Errorf("agent with IP %q not found", ping.Target)
 				}
 
-				if cells[fromAgentID][toAgent.GetId()] == nil {
-					cells[fromAgentID][toAgent.GetId()] = ping
+				if cells[fromAgentID][toAgent.ID] == nil {
+					cells[fromAgentID][toAgent.ID] = ping
 				}
 			}
 		}
 	}
 
-	fmt.Println("Latest test results time:", trs[0].Time.AsTime())
+	fmt.Println("Latest test results time:", trs[0].Time)
 	return metricsMatrix{agents: agents, cells: cells}, nil
 }
 
 // prepareAgents prepares agents that are involved in test results.
-func prepareAgents(tr *syntheticspb.TestResults, allAgents []*syntheticspb.Agent) ([]*syntheticspb.Agent, error) {
+func prepareAgents(tr synthetics.TestResults, allAgents []synthetics.Agent) ([]synthetics.Agent, error) {
 	agentIDToAgentMap := makeAgentIDToAgentMap(allAgents)
 
-	var agents []*syntheticspb.Agent
-	for _, ars := range tr.GetAgents() {
-		a, ok := agentIDToAgentMap[ars.GetAgentId()]
+	var agents []synthetics.Agent
+	for _, ars := range tr.Agents {
+		a, ok := agentIDToAgentMap[ars.AgentID]
 		if !ok {
-			return nil, fmt.Errorf("agent with ID %v not found in listed agents", ars.GetAgentId())
+			return nil, fmt.Errorf("agent with ID %v not found in listed agents", ars.AgentID)
 		}
 		agents = append(agents, a)
 	}
 	return agents, nil
 }
 
-func makeAgentIDToAgentMap(agents []*syntheticspb.Agent) map[string]*syntheticspb.Agent {
-	m := make(map[string]*syntheticspb.Agent)
+func makeAgentIDToAgentMap(agents []synthetics.Agent) map[string]synthetics.Agent {
+	m := make(map[string]synthetics.Agent)
 	for _, a := range agents {
-		m[a.GetId()] = a
+		m[a.ID] = a
 	}
 	return m
 }
 
-func makeAgentIPToAgentMap(agents []*syntheticspb.Agent) map[string]*syntheticspb.Agent {
-	m := make(map[string]*syntheticspb.Agent)
+func makeAgentIPToAgentMap(agents []synthetics.Agent) map[string]synthetics.Agent {
+	m := make(map[string]synthetics.Agent)
 	for _, a := range agents {
-		m[a.GetIp()] = a
+		m[a.IP] = a
 	}
 	return m
 }
 
-func (m metricsMatrix) GetPingResults(fromAgentID string, toAgentID string) *syntheticspb.PingResults {
+func (m metricsMatrix) GetPingResults(fromAgentID string, toAgentID string) *synthetics.PingResults {
 	toAgents, ok := m.cells[fromAgentID]
 	if !ok {
 		return nil
@@ -329,7 +335,7 @@ func makeTabWriter() *tabwriter.Writer {
 func printMatrixHeader(matrix metricsMatrix, w *tabwriter.Writer) {
 	header := ".\t"
 	for _, x := range matrix.agents {
-		header = header + x.GetAlias() + "\t"
+		header = header + x.Alias + "\t"
 	}
 
 	if _, err := fmt.Fprintln(w, header); err != nil {
@@ -337,13 +343,13 @@ func printMatrixHeader(matrix metricsMatrix, w *tabwriter.Writer) {
 	}
 }
 
-type formatCellFunc = func(*syntheticspb.PingResults) string
+type formatCellFunc = func(*synthetics.PingResults) string
 
 func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer, formatCell formatCellFunc) {
 	for _, fromAgent := range matrix.agents {
-		row := fromAgent.GetAlias() + "\t"
+		row := fromAgent.Alias + "\t"
 		for _, toAgent := range matrix.agents {
-			pr := matrix.GetPingResults(fromAgent.GetId(), toAgent.GetId())
+			pr := matrix.GetPingResults(fromAgent.ID, toAgent.ID)
 			row += formatCell(pr)
 		}
 
@@ -354,58 +360,63 @@ func printMatrixRows(matrix metricsMatrix, w *tabwriter.Writer, formatCell forma
 	}
 }
 
-func formatPingLatency(pr *syntheticspb.PingResults) string {
-	return formatMetricData(pr.GetLatency(), isCurrentMeasurementValid(pr))
-}
+const noResult = "[X]\t"
 
-func formatPingJitter(pr *syntheticspb.PingResults) string {
-	return formatMetricData(pr.GetJitter(), isCurrentMeasurementValid(pr))
-}
-
-func formatPingPacketLoss(pr *syntheticspb.PingResults) string {
-	pl := pr.GetPacketLoss()
-	if pl == nil {
-		return "[X]\t"
+func formatPingLatency(pr *synthetics.PingResults) string {
+	if pr == nil {
+		return noResult
 	}
 
-	return fmt.Sprintf("%.2f %% / %v\t", toPercent(pl.GetCurrent()), pl.GetHealth())
+	return formatMetricData(pr.Latency, isCurrentMeasurementValid(*pr))
+}
+
+func formatPingJitter(pr *synthetics.PingResults) string {
+	if pr == nil {
+		return noResult
+	}
+
+	return formatMetricData(pr.Jitter, isCurrentMeasurementValid(*pr))
+}
+
+func formatPingPacketLoss(pr *synthetics.PingResults) string {
+	if pr == nil {
+		return noResult
+	}
+
+	return fmt.Sprintf("%.2f %% / %v\t", toPercent(pr.PacketLoss.Current), pr.PacketLoss.Health)
 }
 
 func toPercent(v float64) float64 {
 	return v * 100
 }
 
-func formatMetricData(md *syntheticspb.MetricData, isCurrentMeasurementValid bool) string {
-	if md == nil {
-		return "[X]\t"
-	}
-
+func formatMetricData(md synthetics.MetricData, isCurrentMeasurementValid bool) string {
 	return fmt.Sprintf(
 		"%v / %v / %v / %v\t",
-		formatCurrentMetricValue(md.GetCurrent(), isCurrentMeasurementValid),
-		formatRollingMetricValue(md.GetRollingAvg()),
-		formatRollingMetricValue(md.GetRollingStddev()),
-		md.GetHealth(),
+		formatCurrentMetricValue(md.Current, isCurrentMeasurementValid),
+		formatRollingMetricValue(md.RollingAvg),
+		formatRollingMetricValue(md.RollingStdDev),
+		md.Health,
 	)
 }
 
-func formatCurrentMetricValue(metricValue uint32, isCurrentMeasurementValid bool) string {
+func formatCurrentMetricValue(metricValue time.Duration, isCurrentMeasurementValid bool) string {
 	if !isCurrentMeasurementValid {
 		return "[X]"
 	}
 	return formatMetricValue(metricValue)
 }
 
-func formatRollingMetricValue(metricValue uint32) string {
+func formatRollingMetricValue(metricValue time.Duration) string {
 	return formatMetricValue(metricValue)
 }
 
-// formatMetric formats the value of metric given in nanoseconds to milliseconds.
-func formatMetricValue(metricValue uint32) string {
-	return strconv.Itoa(int(metricValue) / 1000)
+// formatMetric formats the value of metric to milliseconds.
+func formatMetricValue(metricValue time.Duration) string {
+	return strconv.FormatInt(metricValue.Milliseconds(), 10)
 }
 
 // isCurrentMeasurementValid returns true if current ping packet loss is less than 100%.
-func isCurrentMeasurementValid(pr *syntheticspb.PingResults) bool {
-	return pr.GetPacketLoss().GetCurrent() < 1
+func isCurrentMeasurementValid(pr synthetics.PingResults) bool {
+	return pr.PacketLoss.Current < 1
 }
