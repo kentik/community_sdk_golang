@@ -192,6 +192,18 @@ func (s *spySyntheticsServer) GetResultsForTests(
 	return s.responses.getResultsForTestsResponse.data, s.responses.getResultsForTestsResponse.err
 }
 
+func (s *spySyntheticsServer) GetTraceForTest(
+	ctx context.Context, req *syntheticspb.GetTraceForTestRequest,
+) (*syntheticspb.GetTraceForTestResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	s.requests.getTraceForTestRequests = append(s.requests.getTraceForTestRequests, getTraceForTestRequest{
+		metadata: md,
+		data:     req,
+	})
+
+	return s.responses.getTraceForTestResponse.data, s.responses.getTraceForTestResponse.err
+}
+
 type syntheticsRequests struct {
 	listAgentsRequests         []listAgentsRequest
 	getAgentRequests           []getAgentRequest
@@ -204,6 +216,7 @@ type syntheticsRequests struct {
 	deleteTestRequests         []deleteTestRequest
 	setTestStatusRequests      []setTestStatusRequest
 	getResultsForTestsRequests []getResultsForTestsRequest
+	getTraceForTestRequests    []getTraceForTestRequest
 }
 
 type listAgentsRequest struct {
@@ -261,6 +274,11 @@ type getResultsForTestsRequest struct {
 	data     *syntheticspb.GetResultsForTestsRequest
 }
 
+type getTraceForTestRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.GetTraceForTestRequest
+}
+
 type syntheticsResponses struct {
 	listAgentsResponse         listAgentsResponse
 	getAgentResponse           getAgentResponse
@@ -273,6 +291,7 @@ type syntheticsResponses struct {
 	deleteTestResponse         deleteTestResponse
 	setTestStatusResponse      setTestStatusResponse
 	getResultsForTestsResponse getResultsForTestsResponse
+	getTraceForTestResponse    getTraceForTestResponse
 }
 
 type listAgentsResponse struct {
@@ -327,5 +346,10 @@ type setTestStatusResponse struct {
 
 type getResultsForTestsResponse struct {
 	data *syntheticspb.GetResultsForTestsResponse
+	err  error
+}
+
+type getTraceForTestResponse struct {
+	data *syntheticspb.GetTraceForTestResponse
 	err  error
 }

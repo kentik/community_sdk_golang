@@ -18,7 +18,7 @@ type GetTraceForTestRequest struct {
 	// AgentIDs is an optional subset of agents to retrieve results for.
 	AgentIDs []models.ID
 	// Targets is an optional subset of destination IP addresses to retrieve results for.
-	TargetIPs []string
+	Targets []net.IP
 }
 
 // GetTraceForTestResponse contains results for GetTraceForTest request.

@@ -90,7 +90,7 @@ func TestClient_Synthetics_GetResultsForTests(t *testing.T) {
 			require.NoError(t, err)
 
 			// act
-			result, err := client.Synthetics.GetResultsForTests(context.Background(), newGetResultsFroTestsRequest())
+			result, err := client.Synthetics.GetResultsForTests(context.Background(), newGetResultsForTestsRequest())
 
 			// assert
 			t.Logf("Got result: %+v, err: %v", result, err)
@@ -125,7 +125,7 @@ func testResultsPayloadFromJSON(t *testing.T, payloadJSON string) *syntheticspb.
 	return &r
 }
 
-func newGetResultsFroTestsRequest() synthetics.GetResultsForTestsRequest {
+func newGetResultsForTestsRequest() synthetics.GetResultsForTestsRequest {
 	return synthetics.GetResultsForTestsRequest{
 		TestIDs:   []string{"40785"},
 		StartTime: time.Date(2022, time.July, 19, 14, 11, 22, 123456789, time.UTC),

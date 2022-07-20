@@ -6,9 +6,21 @@ import (
 	"net"
 
 	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
+	"github.com/kentik/community_sdk_golang/kentikapi/internal/convert"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func getTraceForTestRequestToPayload(req synthetics.GetTraceForTestRequest) *syntheticspb.GetTraceForTestRequest {
+	return &syntheticspb.GetTraceForTestRequest{
+		Id:        req.TestID,
+		StartTime: timestamppb.New(req.StartTime),
+		EndTime:   timestamppb.New(req.EndTime),
+		AgentIds:  req.AgentIDs,
+		TargetIps: convert.IPsToStrings(req.Targets),
+	}
+}
 
 type getTraceForTestResponse syntheticspb.GetTraceForTestResponse
 

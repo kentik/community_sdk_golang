@@ -12,7 +12,6 @@ import (
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // API aggregates synthetics API methods.
@@ -259,7 +258,6 @@ func (a *API) SetTestStatus(ctx context.Context, id models.ID, ts synthetics.Tes
 
 // GetResultsForTests returns measurement results for a set of tests for specified period of time, or the latest
 // available data. It returns one TestResults object for each requested test.
-// TODO(dfurman): implement integration test for the endpoint.
 func (a *API) GetResultsForTests(
 	ctx context.Context, req synthetics.GetResultsForTestsRequest,
 ) ([]synthetics.TestResults, error) {
@@ -277,17 +275,10 @@ func (a *API) GetResultsForTests(
 }
 
 // GetTraceForTest retrieves trace route results for specified synthetic test.
-// TODO(dfurman): implement integration test for the endpoint.
 func (a *API) GetTraceForTest(
 	ctx context.Context, req synthetics.GetTraceForTestRequest,
 ) (synthetics.GetTraceForTestResponse, error) {
-	respPayload, err := a.dataService.GetTraceForTest(ctx, &syntheticspb.GetTraceForTestRequest{
-		Id:        req.TestID,
-		StartTime: timestamppb.New(req.StartTime),
-		EndTime:   timestamppb.New(req.EndTime),
-		AgentIds:  req.AgentIDs,
-		TargetIps: req.TargetIPs,
-	})
+	respPayload, err := a.dataService.GetTraceForTest(ctx, getTraceForTestRequestToPayload(req))
 	if err != nil {
 		return synthetics.GetTraceForTestResponse{}, kentikerrors.StatusErrorFromGRPC(err)
 	}
