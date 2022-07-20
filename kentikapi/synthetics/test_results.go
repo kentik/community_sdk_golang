@@ -144,7 +144,7 @@ type DNSResponseData struct {
 
 // PacketLossData contains packet loss observation.
 type PacketLossData struct {
-	// Current is a packet loss observed in the interval as a decimal number with range [0, 1].
+	// Current is a packet loss observed in the interval as a number with range [0, 1].
 	Current float64
 	// Health is a health evaluation for the observation.
 	Health Health

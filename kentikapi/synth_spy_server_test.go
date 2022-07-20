@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
+	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -14,7 +14,8 @@ import (
 )
 
 type spySyntheticsServer struct {
-	synthetics.UnimplementedSyntheticsAdminServiceServer
+	syntheticspb.UnimplementedSyntheticsAdminServiceServer
+	syntheticspb.UnimplementedSyntheticsDataServiceServer
 	server *grpc.Server
 
 	url  string
@@ -25,132 +26,6 @@ type spySyntheticsServer struct {
 
 	// requests spied by the server
 	requests syntheticsRequests
-}
-
-type syntheticsRequests struct {
-	listAgentsRequests    []listAgentsRequest
-	getAgentRequests      []getAgentRequest
-	updateAgentRequests   []updateAgentRequest
-	deleteAgentRequests   []deleteAgentRequest
-	listTestsRequests     []listTestsRequest
-	getTestRequests       []getTestRequest
-	createTestRequests    []createTestRequest
-	updateTestRequests    []updateTestRequest
-	deleteTestRequests    []deleteTestRequest
-	setTestStatusRequests []setTestStatusRequest
-}
-
-type listAgentsRequest struct {
-	metadata metadata.MD
-	data     *synthetics.ListAgentsRequest
-}
-
-type getAgentRequest struct {
-	metadata metadata.MD
-	data     *synthetics.GetAgentRequest
-}
-
-type updateAgentRequest struct {
-	metadata metadata.MD
-	data     *synthetics.UpdateAgentRequest
-}
-
-type deleteAgentRequest struct {
-	metadata metadata.MD
-	data     *synthetics.DeleteAgentRequest
-}
-
-type listTestsRequest struct {
-	metadata metadata.MD
-	data     *synthetics.ListTestsRequest
-}
-
-type getTestRequest struct {
-	metadata metadata.MD
-	data     *synthetics.GetTestRequest
-}
-
-type createTestRequest struct {
-	metadata metadata.MD
-	data     *synthetics.CreateTestRequest
-}
-
-type updateTestRequest struct {
-	metadata metadata.MD
-	data     *synthetics.UpdateTestRequest
-}
-
-type deleteTestRequest struct {
-	metadata metadata.MD
-	data     *synthetics.DeleteTestRequest
-}
-
-type setTestStatusRequest struct {
-	metadata metadata.MD
-	data     *synthetics.SetTestStatusRequest
-}
-
-type syntheticsResponses struct {
-	listAgentsResponse    listAgentsResponse
-	getAgentResponse      getAgentResponse
-	updateAgentResponse   updateAgentResponse
-	deleteAgentResponse   deleteAgentResponse
-	listTestsResponse     listTestsResponse
-	getTestResponse       getTestResponse
-	createTestResponse    createTestResponse
-	updateTestResponse    updateTestResponse
-	deleteTestResponse    deleteTestResponse
-	setTestStatusResponse setTestStatusResponse
-}
-
-type listAgentsResponse struct {
-	data *synthetics.ListAgentsResponse
-	err  error
-}
-
-type getAgentResponse struct {
-	data *synthetics.GetAgentResponse
-	err  error
-}
-
-type updateAgentResponse struct {
-	data *synthetics.UpdateAgentResponse
-	err  error
-}
-
-type deleteAgentResponse struct {
-	data *synthetics.DeleteAgentResponse
-	err  error
-}
-
-type listTestsResponse struct {
-	data *synthetics.ListTestsResponse
-	err  error
-}
-
-type getTestResponse struct {
-	data *synthetics.GetTestResponse
-	err  error
-}
-
-type createTestResponse struct {
-	data *synthetics.CreateTestResponse
-	err  error
-}
-
-type updateTestResponse struct {
-	data *synthetics.UpdateTestResponse
-	err  error
-}
-
-type deleteTestResponse struct {
-	data *synthetics.DeleteTestResponse
-	err  error
-}
-
-type setTestStatusResponse struct {
-	data *synthetics.SetTestStatusResponse
-	err  error
 }
 
 func newSpySyntheticsServer(t testing.TB, r syntheticsResponses) *spySyntheticsServer {
@@ -167,7 +42,8 @@ func (s *spySyntheticsServer) Start() {
 
 	s.url = l.Addr().String()
 	s.server = grpc.NewServer()
-	synthetics.RegisterSyntheticsAdminServiceServer(s.server, s)
+	syntheticspb.RegisterSyntheticsAdminServiceServer(s.server, s)
+	syntheticspb.RegisterSyntheticsDataServiceServer(s.server, s)
 
 	go func() {
 		err = s.server.Serve(l)
@@ -185,8 +61,8 @@ func (s *spySyntheticsServer) Stop() {
 }
 
 func (s *spySyntheticsServer) ListAgents(
-	ctx context.Context, req *synthetics.ListAgentsRequest,
-) (*synthetics.ListAgentsResponse, error) {
+	ctx context.Context, req *syntheticspb.ListAgentsRequest,
+) (*syntheticspb.ListAgentsResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.listAgentsRequests = append(s.requests.listAgentsRequests, listAgentsRequest{
 		metadata: md,
@@ -197,8 +73,8 @@ func (s *spySyntheticsServer) ListAgents(
 }
 
 func (s *spySyntheticsServer) GetAgent(
-	ctx context.Context, req *synthetics.GetAgentRequest,
-) (*synthetics.GetAgentResponse, error) {
+	ctx context.Context, req *syntheticspb.GetAgentRequest,
+) (*syntheticspb.GetAgentResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.getAgentRequests = append(s.requests.getAgentRequests, getAgentRequest{
 		metadata: md,
@@ -209,8 +85,8 @@ func (s *spySyntheticsServer) GetAgent(
 }
 
 func (s *spySyntheticsServer) UpdateAgent(
-	ctx context.Context, req *synthetics.UpdateAgentRequest,
-) (*synthetics.UpdateAgentResponse, error) {
+	ctx context.Context, req *syntheticspb.UpdateAgentRequest,
+) (*syntheticspb.UpdateAgentResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.updateAgentRequests = append(s.requests.updateAgentRequests, updateAgentRequest{
 		metadata: md,
@@ -221,8 +97,8 @@ func (s *spySyntheticsServer) UpdateAgent(
 }
 
 func (s *spySyntheticsServer) DeleteAgent(
-	ctx context.Context, req *synthetics.DeleteAgentRequest,
-) (*synthetics.DeleteAgentResponse, error) {
+	ctx context.Context, req *syntheticspb.DeleteAgentRequest,
+) (*syntheticspb.DeleteAgentResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.deleteAgentRequests = append(s.requests.deleteAgentRequests, deleteAgentRequest{
 		metadata: md,
@@ -233,8 +109,8 @@ func (s *spySyntheticsServer) DeleteAgent(
 }
 
 func (s *spySyntheticsServer) ListTests(
-	ctx context.Context, req *synthetics.ListTestsRequest,
-) (*synthetics.ListTestsResponse, error) {
+	ctx context.Context, req *syntheticspb.ListTestsRequest,
+) (*syntheticspb.ListTestsResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.listTestsRequests = append(s.requests.listTestsRequests, listTestsRequest{
 		metadata: md,
@@ -245,8 +121,8 @@ func (s *spySyntheticsServer) ListTests(
 }
 
 func (s *spySyntheticsServer) GetTest(
-	ctx context.Context, req *synthetics.GetTestRequest,
-) (*synthetics.GetTestResponse, error) {
+	ctx context.Context, req *syntheticspb.GetTestRequest,
+) (*syntheticspb.GetTestResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.getTestRequests = append(s.requests.getTestRequests, getTestRequest{
 		metadata: md,
@@ -257,8 +133,8 @@ func (s *spySyntheticsServer) GetTest(
 }
 
 func (s *spySyntheticsServer) CreateTest(
-	ctx context.Context, req *synthetics.CreateTestRequest,
-) (*synthetics.CreateTestResponse, error) {
+	ctx context.Context, req *syntheticspb.CreateTestRequest,
+) (*syntheticspb.CreateTestResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.createTestRequests = append(s.requests.createTestRequests, createTestRequest{
 		metadata: md,
@@ -269,8 +145,8 @@ func (s *spySyntheticsServer) CreateTest(
 }
 
 func (s *spySyntheticsServer) UpdateTest(
-	ctx context.Context, req *synthetics.UpdateTestRequest,
-) (*synthetics.UpdateTestResponse, error) {
+	ctx context.Context, req *syntheticspb.UpdateTestRequest,
+) (*syntheticspb.UpdateTestResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.updateTestRequests = append(s.requests.updateTestRequests, updateTestRequest{
 		metadata: md,
@@ -281,8 +157,8 @@ func (s *spySyntheticsServer) UpdateTest(
 }
 
 func (s *spySyntheticsServer) DeleteTest(
-	ctx context.Context, req *synthetics.DeleteTestRequest,
-) (*synthetics.DeleteTestResponse, error) {
+	ctx context.Context, req *syntheticspb.DeleteTestRequest,
+) (*syntheticspb.DeleteTestResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.deleteTestRequests = append(s.requests.deleteTestRequests, deleteTestRequest{
 		metadata: md,
@@ -293,8 +169,8 @@ func (s *spySyntheticsServer) DeleteTest(
 }
 
 func (s *spySyntheticsServer) SetTestStatus(
-	ctx context.Context, req *synthetics.SetTestStatusRequest,
-) (*synthetics.SetTestStatusResponse, error) {
+	ctx context.Context, req *syntheticspb.SetTestStatusRequest,
+) (*syntheticspb.SetTestStatusResponse, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	s.requests.setTestStatusRequests = append(s.requests.setTestStatusRequests, setTestStatusRequest{
 		metadata: md,
@@ -302,4 +178,154 @@ func (s *spySyntheticsServer) SetTestStatus(
 	})
 
 	return s.responses.setTestStatusResponse.data, s.responses.setTestStatusResponse.err
+}
+
+func (s *spySyntheticsServer) GetResultsForTests(
+	ctx context.Context, req *syntheticspb.GetResultsForTestsRequest,
+) (*syntheticspb.GetResultsForTestsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	s.requests.getResultsForTestsRequests = append(s.requests.getResultsForTestsRequests, getResultsForTestsRequest{
+		metadata: md,
+		data:     req,
+	})
+
+	return s.responses.getResultsForTestsResponse.data, s.responses.getResultsForTestsResponse.err
+}
+
+type syntheticsRequests struct {
+	listAgentsRequests         []listAgentsRequest
+	getAgentRequests           []getAgentRequest
+	updateAgentRequests        []updateAgentRequest
+	deleteAgentRequests        []deleteAgentRequest
+	listTestsRequests          []listTestsRequest
+	getTestRequests            []getTestRequest
+	createTestRequests         []createTestRequest
+	updateTestRequests         []updateTestRequest
+	deleteTestRequests         []deleteTestRequest
+	setTestStatusRequests      []setTestStatusRequest
+	getResultsForTestsRequests []getResultsForTestsRequest
+}
+
+type listAgentsRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.ListAgentsRequest
+}
+
+type getAgentRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.GetAgentRequest
+}
+
+type updateAgentRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.UpdateAgentRequest
+}
+
+type deleteAgentRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.DeleteAgentRequest
+}
+
+type listTestsRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.ListTestsRequest
+}
+
+type getTestRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.GetTestRequest
+}
+
+type createTestRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.CreateTestRequest
+}
+
+type updateTestRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.UpdateTestRequest
+}
+
+type deleteTestRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.DeleteTestRequest
+}
+
+type setTestStatusRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.SetTestStatusRequest
+}
+
+type getResultsForTestsRequest struct {
+	metadata metadata.MD
+	data     *syntheticspb.GetResultsForTestsRequest
+}
+
+type syntheticsResponses struct {
+	listAgentsResponse         listAgentsResponse
+	getAgentResponse           getAgentResponse
+	updateAgentResponse        updateAgentResponse
+	deleteAgentResponse        deleteAgentResponse
+	listTestsResponse          listTestsResponse
+	getTestResponse            getTestResponse
+	createTestResponse         createTestResponse
+	updateTestResponse         updateTestResponse
+	deleteTestResponse         deleteTestResponse
+	setTestStatusResponse      setTestStatusResponse
+	getResultsForTestsResponse getResultsForTestsResponse
+}
+
+type listAgentsResponse struct {
+	data *syntheticspb.ListAgentsResponse
+	err  error
+}
+
+type getAgentResponse struct {
+	data *syntheticspb.GetAgentResponse
+	err  error
+}
+
+type updateAgentResponse struct {
+	data *syntheticspb.UpdateAgentResponse
+	err  error
+}
+
+type deleteAgentResponse struct {
+	data *syntheticspb.DeleteAgentResponse
+	err  error
+}
+
+type listTestsResponse struct {
+	data *syntheticspb.ListTestsResponse
+	err  error
+}
+
+type getTestResponse struct {
+	data *syntheticspb.GetTestResponse
+	err  error
+}
+
+type createTestResponse struct {
+	data *syntheticspb.CreateTestResponse
+	err  error
+}
+
+type updateTestResponse struct {
+	data *syntheticspb.UpdateTestResponse
+	err  error
+}
+
+type deleteTestResponse struct {
+	data *syntheticspb.DeleteTestResponse
+	err  error
+}
+
+type setTestStatusResponse struct {
+	data *syntheticspb.SetTestStatusResponse
+	err  error
+}
+
+type getResultsForTestsResponse struct {
+	data *syntheticspb.GetResultsForTestsResponse
+	err  error
 }
