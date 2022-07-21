@@ -1,7 +1,6 @@
 package synthetics
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -29,7 +28,7 @@ type getResultsForTestsResponse syntheticspb.GetResultsForTestsResponse
 
 func (r *getResultsForTestsResponse) ToModel() ([]synthetics.TestResults, error) {
 	if r == nil {
-		return nil, errors.New("response payload is nil")
+		return nil, nil
 	}
 
 	var trSlice []synthetics.TestResults

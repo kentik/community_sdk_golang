@@ -26,7 +26,7 @@ type getTraceForTestResponse syntheticspb.GetTraceForTestResponse
 
 func (r *getTraceForTestResponse) ToModel() (synthetics.GetTraceForTestResponse, error) {
 	if r == nil {
-		return synthetics.GetTraceForTestResponse{}, errors.New("response payload is nil")
+		return synthetics.GetTraceForTestResponse{}, nil
 	}
 
 	nodes, err := nodesFromPayload(r.Nodes)
