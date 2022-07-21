@@ -43,7 +43,7 @@ func TestClient_Synthetics_GetResultsForTests(t *testing.T) {
 			expectedResult: nil,
 			expectedError:  false,
 		}, {
-			name: "test results with empty agent results received",
+			name: "test results with empty agent results list received",
 			response: getResultsForTestsResponse{
 				data: &syntheticspb.GetResultsForTestsResponse{
 					Results: []*syntheticspb.TestResults{
@@ -62,6 +62,33 @@ func TestClient_Synthetics_GetResultsForTests(t *testing.T) {
 					Time:   time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC),
 					Health: synthetics.HealthHealthy,
 					Agents: nil,
+				},
+			},
+		}, {
+			name: "test results with nil agent results received",
+			response: getResultsForTestsResponse{
+				data: &syntheticspb.GetResultsForTestsResponse{
+					Results: []*syntheticspb.TestResults{
+						{
+							TestId: "40785",
+							Time:   timestamppb.New(time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC)),
+							Health: "healthy",
+							Agents: []*syntheticspb.AgentResults{nil},
+						},
+					},
+				},
+			},
+			expectedResult: []synthetics.TestResults{
+				{
+					TestID: "40785",
+					Time:   time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC),
+					Health: synthetics.HealthHealthy,
+					// gRPC bindings initialize syntheticspb.AgentResults anyway
+					Agents: []synthetics.AgentResults{{
+						AgentID: "",
+						Health:  "",
+						Tasks:   nil,
+					}},
 				},
 			},
 		}, {

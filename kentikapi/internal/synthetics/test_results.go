@@ -68,23 +68,25 @@ func agentResultsSliceFromPayload(arsPayload []*syntheticspb.AgentResults) ([]sy
 		if err != nil {
 			return nil, fmt.Errorf("agent results with index %v: %w", i, err)
 		}
-		ars = append(ars, ar)
+		if ar != nil {
+			ars = append(ars, *ar)
+		}
 	}
 
 	return ars, nil
 }
 
-func agentResultsFromPayload(arPayload *syntheticspb.AgentResults) (synthetics.AgentResults, error) {
+func agentResultsFromPayload(arPayload *syntheticspb.AgentResults) (*synthetics.AgentResults, error) {
 	if arPayload == nil {
-		return synthetics.AgentResults{}, fmt.Errorf("agent results are nil")
+		return nil, nil
 	}
 
 	tasks, err := taskResultsSliceFromPayload(arPayload.Tasks)
 	if err != nil {
-		return synthetics.AgentResults{}, err
+		return nil, err
 	}
 
-	return synthetics.AgentResults{
+	return &synthetics.AgentResults{
 		AgentID: arPayload.AgentId,
 		Health:  synthetics.Health(arPayload.Health),
 		Tasks:   tasks,
