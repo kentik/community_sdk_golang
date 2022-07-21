@@ -167,7 +167,7 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]synthetics.TestResults, error) {
 	trs, err := c.Synthetics.GetResultsForTests(ctx, synthetics.GetResultsForTestsRequest{
 		TestIDs:   []models.ID{testID},
-		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
+		StartTime: time.Now().Add(-time.Hour * 12), // last 12 hours; should provide sufficient number of results
 		EndTime:   time.Now(),
 	})
 	if err != nil {
