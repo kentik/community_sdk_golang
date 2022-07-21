@@ -1,6 +1,7 @@
 package synthetics
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/url"
@@ -269,11 +270,37 @@ func httpResponseDataFromPayload(d *syntheticspb.HTTPResponseData) (synthetics.H
 		return synthetics.HTTPResponseData{}, fmt.Errorf("HTTP response data is nil")
 	}
 
+	data, err := decodeHTTPResponseData(d.Data)
+	if err != nil {
+		return synthetics.HTTPResponseData{}, err
+	}
+
 	return synthetics.HTTPResponseData{
 		Status: d.Status,
 		Size:   d.Size,
-		Data:   d.Data,
+		Data:   data,
 	}, nil
+}
+
+func decodeHTTPResponseData(rawData string) ([]map[string]interface{}, error) {
+	var data []map[string]interface{}
+	err := json.Unmarshal([]byte(rawData), &data)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshal HTTPResponseData.Data: %w", err)
+	}
+
+	return withSnakeCaseKeys(data), nil
+}
+
+func withSnakeCaseKeys(data []map[string]interface{}) []map[string]interface{} {
+	for i, m := range data {
+		m2 := make(map[string]interface{}, len(m))
+		for k, v := range m {
+			m2[convert.ToSnakeCase(k)] = v
+		}
+		data[i] = m2
+	}
+	return data
 }
 
 func dnsResponseDataFromPayload(d *syntheticspb.DNSResponseData) (synthetics.DNSResponseData, error) {

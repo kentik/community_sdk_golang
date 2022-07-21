@@ -3,6 +3,8 @@ package kentikapi_test
 import (
 	"context"
 	"net"
+	"net/http"
+	"net/url"
 	"testing"
 	"time"
 
@@ -94,9 +96,191 @@ func TestClient_Synthetics_GetResultsForTests(t *testing.T) {
 		}, {
 			name: "3x3 network mesh test results received",
 			response: getResultsForTestsResponse{
-				data: testResultsPayloadFromJSON(t, testResultsResponseJSON),
+				data: testResultsPayloadFromJSON(t, networkMeshTestResultsResponseJSON),
 			},
-			expectedResult: newTestResults(),
+			expectedResult: newNetworkMeshTestResults(),
+		}, {
+			name: "HTTP test results received",
+			response: getResultsForTestsResponse{
+				data: &syntheticspb.GetResultsForTestsResponse{
+					Results: []*syntheticspb.TestResults{{
+						TestId: "40785",
+						Time:   timestamppb.New(time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC)),
+						Health: "healthy",
+						Agents: []*syntheticspb.AgentResults{{
+							AgentId: "587",
+							Health:  "healthy",
+							Tasks: []*syntheticspb.TaskResults{{
+								TaskType: &syntheticspb.TaskResults_Http{
+									Http: &syntheticspb.HTTPResults{
+										Target: "https://www.jcsu.edu",
+										Latency: &syntheticspb.MetricData{
+											Current:       946143,
+											RollingAvg:    1125607,
+											RollingStddev: 139685,
+											Health:        "healthy",
+										},
+										Response: &syntheticspb.HTTPResponseData{
+											Status: 200,
+											Size:   36249,
+											Data: "[{\"https_validity\":1,\"https_expiry_timestamp\":1671292495," +
+												"\"errors\":[],\"connectEnd\":61285.083333," +
+												"\"domainLookupEnd\":57.645833,\"duration\":946143.708333," +
+												"\"requestStart\":61285.083333}]",
+										},
+										DstIp: "67.227.195.168",
+									},
+								},
+								Health: "healthy",
+							}},
+						}},
+					}},
+				},
+			},
+			expectedResult: []synthetics.TestResults{
+				{
+					TestID: "40785",
+					Time:   time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC),
+					Health: synthetics.HealthHealthy,
+					Agents: []synthetics.AgentResults{{
+						AgentID: "587",
+						Health:  synthetics.HealthHealthy,
+						Tasks: []synthetics.TaskResults{{
+							Health:   synthetics.HealthHealthy,
+							TaskType: synthetics.TaskTypeHTTP,
+							Task: synthetics.HTTPResults{
+								Target: url.URL{Scheme: "https", Host: "www.jcsu.edu"},
+								Latency: synthetics.MetricData{
+									Current:       946143 * time.Microsecond,
+									RollingAvg:    1125607 * time.Microsecond,
+									RollingStdDev: 139685 * time.Microsecond,
+									Health:        synthetics.HealthHealthy,
+								},
+								Response: synthetics.HTTPResponseData{
+									Status: http.StatusOK,
+									Size:   36249,
+									Data: []map[string]interface{}{{
+										"https_validity":         1.0,
+										"https_expiry_timestamp": 1671292495.0,
+										"errors":                 []interface{}{},
+										"connect_end":            61285.083333,
+										"domain_lookup_end":      57.645833,
+										"duration":               946143.708333,
+										"request_start":          61285.083333,
+									}},
+								},
+								DstIP: net.ParseIP("67.227.195.168"),
+							},
+						}},
+					}},
+				},
+			},
+		}, {
+			name: "page load test results received",
+			response: getResultsForTestsResponse{
+				data: &syntheticspb.GetResultsForTestsResponse{
+					Results: []*syntheticspb.TestResults{{
+						TestId: "40785",
+						Time:   timestamppb.New(time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC)),
+						Health: "healthy",
+						Agents: []*syntheticspb.AgentResults{{
+							AgentId: "587",
+							Health:  "healthy",
+							Tasks: []*syntheticspb.TaskResults{{
+								TaskType: &syntheticspb.TaskResults_Http{
+									Http: &syntheticspb.HTTPResults{
+										Target: "https://www.jcsu.edu",
+										Latency: &syntheticspb.MetricData{
+											Current:       946143,
+											RollingAvg:    1125607,
+											RollingStddev: 139685,
+											Health:        "healthy",
+										},
+										Response: &syntheticspb.HTTPResponseData{
+											Status: 200,
+											Size:   36249,
+											Data: "[{\"decodedBodySize\":9474,\"fetchStart\":137.5,\"responseEnd\":" +
+												"231200,\"domContentLoadedEventEnd\":356350,\"requestStart\":155787.5," +
+												"\"https_validity\":1,\"secureConnectionStart\":83275,\"tlsProtocol\":" +
+												"\"TLS 1.3\",\"domContentLoadedEventStart\":355700,\"connectEnd\":" +
+												"155712.5,\"loadEventEnd\":718762.5,\"connectStart\":13700," +
+												"\"responseStart\":230362.5,\"domComplete\":718750,\"statusCode\":200," +
+												"\"errors\":[],\"https_expiry_timestamp\":1684108799," +
+												"\"domainLookupEnd\":13700,\"s3_data\":{\"har\":[{\"path\":" +
+												"\"26393/38443/3590307/2542/har-1658410261241.json\"}]}," +
+												"\"duration\":718762.5,\"loadEventStart\":718762.5,\"redirectCount\":0," +
+												"\"domainLookupStart\":1862.5,\"domInteractive\":355675}]",
+										},
+										DstIp: "67.227.195.168",
+									},
+								},
+								Health: "healthy",
+							}},
+						}},
+					}},
+				},
+			},
+			expectedResult: []synthetics.TestResults{
+				{
+					TestID: "40785",
+					Time:   time.Date(2022, time.July, 19, 15, 0, 0, 0, time.UTC),
+					Health: synthetics.HealthHealthy,
+					Agents: []synthetics.AgentResults{{
+						AgentID: "587",
+						Health:  synthetics.HealthHealthy,
+						Tasks: []synthetics.TaskResults{{
+							Health:   synthetics.HealthHealthy,
+							TaskType: synthetics.TaskTypeHTTP,
+							Task: synthetics.HTTPResults{
+								Target: url.URL{Scheme: "https", Host: "www.jcsu.edu"},
+								Latency: synthetics.MetricData{
+									Current:       946143 * time.Microsecond,
+									RollingAvg:    1125607 * time.Microsecond,
+									RollingStdDev: 139685 * time.Microsecond,
+									Health:        synthetics.HealthHealthy,
+								},
+								Response: synthetics.HTTPResponseData{
+									Status: http.StatusOK,
+									Size:   36249,
+									Data: []map[string]interface{}{{
+										"decoded_body_size":              9474.0,
+										"fetch_start":                    137.5,
+										"response_end":                   231200.0,
+										"dom_content_loaded_event_end":   356350.0,
+										"request_start":                  155787.5,
+										"https_validity":                 1.0,
+										"secure_connection_start":        83275.0,
+										"tls_protocol":                   "TLS 1.3",
+										"dom_content_loaded_event_start": 355700.0,
+										"connect_end":                    155712.5,
+										"load_event_end":                 718762.5,
+										"connect_start":                  13700.0,
+										"response_start":                 230362.5,
+										"dom_complete":                   718750.0,
+										"status_code":                    200.0,
+										"errors":                         []interface{}{},
+										"https_expiry_timestamp":         1684108799.0,
+										"domain_lookup_end":              13700.0,
+										"s3_data": map[string]interface{}{
+											"har": []interface{}{
+												map[string]interface{}{
+													"path": "26393/38443/3590307/2542/har-1658410261241.json",
+												},
+											},
+										},
+										"duration":            718762.5,
+										"load_event_start":    718762.5,
+										"redirect_count":      0.0,
+										"domain_lookup_start": 1862.5,
+										"dom_interactive":     355675.0,
+									}},
+								},
+								DstIP: net.ParseIP("67.227.195.168"),
+							},
+						}},
+					}},
+				},
+			},
 		},
 	}
 
@@ -176,7 +360,7 @@ func newGetResultsForTestsRequestPayload() *syntheticspb.GetResultsForTestsReque
 	}
 }
 
-const testResultsResponseJSON = `
+const networkMeshTestResultsResponseJSON = `
 {
     "results": [
         {
@@ -346,7 +530,7 @@ const testResultsResponseJSON = `
 }
 `
 
-func newTestResults() []synthetics.TestResults {
+func newNetworkMeshTestResults() []synthetics.TestResults {
 	// nolint: dupl // ping results are similar but different
 	return []synthetics.TestResults{
 		{

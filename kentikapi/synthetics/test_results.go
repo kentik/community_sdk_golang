@@ -113,11 +113,11 @@ type HTTPResponseData struct {
 	Status uint32
 	// Size is a size of received response body in bytes.
 	Size uint32
-	// Data is a JSON blob containing details about request delivery and response processing timing.
+	// Data contains details about request delivery and response processing timing.
 	// It differs for HTTP and page load tasks.
 	// TODO(dfurman): point to the documentation with HTTP / page load response details
 	//  or model as an union of structs.
-	Data string
+	Data []map[string]interface{}
 }
 
 // DNSResults contains observations for DNS task.
