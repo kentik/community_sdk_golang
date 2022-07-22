@@ -40,14 +40,14 @@ func demonstrateSyntheticsTestResultsAPI() error {
 		return err
 	}
 
-	testID, err := pickNetworkMeshTestID(ctx, client)
+	test, err := pickNetworkMeshTest(ctx, client)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("### Getting results for test with ID", testID)
+	fmt.Println("### Getting results for test with ID", test.ID)
 	results, err := client.Synthetics.GetResultsForTests(ctx, synthetics.GetResultsForTestsRequest{
-		TestIDs:   []string{testID},
+		TestIDs:   []string{test.ID},
 		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
 		EndTime:   time.Now(),
 	})
@@ -60,9 +60,9 @@ func demonstrateSyntheticsTestResultsAPI() error {
 	fmt.Println("Got test results (simplified):", formatTestResultsSlice(results))
 	fmt.Println("Number of test results:", len(results))
 
-	fmt.Println("### Getting traceroute results for test with ID", testID)
+	fmt.Println("### Getting traceroute results for test with ID", test.ID)
 	traceResp, err := client.Synthetics.GetTraceForTest(ctx, synthetics.GetTraceForTestRequest{
-		TestID:    testID,
+		TestID:    test.ID,
 		StartTime: time.Now().Add(-time.Hour * 240), // last 10 days
 		EndTime:   time.Now(),
 	})
@@ -77,19 +77,19 @@ func demonstrateSyntheticsTestResultsAPI() error {
 	return nil
 }
 
-func pickNetworkMeshTestID(ctx context.Context, c *kentikapi.Client) (string, error) {
+func pickNetworkMeshTest(ctx context.Context, c *kentikapi.Client) (synthetics.Test, error) {
 	getAllResp, err := c.Synthetics.GetAllTests(ctx)
 	if err != nil {
-		return "", fmt.Errorf("c.Synthetics.GetAllTests: %w", err)
+		return synthetics.Test{}, fmt.Errorf("c.Synthetics.GetAllTests: %w", err)
 	}
 
 	for _, test := range getAllResp.Tests {
 		if test.Type == synthetics.TestTypeNetworkMesh {
 			fmt.Printf("Picked network_mesh test named %q with ID %v\n", test.Name, test.ID)
-			return test.ID, nil
+			return test, nil
 		}
 	}
-	return "", errors.New("no network_mesh tests found")
+	return synthetics.Test{}, errors.New("no network_mesh tests found")
 }
 
 func formatTestResultsSlice(trs []synthetics.TestResults) string {
@@ -122,12 +122,12 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 		return err
 	}
 
-	testID, err := pickNetworkMeshTestID(ctx, client)
+	test, err := pickNetworkMeshTest(ctx, client)
 	if err != nil {
 		return err
 	}
 
-	trs, err := getLastTenTestResults(ctx, client, testID)
+	trs, err := getLastTenTestResults(ctx, client, test.ID)
 	if err != nil {
 		return err
 	}
@@ -136,12 +136,14 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 		return nil
 	}
 
-	getAllAgentsResp, err := client.Synthetics.GetAllAgents(ctx)
+	agents, err := prepareAgents(ctx, client, test)
 	if err != nil {
-		return fmt.Errorf("client.Synthetics.GetAllAgents: %w", err)
+		return fmt.Errorf("prepare agents: %w", err)
 	}
+	fmt.Println("Test agents: ", test.Settings.AgentIDs)
+	fmt.Println("Prepared agents: ", agents)
 
-	m, err := newMetricsMatrix(trs, getAllAgentsResp.Agents)
+	m, err := newMetricsMatrix(trs, agents)
 	if err != nil {
 		return fmt.Errorf("new metrics matrix: %w", err)
 	}
@@ -166,8 +168,10 @@ func demonstrateSyntheticsNetworkMeshTestResults() error {
 
 func getLastTenTestResults(ctx context.Context, c *kentikapi.Client, testID string) ([]synthetics.TestResults, error) {
 	trs, err := c.Synthetics.GetResultsForTests(ctx, synthetics.GetResultsForTestsRequest{
-		TestIDs:   []models.ID{testID},
-		StartTime: time.Now().Add(-time.Hour * 12), // last 12 hours; should provide sufficient number of results
+		TestIDs: []models.ID{testID},
+		// Last 12 hours; should provide sufficient number of results (assuming 1 hour max test period)
+		// It could be optimized by picking 10-12 test periods instead to lower the number of retrieved results
+		StartTime: time.Now().Add(-time.Hour * 12),
 		EndTime:   time.Now(),
 	})
 	if err != nil {
@@ -190,21 +194,16 @@ func min(x, y int) int {
 	return y
 }
 
-// metricsMatrix holds mesh test results for ping task.
+// metricsMatrix holds network mesh test results for ping task.
 type metricsMatrix struct {
-	// agents hold agents data in the same order as cells.
+	// agents hold agents that are involved in the synthetic test.
 	agents []synthetics.Agent
 	// cells hold all "fromAgent" -> "toAgent" connection metrics.
 	cells map[string]map[string]*synthetics.PingResults
 }
 
-func newMetricsMatrix(trs []synthetics.TestResults, allAgents []synthetics.Agent) (metricsMatrix, error) {
-	agents, err := prepareAgents(trs[0], allAgents)
-	if err != nil {
-		return metricsMatrix{}, fmt.Errorf("prepare agents: %w", err)
-	}
+func newMetricsMatrix(trs []synthetics.TestResults, agents []synthetics.Agent) (metricsMatrix, error) {
 	agentIPToAgentMap := makeAgentIPToAgentMap(agents)
-
 	cells := make(map[string]map[string]*synthetics.PingResults)
 	for _, tr := range trs {
 		for _, agentResults := range tr.Agents {
@@ -225,7 +224,11 @@ func newMetricsMatrix(trs []synthetics.TestResults, allAgents []synthetics.Agent
 
 				toAgent, ok := agentIPToAgentMap[ping.Target]
 				if !ok {
-					return metricsMatrix{}, fmt.Errorf("agent with IP %q not found", ping.Target)
+					fmt.Printf(
+						"Ignoring ping results to target IP %v - no such agent IP in test configuration\n",
+						ping.Target,
+					)
+					continue
 				}
 
 				if cells[fromAgentID][toAgent.ID] == nil {
@@ -239,23 +242,28 @@ func newMetricsMatrix(trs []synthetics.TestResults, allAgents []synthetics.Agent
 	return metricsMatrix{agents: agents, cells: cells}, nil
 }
 
-// prepareAgents prepares agents that are involved in test results.
-func prepareAgents(tr synthetics.TestResults, allAgents []synthetics.Agent) ([]synthetics.Agent, error) {
-	agentIDToAgentMap := makeAgentIDToAgentMap(allAgents)
+// prepareAgents returns agents involved in given synthetic test.
+func prepareAgents(ctx context.Context, c *kentikapi.Client, test synthetics.Test) ([]synthetics.Agent, error) {
+	aResp, err := c.Synthetics.GetAllAgents(ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	agentIDToAgentMap := makeAgentIDToAgentMap(aResp.Agents)
 	var agents []synthetics.Agent
-	for _, ars := range tr.Agents {
-		a, ok := agentIDToAgentMap[ars.AgentID]
+	for _, agentID := range test.Settings.AgentIDs {
+		a, ok := agentIDToAgentMap[agentID]
 		if !ok {
-			return nil, fmt.Errorf("agent with ID %v not found in listed agents", ars.AgentID)
+			return nil, fmt.Errorf("agent with ID %v not found in listed agents", agentID)
 		}
 		agents = append(agents, a)
 	}
+
 	return agents, nil
 }
 
 func makeAgentIDToAgentMap(agents []synthetics.Agent) map[string]synthetics.Agent {
-	m := make(map[string]synthetics.Agent)
+	m := make(map[string]synthetics.Agent, len(agents))
 	for _, a := range agents {
 		m[a.ID] = a
 	}
@@ -263,7 +271,7 @@ func makeAgentIDToAgentMap(agents []synthetics.Agent) map[string]synthetics.Agen
 }
 
 func makeAgentIPToAgentMap(agents []synthetics.Agent) map[string]synthetics.Agent {
-	m := make(map[string]synthetics.Agent)
+	m := make(map[string]synthetics.Agent, len(agents))
 	for _, a := range agents {
 		m[a.IP] = a
 	}

@@ -58,18 +58,27 @@ type TaskResults struct {
 }
 
 func (r TaskResults) GetPingResults() *PingResults {
-	ping, _ := r.Task.(PingResults) // nolint:errcheck // user can check the pointer
-	return &ping
+	pr, ok := r.Task.(PingResults)
+	if !ok {
+		return nil
+	}
+	return &pr
 }
 
 func (r TaskResults) GetHTTPResults() *HTTPResults {
-	http, _ := r.Task.(HTTPResults) // nolint:errcheck // user can check the pointer
-	return &http
+	hr, ok := r.Task.(HTTPResults)
+	if !ok {
+		return nil
+	}
+	return &hr
 }
 
 func (r TaskResults) GetDNSResults() *DNSResults {
-	dns, _ := r.Task.(DNSResults) // nolint:errcheck // user can check the pointer
-	return &dns
+	dr, ok := r.Task.(DNSResults)
+	if !ok {
+		return nil
+	}
+	return &dr
 }
 
 // TaskSpecificResults emulates a union of PingResults, HTTPResults and DNSResults.
