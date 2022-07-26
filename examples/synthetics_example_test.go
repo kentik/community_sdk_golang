@@ -507,7 +507,7 @@ func newMinimalURLTest(agentIDs []models.ID) *synthetics.Test {
 				Host:     "www.example.com:443",
 				RawQuery: "dummy=query",
 			},
-			Timeout: time.Minute,
+			Timeout: 30 * time.Second,
 		},
 	})
 }
@@ -524,7 +524,7 @@ func newMinimalPageLoadTest(agentIDs []models.ID) *synthetics.Test {
 				Host:     "www.example.com:443",
 				RawQuery: "dummy=query",
 			},
-			Timeout: time.Minute,
+			Timeout: 30 * time.Second,
 		},
 	})
 }

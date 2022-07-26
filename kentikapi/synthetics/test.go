@@ -348,7 +348,7 @@ func (d *TestDefinitionFlow) isTestDefinition() {}
 type TestDefinitionURL struct {
 	// Target is a URL to use in the HTTP request.
 	Target url.URL
-	// Timeout is an HTTP request timeout. Allowed values range: [5 s, 60 s].
+	// Timeout is an HTTP request timeout. Allowed values range: [5 s, 30 s].
 	Timeout time.Duration
 	// Method is an HTTP method to use in the request. Default: GET. Allowed values: GET, PATCH, POST, PUT.
 	Method string
@@ -367,7 +367,7 @@ func (d *TestDefinitionURL) isTestDefinition() {}
 type TestDefinitionPageLoad struct {
 	// Target is a URL to use in the HTTP request.
 	Target url.URL
-	// Timeout is an HTTP request timeout. Allowed values range: [5 s, 60 s].
+	// Timeout is an HTTP request timeout. Allowed values range: [5 s, 30 s].
 	Timeout time.Duration
 	// Headers is a set of key-value pairs to be included among HTTP headers in the request. Valid HTTP header names
 	// and values are expected.
