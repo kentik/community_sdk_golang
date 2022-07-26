@@ -198,6 +198,146 @@ func TestClient_GetUserWithRetries(t *testing.T) {
 	}
 }
 
+func TestClient_CreateUserWithRetries(t *testing.T) {
+	tests := []struct {
+		name    string
+		options []kentikapi.ClientOption
+		user    models.User
+		// expectedRequestBody is a map for the granularity of assertion diff
+		expectedRequestBody map[string]interface{}
+		responses           []testutil.HTTPResponse
+		expectedResult      *models.User
+		expectedError       bool
+	}{
+		{
+			name:                "retry 4 times and when status 429, 502, 503, 504 received and last status is 429",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
+				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+			},
+			expectedError: true,
+		}, {
+			name:                "retry 5 times when status 429, 502, 503, 504 received and last status is 502",
+			user:                models.User{},
+			expectedRequestBody: newEmptyUserRequestBody(),
+			options:             []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(5)},
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
+				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
+			},
+			expectedError: true,
+		}, {
+			name: "retry till success when status 429 too many requests received",
+			user: *models.NewUser(models.UserRequiredFields{
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: false,
+			}),
+			expectedRequestBody: object{
+				"user": object{
+					"username":       "testuser",
+					"user_full_name": "Test User",
+					"user_email":     "test@user.example",
+					"role":           "Member",
+					"email_service":  true,
+					"email_product":  false,
+				},
+			},
+			responses: []testutil.HTTPResponse{
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
+				{
+					StatusCode: http.StatusCreated,
+					Body: `{
+						"user": {
+							"id": "145999",
+							"username": "testuser",
+							"user_full_name": "Test User",
+							"user_email": "test@user.example",
+							"role": "Member",
+							"email_service": "true",
+							"email_product": "false",
+							"last_login": null,
+							"created_date": "2020-12-09T14:48:42.187Z",
+							"updated_date": "2020-12-09T14:48:43.243Z",
+							"company_id": "74333",
+							"user_api_token": null,
+							"filters": {},
+							"saved_filters": []
+						}
+					}`,
+				},
+			},
+			expectedResult: &models.User{
+				ID:           "145999",
+				Username:     "testuser",
+				UserFullName: "Test User",
+				UserEmail:    "test@user.example",
+				Role:         "Member",
+				EmailService: true,
+				EmailProduct: false,
+				LastLogin:    nil,
+				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
+				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
+				CompanyID:    "74333",
+				UserAPIToken: nil,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// arrange
+			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses, 0)
+			s := httptest.NewServer(h)
+			defer s.Close()
+
+			options := []kentikapi.ClientOption{
+				kentikapi.WithAPIURL(s.URL),
+				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
+				kentikapi.WithRetryMinDelay(1 * time.Microsecond),
+				kentikapi.WithRetryMaxDelay(10 * time.Microsecond),
+				kentikapi.WithLogPayloads(),
+			}
+			c, err := kentikapi.NewClient(append(options, tt.options...)...)
+			assert.NoError(t, err)
+
+			// act
+			result, err := c.Users.
+				Create(context.Background(), tt.user)
+
+			// assert
+			t.Logf("Got result: %v, err: %v", result, err)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
+			for _, r := range h.Requests {
+				assert.Equal(t, http.MethodPost, r.Method)
+				assert.Equal(t, "/api/v5/user", r.URL.Path)
+				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
+				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
+				assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, r.Body))
+			}
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
+
 func TestClient_Synthetics_GetAgentWithRetries(t *testing.T) {
 	tests := []struct {
 		name            string
