@@ -22,7 +22,7 @@ type listTestsResponse syntheticspb.ListTestsResponse
 
 func (r *listTestsResponse) ToModel() (*synthetics.GetAllTestsResponse, error) {
 	if r == nil {
-		return nil, errors.New("response payload is nil")
+		return &synthetics.GetAllTestsResponse{}, nil
 	}
 
 	tests, err := testsFromPayload(r.Tests)

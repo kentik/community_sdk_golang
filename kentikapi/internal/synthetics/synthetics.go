@@ -16,19 +16,21 @@ import (
 
 // API aggregates synthetics API methods.
 type API struct {
-	client syntheticspb.SyntheticsAdminServiceClient
+	adminService syntheticspb.SyntheticsAdminServiceClient
+	dataService  syntheticspb.SyntheticsDataServiceClient
 }
 
 // NewAPI creates new synthetics API.
 func NewAPI(cc grpc.ClientConnInterface) *API {
 	return &API{
-		client: syntheticspb.NewSyntheticsAdminServiceClient(cc),
+		adminService: syntheticspb.NewSyntheticsAdminServiceClient(cc),
+		dataService:  syntheticspb.NewSyntheticsDataServiceClient(cc),
 	}
 }
 
 // GetAllAgents lists synthetics agents.
 func (a *API) GetAllAgents(ctx context.Context) (*synthetics.GetAllAgentsResponse, error) {
-	respPayload, err := a.client.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
+	respPayload, err := a.adminService.ListAgents(ctx, &syntheticspb.ListAgentsRequest{})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -43,7 +45,7 @@ func (a *API) GetAllAgents(ctx context.Context) (*synthetics.GetAllAgentsRespons
 
 // GetAgent retrieves synthetics agent with given ID.
 func (a *API) GetAgent(ctx context.Context, id models.ID) (*synthetics.Agent, error) {
-	respPayload, err := a.client.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: id})
+	respPayload, err := a.adminService.GetAgent(ctx, &syntheticspb.GetAgentRequest{Id: id})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -63,7 +65,7 @@ func (a *API) UpdateAgent(ctx context.Context, agent *synthetics.Agent) (*synthe
 		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
 	}
 
-	respPayload, err := a.client.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{Agent: reqPayload})
+	respPayload, err := a.adminService.UpdateAgent(ctx, &syntheticspb.UpdateAgentRequest{Agent: reqPayload})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -78,7 +80,7 @@ func (a *API) UpdateAgent(ctx context.Context, agent *synthetics.Agent) (*synthe
 
 // DeleteAgent removes synthetics agent with given ID.
 func (a *API) DeleteAgent(ctx context.Context, id models.ID) error {
-	_, err := a.client.DeleteAgent(ctx, &syntheticspb.DeleteAgentRequest{Id: id})
+	_, err := a.adminService.DeleteAgent(ctx, &syntheticspb.DeleteAgentRequest{Id: id})
 	return kentikerrors.StatusErrorFromGRPC(err)
 }
 
@@ -134,7 +136,7 @@ func (a *API) DeactivateAgent(ctx context.Context, id models.ID) (*synthetics.Ag
 
 // GetAllTests lists synthetics tests.
 func (a *API) GetAllTests(ctx context.Context) (*synthetics.GetAllTestsResponse, error) {
-	respPayload, err := a.client.ListTests(ctx, &syntheticspb.ListTestsRequest{})
+	respPayload, err := a.adminService.ListTests(ctx, &syntheticspb.ListTestsRequest{})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -149,7 +151,7 @@ func (a *API) GetAllTests(ctx context.Context) (*synthetics.GetAllTestsResponse,
 
 // GetTest retrieves synthetics test with given ID.
 func (a *API) GetTest(ctx context.Context, id models.ID) (*synthetics.Test, error) {
-	respPayload, err := a.client.GetTest(ctx, &syntheticspb.GetTestRequest{Id: id})
+	respPayload, err := a.adminService.GetTest(ctx, &syntheticspb.GetTestRequest{Id: id})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -176,7 +178,7 @@ func (a *API) CreateTest(ctx context.Context, test *synthetics.Test) (*synthetic
 		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
 	}
 
-	respPayload, err := a.client.CreateTest(ctx, &syntheticspb.CreateTestRequest{Test: reqPayload})
+	respPayload, err := a.adminService.CreateTest(ctx, &syntheticspb.CreateTestRequest{Test: reqPayload})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -226,7 +228,7 @@ func (a *API) UpdateTest(ctx context.Context, test *synthetics.Test) (*synthetic
 		return nil, kentikerrors.New(kentikerrors.InvalidRequest, err.Error())
 	}
 
-	respPayload, err := a.client.UpdateTest(ctx, &syntheticspb.UpdateTestRequest{Test: reqPayload})
+	respPayload, err := a.adminService.UpdateTest(ctx, &syntheticspb.UpdateTestRequest{Test: reqPayload})
 	if err != nil {
 		return nil, kentikerrors.StatusErrorFromGRPC(err)
 	}
@@ -241,18 +243,50 @@ func (a *API) UpdateTest(ctx context.Context, test *synthetics.Test) (*synthetic
 
 // DeleteTest removes synthetics test with given ID.
 func (a *API) DeleteTest(ctx context.Context, id models.ID) error {
-	_, err := a.client.DeleteTest(ctx, &syntheticspb.DeleteTestRequest{Id: id})
+	_, err := a.adminService.DeleteTest(ctx, &syntheticspb.DeleteTestRequest{Id: id})
 	return kentikerrors.StatusErrorFromGRPC(err)
 }
 
 // SetTestStatus modifies status of the synthetics test with given ID.
 func (a *API) SetTestStatus(ctx context.Context, id models.ID, ts synthetics.TestStatus) error {
-	_, err := a.client.SetTestStatus(ctx, &syntheticspb.SetTestStatusRequest{
+	_, err := a.adminService.SetTestStatus(ctx, &syntheticspb.SetTestStatusRequest{
 		Id:     id,
 		Status: syntheticspb.TestStatus(syntheticspb.TestStatus_value[string(ts)]),
 	})
 	return kentikerrors.StatusErrorFromGRPC(err)
 }
 
-// TODO(dfurman): client.Synthetics.GetTestResults()
-// TODO(dfurman): client.Synthetics.GetTraceResults()
+// GetResultsForTests returns measurement results for a set of tests for specified period of time, or the latest
+// available data. It returns one TestResults object for each requested test.
+func (a *API) GetResultsForTests(
+	ctx context.Context, req synthetics.GetResultsForTestsRequest,
+) ([]synthetics.TestResults, error) {
+	respPayload, err := a.dataService.GetResultsForTests(ctx, getResultsForTestsRequestToPayload(req))
+	if err != nil {
+		return nil, kentikerrors.StatusErrorFromGRPC(err)
+	}
+
+	resp, err := (*getResultsForTestsResponse)(respPayload).ToModel()
+	if err != nil {
+		return nil, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, nil
+}
+
+// GetTraceForTest retrieves trace route results for specified synthetic test.
+func (a *API) GetTraceForTest(
+	ctx context.Context, req synthetics.GetTraceForTestRequest,
+) (synthetics.GetTraceForTestResponse, error) {
+	respPayload, err := a.dataService.GetTraceForTest(ctx, getTraceForTestRequestToPayload(req))
+	if err != nil {
+		return synthetics.GetTraceForTestResponse{}, kentikerrors.StatusErrorFromGRPC(err)
+	}
+
+	resp, err := (*getTraceForTestResponse)(respPayload).ToModel()
+	if err != nil {
+		return synthetics.GetTraceForTestResponse{}, kentikerrors.New(kentikerrors.InvalidResponse, err.Error())
+	}
+
+	return resp, nil
+}

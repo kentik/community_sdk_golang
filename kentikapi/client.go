@@ -12,7 +12,6 @@ import (
 	"github.com/AlekSi/pointer"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcretry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/api_connection"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/cloud"
 	"github.com/kentik/community_sdk_golang/kentikapi/internal/httputil"
@@ -57,10 +56,6 @@ type Client struct {
 	Synthetics         *synthetics.API
 	Tags               *resources.TagsAPI
 	Users              *resources.UsersAPI
-
-	// SyntheticsAdmin and SyntheticsData are legacy gRPC clients for Kentik API Synthetics services.
-	SyntheticsAdmin syntheticspb.SyntheticsAdminServiceClient
-	SyntheticsData  syntheticspb.SyntheticsDataServiceClient
 
 	config config
 }
@@ -178,9 +173,6 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		Synthetics:         synthetics.NewAPI(grpcConnection),
 		Tags:               resources.NewTagsAPI(rc, c.LogPayloads),
 		Users:              resources.NewUsersAPI(rc, c.LogPayloads),
-
-		SyntheticsAdmin: syntheticspb.NewSyntheticsAdminServiceClient(grpcConnection),
-		SyntheticsData:  syntheticspb.NewSyntheticsDataServiceClient(grpcConnection),
 
 		config: c,
 	}, nil

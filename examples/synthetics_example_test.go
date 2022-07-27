@@ -5,22 +5,18 @@ package examples
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
-	"strings"
 	"testing"
 	"time"
 
-	syntheticspb "github.com/kentik/api-schema-public/gen/go/kentik/synthetics/v202202"
 	"github.com/kentik/community_sdk_golang/kentikapi"
 	"github.com/kentik/community_sdk_golang/kentikapi/models"
 	"github.com/kentik/community_sdk_golang/kentikapi/synthetics"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestDemonstrateSyntheticsAgentsAPI(t *testing.T) {
@@ -40,12 +36,6 @@ func TestDemonstrateSyntheticsTestsAPI(t *testing.T) {
 func TestDemonstrateSyntheticsTestsAPI_CreateMinimalTests(t *testing.T) {
 	t.Parallel()
 	err := createMinimalTests()
-	assert.NoError(t, err)
-}
-
-func TestDemonstrateSyntheticsDataServiceAPI(t *testing.T) {
-	t.Parallel()
-	err := demonstrateSyntheticsDataServiceAPI()
 	assert.NoError(t, err)
 }
 
@@ -517,7 +507,7 @@ func newMinimalURLTest(agentIDs []models.ID) *synthetics.Test {
 				Host:     "www.example.com:443",
 				RawQuery: "dummy=query",
 			},
-			Timeout: time.Minute,
+			Timeout: 30 * time.Second,
 		},
 	})
 }
@@ -534,7 +524,7 @@ func newMinimalPageLoadTest(agentIDs []models.ID) *synthetics.Test {
 				Host:     "www.example.com:443",
 				RawQuery: "dummy=query",
 			},
-			Timeout: time.Minute,
+			Timeout: 30 * time.Second,
 		},
 	})
 }
@@ -633,105 +623,4 @@ func pickIPV4NodeAgentID(agents []synthetics.Agent) (models.ID, error) {
 		len(matchedIDs), agentID,
 	)
 	return agentID, nil
-}
-
-func demonstrateSyntheticsDataServiceAPI() error {
-	ctx := context.Background()
-
-	client, err := NewClient()
-	if err != nil {
-		return err
-	}
-
-	testID, err := pickNetworkMeshTestID(ctx, client)
-	if err != nil {
-		return err
-	}
-
-	if err = getResultsForTest(ctx, client, testID); err != nil {
-		return err
-	}
-
-	if err = getTraceForTest(ctx, client, testID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func pickNetworkMeshTestID(ctx context.Context, c *kentikapi.Client) (string, error) {
-	getAllResp, err := c.SyntheticsAdmin.ListTests(ctx, &syntheticspb.ListTestsRequest{})
-	if err != nil {
-		return "", fmt.Errorf("c.SyntheticsAdmin.ListTests: %w", err)
-	}
-
-	if getAllResp.Tests != nil {
-		for _, test := range getAllResp.GetTests() {
-			if test.GetType() == "network_mesh" {
-				fmt.Printf("Picked network_mesh test named %q with ID %v\n", test.GetName(), test.GetId())
-				return test.GetId(), nil
-			}
-		}
-	}
-	return "", errors.New("no network_mesh tests found")
-}
-
-func getResultsForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
-	fmt.Println("### Getting results for test with ID", testID)
-	resp, err := client.SyntheticsData.GetResultsForTests(ctx, &syntheticspb.GetResultsForTestsRequest{
-		Ids:       []string{testID},
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 24000)), // last 1000 days
-		EndTime:   timestamppb.Now(),
-	})
-	if err != nil {
-		return fmt.Errorf("client.SyntheticsData.GetResultsForTests: %w", err)
-	}
-
-	fmt.Println("Got test results:", formatTestResultsSlice(resp.GetResults()))
-	fmt.Println("Number of test results:", len(resp.GetResults()))
-	fmt.Println()
-
-	return nil
-}
-
-func formatTestResultsSlice(trs []*syntheticspb.TestResults) string {
-	var s []string
-	for _, tr := range trs {
-		s = append(s, formatTestResults(tr))
-	}
-	return fmt.Sprintf("{\n%v\n}", strings.Join(s, ", "))
-}
-
-func formatTestResults(tr *syntheticspb.TestResults) string {
-	return fmt.Sprintf(
-		"{\n  test_id=%v\n  time=%v\n  health=%v\n  len(agents)=%v\n  agents=%v\n}",
-		tr.GetTestId(), tr.GetTime().AsTime(), tr.GetHealth(), len(tr.GetAgents()), formatAgentsResults(tr.GetAgents()),
-	)
-}
-
-func formatAgentsResults(ars []*syntheticspb.AgentResults) string {
-	var s []string
-	for _, ar := range ars {
-		s = append(s, fmt.Sprintf("{agent_id=%v health=%v len(tasks)=%v}", ar.GetAgentId(), ar.GetHealth(), len(ar.GetTasks())))
-	}
-	return fmt.Sprintf("{%v}", strings.Join(s, ", "))
-}
-
-func getTraceForTest(ctx context.Context, client *kentikapi.Client, testID string) error {
-	fmt.Println("### Getting trace for test with ID", testID)
-	resp, err := client.SyntheticsData.GetTraceForTest(ctx, &syntheticspb.GetTraceForTestRequest{
-		Id:        testID,
-		StartTime: timestamppb.New(time.Now().Add(-time.Hour * 24000)), // last 1000 days
-		EndTime:   timestamppb.Now(),
-	})
-	if err != nil {
-		return fmt.Errorf("client.SyntheticsData.GetTraceForTest: %w", err)
-	}
-
-	fmt.Println("Got trace for test")
-	fmt.Println("Number of nodes:", len(resp.GetNodes()))
-	fmt.Println("Number of paths:", len(resp.GetPaths()))
-	fmt.Println()
-
-	return nil
 }

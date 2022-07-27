@@ -22,7 +22,7 @@ type listExportsResponse cloudexportpb.ListCloudExportResponse
 
 func (r *listExportsResponse) ToModel() (*cloud.GetAllExportsResponse, error) {
 	if r == nil {
-		return nil, errors.New("response payload is nil")
+		return &cloud.GetAllExportsResponse{}, nil
 	}
 
 	ces, err := exportsFromPayload(r.Exports)

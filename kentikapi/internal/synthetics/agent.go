@@ -13,7 +13,7 @@ type listAgentsResponse syntheticspb.ListAgentsResponse
 
 func (r *listAgentsResponse) ToModel() (*synthetics.GetAllAgentsResponse, error) {
 	if r == nil {
-		return nil, errors.New("response payload is nil")
+		return &synthetics.GetAllAgentsResponse{}, nil
 	}
 
 	agents, err := agentsFromPayload(r.Agents)
