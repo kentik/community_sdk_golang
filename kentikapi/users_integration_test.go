@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/AlekSi/pointer"
 	"github.com/kentik/community_sdk_golang/kentikapi"
@@ -294,12 +293,12 @@ func TestClient_GetUser(t *testing.T) {
 
 func TestClient_CreateUser(t *testing.T) {
 	tests := []struct {
-		name    string
-		options []kentikapi.ClientOption
-		user    models.User
+		name string
+		user models.User
 		// expectedRequestBody is a map for the granularity of assertion diff
 		expectedRequestBody map[string]interface{}
-		responses           []testutil.HTTPResponse
+		responseCode        int
+		responseBody        string
 		expectedResult      *models.User
 		expectedError       bool
 	}{
@@ -323,29 +322,25 @@ func TestClient_CreateUser(t *testing.T) {
 					"email_product":  false,
 				},
 			},
-			responses: []testutil.HTTPResponse{
-				{
-					StatusCode: http.StatusCreated,
-					Body: `{
-						"user": {
-							"id": "145999",
-							"username": "testuser",
-							"user_full_name": "Test User",
-							"user_email": "test@user.example",
-							"role": "Member",
-							"email_service": "true",
-							"email_product": "false",
-							"last_login": null,
-							"created_date": "2020-12-09T14:48:42.187Z",
-							"updated_date": "2020-12-09T14:48:43.243Z",
-							"company_id": "74333",
-							"user_api_token": null,
-							"filters": {},
-							"saved_filters": []
-						}
-					}`,
-				},
-			},
+			responseCode: http.StatusCreated,
+			responseBody: `{
+				"user": {
+					"id": "145999",
+					"username": "testuser",
+					"user_full_name": "Test User",
+					"user_email": "test@user.example",
+					"role": "Member",
+					"email_service": "true",
+					"email_product": "false",
+					"last_login": null,
+					"created_date": "2020-12-09T14:48:42.187Z",
+					"updated_date": "2020-12-09T14:48:43.243Z",
+					"company_id": "74333",
+					"user_api_token": null,
+					"filters": {},
+					"saved_filters": []
+				}
+			}`,
 			expectedResult: &models.User{
 				ID:           "145999",
 				Username:     "testuser",
@@ -364,133 +359,42 @@ func TestClient_CreateUser(t *testing.T) {
 			name:                "status bad request",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HTTPResponse{
-				{StatusCode: http.StatusBadRequest, Body: `{"error":"Bad Request"}`},
-			},
-			expectedError: true,
+			responseCode:        http.StatusBadRequest,
+			responseBody:        `{"error":"Bad Request"}`,
+			expectedError:       true,
 		}, {
 			name:                "invalid response format",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HTTPResponse{
-				{StatusCode: http.StatusCreated, Body: "invalid JSON"},
-			},
-			expectedError: true,
+			responseCode:        http.StatusCreated,
+			responseBody:        "invalid JSON",
+			expectedError:       true,
 		}, {
 			name:                "empty response",
 			user:                models.User{},
 			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HTTPResponse{
-				{StatusCode: http.StatusCreated, Body: "{}"},
-			},
-			expectedError: true,
-		}, {
-			name:                "retry 4 times and when status 429, 502, 503, 504 received and last status is 429",
-			user:                models.User{},
-			expectedRequestBody: newEmptyUserRequestBody(),
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
-				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
-				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
-			},
-			expectedError: true,
-		}, {
-			name:                "retry 5 times when status 429, 502, 503, 504 received and last status is 502",
-			user:                models.User{},
-			expectedRequestBody: newEmptyUserRequestBody(),
-			options:             []kentikapi.ClientOption{kentikapi.WithRetryMaxAttempts(5)},
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-				testutil.NewErrorHTTPResponse(http.StatusServiceUnavailable),
-				testutil.NewErrorHTTPResponse(http.StatusGatewayTimeout),
-				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
-				testutil.NewErrorHTTPResponse(http.StatusBadGateway),
-			},
-			expectedError: true,
-		}, {
-			name: "retry till success when status 429 too many requests received",
-			user: *models.NewUser(models.UserRequiredFields{
-				Username:     "testuser",
-				UserFullName: "Test User",
-				UserEmail:    "test@user.example",
-				Role:         "Member",
-				EmailService: true,
-				EmailProduct: false,
-			}),
-			expectedRequestBody: object{
-				"user": object{
-					"username":       "testuser",
-					"user_full_name": "Test User",
-					"user_email":     "test@user.example",
-					"role":           "Member",
-					"email_service":  true,
-					"email_product":  false,
-				},
-			},
-			responses: []testutil.HTTPResponse{
-				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
-				testutil.NewErrorHTTPResponse(http.StatusTooManyRequests),
-				{
-					StatusCode: http.StatusCreated,
-					Body: `{
-						"user": {
-							"id": "145999",
-							"username": "testuser",
-							"user_full_name": "Test User",
-							"user_email": "test@user.example",
-							"role": "Member",
-							"email_service": "true",
-							"email_product": "false",
-							"last_login": null,
-							"created_date": "2020-12-09T14:48:42.187Z",
-							"updated_date": "2020-12-09T14:48:43.243Z",
-							"company_id": "74333",
-							"user_api_token": null,
-							"filters": {},
-							"saved_filters": []
-						}
-					}`,
-				},
-			},
-			expectedResult: &models.User{
-				ID:           "145999",
-				Username:     "testuser",
-				UserFullName: "Test User",
-				UserEmail:    "test@user.example",
-				Role:         "Member",
-				EmailService: true,
-				EmailProduct: false,
-				LastLogin:    nil,
-				CreatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:42.187Z"),
-				UpdatedDate:  *testutil.ParseISO8601Timestamp(t, "2020-12-09T14:48:43.243Z"),
-				CompanyID:    "74333",
-				UserAPIToken: nil,
-			},
+			responseCode:        http.StatusCreated,
+			responseBody:        "{}",
+			expectedError:       true,
 		},
 	}
+	// nolint: dupl
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// arrange
-			h := testutil.NewMultipleResponseSpyHTTPHandler(t, tt.responses, 0)
+			h := testutil.NewSpyHTTPHandler(t, tt.responseCode, []byte(tt.responseBody))
 			s := httptest.NewServer(h)
 			defer s.Close()
 
-			options := []kentikapi.ClientOption{
+			c, err := kentikapi.NewClient(
 				kentikapi.WithAPIURL(s.URL),
 				kentikapi.WithCredentials(dummyAuthEmail, dummyAuthToken),
-				kentikapi.WithRetryMinDelay(1 * time.Microsecond),
-				kentikapi.WithRetryMaxDelay(10 * time.Microsecond),
 				kentikapi.WithLogPayloads(),
-			}
-			c, err := kentikapi.NewClient(append(options, tt.options...)...)
+			)
 			assert.NoError(t, err)
 
 			// act
-			result, err := c.Users.
-				Create(context.Background(), tt.user)
+			result, err := c.Users.Create(context.Background(), tt.user)
 
 			// assert
 			t.Logf("Got result: %v, err: %v", result, err)
@@ -500,14 +404,13 @@ func TestClient_CreateUser(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, len(tt.responses), len(h.Requests), "invalid number of requests")
-			for _, r := range h.Requests {
-				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/api/v5/user", r.URL.Path)
-				assert.Equal(t, dummyAuthEmail, r.Header.Get(authEmailKey))
-				assert.Equal(t, dummyAuthToken, r.Header.Get(authAPITokenKey))
-				assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, r.Body))
-			}
+			assert.Equal(t, 1, h.RequestsCount)
+			assert.Equal(t, http.MethodPost, h.LastMethod)
+			assert.Equal(t, "/api/v5/user", h.LastURL.Path)
+			assert.Equal(t, dummyAuthEmail, h.LastHeader.Get(authEmailKey))
+			assert.Equal(t, dummyAuthToken, h.LastHeader.Get(authAPITokenKey))
+			assert.Equal(t, tt.expectedRequestBody, testutil.UnmarshalJSONToIf(t, h.LastRequestBody))
+
 			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
