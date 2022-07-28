@@ -189,7 +189,7 @@ func DeviceToPayload(d models.Device) DevicePayload {
 		DeviceDescription:     d.DeviceDescription,
 		DeviceSNMNPIP:         d.DeviceSNMPIP,
 		DeviceSNMPCommunity:   d.DeviceSNMPCommunity,
-		DeviceSNMPv3Conf:      snmp3ConfToPayload(d.DeviceSNMPv3Conf),
+		DeviceSNMPv3Conf:      snmpV3ConfToPayload(d.DeviceSNMPv3Conf),
 		MinimizeSNMP:          d.MinimizeSNMP,
 		DeviceBGPType:         deviceBGPTypeToStringPtr(d.DeviceBGPType),
 		DeviceBGPNeighborIP:   d.DeviceBGPNeighborIP,
@@ -273,7 +273,7 @@ func privacyProtocolFromStringPtr(s *string) *models.PrivacyProtocol {
 	return &result
 }
 
-func snmp3ConfToPayload(d *models.SNMPv3Conf) *snmpV3ConfPayload {
+func snmpV3ConfToPayload(d *models.SNMPv3Conf) *snmpV3ConfPayload {
 	if d == nil {
 		return nil
 	}

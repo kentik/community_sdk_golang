@@ -17,7 +17,7 @@ type Tag struct {
 	Protocol      *string
 	ASN           *string
 	LastHopAsName *string
-	NextHopAsn    *string
+	NextHopASN    *string
 	NextHopAsName *string
 	NextHop       *string
 	BGPAsPath     *string

@@ -45,7 +45,7 @@ func demonstrateTagsCRUD() error {
 	t.Protocol = stringPointer("6,17")
 	t.ASN = stringPointer("101,102,103")
 	t.LastHopAsName = stringPointer("as1,as2,as3")
-	t.NextHopAsn = stringPointer("51,52,53")
+	t.NextHopASN = stringPointer("51,52,53")
 	t.NextHopAsName = stringPointer("as51,as52,as53")
 	t.NextHop = stringPointer("192.168.7.1,192.168.7.2")
 	t.BGPAsPath = stringPointer("201,202,203")

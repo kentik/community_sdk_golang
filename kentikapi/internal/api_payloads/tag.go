@@ -48,11 +48,11 @@ type tagPayload struct {
 	TCPFlags      *string `json:"tcp_flags,omitempty"`
 	Protocol      *string `json:"protocol,omitempty"`
 	ASN           *string `json:"asn,omitempty"`
-	LasthopAsName *string `json:"lasthop_as_name,omitempty"`
-	NexthopAsn    *string `json:"nexthop_asn,omitempty"`
-	NexthopAsName *string `json:"nexthop_as_name,omitempty"`
-	Nexthop       *string `json:"nexthop,omitempty"`
-	BGPAspath     *string `json:"bgp_aspath,omitempty"`
+	LastHopAsName *string `json:"lasthop_as_name,omitempty"`
+	NextHopASN    *string `json:"nexthop_asn,omitempty"`
+	NextHopAsName *string `json:"nexthop_as_name,omitempty"`
+	NextHop       *string `json:"nexthop,omitempty"`
+	BGPAsPath     *string `json:"bgp_aspath,omitempty"`
 	BGPCommunity  *string `json:"bgp_community,omitempty"`
 	MAC           *string `json:"mac,omitempty"`
 	Country       *string `json:"country,omitempty"`
@@ -81,11 +81,11 @@ func (p tagPayload) ToTag() *models.Tag {
 		TCPFlags:      p.TCPFlags,
 		Protocol:      p.Protocol,
 		ASN:           p.ASN,
-		LastHopAsName: p.LasthopAsName,
-		NextHopAsn:    p.NexthopAsn,
-		NextHopAsName: p.NexthopAsName,
-		NextHop:       p.Nexthop,
-		BGPAsPath:     p.BGPAspath,
+		LastHopAsName: p.LastHopAsName,
+		NextHopASN:    p.NextHopASN,
+		NextHopAsName: p.NextHopAsName,
+		NextHop:       p.NextHop,
+		BGPAsPath:     p.BGPAsPath,
 		BGPCommunity:  p.BGPCommunity,
 		MAC:           p.MAC,
 		Country:       p.Country,
@@ -115,11 +115,11 @@ func TagToPayload(u models.Tag) tagPayload {
 		TCPFlags:      u.TCPFlags,
 		Protocol:      u.Protocol,
 		ASN:           u.ASN,
-		LasthopAsName: u.LastHopAsName,
-		NexthopAsn:    u.NextHopAsn,
-		NexthopAsName: u.NextHopAsName,
-		Nexthop:       u.NextHop,
-		BGPAspath:     u.BGPAsPath,
+		LastHopAsName: u.LastHopAsName,
+		NextHopASN:    u.NextHopASN,
+		NextHopAsName: u.NextHopAsName,
+		NextHop:       u.NextHop,
+		BGPAsPath:     u.BGPAsPath,
 		BGPCommunity:  u.BGPCommunity,
 		MAC:           u.MAC,
 		Country:       u.Country,
