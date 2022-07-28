@@ -52,7 +52,7 @@ type Query struct {
 	AllSelected     *bool          // overrides "DeviceName" if true (makes it ignored)
 	DeviceName      []string       // alternative with "AllSelected"; but required non-nil even if no elements
 	Descriptor      string         // default "", only used when Dimension is "Traffic"
-	Aggregates      []Aggregate    // if empty, will be auto-filled based on "Metric" field
+	Aggregates      []Aggregate    // if empty, will be autofilled based on "Metric" field
 	Outsort         *string        // name of aggregate object, required when more than 1 objects on "Aggregates" list
 	QueryTitle      string         // default "", only used in QueryChart
 	VizType         *ChartViewType // only used in QueryChart, QueryURL
@@ -61,7 +61,7 @@ type Query struct {
 	SyncAxes        *bool          // only used in QueryChart, QueryURL
 }
 
-// QueryRequiredFields is subset of Query fields required to create an Query.
+// QueryRequiredFields is a subset of Query fields required to create a Query.
 type QueryRequiredFields struct {
 	Metric    MetricType
 	Dimension []DimensionType
@@ -93,7 +93,7 @@ type Aggregate struct {
 	Raw        *bool // required for chart queries
 }
 
-// AggregateRequiredFields is subset of Aggregate fields required to create an Aggregate.
+// AggregateRequiredFields is a subset of Aggregate fields required to create an Aggregate.
 type AggregateRequiredFields struct {
 	Name   string
 	Column string
@@ -113,26 +113,26 @@ func NewAggregate(a AggregateRequiredFields) Aggregate {
 type MetricType int
 
 const (
-	MetricTypeBytes             MetricType = iota // "bytes"
-	MetricTypeInBytes                             // "in_bytes"
-	MetricTypeOutBytes                            // "out_bytes"
-	MetricTypePackets                             // "packets"
-	MetricTypeInPackets                           // "in_packets"
-	MetricTypeOutPackets                          // "out_packets"
-	MetricTypeTCPRetransmit                       // "tcp_retransmit"
-	MetricTypePercRetransmit                      // "perc_retransmit"
-	MetricTypeRetransmitsIn                       // "retransmits_in"
-	MetricTypePercRetransmitsIn                   // "perc_retransmits_in"
-	MetricTypeOutOfOrderIn                        // "out_of_order_in"
-	MetricTypePercOutOfOrderIn                    // "perc_out_of_order_in"
-	MetricTypeFragments                           // "fragments"
-	MetricTypePercFragmets                        // "perc_fragments"
-	MetricTypeClientLatency                       // "client_latency"
-	MetricTypeServerLatency                       // "server_latency"
-	MetricTypeApplLatency                         // "appl_latency"
-	MetricTypeFPS                                 // "fps"
-	MetricTypeUniqueSrcIP                         // "unique_src_ip"
-	MetricTypeUniqueDstIP                         // "unique_dst_ip"
+	MetricTypeBytes              MetricType = iota // "bytes"
+	MetricTypeInBytes                              // "in_bytes"
+	MetricTypeOutBytes                             // "out_bytes"
+	MetricTypePackets                              // "packets"
+	MetricTypeInPackets                            // "in_packets"
+	MetricTypeOutPackets                           // "out_packets"
+	MetricTypeTCPRetransmit                        // "tcp_retransmit"
+	MetricTypePercRetransmit                       // "perc_retransmit"
+	MetricTypeRetransmitsIn                        // "retransmits_in"
+	MetricTypePercRetransmitsIn                    // "perc_retransmits_in"
+	MetricTypeOutOfOrderIn                         // "out_of_order_in"
+	MetricTypePercOutOfOrderIn                     // "perc_out_of_order_in"
+	MetricTypeFragments                            // "fragments"
+	MetricTypePercFragments                        // "perc_fragments"
+	MetricTypeClientLatency                        // "client_latency"
+	MetricTypeServerLatency                        // "server_latency"
+	MetricTypeApplicationLatency                   // "appl_latency"
+	MetricTypeFPS                                  // "fps"
+	MetricTypeUniqueSrcIP                          // "unique_src_ip"
+	MetricTypeUniqueDstIP                          // "unique_dst_ip"
 )
 
 type DimensionType int
@@ -143,7 +143,7 @@ const (
 	DimensionTypeInterfaceIDSrc                           // "InterfaceID_src"
 	DimensionTypePortSrc                                  // "Port_src"
 	DimensionTypeSrcEthMac                                // "src_eth_mac"
-	DimensionTypeVLANSRC                                  // "VLAN_src"
+	DimensionTypeVLANSrc                                  // "VLAN_src"
 	DimensionTypeIPSrc                                    // "IP_src"
 	DimensionTypeASDst                                    // "AS_dst"
 	DimensionTypeGeographyDst                             // "Geography_dst"
@@ -169,18 +169,18 @@ const (
 	DimensionTypeSrcRoutePrefixLen                        // "src_route_prefix_len"
 	DimensionTypeSrcRouteLength                           // "src_route_length"
 	DimensionTypeSrcBGPCommunity                          // "src_bgp_community"
-	DimensionTypeSrcBGPAspath                             // "src_bgp_aspath"
-	DimensionTypeSrcNexthopIP                             // "src_nexthop_ip"
-	DimensionTypeSrcNexthopASN                            // "src_nexthop_asn"
+	DimensionTypeSrcBGPASPath                             // "src_bgp_aspath"
+	DimensionTypeSrcNextHopIP                             // "src_nexthop_ip"
+	DimensionTypeSrcNextHopASN                            // "src_nexthop_asn"
 	DimensionTypeSrcSecondASN                             // "src_second_asn"
 	DimensionTypeSrcThirdASN                              // "src_third_asn"
 	DimensionTypeSrcProtoPort                             // "src_proto_port"
 	DimensionTypeDstRoutePrefixLen                        // "dst_route_prefix_len"
 	DimensionTypeDstRouteLength                           // "dst_route_length"
 	DimensionTypeDstBGPCommunity                          // "dst_bgp_community"
-	DimensionTypeDstBGPAspath                             // "dst_bgp_aspath"
-	DimensionTypeDstNexthopIP                             // "dst_nexthop_ip"
-	DimensionTypeDstNexthopASN                            // "dst_nexthop_asn"
+	DimensionTypeDstBGPASPath                             // "dst_bgp_aspath"
+	DimensionTypeDstNextHopIP                             // "dst_nexthop_ip"
+	DimensionTypeDstNextHopASN                            // "dst_nexthop_asn"
 	DimensionTypeDstSecondASN                             // "dst_second_asn"
 	DimensionTypeDstThirdASN                              // "dst_third_asn"
 	DimensionTypeDstProtoPort                             // "dst_proto_port"

@@ -92,7 +92,7 @@ func payloadToPopulator(p PopulatorPayload) models.Populator {
 		NextHopAsName: p.NextHopAsName,
 		MAC:           p.MAC,
 		Country:       p.Country,
-		VLans:         p.VLans,
+		VLANs:         p.VLans,
 		ID:            strconv.Itoa(*p.ID),
 		DimensionID:   strconv.Itoa(*p.DimensionID),
 		CompanyID:     *p.CompanyID,
@@ -126,6 +126,6 @@ func PopulatorToPayload(p models.Populator) PopulatorPayload {
 		NextHopAsName: p.NextHopAsName,
 		MAC:           p.MAC,
 		Country:       p.Country,
-		VLans:         p.VLans,
+		VLans:         p.VLANs,
 	}
 }

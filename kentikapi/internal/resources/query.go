@@ -13,7 +13,7 @@ type QueryAPI struct {
 	BaseAPI
 }
 
-// NewQueryAPI is constructor.
+// NewQueryAPI creates new QueryAPI.
 func NewQueryAPI(transport api_connection.Transport, logPayloads bool) *QueryAPI {
 	return &QueryAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},
@@ -40,7 +40,7 @@ func (a *QueryAPI) Data(ctx context.Context, query models.QueryObject) (models.Q
 	}
 
 	var response api_payloads.QueryDataResponse
-	if err := a.PostAndValidate(ctx, api_endpoints.QueryData(), payload, &response); err != nil {
+	if err = a.PostAndValidate(ctx, api_endpoints.QueryData(), payload, &response); err != nil {
 		return models.QueryDataResult{}, err
 	}
 
@@ -55,7 +55,7 @@ func (a *QueryAPI) Chart(ctx context.Context, query models.QueryObject) (models.
 	}
 
 	var response api_payloads.QueryChartResponse
-	if err := a.PostAndValidate(ctx, api_endpoints.QueryChart(), payload, &response); err != nil {
+	if err = a.PostAndValidate(ctx, api_endpoints.QueryChart(), payload, &response); err != nil {
 		return models.QueryChartResult{}, err
 	}
 
@@ -70,7 +70,7 @@ func (a *QueryAPI) URL(ctx context.Context, query models.QueryObject) (models.Qu
 	}
 
 	var response api_payloads.QueryURLResponse
-	if err := a.PostAndValidate(ctx, api_endpoints.QueryURL(), payload, &response); err != nil {
+	if err = a.PostAndValidate(ctx, api_endpoints.QueryURL(), payload, &response); err != nil {
 		return models.QueryURLResult{}, err
 	}
 

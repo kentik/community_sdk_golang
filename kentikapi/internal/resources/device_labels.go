@@ -14,7 +14,7 @@ type DeviceLabelsAPI struct {
 	BaseAPI
 }
 
-// NewDeviceLabelsAPI is constructor.
+// NewDeviceLabelsAPI creates new DeviceLabelsAPI.
 func NewDeviceLabelsAPI(transport api_connection.Transport, logPayloads bool) *DeviceLabelsAPI {
 	return &DeviceLabelsAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},
@@ -42,7 +42,7 @@ func (a *DeviceLabelsAPI) Get(ctx context.Context, id models.ID) (*models.Device
 	return &device, err
 }
 
-// Create new label.
+// Create a new label.
 func (a *DeviceLabelsAPI) Create(ctx context.Context, label models.DeviceLabel) (*models.DeviceLabel, error) {
 	payload := api_payloads.DeviceLabelToPayload(label)
 

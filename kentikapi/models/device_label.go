@@ -3,11 +3,13 @@ package models
 import "time"
 
 type DeviceLabel struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	Name  string
 	Color string
 
-	// read-only properties (can't be updated in update call)
+	// Read-only properties
+
 	Devices     []DeviceItem
 	ID          ID
 	UserID      *ID
@@ -16,7 +18,7 @@ type DeviceLabel struct {
 	UpdatedDate time.Time
 }
 
-// DeviceLabelRequiredFields is subset of DeviceLabel fields required to create a DeviceLabel.
+// DeviceLabelRequiredFields is a subset of DeviceLabel fields required to create a DeviceLabel.
 type DeviceLabelRequiredFields struct {
 	Name  string
 	Color string

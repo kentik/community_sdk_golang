@@ -106,11 +106,11 @@ func TestCreateDeviceRouter(t *testing.T) {
 		DeviceSubType:    models.DeviceSubtypeRouter,
 		DeviceSampleRate: 1,
 		PlanID:           models.ID("11466"),
-		SendingIPS:       []string{"128.0.0.10"},
+		SendingIPs:       []string{"128.0.0.10"},
 		MinimizeSNMP:     false,
 	}).WithBGPTypeDevice("77")
 	router.DeviceDescription = pointer.ToString("testapi router with full config")
-	router.DeviceSNMNPIP = pointer.ToString("127.0.0.1")
+	router.DeviceSNMPIP = pointer.ToString("127.0.0.1")
 	router.DeviceSNMPv3Conf = snmpv3conf
 	router.DeviceBGPNeighborIP = pointer.ToString("127.0.0.2")
 	router.DeviceBGPPassword = pointer.ToString("bgp-optional-password")
@@ -182,9 +182,9 @@ func TestCreateDeviceRouter(t *testing.T) {
 	assert.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
 	assert.Equal(1, device.DeviceSampleRate)
-	assert.Equal(1, len(device.SendingIPS))
-	assert.Equal("128.0.0.10", device.SendingIPS[0])
-	assert.Equal("127.0.0.1", *device.DeviceSNMNPIP)
+	assert.Equal(1, len(device.SendingIPs))
+	assert.Equal("128.0.0.10", device.SendingIPs[0])
+	assert.Equal("127.0.0.1", *device.DeviceSNMPIP)
 	assert.Equal("", *device.DeviceSNMPCommunity)
 	assert.False(*device.MinimizeSNMP)
 	assert.Equal(models.DeviceBGPTypeDevice, *device.DeviceBGPType)
@@ -281,10 +281,10 @@ func TestCreateDeviceDNS(t *testing.T) {
 	// act
 	dns := models.NewDeviceDNS(models.DeviceDNSRequiredFields{
 		DeviceName:       "testapi_dns-aws_subnet_bgp_other_device",
-		DeviceSubType:    models.DeviceSubtypeAwsSubnet,
+		DeviceSubType:    models.DeviceSubtypeAWSSubnet,
 		DeviceSampleRate: 1,
 		PlanID:           models.ID("11466"),
-		CdnAttr:          models.CDNAttributeYes,
+		CDNAttr:          models.CDNAttributeYes,
 	}).WithBGPTypeOtherDevice(models.ID("42"))
 	dns.DeviceDescription = pointer.ToString("testapi dns with minimal config")
 	dns.SiteID = models.IDPtr("8483")
@@ -343,8 +343,8 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
 	assert.Equal(1, device.DeviceSampleRate)
-	assert.Equal(0, len(device.SendingIPS))
-	assert.Nil(device.DeviceSNMNPIP)
+	assert.Equal(0, len(device.SendingIPs))
+	assert.Nil(device.DeviceSNMPIP)
 	assert.Equal("", *device.DeviceSNMPCommunity)
 	assert.False(*device.MinimizeSNMP)
 	assert.Equal(models.DeviceBGPTypeOtherDevice, *device.DeviceBGPType)
@@ -356,7 +356,7 @@ func TestCreateDeviceDNS(t *testing.T) {
 	assert.Equal("208.76.14.223", *device.BGPPeerIP4)
 	assert.Equal("2620:129:1:2::1", *device.BGPPeerIP6)
 	assert.Nil(device.SNMPLastUpdated)
-	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
+	assert.Equal(models.DeviceSubtypeAWSSubnet, device.DeviceSubType)
 }
 
 func TestUpdatetDeviceRouter(t *testing.T) {
@@ -449,12 +449,12 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 
 	router := models.Device{
 		ID:               deviceID,
-		SendingIPS:       []string{"128.0.0.10", "128.0.0.11"},
+		SendingIPs:       []string{"128.0.0.10", "128.0.0.11"},
 		DeviceSampleRate: 10,
 		DeviceSNMPv3Conf: snmpv3conf,
 	}
 	router.DeviceDescription = pointer.ToString("updated description")
-	router.DeviceSNMNPIP = pointer.ToString("127.0.0.10")
+	router.DeviceSNMPIP = pointer.ToString("127.0.0.10")
 	router.MinimizeSNMP = pointer.ToBool(true)
 	router.PlanID = models.IDPtr("11466")
 	router.SiteID = models.IDPtr("8483")
@@ -527,10 +527,10 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
 	assert.Equal(10, device.DeviceSampleRate)
-	assert.Equal(2, len(device.SendingIPS))
-	assert.Equal("128.0.0.10", device.SendingIPS[0])
-	assert.Equal("128.0.0.11", device.SendingIPS[1])
-	assert.Equal("127.0.0.10", *device.DeviceSNMNPIP)
+	assert.Equal(2, len(device.SendingIPs))
+	assert.Equal("128.0.0.10", device.SendingIPs[0])
+	assert.Equal("128.0.0.11", device.SendingIPs[1])
+	assert.Equal("127.0.0.10", *device.DeviceSNMPIP)
 	assert.Equal("", *device.DeviceSNMPCommunity)
 	assert.True(*device.MinimizeSNMP)
 	assert.Equal(models.DeviceBGPTypeDevice, *device.DeviceBGPType)
@@ -551,7 +551,7 @@ func TestUpdatetDeviceRouter(t *testing.T) {
 	assert.Equal("208.76.14.223", *device.BGPPeerIP4)
 	assert.Equal("2620:129:1:2::1", *device.BGPPeerIP6)
 	assert.Nil(device.SNMPLastUpdated)
-	assert.Equal(models.DeviceSubtypePaloalto, device.DeviceSubType)
+	assert.Equal(models.DeviceSubtypePaloAlto, device.DeviceSubType)
 }
 
 //nolint:dupl
@@ -729,8 +729,8 @@ func TestGetDevice(t *testing.T) {
 				SiteID:              nil,
 				DeviceDescription:   pointer.ToString("testapi router with full config"),
 				DeviceSampleRate:    1001,
-				SendingIPS:          []string{"128.0.0.11", "128.0.0.12"},
-				DeviceSNMNPIP:       pointer.ToString("129.0.0.1"),
+				SendingIPs:          []string{"128.0.0.11", "128.0.0.12"},
+				DeviceSNMPIP:        pointer.ToString("129.0.0.1"),
 				DeviceSNMPCommunity: pointer.ToString(""),
 				MinimizeSNMP:        pointer.ToBool(false),
 				DeviceBGPType: func() *models.DeviceBGPType {
@@ -897,8 +897,8 @@ func TestGetDevice(t *testing.T) {
 				SiteID:              nil,
 				DeviceDescription:   pointer.ToString("testapi dns with minimal config"),
 				DeviceSampleRate:    1,
-				SendingIPS:          []string{},
-				DeviceSNMNPIP:       nil,
+				SendingIPs:          []string{},
+				DeviceSNMPIP:        nil,
 				DeviceSNMPCommunity: pointer.ToString(""),
 				MinimizeSNMP:        pointer.ToBool(false),
 				DeviceBGPType: func() *models.DeviceBGPType {
@@ -919,7 +919,7 @@ func TestGetDevice(t *testing.T) {
 				ID:              "43",
 				DeviceName:      "testapi_dns_minimal_1",
 				DeviceType:      models.DeviceTypeHostNProbeDNSWWW,
-				DeviceSubType:   models.DeviceSubtypeAwsSubnet,
+				DeviceSubType:   models.DeviceSubtypeAWSSubnet,
 				DeviceStatus:    pointer.ToString("V"),
 				DeviceFlowType:  pointer.ToString("auto"),
 				CompanyID:       "74333",
@@ -1341,10 +1341,10 @@ func TestGetAllDevices(t *testing.T) {
 	require.Equal(0, len(device.AllInterfaces))
 	assert.Equal("auto", *device.DeviceFlowType)
 	assert.Equal(1001, device.DeviceSampleRate)
-	assert.Equal(2, len(device.SendingIPS))
-	assert.Equal("128.0.0.11", device.SendingIPS[0])
-	assert.Equal("128.0.0.12", device.SendingIPS[1])
-	assert.Equal("129.0.0.1", *device.DeviceSNMNPIP)
+	assert.Equal(2, len(device.SendingIPs))
+	assert.Equal("128.0.0.11", device.SendingIPs[0])
+	assert.Equal("128.0.0.12", device.SendingIPs[1])
+	assert.Equal("129.0.0.1", *device.DeviceSNMPIP)
 	assert.Equal("", *device.DeviceSNMPCommunity)
 	assert.False(*device.MinimizeSNMP)
 	assert.Equal(models.DeviceBGPTypeDevice, *device.DeviceBGPType)
@@ -1371,7 +1371,7 @@ func TestGetAllDevices(t *testing.T) {
 	device = devices[1]
 	assert.Equal(models.ID("43"), device.ID)
 	assert.Equal(models.DeviceTypeHostNProbeDNSWWW, device.DeviceType)
-	assert.Equal(models.DeviceSubtypeAwsSubnet, device.DeviceSubType)
+	assert.Equal(models.DeviceSubtypeAWSSubnet, device.DeviceSubType)
 	assert.Equal(models.DeviceBGPTypeNone, *device.DeviceBGPType)
 }
 

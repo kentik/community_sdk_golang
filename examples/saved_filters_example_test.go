@@ -91,7 +91,7 @@ func runCRUDSavedFilters() error {
 	fmt.Println()
 
 	fmt.Println("## DELETE")
-	err = client.SavedFilters.Detete(context.Background(), savedFilter.ID)
+	err = client.SavedFilters.Delete(context.Background(), savedFilter.ID)
 	if err != nil {
 		return err
 	}

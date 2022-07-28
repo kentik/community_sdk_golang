@@ -70,7 +70,7 @@ type InterfacePayload struct {
 	InitialSNMPAlias            *string                `json:"initial_snmp_alias,omitempty"`
 	InitialInterfaceDescription *string                `json:"initial_interface_description,omitempty"`
 	InitialSNMPSpeed            *int                   `json:"initial_snmp_speed,string,omitempty"`
-	TopNexthopASNs              []topNextHopASNPayload `json:"top_nexthop_asns,omitempty"`
+	TopNextHopASNs              []topNextHopASNPayload `json:"top_nexthop_asns,omitempty"`
 }
 
 func (p *InterfacePayload) UnmarshalJSON(data []byte) error {
@@ -100,7 +100,7 @@ func payloadToInterface(p InterfacePayload) (models.Interface, error) {
 	}
 
 	var topNextHopASNs []models.TopNextHopASN
-	err = utils.ConvertList(p.TopNexthopASNs, payloadToTopNextHopASN, &topNextHopASNs)
+	err = utils.ConvertList(p.TopNextHopASNs, payloadToTopNextHopASN, &topNextHopASNs)
 	if err != nil {
 		return models.Interface{}, err
 	}

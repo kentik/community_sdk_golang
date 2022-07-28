@@ -357,7 +357,7 @@ func TestDeleteSavedFilter(t *testing.T) {
 	savedFiltersAPI := resources.NewSavedFiltersAPI(transport, true)
 
 	filterID := "8153"
-	err := savedFiltersAPI.Detete(context.Background(), filterID)
+	err := savedFiltersAPI.Delete(context.Background(), filterID)
 
 	assert.NoError(t, err)
 	assert.Empty(t, transport.RequestBody)

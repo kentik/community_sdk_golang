@@ -1,20 +1,23 @@
 package models
 
 type CustomDimension struct {
-	// read-write properties (can be updated in update call)
+	// Read-write properties
+
 	DisplayName string
 
-	// read-only properties (can't be updated in update call)
-	Name       string // must start with c_ and be unique even against deleted dimensions (deleted names are retained for 1 year)
+	// Read-only properties
+
+	// Name must start with c_ and be unique even against deleted dimensions (deleted names are retained for 1 year).
+	Name       string
 	Type       CustomDimensionType
 	ID         ID
 	CompanyID  ID
 	Populators []Populator
 }
 
-// CustomDimensionRequiredFields is subset of CustomDimension fields required to create a CustomDimension.
-// Note: name must begin with "c_" and be unique even among already deleted custom dimensions as names are retained for 1 year.
+// CustomDimensionRequiredFields is a subset of CustomDimension fields required to create a CustomDimension.
 type CustomDimensionRequiredFields struct {
+	// Name must begin with "c_" and be unique even among already deleted custom dimensions as names are retained for 1 year.
 	Name        string
 	DisplayName string
 	Type        CustomDimensionType

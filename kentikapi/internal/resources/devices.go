@@ -14,7 +14,7 @@ type DevicesAPI struct {
 	Interfaces *interfacesAPI
 }
 
-// NewDevicesAPI is constructor.
+// NewDevicesAPI creates new DevicesAPI.
 func NewDevicesAPI(transport api_connection.Transport, logPayloads bool) *DevicesAPI {
 	return &DevicesAPI{
 		BaseAPI{Transport: transport, LogPayloads: logPayloads},
@@ -43,7 +43,7 @@ func (a *DevicesAPI) Get(ctx context.Context, id models.ID) (*models.Device, err
 	return &device, err
 }
 
-// Create new device.
+// Create a new device.
 func (a *DevicesAPI) Create(ctx context.Context, device models.Device) (*models.Device, error) {
 	request := api_payloads.CreateDeviceRequest{Payload: api_payloads.DeviceToPayload(device)}
 	var response api_payloads.CreateDeviceResponse
@@ -82,7 +82,7 @@ func (a *DevicesAPI) ApplyLabels(ctx context.Context, deviceID models.ID, labels
 	}
 	request := api_payloads.ApplyLabelsRequest{Labels: payload}
 	var response api_payloads.ApplyLabelsResponse
-	if err := a.UpdateAndValidate(ctx, api_endpoints.ApplyDeviceLabels(deviceID), request, &response); err != nil {
+	if err = a.UpdateAndValidate(ctx, api_endpoints.ApplyDeviceLabels(deviceID), request, &response); err != nil {
 		return models.AppliedLabels{}, err
 	}
 
@@ -114,7 +114,7 @@ func (a *interfacesAPI) Get(ctx context.Context, deviceID, interfaceID models.ID
 	return &intf, err
 }
 
-// Create new interface under given device.
+// Create a new interface under given device.
 func (a *interfacesAPI) Create(ctx context.Context, intf models.Interface) (*models.Interface, error) {
 	payload, err := api_payloads.InterfaceToPayload(intf)
 	if err != nil {

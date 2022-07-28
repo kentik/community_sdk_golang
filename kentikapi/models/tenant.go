@@ -17,7 +17,7 @@ type TenantUser struct {
 	CompanyID ID
 	Email     string
 	Name      *string
-	Fullname  *string
+	FullName  *string
 	TenantID  ID
 	LastLogin *time.Time
 }

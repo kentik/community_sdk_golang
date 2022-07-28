@@ -93,7 +93,7 @@ func runCRUDCustomDimensions() error {
 	populator.NextHopAsName = pointer.ToString("asn201,asn202")
 	populator.MAC = pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
 	populator.Country = pointer.ToString("NL,SE")
-	populator.VLans = pointer.ToString("2001,2002")
+	populator.VLANs = pointer.ToString("2001,2002")
 	createdPopulator, err := client.CustomDimensions.Populators.Create(context.Background(), *populator)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func runCRUDCustomDimensions() error {
 	return nil
 }
 
-//nolint: gosec // no need for cryptographically secure RNG here
+// nolint: gosec // no need for cryptographically secure RNG here
 func randID() string {
 	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")

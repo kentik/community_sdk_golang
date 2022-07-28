@@ -203,7 +203,7 @@ func TestGetCustomDimension(t *testing.T) {
 					NextHopAsName: pointer.ToString("asn201,asn202"),
 					MAC:           pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF"),
 					Country:       pointer.ToString("NL,SE"),
-					VLans:         pointer.ToString("2001,2002"),
+					VLANs:         pointer.ToString("2001,2002"),
 					ID:            "1510871096",
 					CompanyID:     "74333",
 					DimensionID:   "24001",
@@ -498,7 +498,7 @@ func TestCreatePopulator(t *testing.T) {
 	populator.NextHopAsName = pointer.ToString("asn201,asn202")
 	populator.MAC = pointer.ToString("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF")
 	populator.Country = pointer.ToString("NL,SE")
-	populator.VLans = pointer.ToString("2001,2002")
+	populator.VLANs = pointer.ToString("2001,2002")
 
 	// act
 	created, err := customDimensionsAPI.Populators.Create(context.Background(), *populator)
@@ -555,7 +555,7 @@ func TestCreatePopulator(t *testing.T) {
 	assert.Equal("asn201,asn202", *created.NextHopAsName)
 	assert.Equal("FF:FF:FF:FF:FF:FA,FF:FF:FF:FF:FF:FF", *created.MAC)
 	assert.Equal("NL,SE", *created.Country)
-	assert.Equal("2001,2002", *created.VLans)
+	assert.Equal("2001,2002", *created.VLANs)
 	assert.Equal(models.ID("74333"), created.CompanyID)
 	assert.Equal("144319", *created.User)
 	assert.Equal(2, created.MACCount)

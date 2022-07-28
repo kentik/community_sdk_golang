@@ -16,68 +16,68 @@ type CreateManualMitigationRequest struct {
 }
 
 type AlarmPayload struct {
-	AlarmID         int               `json:"alarm_id"`
-	RowType         string            `json:"row_type"`
-	AlarmState      string            `json:"alarm_state"`
-	AlertID         int               `json:"alert_id"`
-	MitigationID    *StringAsInt      `json:"mitigation_id"`
-	TresholdID      int               `json:"threshold_id"`
-	AlertKey        string            `json:"alert_key"`
-	AlertDimension  string            `json:"alert_dimension"`
-	AlertMetric     []string          `json:"alert_metric"`
-	AlertValue      float32           `json:"alert_value"`
-	AlertValue2nd   float32           `json:"alert_value2nd"`
-	AlertValue3rd   float32           `json:"alert_value3rd"`
-	AlertMatchCount int               `json:"alert_match_count"`
-	AlertBaseline   int               `json:"alert_baseline"`
-	AlertSeverity   string            `json:"alert_severity"`
-	BaselineUsed    int               `json:"baseline_used"`
-	LearningMode    BoolAsStringOrInt `json:"learning_mode"`
-	DebugMode       BoolAsStringOrInt `json:"debug_mode"`
-	AlarmStart      time.Time         `json:"alarm_start"`
-	AlarmEnd        *string           `json:"alarm_end,omitempty"`
-	AlarmLastComent *string           `json:"alarm_last_comment,omitempty"`
-	MitAlertID      int               `json:"mit_alert_id"`
-	MitAlertIP      string            `json:"mit_alert_ip"`
-	MitTresholdID   int               `json:"mit_treshold_id"`
-	Args            string            `json:"args"`
-	ID              int               `json:"id"`
-	PolicyID        int               `json:"policy_id"`
-	PolicyName      string            `json:"policy_name"`
-	AlertKeyLookup  string            `json:"alert_key_lookup"`
+	AlarmID          int               `json:"alarm_id"`
+	RowType          string            `json:"row_type"`
+	AlarmState       string            `json:"alarm_state"`
+	AlertID          int               `json:"alert_id"`
+	MitigationID     *StringAsInt      `json:"mitigation_id"`
+	ThresholdID      int               `json:"threshold_id"`
+	AlertKey         string            `json:"alert_key"`
+	AlertDimension   string            `json:"alert_dimension"`
+	AlertMetric      []string          `json:"alert_metric"`
+	AlertValue       float32           `json:"alert_value"`
+	AlertValue2nd    float32           `json:"alert_value2nd"`
+	AlertValue3rd    float32           `json:"alert_value3rd"`
+	AlertMatchCount  int               `json:"alert_match_count"`
+	AlertBaseline    int               `json:"alert_baseline"`
+	AlertSeverity    string            `json:"alert_severity"`
+	BaselineUsed     int               `json:"baseline_used"`
+	LearningMode     BoolAsStringOrInt `json:"learning_mode"`
+	DebugMode        BoolAsStringOrInt `json:"debug_mode"`
+	AlarmStart       time.Time         `json:"alarm_start"`
+	AlarmEnd         *string           `json:"alarm_end,omitempty"`
+	AlarmLastComment *string           `json:"alarm_last_comment,omitempty"`
+	MitAlertID       int               `json:"mit_alert_id"`
+	MitAlertIP       string            `json:"mit_alert_ip"`
+	MitThresholdID   int               `json:"mit_treshold_id"`
+	Args             string            `json:"args"`
+	ID               int               `json:"id"`
+	PolicyID         int               `json:"policy_id"`
+	PolicyName       string            `json:"policy_name"`
+	AlertKeyLookup   string            `json:"alert_key_lookup"`
 }
 
 func (p AlarmPayload) ToAlarm() models.Alarm {
 	return models.Alarm{
-		AlarmID:         strconv.Itoa(p.AlarmID),
-		RowType:         p.RowType,
-		AlarmState:      p.AlarmState,
-		AlertID:         strconv.Itoa(p.AlertID),
-		MitigationID:    (*models.ID)(p.MitigationID),
-		TresholdID:      strconv.Itoa(p.TresholdID),
-		AlertKey:        p.AlertKey,
-		AlertDimension:  p.AlertDimension,
-		AlertMetric:     p.AlertMetric,
-		AlertValue:      p.AlertValue,
-		AlertValue2nd:   p.AlertValue2nd,
-		AlertValue3rd:   p.AlertValue3rd,
-		AlertMatchCount: p.AlertMatchCount,
-		AlertBaseline:   p.AlertBaseline,
-		AlertSeverity:   p.AlertSeverity,
-		BaselineUsed:    p.BaselineUsed,
-		LearningMode:    bool(p.LearningMode),
-		DebugMode:       bool(p.DebugMode),
-		AlarmStart:      p.AlarmStart,
-		AlarmEnd:        p.AlarmEnd,
-		AlarmLastComent: p.AlarmLastComent,
-		MitAlertID:      strconv.Itoa(p.MitAlertID),
-		MitAlertIP:      p.MitAlertIP,
-		MitTresholdID:   strconv.Itoa(p.MitTresholdID),
-		Args:            p.Args,
-		ID:              strconv.Itoa(p.ID),
-		PolicyID:        strconv.Itoa(p.PolicyID),
-		PolicyName:      p.PolicyName,
-		AlertKeyLookup:  p.AlertKeyLookup,
+		AlarmID:          strconv.Itoa(p.AlarmID),
+		RowType:          p.RowType,
+		AlarmState:       p.AlarmState,
+		AlertID:          strconv.Itoa(p.AlertID),
+		MitigationID:     (*models.ID)(p.MitigationID),
+		ThresholdID:      strconv.Itoa(p.ThresholdID),
+		AlertKey:         p.AlertKey,
+		AlertDimension:   p.AlertDimension,
+		AlertMetric:      p.AlertMetric,
+		AlertValue:       p.AlertValue,
+		AlertValue2nd:    p.AlertValue2nd,
+		AlertValue3rd:    p.AlertValue3rd,
+		AlertMatchCount:  p.AlertMatchCount,
+		AlertBaseline:    p.AlertBaseline,
+		AlertSeverity:    p.AlertSeverity,
+		BaselineUsed:     p.BaselineUsed,
+		LearningMode:     bool(p.LearningMode),
+		DebugMode:        bool(p.DebugMode),
+		AlarmStart:       p.AlarmStart,
+		AlarmEnd:         p.AlarmEnd,
+		AlarmLastComment: p.AlarmLastComment,
+		MitAlertID:       strconv.Itoa(p.MitAlertID),
+		MitAlertIP:       p.MitAlertIP,
+		MitThresholdID:   strconv.Itoa(p.MitThresholdID),
+		Args:             p.Args,
+		ID:               strconv.Itoa(p.ID),
+		PolicyID:         strconv.Itoa(p.PolicyID),
+		PolicyName:       p.PolicyName,
+		AlertKeyLookup:   p.AlertKeyLookup,
 	}
 }
 
